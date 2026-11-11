@@ -12,8 +12,9 @@
   <meta name="format-detection" content="telephone=no">
   <title>DinoGo · 恐龙英语</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="images/icons/icon-192.png">
+  <!-- 样式按模块拆分，顺序与 build.mjs 的 CSS_FILES 保持一致 -->
   <style>
 /* ============================================================
    DinoGo · 恐龙英语 — interactive iOS / iPad app
@@ -151,6 +152,30 @@ h1,h2,h3,h4,p{margin:0}
   box-shadow:0 5px 12px rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
 .avatar .crop{position:absolute;width:96px;height:96px;left:-39px;top:-7px}
 
+/* ------------------------------------------------ animations */
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+@keyframes evoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes heartOut{0%{transform:scale(1)}40%{transform:scale(1.35);opacity:1}100%{transform:scale(.6);opacity:.25}}
+@keyframes confettiFall{0%{opacity:0;transform:translateY(-30px) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(160px) rotate(240deg)}}
+@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
+
+/* ============================================================
+   DinoGo · 恐龙英语 — home：乐园首页 + 随机记单词 + 成长档案
+   ============================================================ */
+
 /* ------------------------------------------------ home */
 .home-top{display:flex;align-items:center;gap:11px;margin-top:2px;margin-bottom:14px}
 .home-top .greet{flex:1;min-width:0}
@@ -174,9 +199,9 @@ h1,h2,h3,h4,p{margin:0}
 .hero .moon::after{content:"";position:absolute;left:-12px;top:4px;width:44px;height:44px;border-radius:50%;
   background:#16382C;box-shadow:0 0 0 1px rgba(255,255,255,.02)}
 .hero .stars i{position:absolute;background:#FFF6D8;border-radius:50%}
-.hero .cloud{position:absolute;background:#fff;border-radius:99px;opacity:.72}
-.hero .cloud.a{width:58px;height:18px;left:28px;top:38px}
-.hero .cloud.b{width:40px;height:14px;left:48px;top:31px}
+.hero .cloud{position:absolute;background:#fff;border-radius:99px;opacity:.62}
+.hero .cloud.a{width:58px;height:18px;right:92px;top:32px}
+.hero .cloud.b{width:40px;height:14px;right:118px;top:45px}
 .hero .hill{position:absolute;left:-10%;right:-10%;border-radius:50% 50% 0 0;transition:background .6s ease}
 .hero .hill.a{height:110px;bottom:-44px;background:#CDE9AC}
 .hero .hill.b{height:86px;bottom:-40px;background:#B9DF92;left:34%;right:-24%}
@@ -192,11 +217,14 @@ h1,h2,h3,h4,p{margin:0}
 }
 .hero .dino-wrap.ultra{filter:drop-shadow(0 0 26px rgba(255,210,90,.55)) drop-shadow(0 14px 18px rgba(48,104,64,.2))}
 .hero .dino-wrap.with-hat{bottom:66px}
-.hero .stage-tag{position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;
-  border-radius:99px;background:rgba(255,255,255,.84);border:1.5px solid rgba(255,255,255,.9);
-  font-size:10.5px;font-weight:800;color:var(--green-d);letter-spacing:.3px;backdrop-filter:blur(4px)}
-.hero .name{position:absolute;left:16px;top:52px}
-.hero .name b{display:block;font-size:27px;font-weight:900;letter-spacing:-.5px}
+.hero .hero-id{position:absolute;left:14px;top:14px;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.hero .stage-tag{position:static;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;
+  border-radius:99px;background:rgba(255,255,255,.86);border:1.5px solid rgba(255,255,255,.92);
+  font-size:10.5px;font-weight:800;color:var(--green-d);letter-spacing:.3px;backdrop-filter:blur(4px);
+  box-shadow:0 3px 8px rgba(80,60,20,.08)}
+.hero .name{position:static;display:flex;align-items:center;gap:6px}
+.hero .name b{display:block;font-size:27px;font-weight:900;letter-spacing:-.5px;line-height:1.1;
+  text-shadow:0 1px 0 rgba(255,255,255,.45)}
 .hero .bubble{position:absolute;right:12px;top:138px;width:112px;padding:8px 10px;
   border-radius:12px 12px 12px 3px;background:#fff;font-size:9.5px;line-height:1.55;
   font-weight:700;color:#57705B;box-shadow:0 5px 12px rgba(70,50,20,.1)}
@@ -256,29 +284,6 @@ h1,h2,h3,h4,p{margin:0}
 .word-card:active{transform:scale(.99)}
 
 .home-note{margin:12px 4px 0;font-size:9px;font-weight:600;color:#AC9C80;text-align:center;line-height:1.6}
-.wide-extra{display:none}
-@media (min-width:700px) and (min-height:600px){
-  .wide-extra{display:grid;grid-template-columns:1.35fr .65fr;gap:12px;margin-top:14px;height:140px}
-  .we-main{border-radius:22px;background:#fff;border:1.5px solid var(--line);box-shadow:var(--shadow);
-    padding:10px 16px;display:flex;flex-direction:column;min-width:0}
-  .we-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-  .we-head .lb{font-size:8px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
-  .we-head b{font-size:19px;font-weight:900;color:var(--green-d);line-height:1.1}
-  .we-head b small{font-size:9px;color:var(--muted);font-weight:700}
-  .we-head .goal{font-size:7.5px;font-weight:800;color:#8A6415;background:#FFF4CE;padding:3px 7px;border-radius:99px;white-space:nowrap}
-  .we-chart{flex:1;display:flex;align-items:flex-end;gap:10px;margin-top:4px;padding-top:2px;min-height:0}
-  .we-chart .wc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end}
-  .we-chart .wc .b{width:100%;max-width:26px;border-radius:6px;background:#DCEBCB;position:relative}
-  .we-chart .wc .b::after{content:"";position:absolute;left:3px;right:3px;top:2px;height:2px;border-radius:9px;background:rgba(255,255,255,.6)}
-  .we-chart .wc.today .b{background:linear-gradient(180deg,#FFD25A,#F2A93B);box-shadow:0 4px 8px rgba(242,169,59,.3)}
-  .we-chart .wc span{font-size:7px;font-weight:700;color:#A6B2A4}
-  .we-side{display:flex;flex-direction:column;gap:8px;min-width:0}
-  .we-stat{flex:1;border-radius:16px;background:#fff;border:1.5px solid var(--line);box-shadow:0 5px 12px rgba(94,70,30,.05);
-    display:flex;flex-direction:column;justify-content:center;padding:6px 11px;position:relative;min-width:0}
-  .we-stat .si{position:absolute;right:11px;top:50%;transform:translateY(-50%);opacity:.85}
-  .we-stat b{font-size:10.5px;font-weight:900;display:block}
-  .we-stat span:last-child{font-size:7px;color:#A19278;font-weight:600;margin-top:1px;display:block}
-}
 
 /* hero background themes */
 .hero.bg-sunset{background:linear-gradient(170deg,#FFD9A8 0%,#FFC7A0 44%,#FFE4C0 100%);border-color:#F1CBA4}
@@ -295,20 +300,117 @@ h1,h2,h3,h4,p{margin:0}
 .hero.bg-night .cloud{opacity:.12}
 .hero.bg-night .leaves{opacity:.42;filter:brightness(.75)}
 
+/* ------------------------------------------------ profile */
+.profile-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.profile-head .t{flex:1;min-width:0}
+.profile-head h1{font-size:clamp(22px,3.6vw,28px);font-weight:900;letter-spacing:-.5px}
+.profile-head p{font-size:9.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.profile-card{border-radius:26px;padding:15px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;
+  background:linear-gradient(125deg,#FFF7E4,#F7EEDB);border:1.5px solid #EBDCC0}
+.profile-card .pc-ava{width:62px;height:62px;border-radius:20px;background:#E6F5D3;border:2.5px solid #fff;overflow:hidden;
+  position:relative;flex:none;box-shadow:0 6px 14px rgba(70,50,20,.12);z-index:1}
+.profile-card .pc-ava .crop{position:absolute;width:110px;height:110px;left:-45px;top:-4px}
+.profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
+.profile-card .pc-main b{font-size:18px;font-weight:900;letter-spacing:-.2px}
+.profile-card .pc-main .lv{font-size:8px;font-weight:900;color:#fff;background:var(--green);padding:2px 6px;border-radius:5px;margin-left:5px;vertical-align:2px}
+.profile-card .pc-main p{font-size:9.5px;font-weight:600;color:#8D7E62;margin-top:4px}
+.profile-card .pc-stage{text-align:right;flex:none;position:relative;z-index:1}
+.profile-card .pc-stage .chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:99px;
+  background:#fff;font-size:8.5px;font-weight:800;color:var(--green-d);border:1px solid #DDEBD0;white-space:nowrap}
+.profile-card .pc-stage p{font-size:7.5px;color:#A3927A;margin-top:5px;white-space:nowrap}
+.profile-card .leaf{position:absolute;right:-16px;bottom:-22px;width:96px;opacity:.2;z-index:0}
+
+.stat-row{display:flex;gap:9px;margin-top:12px}
+.stat-card{flex:1;min-height:68px;border-radius:18px;background:#fff;border:1.5px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 5px 12px rgba(94,70,30,.05)}
+.stat-card .v{font-size:17px;font-weight:900;display:flex;align-items:center;gap:3px}
+.stat-card .k{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:.4px}
+
+.chart-card{border-radius:24px;padding:14px 16px 12px;margin-top:12px;height:216px;display:flex;flex-direction:column}
+@media (min-width:700px) and (min-height:600px){.chart-card{height:238px}}
+.chart-card .ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.chart-card .ch-head .lb{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
+.chart-card .ch-head .v{font-size:21px;font-weight:900;color:var(--green-d);margin-top:1px}
+.chart-card .ch-head .v small{font-size:9px;font-weight:700;color:var(--muted)}
+.chart-card .ch-head .goal{font-size:8px;font-weight:800;color:#8A6415;background:#FFF4CE;padding:3px 7px;border-radius:99px;white-space:nowrap}
+.chart{flex:1;display:flex;align-items:flex-end;gap:9px;margin-top:8px;position:relative;padding-top:10px;min-height:110px}
+.chart .gl{position:absolute;left:0;right:0;bottom:22px;border-top:1.5px dashed #E6D9C1}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;position:relative;z-index:2}
+.chart .col .b{width:22px;border-radius:7px;background:#DCEBCB;position:relative}
+.chart .col .b::after{content:"";position:absolute;left:4px;right:4px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.6)}
+.chart .col.today .b{background:linear-gradient(180deg,#FFD25A,#F2A93B);box-shadow:0 4px 8px rgba(242,169,59,.3)}
+.chart .col .d{font-size:8px;font-weight:700;color:#A6B2A4}
+.chart .col.today .d{color:#8A6415;font-weight:900}
+.chart .col .tip{position:absolute;top:-14px;font-size:7.5px;font-weight:900;color:#8A6415;background:#FFF4CE;padding:2px 5px;border-radius:5px;white-space:nowrap}
+
+.ach-card{border-radius:24px;padding:14px 16px 16px;margin-top:12px}
+.ach-card .ach-head{display:flex;align-items:center;justify-content:space-between}
+.ach-card .ach-head b{font-size:13px;font-weight:900}
+.ach-card .ach-head span{font-size:8.5px;font-weight:700;color:var(--muted)}
+.ach-list{display:flex;gap:10px;margin-top:12px}
+.ach{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.ach .medal{width:clamp(44px,9vw,54px);height:clamp(44px,9vw,54px);border-radius:50%;display:grid;place-items:center;position:relative}
+.ach .medal.a1{background:linear-gradient(160deg,#FFE39B,#F5B641);color:#7A4E08;box-shadow:0 5px 12px rgba(245,182,65,.3)}
+.ach .medal.a2{background:linear-gradient(160deg,#CFE9FF,#8EC7F2);color:#265A80;box-shadow:0 5px 12px rgba(142,199,242,.3)}
+.ach .medal.a3{background:linear-gradient(160deg,#E2D6FF,#AE96F5);color:#4B3585;box-shadow:0 5px 12px rgba(174,150,245,.3)}
+.ach .medal.lock{background:#F2ECDF;color:#C0B7A4;border:1.5px dashed #D9CFBB}
+.ach .medal .dot{position:absolute;right:0;bottom:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid #fff;display:grid;place-items:center;color:#fff}
+.ach b{font-size:8px;font-weight:800;color:#5E7263;text-align:center}
+.ach span{font-size:7px;font-weight:600;color:#AAB4A8;margin-top:-2px}
+
+.quote-card{min-height:64px;border-radius:20px;margin-top:12px;background:linear-gradient(120deg,#EAF7D9,#F7FBE9);border:1.5px solid #D8E9C4;
+  display:flex;align-items:center;gap:10px;padding:10px 14px}
+.quote-card .q{font-size:9px;font-weight:700;color:#6D8464;line-height:1.5}
+.quote-card .q b{color:var(--green-d)}
+.quote-card .qi{width:32px;height:32px;border-radius:11px;background:#fff;display:grid;place-items:center;color:#E2A62E;flex:none}
+.profile-cta{margin-top:12px}
+.profile-scroll{display:flex;flex-direction:column}
+.profile-scroll .quote-card{margin-top:auto}
+
+/* ============================================================
+   DinoGo · 恐龙英语 — map：本单元进度 / 下一关 / 关卡地图 / 答题 / 结算 / 进化
+   ============================================================ */
+
 /* ------------------------------------------------ map */
 .topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .topbar .t{flex:1;min-width:0}
 .topbar h1{font-size:21px;font-weight:900;letter-spacing:-.3px;line-height:1.15}
 .topbar p{font-size:10px;font-weight:600;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.unit-progress{min-height:64px;display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:20px}
-.unit-progress .up-main{flex:1;min-width:0}
-.unit-progress .up-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.unit-progress .up-row b{font-size:11.5px;font-weight:800}
-.unit-progress .up-row span{font-size:9.5px;font-weight:700;color:var(--muted)}
-.unit-progress .up-row span b{color:#B4811C}
-.unit-progress .bar{height:8px}
-.unit-progress .up-star{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:900;color:#8A6415;
-  background:#FFF4CE;padding:6px 9px;border-radius:12px;white-space:nowrap}
+/* theme tabs：主题切换 */
+.theme-tabs{display:flex;gap:7px;margin:-4px 0 12px;overflow-x:auto;scrollbar-width:none}
+.theme-tabs::-webkit-scrollbar{display:none}
+.theme-tabs .tt{flex:none;display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:99px;white-space:nowrap;
+  background:#fff;border:1.5px solid #EADFC9;font-size:11px;font-weight:800;color:#8B7B5C;transition:transform .12s ease}
+.theme-tabs .tt:active{transform:scale(.96)}
+.theme-tabs .tt b{font-size:13px;font-weight:400;line-height:1}
+.theme-tabs .tt.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 6px 12px rgba(46,139,87,.22)}
+/* unit card：本单元进度 */
+.unit-card{margin-top:0;padding:14px 15px 13px;border-radius:22px}
+.uc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.uc-lb{font-size:7.5px;font-weight:900;letter-spacing:1.3px;color:var(--muted)}
+.uc-lb b{display:block;font-size:13px;font-weight:900;letter-spacing:-.2px;color:var(--ink);margin-top:2px}
+.uc-star{flex:none;display:flex;align-items:center;gap:3px;background:#FFF4CE;padding:5px 9px;border-radius:12px;
+  font-size:12.5px;font-weight:900;color:#8A6415;white-space:nowrap}
+.uc-star i{font-style:normal;font-size:8px;font-weight:800;color:#B79A5A;margin-left:1px}
+.uc-bar{position:relative;height:9px;border-radius:99px;background:#EDEADA;margin-top:9px;overflow:hidden}
+.uc-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;
+  background:linear-gradient(90deg,#9ADB6F,#3AA56B);box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
+.uc-row{display:flex;align-items:baseline;justify-content:space-between;margin-top:6px;
+  font-size:9px;font-weight:700;color:var(--muted)}
+.uc-row b{font-size:11.5px;font-weight:900;color:var(--green-d);margin-right:1px}
+/* next card：下一关入口，独立卡片 */
+.next-card{margin-top:12px;padding:13px 14px;border-radius:20px;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#F6FBEC,#FFFDF4);border-color:#E3EFD2}
+.uc-nl{flex:1;min-width:0}
+.uc-kicker{display:flex;align-items:center;gap:5px;font-size:7.5px;font-weight:900;letter-spacing:1.2px;color:var(--orange)}
+.uc-nl h3{font-size:15.5px;font-weight:900;letter-spacing:-.3px;color:var(--ink);margin-top:3px}
+.uc-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;
+  font-size:9px;font-weight:600;color:var(--muted)}
+.uc-st{display:flex;gap:1px}
+.uc-btn{flex:none;min-height:44px;padding:0 14px;border-radius:14px;color:#fff;font-size:12px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;
+  background:linear-gradient(180deg,#3AA56B,#28814F);box-shadow:0 4px 0 #1B6140,0 8px 14px rgba(32,110,70,.2)}
+.uc-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1B6140}
 
 .map-canvas{position:relative;height:clamp(390px,48vh,570px);margin-top:12px;border-radius:28px;overflow:hidden;
   background:linear-gradient(180deg,#E9F6D6 0%,#F3F7DA 60%,#FBF2D8 100%);
@@ -317,6 +419,7 @@ h1,h2,h3,h4,p{margin:0}
 .map-canvas .route{position:absolute;inset:0;width:100%;height:100%}
 .mnode{position:absolute;width:54px;height:54px;transform:translate(-50%,-50%);z-index:2;transition:transform .2s ease}
 .mnode:active{transform:translate(-50%,-50%) scale(.94)}
+.mnode[data-action]{cursor:pointer}
 .mnode .disc{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
   background:#fff;border:3px solid #fff;box-shadow:0 6px 12px rgba(79,110,58,.18);color:#fff}
 .mnode.done .disc{background:linear-gradient(180deg,#5CB87A,#2F9159)}
@@ -343,17 +446,6 @@ h1,h2,h3,h4,p{margin:0}
 .map-canvas .tree2{left:5%;top:27%;width:16%;opacity:.85}
 .map-canvas .mush{right:8%;top:60%;width:10%}
 .map-canvas .cloud{right:4%;top:4%;width:20%;opacity:.85}
-
-.next-level{min-height:126px;margin-top:12px;border-radius:24px;padding:14px 15px;display:flex;align-items:center;gap:12px;
-  background:#fff;border:1.5px solid var(--line);box-shadow:0 12px 24px rgba(74,97,50,.1)}
-.next-level .nl-main{flex:1;min-width:0}
-.next-level .nl-kicker{display:flex;align-items:center;gap:6px;font-size:8.5px;font-weight:900;letter-spacing:1.3px;color:var(--orange)}
-.next-level h3{font-size:17px;font-weight:900;letter-spacing:-.3px;margin-top:4px}
-.next-level .nl-meta{font-size:9.5px;font-weight:600;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.next-level .nl-btn{width:104px;min-height:48px;border-radius:15px;flex:none;background:linear-gradient(180deg,#3AA56B,#28814F);
-  color:#fff;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;
-  box-shadow:0 4px 0 #1B6140,0 8px 14px rgba(32,110,70,.22)}
-.next-level .nl-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1B6140}
 
 /* ------------------------------------------------ quiz */
 .quiz-page{display:flex;flex-direction:column;height:100%;padding-top:calc(8px + var(--safe-top))}
@@ -404,6 +496,42 @@ h1,h2,h3,h4,p{margin:0}
 .option.wrong{border-color:#F07A6A;background:#FFF0EC;animation:shake .4s ease}
 .option.wrong .key{background:#F07A6A;color:#fff}
 .option.dim{opacity:.55}
+/* 听音选图：图片选项 + 听力按钮 + 连线 + 跟读 + 情景对话 */
+.options.pic-grid{grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.option.pic{flex-direction:column;gap:2px;padding:8px 8px 6px;min-height:0;position:relative}
+.option.pic .key{position:absolute;left:8px;top:8px;width:22px;height:22px;font-size:9px}
+.option.pic .pic{width:100%;display:grid;place-items:center;aspect-ratio:1.05}
+.option.pic .pic svg{width:100%;height:100%}
+.option.pic .pic-word{font-size:12px;font-weight:900;color:var(--green-d);letter-spacing:-.2px}
+.big-speaker{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(160deg,#57BE84,#2E8B57);box-shadow:0 10px 20px rgba(46,139,87,.28);position:relative}
+.big-speaker:active{transform:scale(.95)}
+.quiz-art .listen-tip{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:9.5px;font-weight:800;color:#A89A7E}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.match-col{display:flex;flex-direction:column;gap:9px}
+.mcard{border-radius:16px;background:#fff;border:2px solid #EFE2CB;min-height:66px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#4B443A;padding:6px;transition:transform .12s ease}
+.mcard:active{transform:scale(.97)}
+.mcard.art svg{width:100%;height:56px}
+.mcard.sel{border-color:#3AA56B;box-shadow:0 0 0 3px rgba(58,165,107,.16)}
+.mcard.ok{border-color:#B9DDA1;background:#EFF8E4;opacity:.7}
+.repeat-word{margin-top:12px;text-align:center;display:flex;flex-direction:column;gap:3px}
+.repeat-word b{font-size:26px;font-weight:900;color:var(--green-d);letter-spacing:-.4px}
+.repeat-word span{font-size:12px;font-weight:700;color:#A89A7E}
+.repeat-word i{font-size:10px;font-style:normal;font-weight:700;color:#B3A588;margin-top:2px}
+.dialog-card{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.dlg{display:flex;gap:9px;align-items:center;background:#fff;border:2px solid #EFE2CB;border-radius:18px;padding:11px 13px}
+.dlg.me{background:#F5FBEA;border-color:#DDEECB}
+.dlg .who{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:900;
+  color:#fff;background:#C9B58C}
+.dlg.me .who{background:var(--green)}
+.dlg p{font-size:14px;font-weight:800;color:#4B443A;line-height:1.45}
+.dlg .blank{color:var(--green-d);border-bottom:2px dashed #9ACB7D;padding:0 2px}
+.dlg-pic{width:56px;height:56px;flex:none;margin-left:auto;display:grid;place-items:center}
+.dlg-pic svg{width:100%;height:100%}
+.options.one-col{grid-template-columns:1fr;gap:8px;margin-top:10px}
+.options.one-col .option{min-height:52px}
+.options.one-col .option .word{font-size:14px}
 .quiz-foot{flex:none;padding:10px 20px calc(18px + var(--safe-bottom));display:flex;flex-direction:column;gap:10px;background:var(--cream)}
 .combo{min-height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:6px;
   background:linear-gradient(90deg,#FFF0C9,#FFE4A6);border:1.5px solid #F5D48B;
@@ -524,6 +652,74 @@ h1,h2,h3,h4,p{margin:0}
 .evo-unlock .u-skill b{color:#FFD25A}
 .evo-unlock .btn{margin-top:13px;min-height:50px;font-size:15px;color:#4C3306}
 
+/* ============================================================
+   DinoGo · 恐龙英语 — dex：恐龙图鉴
+   ============================================================ */
+
+/* ------------------------------------------------ dex */
+.dex-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.dex-head .t{flex:1}
+.dex-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.05}
+.dex-head p{font-size:10px;font-weight:600;color:var(--muted);margin-top:3px}
+.dex-count{display:flex;align-items:baseline;gap:2px;font-size:13px;font-weight:900;color:var(--green-d);
+  background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:6px 10px;box-shadow:0 4px 10px rgba(94,70,30,.06);flex:none}
+.dex-count span{font-size:9px;color:var(--muted);font-weight:700}
+.dex-sum{border-radius:22px;padding:13px 15px;display:flex;align-items:center;gap:13px}
+.dex-sum .ds-main{flex:1;min-width:0}
+.dex-sum .ds-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.dex-sum .ds-row b{font-size:11px;font-weight:800}
+.dex-sum .ds-row span{font-size:10px;font-weight:900;color:var(--green-d)}
+.dex-sum .ds-foot{display:flex;align-items:center;gap:4px;margin-top:7px;font-size:8.5px;font-weight:700;color:#A19278}
+.dex-sum .ds-foot b{color:var(--orange)}
+.dex-sum .ds-badge{width:46px;height:46px;border-radius:15px;background:#FFF4CE;display:grid;place-items:center;flex:none;color:#B4811C}
+.dex-filters{display:flex;gap:6px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.dex-filters::-webkit-scrollbar{display:none}
+.dex-filters .f{height:30px;padding:0 11px;border-radius:9px;background:#fff;border:1.5px solid #EEE2CD;
+  font-size:9.5px;font-weight:700;color:#8C9B8C;display:flex;align-items:center;white-space:nowrap;flex:none}
+.dex-filters .f.on{background:var(--ink);border-color:var(--ink);color:#FFF6DF}
+
+.dex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
+@media (min-width:620px){.dex-grid{grid-template-columns:repeat(3,1fr)}}
+.dex-card{border-radius:18px;background:#fff;border:1.5px solid var(--line);padding:7px;text-align:center;position:relative;
+  box-shadow:0 5px 12px rgba(94,70,30,.05);transition:transform .15s ease}
+.dex-card:active{transform:scale(.97)}
+.dex-card .pic{height:108px;border-radius:12px;display:grid;place-items:center;position:relative;overflow:hidden}
+@media (min-width:620px){.dex-card .pic{height:84px}}
+.dex-card .pic.t1{background:#EAF7DA}
+.dex-card .pic.t2{background:#E6F4FF}
+.dex-card .pic.t3{background:#FFF2D8}
+.dex-card .pic.t4{background:#F0EBFF}
+.dex-card .pic.t5{background:#FFF0E2}
+.dex-card .pic svg{width:112px;height:112px;margin-bottom:-8px}
+@media (min-width:620px){.dex-card .pic svg{width:88px;height:88px}}
+.dex-card .nm{font-size:10px;font-weight:800;margin-top:5px}
+.dex-card .stg{font-size:7.5px;font-weight:700;color:#A0AE9F;margin-top:1px;letter-spacing:.3px}
+.dex-card.locked .pic{background:#F4EFE3}
+.dex-card.locked .pic svg{opacity:.2;filter:grayscale(1)}
+.dex-card.locked .nm{color:#B3AC9B}
+.dex-card .rare{position:absolute;right:8px;top:8px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:8px;font-weight:900;z-index:4;box-shadow:0 3px 6px rgba(94,70,30,.18)}
+.dex-card .rare.r3{background:#7FB4E8}
+.dex-card .rare.r4{background:#A78BFA}
+.dex-card .rare.r5{background:#F0A23B}
+.dex-card .lock-ic{position:absolute;right:9px;top:9px;color:#C6BDAA;z-index:4}
+.dex-card.current{outline:2px solid rgba(46,139,87,.45);outline-offset:-2px}
+.dex-card .now-tag{position:absolute;left:8px;top:8px;font-size:7px;font-weight:900;color:#fff;background:var(--green);
+  padding:2px 5px;border-radius:5px;z-index:4}
+.dex-reward{margin-top:14px;border-radius:20px;padding:10px 13px;display:flex;align-items:center;gap:11px;
+  background:#fff;border:1.5px solid var(--line);box-shadow:0 8px 18px rgba(94,70,30,.07)}
+.dex-reward .dr-ic{width:52px;height:52px;border-radius:14px;overflow:hidden;flex:none;position:relative;border:1px solid rgba(0,0,0,.05)}
+.dex-reward .dr-main{flex:1;min-width:0}
+.dex-reward .dr-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dex-reward .dr-row b{font-size:10.5px;font-weight:900}
+.dex-reward .dr-row span{font-size:9px;font-weight:900;color:var(--green-d);white-space:nowrap}
+.dex-reward .bar{height:7px;margin-top:5px}
+.dex-reward .dr-note{font-size:8px;font-weight:600;color:#A19278;margin-top:4px}
+.dex-reward .dr-lock{width:30px;height:30px;border-radius:10px;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
+
+/* ============================================================
+   DinoGo · 恐龙英语 — shop：小铺（装扮 / 背景 / 图鉴）
+   ============================================================ */
+
 /* ------------------------------------------------ shop */
 .shop-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
 .shop-head .t{flex:1;min-width:0}
@@ -614,132 +810,9 @@ h1,h2,h3,h4,p{margin:0}
 .dex-teaser .dt-list .mini svg{width:70px;height:70px;margin-bottom:-8px}
 .dex-teaser .btn{margin-top:12px;min-height:46px;font-size:13px}
 
-/* ------------------------------------------------ dex */
-.dex-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
-.dex-head .t{flex:1}
-.dex-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.05}
-.dex-head p{font-size:10px;font-weight:600;color:var(--muted);margin-top:3px}
-.dex-count{display:flex;align-items:baseline;gap:2px;font-size:13px;font-weight:900;color:var(--green-d);
-  background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:6px 10px;box-shadow:0 4px 10px rgba(94,70,30,.06);flex:none}
-.dex-count span{font-size:9px;color:var(--muted);font-weight:700}
-.dex-sum{border-radius:22px;padding:13px 15px;display:flex;align-items:center;gap:13px}
-.dex-sum .ds-main{flex:1;min-width:0}
-.dex-sum .ds-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
-.dex-sum .ds-row b{font-size:11px;font-weight:800}
-.dex-sum .ds-row span{font-size:10px;font-weight:900;color:var(--green-d)}
-.dex-sum .ds-foot{display:flex;align-items:center;gap:4px;margin-top:7px;font-size:8.5px;font-weight:700;color:#A19278}
-.dex-sum .ds-foot b{color:var(--orange)}
-.dex-sum .ds-badge{width:46px;height:46px;border-radius:15px;background:#FFF4CE;display:grid;place-items:center;flex:none;color:#B4811C}
-.dex-filters{display:flex;gap:6px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.dex-filters::-webkit-scrollbar{display:none}
-.dex-filters .f{height:30px;padding:0 11px;border-radius:9px;background:#fff;border:1.5px solid #EEE2CD;
-  font-size:9.5px;font-weight:700;color:#8C9B8C;display:flex;align-items:center;white-space:nowrap;flex:none}
-.dex-filters .f.on{background:var(--ink);border-color:var(--ink);color:#FFF6DF}
-
-.dex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
-@media (min-width:620px){.dex-grid{grid-template-columns:repeat(3,1fr)}}
-.dex-card{border-radius:18px;background:#fff;border:1.5px solid var(--line);padding:7px;text-align:center;position:relative;
-  box-shadow:0 5px 12px rgba(94,70,30,.05);transition:transform .15s ease}
-.dex-card:active{transform:scale(.97)}
-.dex-card .pic{height:108px;border-radius:12px;display:grid;place-items:center;position:relative;overflow:hidden}
-@media (min-width:620px){.dex-card .pic{height:84px}}
-.dex-card .pic.t1{background:#EAF7DA}
-.dex-card .pic.t2{background:#E6F4FF}
-.dex-card .pic.t3{background:#FFF2D8}
-.dex-card .pic.t4{background:#F0EBFF}
-.dex-card .pic.t5{background:#FFF0E2}
-.dex-card .pic svg{width:112px;height:112px;margin-bottom:-8px}
-@media (min-width:620px){.dex-card .pic svg{width:88px;height:88px}}
-.dex-card .nm{font-size:10px;font-weight:800;margin-top:5px}
-.dex-card .stg{font-size:7.5px;font-weight:700;color:#A0AE9F;margin-top:1px;letter-spacing:.3px}
-.dex-card.locked .pic{background:#F4EFE3}
-.dex-card.locked .pic svg{opacity:.2;filter:grayscale(1)}
-.dex-card.locked .nm{color:#B3AC9B}
-.dex-card .rare{position:absolute;right:8px;top:8px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:8px;font-weight:900;z-index:4;box-shadow:0 3px 6px rgba(94,70,30,.18)}
-.dex-card .rare.r3{background:#7FB4E8}
-.dex-card .rare.r4{background:#A78BFA}
-.dex-card .rare.r5{background:#F0A23B}
-.dex-card .lock-ic{position:absolute;right:9px;top:9px;color:#C6BDAA;z-index:4}
-.dex-card.current{outline:2px solid rgba(46,139,87,.45);outline-offset:-2px}
-.dex-card .now-tag{position:absolute;left:8px;top:8px;font-size:7px;font-weight:900;color:#fff;background:var(--green);
-  padding:2px 5px;border-radius:5px;z-index:4}
-.dex-reward{margin-top:14px;border-radius:20px;padding:10px 13px;display:flex;align-items:center;gap:11px;
-  background:#fff;border:1.5px solid var(--line);box-shadow:0 8px 18px rgba(94,70,30,.07)}
-.dex-reward .dr-ic{width:52px;height:52px;border-radius:14px;overflow:hidden;flex:none;position:relative;border:1px solid rgba(0,0,0,.05)}
-.dex-reward .dr-main{flex:1;min-width:0}
-.dex-reward .dr-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.dex-reward .dr-row b{font-size:10.5px;font-weight:900}
-.dex-reward .dr-row span{font-size:9px;font-weight:900;color:var(--green-d);white-space:nowrap}
-.dex-reward .bar{height:7px;margin-top:5px}
-.dex-reward .dr-note{font-size:8px;font-weight:600;color:#A19278;margin-top:4px}
-.dex-reward .dr-lock{width:30px;height:30px;border-radius:10px;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
-
-/* ------------------------------------------------ profile */
-.profile-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.profile-head .t{flex:1;min-width:0}
-.profile-head h1{font-size:clamp(22px,3.6vw,28px);font-weight:900;letter-spacing:-.5px}
-.profile-head p{font-size:9.5px;font-weight:600;color:var(--muted);margin-top:2px}
-.profile-card{border-radius:26px;padding:15px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;
-  background:linear-gradient(125deg,#FFF7E4,#F7EEDB);border:1.5px solid #EBDCC0}
-.profile-card .pc-ava{width:62px;height:62px;border-radius:20px;background:#E6F5D3;border:2.5px solid #fff;overflow:hidden;
-  position:relative;flex:none;box-shadow:0 6px 14px rgba(70,50,20,.12);z-index:1}
-.profile-card .pc-ava .crop{position:absolute;width:110px;height:110px;left:-45px;top:-4px}
-.profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
-.profile-card .pc-main b{font-size:18px;font-weight:900;letter-spacing:-.2px}
-.profile-card .pc-main .lv{font-size:8px;font-weight:900;color:#fff;background:var(--green);padding:2px 6px;border-radius:5px;margin-left:5px;vertical-align:2px}
-.profile-card .pc-main p{font-size:9.5px;font-weight:600;color:#8D7E62;margin-top:4px}
-.profile-card .pc-stage{text-align:right;flex:none;position:relative;z-index:1}
-.profile-card .pc-stage .chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:99px;
-  background:#fff;font-size:8.5px;font-weight:800;color:var(--green-d);border:1px solid #DDEBD0;white-space:nowrap}
-.profile-card .pc-stage p{font-size:7.5px;color:#A3927A;margin-top:5px;white-space:nowrap}
-.profile-card .leaf{position:absolute;right:-16px;bottom:-22px;width:96px;opacity:.2;z-index:0}
-
-.stat-row{display:flex;gap:9px;margin-top:12px}
-.stat-card{flex:1;min-height:68px;border-radius:18px;background:#fff;border:1.5px solid var(--line);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 5px 12px rgba(94,70,30,.05)}
-.stat-card .v{font-size:17px;font-weight:900;display:flex;align-items:center;gap:3px}
-.stat-card .k{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:.4px}
-
-.chart-card{border-radius:24px;padding:14px 16px 12px;margin-top:12px;height:216px;display:flex;flex-direction:column}
-@media (min-width:700px) and (min-height:600px){.chart-card{height:238px}}
-.chart-card .ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.chart-card .ch-head .lb{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
-.chart-card .ch-head .v{font-size:21px;font-weight:900;color:var(--green-d);margin-top:1px}
-.chart-card .ch-head .v small{font-size:9px;font-weight:700;color:var(--muted)}
-.chart-card .ch-head .goal{font-size:8px;font-weight:800;color:#8A6415;background:#FFF4CE;padding:3px 7px;border-radius:99px;white-space:nowrap}
-.chart{flex:1;display:flex;align-items:flex-end;gap:9px;margin-top:8px;position:relative;padding-top:10px;min-height:110px}
-.chart .gl{position:absolute;left:0;right:0;bottom:22px;border-top:1.5px dashed #E6D9C1}
-.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;position:relative;z-index:2}
-.chart .col .b{width:22px;border-radius:7px;background:#DCEBCB;position:relative}
-.chart .col .b::after{content:"";position:absolute;left:4px;right:4px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.6)}
-.chart .col.today .b{background:linear-gradient(180deg,#FFD25A,#F2A93B);box-shadow:0 4px 8px rgba(242,169,59,.3)}
-.chart .col .d{font-size:8px;font-weight:700;color:#A6B2A4}
-.chart .col.today .d{color:#8A6415;font-weight:900}
-.chart .col .tip{position:absolute;top:-14px;font-size:7.5px;font-weight:900;color:#8A6415;background:#FFF4CE;padding:2px 5px;border-radius:5px;white-space:nowrap}
-
-.ach-card{border-radius:24px;padding:14px 16px 16px;margin-top:12px}
-.ach-card .ach-head{display:flex;align-items:center;justify-content:space-between}
-.ach-card .ach-head b{font-size:13px;font-weight:900}
-.ach-card .ach-head span{font-size:8.5px;font-weight:700;color:var(--muted)}
-.ach-list{display:flex;gap:10px;margin-top:12px}
-.ach{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
-.ach .medal{width:clamp(44px,9vw,54px);height:clamp(44px,9vw,54px);border-radius:50%;display:grid;place-items:center;position:relative}
-.ach .medal.a1{background:linear-gradient(160deg,#FFE39B,#F5B641);color:#7A4E08;box-shadow:0 5px 12px rgba(245,182,65,.3)}
-.ach .medal.a2{background:linear-gradient(160deg,#CFE9FF,#8EC7F2);color:#265A80;box-shadow:0 5px 12px rgba(142,199,242,.3)}
-.ach .medal.a3{background:linear-gradient(160deg,#E2D6FF,#AE96F5);color:#4B3585;box-shadow:0 5px 12px rgba(174,150,245,.3)}
-.ach .medal.lock{background:#F2ECDF;color:#C0B7A4;border:1.5px dashed #D9CFBB}
-.ach .medal .dot{position:absolute;right:0;bottom:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid #fff;display:grid;place-items:center;color:#fff}
-.ach b{font-size:8px;font-weight:800;color:#5E7263;text-align:center}
-.ach span{font-size:7px;font-weight:600;color:#AAB4A8;margin-top:-2px}
-
-.quote-card{min-height:64px;border-radius:20px;margin-top:12px;background:linear-gradient(120deg,#EAF7D9,#F7FBE9);border:1.5px solid #D8E9C4;
-  display:flex;align-items:center;gap:10px;padding:10px 14px}
-.quote-card .q{font-size:9px;font-weight:700;color:#6D8464;line-height:1.5}
-.quote-card .q b{color:var(--green-d)}
-.quote-card .qi{width:32px;height:32px;border-radius:11px;background:#fff;display:grid;place-items:center;color:#E2A62E;flex:none}
-.profile-cta{margin-top:12px}
-.profile-scroll{display:flex;flex-direction:column}
-.profile-scroll .quote-card{margin-top:auto}
+/* ============================================================
+   DinoGo · 恐龙英语 — overlays：弹层 / 设置 / toast
+   ============================================================ */
 
 /* ------------------------------------------------ overlays */
 .overlay{position:absolute;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;
@@ -801,25 +874,9 @@ h1,h2,h3,h4,p{margin:0}
   box-shadow:0 10px 24px rgba(20,40,30,.25);animation:toastIn .25s ease both;max-width:100%;text-align:center}
 .toast.out{animation:toastOut .25s ease both}
 
-/* ------------------------------------------------ animations */
-@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
-@keyframes toastIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
-@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
-@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
-@keyframes evoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
-@keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
-@keyframes heartOut{0%{transform:scale(1)}40%{transform:scale(1.35);opacity:1}100%{transform:scale(.6);opacity:.25}}
-@keyframes confettiFall{0%{opacity:0;transform:translateY(-30px) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(160px) rotate(240deg)}}
-@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1}}
-
-@media (prefers-reduced-motion: reduce){
-  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
-}
+/* ============================================================
+   DinoGo · 恐龙英语 — responsive：大屏（iPad）适配，最后加载以覆盖前面规则
+   ============================================================ */
 
 /* ------------------------------------------------ larger screens */
 @media (min-width:700px) and (min-height:600px){
@@ -873,7 +930,7 @@ h1,h2,h3,h4,p{margin:0}
   .dex-card .stg{font-size:8.5px}
 }
 
-</style>
+  </style>
 </head>
 <body>
   <div class="app" id="app">
@@ -881,6 +938,117 @@ h1,h2,h3,h4,p{margin:0}
     <div id="overlay-root"></div>
     <div class="toast-root" id="toast-root"></div>
   </div>
+  <!-- 主题词汇：每个主题一个文件，新增主题在此登记（build.mjs 的 JS_FILES 也要同步） -->
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题词汇：水果大冒险
+   新增主题只需在同目录添加一个文件，并在 index.html / build.mjs 里登记
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "fruit",
+  name: "水果大冒险",
+  chip: "水果单词",
+  unit: "Unit 3 · 水果乐园",
+  emoji: "🍎",
+  dialog: { q: "What's this?", a: "It's a {word}." },
+  words: [
+    { word: "apple",      zh: "苹果", phon: "/ˈæpəl/",         example: "I eat an apple every day.",   art: () => appleSVG() },
+    { word: "banana",     zh: "香蕉", phon: "/bəˈnɑːnə/",      example: "The monkey likes bananas.",   art: () => bananaSVG() },
+    { word: "orange",     zh: "橙子", phon: "/ˈɒrɪndʒ/",       example: "This orange is sweet.",       art: () => orangeSVG() },
+    { word: "grape",      zh: "葡萄", phon: "/ɡreɪp/",         example: "Grapes grow on a vine.",      art: () => grapeSVG() },
+    { word: "strawberry", zh: "草莓", phon: "/ˈstrɔːbəri/",    example: "I want a strawberry.",        art: () => strawberrySVG() },
+    { word: "pear",       zh: "梨",   phon: "/peə(r)/",        example: "This pear is juicy.",         emoji: "🍐" },
+    { word: "peach",      zh: "桃子", phon: "/piːtʃ/",         example: "The peach is soft and sweet.", emoji: "🍑" },
+    { word: "lemon",      zh: "柠檬", phon: "/ˈlemən/",        example: "The lemon tastes sour.",      emoji: "🍋" },
+    { word: "watermelon", zh: "西瓜", phon: "/ˈwɔːtərmelən/",  example: "We eat watermelon in summer.", emoji: "🍉" },
+    { word: "cherry",     zh: "樱桃", phon: "/ˈtʃeri/",        example: "She has two cherries.",       emoji: "🍒" },
+  ],
+});
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题词汇：汽车派对
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "cars",
+  name: "汽车派对",
+  chip: "交通单词",
+  unit: "Unit 4 · 汽车派对",
+  emoji: "🚗",
+  dialog: { q: "How do we get there?", a: "Let's take a {word}." },
+  words: [
+    { word: "car",    zh: "小汽车", phon: "/kɑːr/",          example: "My dad drives a red car.",      emoji: "🚗" },
+    { word: "bus",    zh: "公交车", phon: "/bʌs/",           example: "I take the bus to school.",     emoji: "🚌" },
+    { word: "bike",   zh: "自行车", phon: "/baɪk/",          example: "I ride my bike in the park.",   emoji: "🚲" },
+    { word: "train",  zh: "火车",   phon: "/treɪn/",         example: "The train goes very fast.",     emoji: "🚂" },
+    { word: "plane",  zh: "飞机",   phon: "/pleɪn/",         example: "The plane flies in the sky.",   emoji: "✈️" },
+    { word: "boat",   zh: "小船",   phon: "/bəʊt/",          example: "A boat sails on the lake.",     emoji: "⛵" },
+    { word: "taxi",   zh: "出租车", phon: "/ˈtæksi/",        example: "We take a taxi to the station.", emoji: "🚕" },
+    { word: "truck",  zh: "卡车",   phon: "/trʌk/",          example: "The truck carries big boxes.",  emoji: "🚚" },
+    { word: "ship",   zh: "轮船",   phon: "/ʃɪp/",           example: "The ship crosses the sea.",     emoji: "🚢" },
+    { word: "rocket", zh: "火箭",   phon: "/ˈrɒkɪt/",        example: "The rocket flies to the moon.", emoji: "🚀" },
+  ],
+});
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题词汇：动物园奇遇
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "zoo",
+  name: "动物园奇遇",
+  chip: "动物单词",
+  unit: "Unit 5 · 动物园奇遇",
+  emoji: "🦁",
+  dialog: { q: "What can you see?", a: "I can see a {word}." },
+  words: [
+    { word: "lion",     zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion has a big mane.",          emoji: "🦁" },
+    { word: "tiger",    zh: "老虎",   phon: "/ˈtaɪɡər/",      example: "The tiger runs very fast.",         emoji: "🐯" },
+    { word: "monkey",   zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey likes bananas.",         emoji: "🐵" },
+    { word: "elephant", zh: "大象",   phon: "/ˈelɪfənt/",     example: "An elephant has a long nose.",      emoji: "🐘" },
+    { word: "panda",    zh: "熊猫",   phon: "/ˈpændə/",       example: "The panda eats bamboo.",            emoji: "🐼" },
+    { word: "giraffe",  zh: "长颈鹿", phon: "/dʒəˈrɑːf/",     example: "The giraffe has a long neck.",      emoji: "🦒" },
+    { word: "zebra",    zh: "斑马",   phon: "/ˈzebrə/",       example: "The zebra has black and white stripes.", emoji: "🦓" },
+    { word: "bear",     zh: "熊",     phon: "/beər/",         example: "The bear sleeps in winter.",        emoji: "🐻" },
+    { word: "rabbit",   zh: "兔子",   phon: "/ˈræbɪt/",       example: "The rabbit jumps in the grass.",    emoji: "🐰" },
+    { word: "penguin",  zh: "企鹅",   phon: "/ˈpeŋɡwɪn/",     example: "The penguin lives in the cold.",    emoji: "🐧" },
+  ],
+});
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题词汇：美食街
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "food",
+  name: "美食街",
+  chip: "食物单词",
+  unit: "Unit 6 · 美食街",
+  emoji: "🍕",
+  dialog: { q: "What would you like?", a: "I'd like some {word}." },
+  words: [
+    { word: "bread",     zh: "面包",   phon: "/bred/",             example: "I eat bread for breakfast.",   emoji: "🍞" },
+    { word: "cake",      zh: "蛋糕",   phon: "/keɪk/",             example: "We share a birthday cake.",    emoji: "🍰" },
+    { word: "rice",      zh: "米饭",   phon: "/raɪs/",             example: "We have rice for dinner.",     emoji: "🍚" },
+    { word: "noodles",   zh: "面条",   phon: "/ˈnuːdlz/",          example: "These noodles are hot.",       emoji: "🍜" },
+    { word: "egg",       zh: "鸡蛋",   phon: "/eɡ/",               example: "I eat an egg every morning.",  emoji: "🥚" },
+    { word: "milk",      zh: "牛奶",   phon: "/mɪlk/",             example: "I drink milk before bed.",     emoji: "🥛" },
+    { word: "juice",     zh: "果汁",   phon: "/dʒuːs/",            example: "This apple juice is sweet.",   emoji: "🧃" },
+    { word: "hamburger", zh: "汉堡",   phon: "/ˈhæmbɜːɡər/",       example: "He orders a hamburger.",       emoji: "🍔" },
+    { word: "ice cream", zh: "冰淇淋", phon: "/ˌaɪs ˈkriːm/",      example: "Ice cream melts in the sun.",  emoji: "🍦" },
+    { word: "pizza",     zh: "披萨",   phon: "/ˈpiːtsə/",          example: "We eat pizza on Friday.",      emoji: "🍕" },
+  ],
+});
+
+</script>
+  <!-- 公共：数据 / 图标 / 状态 / 路由 / 事件；四个 Tab 各自一个文件 -->
   <script>
 /* ============================================================
    DinoGo · 恐龙英语 — interactive app
@@ -909,14 +1077,6 @@ const BACKGROUNDS = [
   { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 200, cls: "night" },
 ];
 
-const WORDS = [
-  { word: "apple",      zh: "苹果", phon: "/ˈæpəl/",     example: "I eat an apple every day.", art: appleSVG },
-  { word: "banana",     zh: "香蕉", phon: "/bəˈnɑːnə/",  example: "The monkey likes bananas.", art: bananaSVG },
-  { word: "orange",     zh: "橙子", phon: "/ˈɒrɪndʒ/",   example: "This orange is sweet.", art: orangeSVG },
-  { word: "grape",      zh: "葡萄", phon: "/ɡreɪp/",     example: "Grapes grow on a vine.", art: grapeSVG },
-  { word: "strawberry", zh: "草莓", phon: "/ˈstrɔːbəri/", example: "I want a strawberry.", art: strawberrySVG },
-];
-
 const DEX = STAGES.map((s) => ({ ...s }));
 
 /* ------------------------------------------------ helpers */
@@ -934,7 +1094,6 @@ function stageForGrowth(growth) {
   return out;
 }
 function fmt(n) { return Number(n).toLocaleString("en-US"); }
-function todayWord() { return WORDS[new Date().getDate() % WORDS.length]; }
 function greeting() {
   const h = new Date().getHours();
   if (h < 11) return "早上好";
@@ -1222,28 +1381,77 @@ function strawberrySVG() {
   </svg>`;
 }
 
+/* ------------------------------------------------ theme words */
+/* 主题词汇由 app/words/*.js 注册；有精绘 SVG 的用 art，其余用 emoji 插图 */
+function emojiArt(ch) {
+  return `<svg class="fruit" viewBox="0 0 120 120" aria-hidden="true">
+    <text x="60" y="64" font-size="78" text-anchor="middle" dominant-baseline="middle">${ch}</text>
+  </svg>`;
+}
+const WORD_SETS = (window.DINO_WORD_SETS || []).map((set) => ({
+  ...set,
+  words: set.words.map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) })),
+}));
+const ALL_WORDS = WORD_SETS.flatMap((set) => set.words);
+/* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
+const LEVELS_PER_THEME = 10;
+const PASS_STARS = 2;
+function currentTheme() {
+  return WORD_SETS.find((set) => set.id === state.theme) || WORD_SETS[0];
+}
+function themeWords() {
+  return currentTheme().words;
+}
+/* 每个主题独立关卡进度：{ level, stars }，互不影响 */
+function themeProgress(id) {
+  const key = id || (state && state.theme) || "fruit";
+  if (!state.progress) state.progress = {};
+  if (!state.progress[key]) state.progress[key] = { level: 1, stars: {} };
+  return state.progress[key];
+}
+function themeStars(p) {
+  return Object.values(p.stars).reduce((a, b) => a + b, 0);
+}
+function totalLevelsDone() {
+  return WORD_SETS.reduce((n, t) => n + (state.progress && state.progress[t.id] ? state.progress[t.id].level - 1 : 0), 0);
+}
+/* 全新存档：零星星、零成长、零记录，所有主题从第 1 关开始 */
+function initialState() {
+  return {
+    ...DEFAULT_STATE,
+    tasks: { ...DEFAULT_STATE.tasks },
+    equipped: { ...DEFAULT_STATE.equipped },
+    progress: {},
+    log: {},
+    bgOwned: [...DEFAULT_STATE.bgOwned],
+    dex: [...DEFAULT_STATE.dex],
+    owned: [],
+  };
+}
+
 /* ------------------------------------------------ state */
-const STORE_KEY = "dinogo.v2";
+const STORE_KEY = "dinogo.v3";
 try {
   if (new URLSearchParams(location.search).get("fresh") === "1") localStorage.removeItem(STORE_KEY);
 } catch (e) { /* private mode */ }
 const DEFAULT_STATE = {
-  v: 2,
-  name: "小宇",
-  stars: 1280,
-  growth: 480,
-  stage: "teen",
-  level: 13,
-  levelStars: {},
-  words: 126,
-  minutes: 8,
+  v: 3,
+  name: "毛肚",
+  stars: 0,
+  growth: 0,
+  stage: "egg",
+  theme: "fruit",
+  progress: {},
+  log: {},
+  words: 0,
+  minutes: 0,
   threeStars: 0,
   tasks: { level: false },
   owned: [],
   equipped: { head: null, face: null, back: null },
   bg: "jungle",
   bgOwned: ["jungle"],
-  dex: ["egg", "baby", "teen"],
+  dex: ["egg"],
   sound: true,
   starBonus: 0,
 };
@@ -1253,9 +1461,6 @@ let current = "home";
 let quiz = null;
 let lastResult = null;
 let evolutionInfo = null;
-let shopTab = "decor";
-let dexFilter = "all";
-let pendingBuy = null;
 let timers = [];
 let audioCtx = null;
 let installDismissed = false;
@@ -1263,31 +1468,42 @@ let installDismissed = false;
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+    if (!raw) return initialState();
     const parsed = JSON.parse(raw);
     return {
-      ...DEFAULT_STATE,
+      ...initialState(),
       ...parsed,
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
       equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
-      levelStars: parsed.levelStars || {},
+      progress: parsed.progress || {},
+      log: parsed.log || {},
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
       owned: Array.isArray(parsed.owned) ? parsed.owned : [],
     };
   } catch (e) {
-    return { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+    return initialState();
   }
 }
 function save() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* private mode */ }
 }
 function resetState() {
-  state = { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+  state = initialState();
   lastResult = null;
   evolutionInfo = null;
   quiz = null;
   save();
+}
+
+/* ------------------------------------------------ study log */
+function dateKey(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function recordLevel(stars) {
+  const k = dateKey();
+  const rec = state.log[k] || { levels: 0, stars: 0 };
+  state.log[k] = { levels: rec.levels + 1, stars: rec.stars + stars };
 }
 
 /* ------------------------------------------------ timers / sound */
@@ -1403,12 +1619,290 @@ function sceneHTML() {
   </div>`;
 }
 
+
+function openOverlay(html) { $("#overlay-root").innerHTML = html; }
+function closeOverlay() { $("#overlay-root").innerHTML = ""; }
+
+function openSettings() {
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>设置</h2>
+      <div class="sheet-sub">${standalone ? "当前已从主屏幕运行，体验和 App 一样。" : "调整声音、安装到主屏幕，或重置演示进度。"}</div>
+      <div style="margin-top:10px">
+        <div class="setting-row">
+          <div class="s-ic">${I.volume(18)}</div>
+          <div class="s-txt"><b>音效与发音</b><span>答对 / 答错 / 翻页的提示音</span></div>
+          <button class="switch ${state.sound ? "on" : ""}" data-action="toggle-sound" aria-label="音效开关"></button>
+        </div>
+        <div class="setting-row" data-action="install-guide" role="button">
+          <div class="s-ic">${I.share(18)}</div>
+          <div class="s-txt"><b>安装到主屏幕</b><span>全屏运行，像原生 App 一样</span></div>
+          <span style="color:#B3A78E">${I.chevron(12)}</span>
+        </div>
+        <div class="setting-row" data-action="reset-confirm" role="button">
+          <div class="s-ic">${I.refresh(18)}</div>
+          <div class="s-txt"><b>清空学习数据</b><span>星星、成长值与闯关进度全部归零</span></div>
+          <span style="color:#B3A78E">${I.chevron(12)}</span>
+        </div>
+        <div class="setting-row">
+          <div class="s-ic">${I.info(18)}</div>
+          <div class="s-txt"><b>DinoGo · 恐龙英语</b><span>交互概念版 v1.0 · 离线可用</span></div>
+        </div>
+      </div>
+      <div class="sheet-actions"><button class="btn ghost" data-action="close-overlay">完成</button></div>
+    </div>
+  </div>`);
+}
+function openInstallGuide() {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>把 DinoGo 装到主屏幕</h2>
+      <div class="sheet-sub">添加后会以全屏方式运行；通过 HTTPS 访问时还支持离线打开。</div>
+      ${ios ? `
+        <div class="install-step"><span class="n">1</span><p>用 <b>Safari</b> 打开本页（需要是本机或局域网地址，不能是本地文件）。</p></div>
+        <div class="install-step"><span class="n">2</span><p>点击底部工具栏的 <b>分享</b> 按钮。</p></div>
+        <div class="install-step"><span class="n">3</span><p>向上滑动，选择 <b>添加到主屏幕</b>，再点右上角「添加」。</p></div>
+        <div class="install-step"><span class="n">4</span><p>回到主屏幕，点击 DinoGo 图标即可全屏进入。</p></div>
+      ` : `
+        <div class="install-step"><span class="n">1</span><p>在 Chrome / Edge 中通过 <b>http 或 https</b> 打开本页。</p></div>
+        <div class="install-step"><span class="n">2</span><p>点击地址栏右侧的 <b>安装</b> 图标，或菜单里的「安装应用」。</p></div>
+        <div class="install-step"><span class="n">3</span><p>安装后可从桌面独立打开，并离线使用。</p></div>
+      `}
+      <div class="install-note">提示：直接双击本地 HTML 文件时，Safari 不会显示「添加到主屏幕」。请用项目里的 <b>start-ios.ps1</b> 启动本地服务，再用 iPad 访问电脑的局域网地址。局域网 HTTP 下不会启用离线缓存；需要离线请用单文件版，或部署到 HTTPS。</div>
+      <div class="sheet-actions"><button class="btn" data-action="close-overlay">知道了</button></div>
+    </div>
+  </div>`);
+}
+function openResetConfirm() {
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="d-ico">${I.refresh(24, "#B4811C")}</div>
+      <h3>重置演示进度？</h3>
+      <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">取消</button>
+        <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 5px 0 #B84435">确认重置</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+/* ------------------------------------------------ toast */
+function toast(msg) {
+  const root = $("#toast-root");
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  root.appendChild(el);
+  while (root.children.length > 3) root.removeChild(root.firstChild);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 260); }, 2100);
+}
+
+/* ------------------------------------------------ events */
+document.addEventListener("click", (e) => {
+  if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const action = el.dataset.action;
+
+  if (action === "tab") {
+    closeOverlay();
+    go(el.dataset.screen, { replace: true });
+    sfx("tap");
+  } else if (action === "home") {
+    closeOverlay();
+    go("home", { replace: true });
+  } else if (action === "profile") {
+    go("profile");
+    sfx("tap");
+  } else if (action === "start-quiz") {
+    closeOverlay();
+    startQuiz(el.dataset.level);
+  } else if (action === "review-level") {
+    startQuiz(Number(el.dataset.level));
+  } else if (action === "locked-level") {
+    toast("先拿到两星通过前一关，才能解锁这一关");
+  } else if (action === "select") {
+    selectOption(el.dataset.word);
+  } else if (action === "check") {
+    checkAnswer();
+  } else if (action === "match-word") {
+    matchPickWord(el.dataset.word);
+  } else if (action === "match-art") {
+    matchPickArt(el.dataset.word);
+  } else if (action === "repeat-done") {
+    repeatDone();
+  } else if (action === "next") {
+    nextQuestion();
+  } else if (action === "close-quiz") {
+    quiz = null;
+    go("map", { replace: true });
+  } else if (action === "evolve") {
+    beginEvolution();
+  } else if (action === "shop-tab") {
+    shopTab = el.dataset.tab;
+    sfx("tap");
+    render();
+  } else if (action === "buy-item") {
+    openBuyItem(el.dataset.id);
+  } else if (action === "equip-item") {
+    toggleItem(el.dataset.id);
+  } else if (action === "locked-item") {
+    const item = ITEMS.find((i) => i.id === el.dataset.id);
+    if (item && item.unlockStage) toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
+  } else if (action === "buy-bg") {
+    openBuyBg(el.dataset.id);
+  } else if (action === "equip-bg") {
+    equipBg(el.dataset.id);
+  } else if (action === "confirm-buy") {
+    confirmBuy();
+  } else if (action === "dex-detail") {
+    openDexDetail(el.dataset.key);
+  } else if (action === "filter-dex") {
+    dexFilter = el.dataset.filter;
+    sfx("tap");
+    render();
+  } else if (action === "theme") {
+    state.theme = el.dataset.theme;
+    save();
+    sfx("tap");
+    render();
+  } else if (action === "settings") {
+    openSettings();
+  } else if (action === "toggle-sound") {
+    state.sound = !state.sound;
+    save();
+    if (state.sound) { ensureAudio(); sfx("tap"); }
+    openSettings();
+    toast(state.sound ? "音效已开启" : "音效已关闭");
+  } else if (action === "install-guide") {
+    openInstallGuide();
+  } else if (action === "reset-confirm") {
+    openResetConfirm();
+  } else if (action === "confirm-reset") {
+    resetState();
+    closeOverlay();
+    go("home", { replace: true });
+    toast("已重置演示进度");
+  } else if (action === "close-overlay") {
+    closeOverlay();
+  } else if (action === "speak-word") {
+    speak(el.dataset.word);
+  } else if (action === "open-review") {
+    openReview();
+  } else if (action === "random-word") {
+    openReview(true);
+  } else if (action === "open-map") {
+    go("map");
+  }
+});
+
+window.addEventListener("popstate", (e) => {
+  const s = (e.state && e.state.screen) || "home";
+  if (s === "result" && !lastResult) { current = "home"; render(); return; }
+  if (s === "evolution" && !evolutionInfo) { current = "home"; render(); return; }
+  if (s === "quiz" && !quiz) { current = "map"; render(); return; }
+  clearTimers();
+  current = s;
+  render();
+});
+
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+
+/* ------------------------------------------------ render */
+/* 页面渲染表在 boot() 里装配，保证四个 Tab 文件都已加载 */
+let SCREEN_FN = {};
+function render() {
+  const fn = SCREEN_FN[current] || screenHome;
+  $("#view").innerHTML = fn();
+}
+
+/* ------------------------------------------------ boot */
+function boot() {
+  SCREEN_FN = {
+    home: screenHome,
+    map: screenMap,
+    quiz: screenQuiz,
+    result: screenResult,
+    evolution: screenEvolution,
+    shop: screenShop,
+    dex: screenDex,
+    profile: screenProfile,
+  };
+  try {
+    if (!history.state || !history.state.screen) history.replaceState({ screen: "home" }, "");
+    else current = history.state.screen;
+  } catch (e) { current = "home"; }
+
+  // A result/evolution screen cannot be restored without runtime context.
+  if (current === "result" && !lastResult) current = "home";
+  if (current === "evolution" && !evolutionInfo) current = "home";
+  if (current === "quiz" && !quiz) current = "home";
+
+  render();
+
+  // Warm up the audio graph on the first touch (iOS requirement).
+  const wake = () => { ensureAudio(); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
+  document.addEventListener("touchstart", wake, { passive: true });
+  document.addEventListener("click", wake);
+
+  // iOS install hint — only once, and only in Safari (not standalone).
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  let seen = false;
+  try { seen = localStorage.getItem("dinogo.installHint") === "1"; } catch (e) {}
+  if (isIOS && !standalone && !seen) {
+    setTimeout(() => {
+      if (current !== "home") return;
+      try { localStorage.setItem("dinogo.installHint", "1"); } catch (e) {}
+      toast("提示：分享 → 添加到主屏幕，可全屏离线玩");
+    }, 2400);
+  }
+}
+
+/* PWA: cache the app for offline use when served over http(s). */
+if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 乐园（home）
+   底部 Tab 1：首页 + 成长档案 + 随机记单词弹层
+   ============================================================ */
+
 /* ------------------------------------------------ home */
+let reviewWord = null;
+function randomWord() { return ALL_WORDS[Math.floor(Math.random() * ALL_WORDS.length)]; }
+
+function todayLevels() {
+  return (state.log[dateKey()] || {}).levels || 0;
+}
+function streakDays() {
+  let n = 0;
+  const d = new Date();
+  if (!(state.log[dateKey(d)] || {}).levels) d.setDate(d.getDate() - 1);
+  while ((state.log[dateKey(d)] || {}).levels) {
+    n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}
 function tasksData() {
+  const lv = todayLevels();
+  const streak = streakDays();
   return [
     { done: !!state.tasks.level, color: "orange", icon: I.flag, title: "完成 1 次闯关", sub: state.tasks.level ? "今日目标已达成" : "还差 1 次，约 3 分钟", reward: "+60 成长值" },
-    { done: true, color: "blue", icon: I.book, title: "学会 5 个新单词", sub: "已掌握 5 / 5 个", reward: "+40 成长值" },
-    { done: true, color: "coral", icon: I.flame, title: "连续学习 7 天", sub: "太棒了，明天继续！", reward: "+20 星星" },
+    { done: lv >= 1, color: "blue", icon: I.book, title: "学会 5 个新单词", sub: `已掌握 ${Math.min(5, lv * 5)} / 5 个`, reward: "+40 成长值" },
+    { done: streak >= 7, color: "coral", icon: I.flame, title: "连续学习 7 天", sub: streak ? `已连续 ${streak} 天` : "今天开始计数", reward: "+20 星星" },
   ];
 }
 
@@ -1419,7 +1913,7 @@ function screenHome() {
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
   const tasks = tasksData();
   const doneCount = tasks.filter((t) => t.done).length;
-  const word = todayWord();
+  const word = reviewWord = randomWord();
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
   let bubble;
   if (!next) bubble = `已经成长为<br><b>超级霸王龙</b>！<br>继续收集星星吧`;
@@ -1432,15 +1926,17 @@ function screenHome() {
         <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
-          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 7 天 · 今日已学 ${state.minutes} 分钟</div>
+          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streakDays()} 天 · 今日已学 ${todayLevels() * 2} 分钟</div>
         </div>
         ${starPill()}
       </div>
 
       <section class="hero ${bgClass(state.bg)}">
         ${sceneHTML()}
-        <div class="stage-tag">${stageChip()}</div>
-        <div class="name"><b>奇奇</b></div>
+        <div class="hero-id">
+          <div class="stage-tag">${stageChip()}</div>
+          <div class="name"><b>小诺</b></div>
+        </div>
         <div class="bubble ${pending ? "max" : ""}">${bubble}</div>
         <div class="dino-wrap ${dinoCls} ${state.equipped.head ? "with-hat" : ""}">${dino(state.stage, { equipped: state.equipped })}</div>
         <div class="growth-panel">
@@ -1458,6 +1954,17 @@ function screenHome() {
         </div>
       </section>
 
+      <button class="word-card" data-action="open-review" aria-label="随机记单词 ${word.word}">
+        <div class="ring"></div>
+        <div class="spk">${I.speaker(21, "#B4811C")}</div>
+        <div class="w-main">
+          <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
+          <div class="w-word">${word.word}</div>
+          <div class="w-phon">${word.phon} · n. ${word.zh}</div>
+        </div>
+        <div class="w-btn">去记单词 ${I.arrow(11)}</div>
+      </button>
+
       <section class="card tasks">
         <div class="head">
           <h3>今日任务</h3><span class="count">${doneCount}/3</span>
@@ -1470,24 +1977,116 @@ function screenHome() {
           <span class="check">${t.done ? I.check(11) : ""}</span>
         </div>`).join("")}
       </section>
-
-      <button class="word-card" data-action="open-review" aria-label="复习单词 ${word.word}">
-        <div class="ring"></div>
-        <div class="spk">${I.speaker(21, "#B4811C")}</div>
-        <div class="w-main">
-          <div class="w-kicker">TODAY'S REVIEW · 今日复习</div>
-          <div class="w-word">${word.word}</div>
-          <div class="w-phon">${word.phon} · n. ${word.zh}</div>
-        </div>
-        <div class="w-btn">去复习 ${I.arrow(11)}</div>
-      </button>
-      <div class="home-note">已连续学习 7 天 · 再学 7 分钟可领取 +20 星星</div>
+      <div class="home-note">${todayLevels() ? `今天已学 ${todayLevels() * 2} 分钟 · 再闯 ${Math.max(0, 2 - todayLevels())} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
   </section>`;
 }
 
+
+/* ------------------------------------------------ profile */
+function screenProfile() {
+  const st = stageMeta(state.stage);
+  const labels = ["一", "二", "三", "四", "五", "六", "日"];
+  const today = new Date();
+  const dow = (today.getDay() + 6) % 7;
+  const days = labels.map((label, i) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - dow + i);
+    const rec = state.log[dateKey(date)] || { levels: 0 };
+    return [label, rec.levels * 2, Math.min(76, 12 + rec.levels * 24), i === dow];
+  });
+  const weekMin = days.reduce((n, d) => n + d[1], 0);
+  const streak = streakDays();
+  const ach = [
+    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
+    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", sub: `${state.words} / 100 词` },
+    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", sub: `${state.threeStars} 次` },
+    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", sub: "???" },
+  ];
+  const decorCount = state.owned.length;
+  return `<section class="screen" data-screen="profile">
+    <div class="scroll profile-scroll">
+      <div class="profile-head">
+        <button class="circle-btn" data-action="home" aria-label="返回">${I.back(18)}</button>
+        <div class="t"><h1>成长档案</h1><p>${state.name} · 和小诺一起长大的第 1 天</p></div>
+        <button class="circle-btn" data-action="settings" aria-label="设置">${I.gear(19)}</button>
+      </div>
+
+      <div class="profile-card">
+        <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
+        <div class="pc-ava"><div class="crop">${dino(state.stage)}</div></div>
+        <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 1 天 · 累计闯关 ${totalLevelsDone()} 次</p></div>
+        <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(state.stars)}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
+        <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="ch-head">
+          <div><div class="lb">WEEKLY REPORT · 本周学习</div><div class="v">${weekMin} <small>分钟</small></div></div>
+          <div class="goal">目标 10 分钟 ${weekMin >= 10 ? "✓" : ""}</div>
+        </div>
+        <div class="chart">
+          <div class="gl"></div>
+          ${days.map(([d, mins, h, today]) => `<div class="col ${today ? "today" : ""}">
+            ${today ? `<span class="tip">${mins}′</span>` : ""}
+            <div class="b" style="height:${h}px"></div><span class="d">${d}</span>
+          </div>`).join("")}
+        </div>
+      </div>
+
+      <div class="card ach-card">
+        <div class="ach-head"><b>成就徽章</b><span>3 / 12 已点亮</span></div>
+        <div class="ach-list">${ach.map((a) => `<div class="ach">
+          <div class="medal ${a.cls}">${a.icon}${a.cls !== "lock" ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
+          <b>${a.name}</b><span>${a.sub}</span>
+        </div>`).join("")}</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="qi">${I.flame(18, "#E2A62E")}</div>
+        <div class="q">小诺说：「今天也一起学 10 分钟吧，<br>我离超级霸王龙又近了一步！」</div>
+      </div>
+
+      <div class="profile-cta"><button class="btn" data-action="start-quiz">去闯关，帮小诺进化 <span class="hint">+120 EXP</span></button></div>
+    </div>
+  </section>`;
+}
+
+
+function openReview(next) {
+  if (next) reviewWord = null;
+  const w = reviewWord || (reviewWord = randomWord());
+  openOverlay(`<div class="overlay">
+    <div class="sheet word-sheet">
+      <div class="grab"></div>
+      <div class="eyebrow">RANDOM WORDS</div>
+      <div class="word-big">${w.word}</div>
+      <div class="word-phon">${w.phon}</div>
+      <div class="word-zh">n. ${w.zh}</div>
+      <div class="tip">例句：${w.example}</div>
+      <button class="btn speak-btn" data-action="speak-word" data-word="${w.word}">${I.speaker(18)} 听一听发音</button>
+      <div class="sheet-actions">
+        <button class="btn ghost" data-action="random-word">换一个单词</button>
+        <button class="btn" data-action="close-overlay">我记住啦</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 闯关（map）
+   底部 Tab 2：关卡地图 + 答题 + 结算 + 进化
+   ============================================================ */
+
 /* ------------------------------------------------ map */
+
 const MAP_POS = [
   [16.6, 15.4], [42.9, 11.9], [69.1, 19.9], [79.4, 40.3], [57.1, 55.7], [29.7, 70.1], [58.9, 85.6],
 ];
@@ -1495,26 +2094,28 @@ const MAP_ROUTE = "M58,62C92,44 122,40 150,48 190,58 226,60 242,80 266,106 284,1
 const MAP_ROUTE_DONE = "M58,62C92,44 122,40 150,48 190,58 226,60 242,80 266,106 284,128 278,162 272,196 240,210 200,224";
 
 function screenMap() {
-  const start = Math.max(1, state.level - 4);
-  const levels = Array.from({ length: 6 }, (_, i) => start + i);
-  const starTotal = 32 + Object.values(state.levelStars).reduce((a, b) => a + b, 0);
+  const prog = themeProgress();
+  const level = prog.level;
+  const start = Math.max(1, level - 4);
+  const levels = Array.from({ length: 6 }, (_, i) => start + i).filter((lvl) => lvl <= LEVELS_PER_THEME);
+  const starTotal = themeStars(prog);
   const nodes = levels.map((lvl, i) => {
     const pos = MAP_POS[i];
-    const done = lvl < state.level;
-    const cur = lvl === state.level;
-    const s = state.levelStars[lvl] || (cur ? 0 : 3);
+    const done = lvl < level;
+    const cur = lvl === level;
+    const s = prog.stars[lvl] || (cur ? 0 : 3);
     let inner;
     if (cur) {
-      inner = `<div class="mnode now" style="left:${pos[0]}%;top:${pos[1]}%">
+      inner = `<div class="mnode now" style="left:${pos[0]}%;top:${pos[1]}%" data-action="start-quiz">
         <div class="ring"></div><div class="disc">${dino(state.stage, { equipped: state.equipped })}</div><div class="go">GO</div>
         <div class="mlabel">${String(lvl).padStart(2, "0")} · 当前</div></div>`;
     } else if (done) {
-      inner = `<div class="mnode done ${s === 2 ? "half" : ""}" style="left:${pos[0]}%;top:${pos[1]}%">
+      inner = `<div class="mnode done ${s === 2 ? "half" : ""}" style="left:${pos[0]}%;top:${pos[1]}%" data-action="review-level" data-level="${lvl}">
         <div class="mstars">${star(9)}<span>${s}</span></div>
         <div class="disc"><span class="num" style="font-size:13px;font-weight:900">${String(lvl).padStart(2, "0")}</span></div>
-        <div class="mlabel">第 ${String(lvl).padStart(2, "0")} 关</div></div>`;
+        <div class="mlabel">第 ${String(lvl).padStart(2, "0")} 关 · 复习</div></div>`;
     } else {
-      inner = `<div class="mnode locked" style="left:${pos[0]}%;top:${pos[1]}%">
+      inner = `<div class="mnode locked" style="left:${pos[0]}%;top:${pos[1]}%" data-action="locked-level">
         <div class="disc">${I.lock(20, "#B7B09C")}</div><div class="mlabel">${String(lvl).padStart(2, "0")} · 未解锁</div></div>`;
     }
     return inner;
@@ -1525,34 +2126,33 @@ function screenMap() {
     <div class="scroll">
       <div class="topbar">
         <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
-        <div class="t"><h1>词汇森林</h1><p>Unit 3 · 动物朋友 · 第 ${state.level} / 20 关</p></div>
+        <div class="t"><h1>词汇森林</h1><p>${currentTheme().unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
         ${starPill()}
       </div>
 
-      <section class="wide-extra">
-        <div class="we-main">
-          <div class="we-head">
-            <div><div class="lb">WEEKLY REPORT · 本周学习</div><b>84 <small>分钟</small></b></div>
-            <div class="goal">目标 70 分钟 ✓</div>
-          </div>
-          <div class="we-chart">
-            ${[44, 32, 56, 42, 30, 42, 42].map((h, i) => `<div class="wc ${i === 4 ? "today" : ""}"><div class="b" style="height:${h}px"></div><span>${["一", "二", "三", "四", "五", "六", "日"][i]}</span></div>`).join("")}
-          </div>
+      <div class="theme-tabs">
+        ${WORD_SETS.map((t) => `<button class="tt ${t.id === currentTheme().id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
+          <b>${t.emoji}</b>${t.name}
+        </button>`).join("")}
+      </div>
+
+      <section class="card unit-card">
+        <div class="uc-head">
+          <div class="uc-lb">UNIT PROGRESS<b>本单元进度</b></div>
+          <div class="uc-star">${star(12)}<b class="num">${starTotal}</b><i>/ ${LEVELS_PER_THEME * 3}</i></div>
         </div>
-        <div class="we-side">
-          <div class="we-stat"><span class="si">${I.flame(16)}</span><b>连续 7 天</b><span>学习不断档</span></div>
-          <div class="we-stat"><span class="si">${I.book(16)}</span><b>图鉴 ${state.dex.length} / ${DEX.length}</b><span>继续进化收集</span></div>
-          <div class="we-stat"><span class="si">${star(15)}</span><b>三星 ${state.threeStars} 次</b><span>最佳表现</span></div>
-        </div>
+        <div class="uc-bar"><i style="width:${Math.round(((level - 1) / LEVELS_PER_THEME) * 100)}%"></i></div>
+        <div class="uc-row"><span>已通关</span><span><b class="num">${level - 1}</b> / ${LEVELS_PER_THEME} 关</span></div>
       </section>
 
-      <div class="card unit-progress">
-        <div class="up-main">
-          <div class="up-row"><b>本单元进度</b><span><b>${state.level - 1}</b> / 20 关</span></div>
-          <div class="bar"><i style="width:${Math.round(((state.level - 1) / 20) * 100)}%"></i></div>
+      <section class="card next-card">
+        <div class="uc-nl">
+          <div class="uc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
+          <h3>${currentTheme().name}</h3>
+          <div class="uc-meta"><span>${themeWords().length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</span><span class="uc-st">${star(9)}${star(9)}${star(9)}</span></div>
         </div>
-        <div class="up-star">${star(14)}<span class="num">${starTotal}</span><span style="font-size:8px;color:#A68A4E">/ 60</span></div>
-      </div>
+        <button class="uc-btn" data-action="start-quiz">开始闯关</button>
+      </section>
 
       <div class="map-canvas">
         <svg class="deco cloud" viewBox="0 0 90 44" style="right:4%;top:4%"><ellipse cx="28" cy="30" rx="22" ry="12" fill="#fff"/><ellipse cx="50" cy="23" rx="20" ry="14" fill="#fff"/><ellipse cx="69" cy="30" rx="16" ry="10" fill="#fff"/></svg>
@@ -1562,18 +2162,9 @@ function screenMap() {
         <svg class="deco" viewBox="0 0 90 60" style="left:4%;bottom:3%;width:22%;opacity:.9"><path d="M12 58c0-16 4-27 11-36M30 58c0-10 2-18 7-25M50 58c0-8 2-13 5-18" stroke="#86BD72" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="23" cy="18" r="3.4" fill="#FFC94A"/><circle cx="23" cy="10" r="3.4" fill="#FFC94A"/><circle cx="16" cy="14" r="3.4" fill="#FFC94A"/><circle cx="30" cy="14" r="3.4" fill="#FFC94A"/><circle cx="23" cy="14" r="2.2" fill="#F08A72"/><circle cx="59" cy="30" r="2.8" fill="#FF9E9E"/><circle cx="59" cy="23" r="2.8" fill="#FF9E9E"/><circle cx="53" cy="27" r="2.8" fill="#FF9E9E"/><circle cx="65" cy="27" r="2.8" fill="#FF9E9E"/></svg>
         <svg class="route" viewBox="0 0 350 402" preserveAspectRatio="none">
           <path d="${MAP_ROUTE}" fill="none" stroke="#D6E6B8" stroke-width="9" stroke-linecap="round" stroke-dasharray="2 13"/>
-          <path d="${MAP_ROUTE_DONE}" fill="none" stroke="#8CC46C" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 11"/>
+          ${level > 1 ? `<path d="${MAP_ROUTE_DONE}" fill="none" stroke="#8CC46C" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 11"/>` : ""}
         </svg>
         ${nodes}${chest}
-      </div>
-
-      <div class="next-level">
-        <div class="nl-main">
-          <div class="nl-kicker">UP NEXT ${I.chevron(8)} 第 ${state.level} 关</div>
-          <h3>水果单词大冒险</h3>
-          <div class="nl-meta"><span>5 道题 · 约 2 分钟</span><span style="display:flex;gap:1px">${star(9)}${star(9)}${star(9)}</span></div>
-        </div>
-        <button class="nl-btn" data-action="start-quiz">开始闯关</button>
       </div>
     </div>
     ${tabbar("map")}
@@ -1581,8 +2172,53 @@ function screenMap() {
 }
 
 /* ------------------------------------------------ quiz */
-function startQuiz() {
+/* 关卡难度递进：1-2 关简单单词，3-4 关加入连线，5-6 关加入跟读，7 关起加入情景对话 */
+const TASK_LABEL = { pic: "看图选词", listen: "听音选图", match: "单词连线", repeat: "跟读练习", dialog: "情景对话" };
+const TASK_TITLE = {
+  pic: "看图，选出正确的单词",
+  listen: "听单词，选出正确的图片",
+  match: "把单词和图片连起来",
+  repeat: "听发音，大声跟读这个单词",
+  dialog: "读对话，选出正确的单词",
+};
+function levelPlan(level) {
+  if (level <= 2) return ["pic", "listen", "pic", "listen", "pic"];
+  if (level === 3) return ["pic", "listen", "match", "pic", "listen"];
+  if (level === 4) return ["listen", "pic", "match", "listen", "pic"];
+  if (level === 5) return ["pic", "match", "repeat", "listen", "pic"];
+  if (level === 6) return ["listen", "repeat", "match", "pic", "listen"];
+  if (level === 7) return ["pic", "match", "repeat", "dialog", "listen"];
+  if (level === 8) return ["listen", "dialog", "match", "repeat", "pic"];
+  if (level === 9) return ["dialog", "match", "listen", "dialog", "repeat"];
+  return ["dialog", "listen", "dialog", "match", "repeat"];
+}
+function artOf(word) {
+  const w = themeWords().find((x) => x.word === word);
+  return w ? w.art : () => emojiArt("❓");
+}
+function buildTasks(level) {
+  const pool = themeWords();
+  const picks = shuffle(pool);
+  const dlg = currentTheme().dialog || { q: "What's this?", a: "It's a {word}." };
+  return levelPlan(level).map((type, i) => {
+    const w = picks[i % picks.length];
+    const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
+    if (type === "match") {
+      const trio = shuffle(pool).slice(0, 3);
+      task.pairs = trio.map((x) => ({ word: x.word, art: x.art }));
+      task.words = shuffle(trio.map((x) => x.word));
+      task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art })));
+    } else if (type !== "repeat") {
+      const n = type === "dialog" ? 3 : 4;
+      task.options = shuffle([w.word, ...shuffle(pool.filter((x) => x.word !== w.word)).slice(0, n - 1).map((x) => x.word)]);
+    }
+    return task;
+  });
+}
+function startQuiz(level) {
+  const lvl = Math.min(LEVELS_PER_THEME, Math.max(1, Number(level) || themeProgress().level));
   quiz = {
+    level: lvl,
     index: 0,
     correct: 0,
     hearts: 3,
@@ -1590,12 +2226,16 @@ function startQuiz() {
     selected: null,
     revealed: false,
     choiceCorrect: null,
+    matched: [],
+    pickWord: null,
+    matchWrong: 0,
     startedAt: Date.now(),
     words: [],
-    order: shuffle(WORDS).map((w) => ({ ...w, options: shuffle([w.word, ...shuffle(WORDS.filter((x) => x.word !== w.word)).slice(0, 3).map((x) => x.word)]) })),
+    order: buildTasks(lvl),
   };
   lastResult = null;
   go("quiz");
+  speakTask();
 }
 
 function screenQuiz() {
@@ -1609,7 +2249,7 @@ function screenQuiz() {
   const revealed = quiz.revealed;
   const hearts = [0, 1, 2].map((i) => I.heart(16, "#FF6F61", i < quiz.hearts ? 1 : 0.22)).join("");
   const letters = ["A", "B", "C", "D"];
-  const options = q.options.map((opt, i) => {
+  const options = (list) => list.map((opt, i) => {
     let cls = "option";
     if (revealed) {
       if (opt === q.word) cls += " correct";
@@ -1622,6 +2262,72 @@ function screenQuiz() {
       <span class="key">${letters[i]}</span><span class="word">${opt}</span>${mark}
     </button>`;
   }).join("");
+  let body;
+  let btn;
+  if (q.type === "match") {
+    const solved = quiz.matched;
+    const wordCol = q.words.map((w) => `<button class="mcard word ${solved.includes(w) ? "ok" : ""} ${quiz.pickWord === w ? "sel" : ""}"
+        data-action="match-word" data-word="${w}">${w}</button>`).join("");
+    const artCol = q.arts.map((p) => `<button class="mcard art ${solved.includes(p.word) ? "ok" : ""}"
+        data-action="match-art" data-word="${p.word}">${p.art()}</button>`).join("");
+    body = `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>`;
+    btn = `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`;
+  } else if (q.type === "repeat") {
+    body = `<div class="quiz-art">
+        <div class="blob"></div>
+        <div class="art-tag">READ IT OUT</div>
+        ${q.art()}
+        <button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} 点我听发音</button>
+      </div>
+      <div class="repeat-word"><b>${q.word}</b><span>${q.phon || ""}</span><i>大声读三遍，点下面完成</i></div>`;
+    btn = revealed ? `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`
+      : `<button class="btn" data-action="repeat-done">我读好了 ${I.arrow(18)}</button>`;
+  } else if (q.type === "listen") {
+    body = `<div class="quiz-art">
+        <div class="blob"></div>
+        <div class="art-tag">LISTEN &amp; CHOOSE</div>
+        <button class="big-speaker" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">${I.speaker(46)}</button>
+        <div class="listen-tip">听发音，选出对应的图片</div>
+      </div>
+      <div class="options pic-grid">${q.options.map((opt, i) => {
+        let cls = "option pic";
+        if (revealed) {
+          if (opt === q.word) cls += " correct";
+          else if (opt === selected) cls += " wrong";
+          else cls += " dim";
+        } else if (opt === selected) cls += " sel";
+        const label = revealed && opt === q.word ? `<b class="pic-word">${opt}</b>` : "";
+        return `<button class="${cls}" data-action="select" data-word="${opt}">
+          <span class="key">${letters[i]}</span><span class="pic">${artOf(opt)()}</span>${label}
+        </button>`;
+      }).join("")}</div>`;
+    btn = !selected ? `<button class="btn" disabled>选一张图片 ${I.arrow(18)}</button>`
+      : !revealed ? `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`
+        : `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`;
+  } else if (q.type === "dialog") {
+    body = `<div class="dialog-card">
+        <div class="dlg"><span class="who">A</span><p>${q.dlgQ}</p><span class="dlg-pic">${q.art()}</span></div>
+        <div class="dlg me"><span class="who">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
+      </div>
+      <div class="options one-col">${options(q.options)}</div>`;
+    btn = !selected ? `<button class="btn" disabled>选一个单词 ${I.arrow(18)}</button>`
+      : !revealed ? `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`
+        : `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`;
+  } else {
+    body = `<div class="quiz-art">
+        <div class="blob"></div>
+        <div class="art-tag">WHAT IS IT?</div>
+        <span class="art-spark s1">${spark(15, "#E8C377")}</span>
+        <span class="art-spark s2">${spark(11, "#E8C377")}</span>
+        <span class="art-spark s3">${spark(8, "#E8C377")}</span>
+        ${q.art()}
+        ${revealed ? `<button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} ${q.word}</button>` : `<div class="listen" style="pointer-events:none">${I.speaker(14)} 答完听发音</div>`}
+      </div>
+      <div class="options">${options(q.options)}</div>`;
+    btn = !selected ? `<button class="btn" disabled>选一个答案 ${I.arrow(18)}</button>`
+      : !revealed ? `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`
+        : `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`;
+  }
   let combo;
   if (revealed) {
     combo = quiz.choiceCorrect
@@ -1632,10 +2338,6 @@ function screenQuiz() {
   } else {
     combo = `连续答对 3 题，结算星星有加成`;
   }
-  let btn;
-  if (!selected) btn = `<button class="btn" disabled>选一个答案 ${I.arrow(18)}</button>`;
-  else if (!revealed) btn = `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`;
-  else btn = `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`;
   return `<section class="screen quiz-page" data-screen="quiz">
     <div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
@@ -1645,19 +2347,10 @@ function screenQuiz() {
     </div>
     <div class="quiz-body">
       <div class="quiz-prompt">
-        <div class="chip">VOCABULARY · 水果单词</div>
-        <h2>看图，选出正确的单词</h2>
+        <div class="chip">LEVEL ${String(quiz.level).padStart(2, "0")} · ${TASK_LABEL[q.type]}</div>
+        <h2>${TASK_TITLE[q.type]}</h2>
       </div>
-      <div class="quiz-art">
-        <div class="blob"></div>
-        <div class="art-tag">WHAT IS IT?</div>
-        <span class="art-spark s1">${spark(15, "#E8C377")}</span>
-        <span class="art-spark s2">${spark(11, "#E8C377")}</span>
-        <span class="art-spark s3">${spark(8, "#E8C377")}</span>
-        ${q.art()}
-        ${revealed ? `<button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} ${q.word}</button>` : `<div class="listen" style="pointer-events:none">${I.speaker(14)} 答完听发音</div>`}
-      </div>
-      <div class="options">${options}</div>
+      ${body}
     </div>
     <div class="quiz-foot">
       <div class="combo ${revealed && !quiz.choiceCorrect ? "silent" : ""}">${I.flame(13)} ${combo}</div>
@@ -1665,12 +2358,66 @@ function screenQuiz() {
     </div>
   </section>`;
 }
-
+function speakTask() {
+  const q = quiz && quiz.order[quiz.index];
+  if (q && (q.type === "listen" || q.type === "repeat")) setTimer(() => speak(q.word), 450);
+}
 function selectOption(word) {
   if (!quiz || quiz.revealed) return;
   quiz.selected = word;
   sfx("tap");
   render();
+}
+function matchPickWord(word) {
+  if (!quiz || quiz.revealed) return;
+  quiz.pickWord = word;
+  sfx("tap");
+  render();
+}
+function matchPickArt(word) {
+  if (!quiz || quiz.revealed || !quiz.pickWord) return;
+  const q = quiz.order[quiz.index];
+  if (word === quiz.pickWord) {
+    quiz.matched.push(word);
+    quiz.pickWord = null;
+    sfx("correct");
+    if (quiz.matched.length >= q.pairs.length) {
+      quiz.revealed = true;
+      quiz.choiceCorrect = quiz.matchWrong === 0;
+      if (quiz.choiceCorrect) { quiz.correct++; quiz.combo++; q.pairs.forEach((p) => quiz.words.push(p.word)); }
+      else quiz.combo = 0;
+      render();
+      setTimer(() => nextQuestion(), 1500);
+      return;
+    }
+  } else {
+    quiz.matchWrong++;
+    quiz.pickWord = null;
+    quiz.hearts = Math.max(0, quiz.hearts - 1);
+    quiz.combo = 0;
+    sfx("wrong");
+    if (quiz.hearts <= 0) {
+      quiz.revealed = true;
+      quiz.choiceCorrect = false;
+      render();
+      setTimer(() => nextQuestion(), 1600);
+      return;
+    }
+    toast("这两张不匹配，再试一次");
+  }
+  render();
+}
+function repeatDone() {
+  if (!quiz || quiz.revealed) return;
+  const q = quiz.order[quiz.index];
+  quiz.revealed = true;
+  quiz.choiceCorrect = true;
+  quiz.correct++;
+  quiz.combo++;
+  quiz.words.push(q.word);
+  sfx("correct");
+  render();
+  setTimer(() => nextQuestion(), 1400);
 }
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
@@ -1703,34 +2450,51 @@ function nextQuestion() {
   quiz.selected = null;
   quiz.revealed = false;
   quiz.choiceCorrect = null;
+  quiz.matched = [];
+  quiz.pickWord = null;
+  quiz.matchWrong = 0;
   render();
+  speakTask();
 }
+
 function finishQuiz() {
   if (!quiz) return;
   const total = quiz.order.length;
   const accuracy = quiz.correct / total;
-  const stars = accuracy >= 0.9 ? 3 : accuracy >= 0.6 ? 2 : 1;
+  /* 答对 3 题 1 星、4 题 2 星、5 题 3 星；2 星及以上才解锁下一关 */
+  const stars = quiz.correct >= total ? 3 : quiz.correct >= total - 1 ? 2 : quiz.correct >= total - 2 ? 1 : 0;
+  const passed = stars >= PASS_STARS;
   const growthGain = quiz.correct * 24;
-  const base = [0, 5, 10, 15][stars];
-  const starGain = Math.round(base * (1 + (state.starBonus || 0)));
-  const completedLevel = state.level;
+  const prog = themeProgress();
+  const completedLevel = quiz.level;
+  const prevBest = prog.stars[completedLevel] || 0;
+  const best = Math.max(prevBest, stars);
+  /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
+  const starGain = Math.round(Math.max(0, [0, 5, 10, 15][best] - [0, 5, 10, 15][prevBest]) * (1 + (state.starBonus || 0)));
+  const isReplay = completedLevel < prog.level;
   const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
   state.growth += growthGain;
   state.stars += starGain;
-  state.levelStars[completedLevel] = stars;
-  state.level += 1;
+  prog.stars[completedLevel] = best;
+  /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
+  if (passed && !isReplay) prog.level = Math.min(LEVELS_PER_THEME, completedLevel + 1);
   state.words += quiz.correct;
   state.minutes += Math.max(1, Math.round(elapsed / 60));
   state.threeStars += stars === 3 ? 1 : 0;
   state.tasks.level = true;
+  recordLevel(stars);
   const target = stageForGrowth(state.growth);
   const canEvolve = stageIndex(target.key) > stageIndex(state.stage);
   lastResult = {
     level: completedLevel,
+    replay: isReplay,
+    prevBest,
+    best,
     correct: quiz.correct,
     total,
     accuracy: Math.round(accuracy * 100),
     stars,
+    passed,
     growthGain,
     starGain,
     seconds: elapsed,
@@ -1759,7 +2523,7 @@ function screenResult() {
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
   const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
   const ss = String(r.seconds % 60).padStart(2, "0");
-  const starRow = [0, 1, 2].map((i) => star(i === 1 ? 66 : 52, i < r.stars ? "#FFC94A" : "#F1E7D2", i < r.stars ? "#E9A93C" : "#E5D7BC", i < r.stars ? 1 : 0.55)).join("");
+  const starRow = [0, 1, 2].map((i) => star(i === 1 ? 66 : 52, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
   const confettiPieces = Array.from({ length: 26 }, (_, i) => {
     const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
     const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
@@ -1769,10 +2533,10 @@ function screenResult() {
     <div class="confetti">${confettiPieces}</div>
     <div class="result-scroll">
       <div class="result-head">
-        <div class="eyebrow">LEVEL ${String(r.level).padStart(2, "0")} · COMPLETE</div>
-        <h1>闯关完成！</h1>
+        <div class="eyebrow">LEVEL ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
+        <h1>${r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
         <div class="result-stars">${starRow}</div>
-        <div class="result-sub">${r.stars === 3 ? "三星通关 · 今天的你超厉害" : r.stars === 2 ? "两星通关 · 再细心一点就满星啦" : "完成比完美更重要，继续加油"}</div>
+        <div class="result-sub">${r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 下一关已解锁" : r.best === 1 ? "一星通关 · 拿到两星才能解锁下一关" : "还差一点点，重新挑战这一关吧"}</div>
       </div>
 
       <div class="result-card">
@@ -1791,7 +2555,7 @@ function screenResult() {
         </div>
         <div class="rc-words">
           <span class="lb">WORDS</span>
-          ${(r.wordList.length ? r.wordList : WORDS.slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
+          ${(r.wordList.length ? r.wordList : themeWords().slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
         </div>
       </div>
 
@@ -1799,18 +2563,18 @@ function screenResult() {
         <div class="evo-row"><span class="evo-lb">EVOLUTION · 进化进度</span><span class="evo-val num">${state.growth} / ${next ? next.min : "MAX"}</span></div>
         <div class="evo-name">${pending ? `${st.name} <b>→</b> ${target.name} · <span style="color:#E2691F">可以进化啦！</span>` : next ? `再获得 ${Math.max(0, next.min - state.growth)} 成长值进化为 ${next.name}` : "已经达到最高形态"}</div>
         <div class="bar gold evo-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
-        <div class="evo-tip">${pending ? `${spark(11, "#fff")} 点击见证奇奇的成长时刻` : `${spark(11, "#fff")} 继续闯关，离进化更近一步`}</div>
+        <div class="evo-tip">${pending ? `${spark(11, "#fff")} 点击见证小诺的成长时刻` : `${spark(11, "#fff")} 继续闯关，离进化更近一步`}</div>
         <div class="evo-mini">${dino(state.stage)}</div>
       </div>
 
       <div class="result-cheer">
         <div class="cheer-dino">${dino(state.stage)}</div>
-        <div class="cheer-say"><b>${pending ? "奇奇已经等不及啦！" : "奇奇今天也很开心！"}</b><span>${pending ? "再点一下，就能看到全新的我" : `再闯一关，就能继续长大`}</span></div>
+        <div class="cheer-say"><b>${pending ? "小诺已经等不及啦！" : "小诺今天也很开心！"}</b><span>${pending ? "再点一下，就能看到全新的我" : `再闯一关，就能继续长大`}</span></div>
       </div>
     </div>
 
     <div class="result-foot">
-      ${pending ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz">再闯一关 ${I.arrow(18)}</button>`}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${r.passed ? Math.min(themeProgress().level, r.level + 1) : r.level}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
       <button class="back" data-action="home">回到恐龙乐园</button>
     </div>
   </section>`;
@@ -1907,82 +2671,19 @@ function screenEvolution() {
   </section>`;
 }
 
-/* ------------------------------------------------ shop */
-function itemState(item) {
-  const locked = item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage);
-  const owned = state.owned.includes(item.id);
-  const using = state.equipped[item.slot] === item.id;
-  return { locked, owned, using };
-}
 
-function screenShop() {
-  const eq = state.equipped;
-  const wearing = ITEMS.filter((it) => eq[it.slot] === it.id).map((it) => it.name);
-  const dinoCls = state.stage === "ultra" ? "ultra" : "";
-  const tabs = `<div class="shop-tabs">
-    <button class="tab ${shopTab === "decor" ? "on" : ""}" data-action="shop-tab" data-tab="decor">装扮</button>
-    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景<span class="tb">${BACKGROUNDS.length - 1}</span></button>
-    <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
-    <span class="all">全部 ${I.chevron(9)}</span>
-  </div>`;
-  let panel = "";
-  if (shopTab === "decor") {
-    panel = `<div class="shop-grid">${ITEMS.map((it) => {
-      const s = itemState(it);
-      const cls = `shop-item ${s.owned ? "owned" : ""} ${s.using ? "using" : ""} ${s.locked ? "locked" : ""}`;
-      const price = s.locked ? `<span class="price locked">${I.lock(9)} 进化解锁</span>`
-        : s.owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${it.price}</span>`;
-      const action = s.locked ? "locked-item" : s.owned ? "equip-item" : "buy-item";
-      return `<button class="${cls}" data-action="${action}" data-id="${it.id}">
-        <div class="thumb ${it.thumb}">${it.badge ? `<span class="badge">${it.badge}</span>` : ""}${it.art()}</div>
-        <div class="name">${it.name}${s.using ? `<span class="tag">穿着中</span>` : ""}</div>
-        <div class="sub">${it.sub}</div>
-        <div class="foot">${price}<span class="action">${s.using ? I.check(12) : s.owned ? I.arrow(12) : s.locked ? I.lock(12) : I.arrow(12)}</span></div>
-      </button>`;
-    }).join("")}</div>`;
-  } else if (shopTab === "bg") {
-    panel = `<div class="bg-grid">${BACKGROUNDS.map((bg) => {
-      const owned = state.bgOwned.includes(bg.id) || state.bg === bg.id;
-      const using = state.bg === bg.id;
-      const price = using ? `<span class="price owned">使用中</span>` : owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${bg.price}</span>`;
-      return `<button class="bg-item ${using ? "using" : ""}" data-action="${owned ? "equip-bg" : "buy-bg"}" data-id="${bg.id}">
-        <div class="bg-thumb ${bg.cls}"><div class="s"></div><div class="h"></div><div class="d">${dino(state.stage, { equipped: state.equipped })}</div></div>
-        <div class="bg-info"><b>${bg.name}</b><span>${bg.sub}</span>${price}</div>
-        ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:26px;height:26px;border-radius:9px;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
-      </button>`;
-    }).join("")}</div>`;
-  } else {
-    const found = DEX.filter((d) => state.dex.includes(d.key)).slice(0, 3);
-    panel = `<div class="card dex-teaser">
-      <div class="dt-top"><div class="t"><b>恐龙图鉴</b><p>已收集 ${state.dex.length} / ${DEX.length} 种形态</p></div><span style="font-size:11px;font-weight:900;color:var(--green-d)">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-      <div class="dt-list">${(found.length ? found : DEX.slice(0, 3)).map((d) => `<div class="mini">${dino(d.key)}</div>`).join("")}</div>
-      <button class="btn ghost" data-action="tab" data-screen="dex">打开恐龙图鉴 ${I.arrow(14)}</button>
-    </div>`;
-  }
-  return `<section class="screen has-tab" data-screen="shop">
-    <div class="scroll">
-      <div class="shop-head">
-        <div class="t"><h1>装饰小铺</h1><p>用星星把奇奇打扮得更酷一点</p></div>
-        ${starPill()}
-      </div>
-      <div class="shop-preview ${bgClass(state.bg)}">
-        <div class="arch"></div><div class="podium"></div>
-        <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
-        <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
-        <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
-        <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
-        <div class="pet">${I.crownMini(12, "#C98B25")} 奇奇 · LV.${stageIndex(state.stage) + 1}</div>
-      </div>
-      ${tabs}
-      ${panel}
-    </div>
-    ${tabbar("shop")}
-  </section>`;
-}
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 图鉴（dex）
+   底部 Tab 3：恐龙图鉴 + 详情弹层
+   ============================================================ */
+
+let dexFilter = "all";
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
-  if (state.dex.length >= 6) return { title: "图鉴全收集 · 星空营地", note: "所有形态都已收录，奇奇为你骄傲", cur: 6, max: 6, reward: "全部完成" };
+  if (state.dex.length >= 6) return { title: "图鉴全收集 · 星空营地", note: "所有形态都已收录，小诺为你骄傲", cur: 6, max: 6, reward: "全部完成" };
   if (state.dex.length >= 4) return { title: "收集奖励 · 星空营地", note: `再发现 ${6 - state.dex.length} 种形态，解锁「星空营地」背景`, cur: state.dex.length, max: 6, reward: "星空营地" };
   return { title: "收集奖励 · 落日山谷", note: `再发现 ${4 - state.dex.length} 种形态，解锁「落日山谷」背景`, cur: state.dex.length, max: 4, reward: "落日山谷" };
 }
@@ -2043,73 +2744,110 @@ function screenDex() {
   </section>`;
 }
 
-/* ------------------------------------------------ profile */
-function screenProfile() {
-  const st = stageMeta(state.stage);
-  const days = [["一", 14, 66], ["二", 10, 48], ["三", 16, 76], ["四", 12, 58], ["五", state.minutes, 42, true], ["六", 12, 58], ["日", 12, 58]];
-  const ach = [
-    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", sub: "已获得" },
-    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", sub: "100 词" },
-    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", sub: `${state.threeStars} 次` },
-    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", sub: "???" },
-  ];
-  const decorCount = state.owned.length;
-  return `<section class="screen" data-screen="profile">
-    <div class="scroll profile-scroll">
-      <div class="profile-head">
-        <button class="circle-btn" data-action="home" aria-label="返回">${I.back(18)}</button>
-        <div class="t"><h1>成长档案</h1><p>${state.name} · 和奇奇一起长大的第 21 天</p></div>
-        <button class="circle-btn" data-action="settings" aria-label="设置">${I.gear(19)}</button>
-      </div>
 
-      <div class="profile-card">
-        <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
-        <div class="pc-ava"><div class="crop">${dino(state.stage)}</div></div>
-        <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 21 天 · 累计闯关 ${state.level - 1} 次</p></div>
-        <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
+function openDexDetail(key) {
+  const d = DEX.find((x) => x.key === key);
+  if (!d) return;
+  if (!state.dex.includes(key)) { toast("这只恐龙还在沉睡，继续闯关吧"); return; }
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <div class="detail-hero"><div class="dino" style="width:170px;height:170px">${dino(key)}</div></div>
+      <div class="detail-meta"><b>${d.name}</b><span class="ph">${d.phase} · ★${d.rarity}</span></div>
+      <div class="detail-desc">${d.desc}</div>
+      <div class="detail-stats">
+        <div class="ds"><b>${d.height}</b><span>身高</span></div>
+        <div class="ds"><b>${d.weight}</b><span>体重</span></div>
+        <div class="ds"><b style="font-size:10px">${d.skill}</b><span>专属能力</span></div>
       </div>
-
-      <div class="stat-row">
-        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(state.stars)}</span></div><div class="k">我的星星</div></div>
-        <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
-        <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
-      </div>
-
-      <div class="card chart-card">
-        <div class="ch-head">
-          <div><div class="lb">WEEKLY REPORT · 本周学习</div><div class="v">84 <small>分钟</small></div></div>
-          <div class="goal">目标 70 分钟 ✓</div>
-        </div>
-        <div class="chart">
-          <div class="gl"></div>
-          ${days.map(([d, mins, h, today]) => `<div class="col ${today ? "today" : ""}">
-            ${today ? `<span class="tip">${mins}′</span>` : ""}
-            <div class="b" style="height:${h}px"></div><span class="d">${d}</span>
-          </div>`).join("")}
-        </div>
-      </div>
-
-      <div class="card ach-card">
-        <div class="ach-head"><b>成就徽章</b><span>3 / 12 已点亮</span></div>
-        <div class="ach-list">${ach.map((a) => `<div class="ach">
-          <div class="medal ${a.cls}">${a.icon}${a.cls !== "lock" ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
-          <b>${a.name}</b><span>${a.sub}</span>
-        </div>`).join("")}</div>
-      </div>
-
-      <div class="quote-card">
-        <div class="qi">${I.flame(18, "#E2A62E")}</div>
-        <div class="q">奇奇说：「今天也一起学 10 分钟吧，<br>我离超级霸王龙又近了一步！」</div>
-      </div>
-
-      <div class="profile-cta"><button class="btn" data-action="start-quiz">去闯关，帮奇奇进化 <span class="hint">+120 EXP</span></button></div>
+      <div class="sheet-actions"><button class="btn" data-action="close-overlay">继续收集</button></div>
     </div>
+  </div>`);
+}
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 小铺（shop）
+   底部 Tab 4：装扮 / 背景 / 图鉴，含购买与装备
+   ============================================================ */
+
+let shopTab = "decor";
+let pendingBuy = null;
+
+/* ------------------------------------------------ shop */
+function itemState(item) {
+  const locked = item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage);
+  const owned = state.owned.includes(item.id);
+  const using = state.equipped[item.slot] === item.id;
+  return { locked, owned, using };
+}
+
+function screenShop() {
+  const eq = state.equipped;
+  const wearing = ITEMS.filter((it) => eq[it.slot] === it.id).map((it) => it.name);
+  const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  const tabs = `<div class="shop-tabs">
+    <button class="tab ${shopTab === "decor" ? "on" : ""}" data-action="shop-tab" data-tab="decor">装扮</button>
+    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景<span class="tb">${BACKGROUNDS.length - 1}</span></button>
+    <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
+    <span class="all">全部 ${I.chevron(9)}</span>
+  </div>`;
+  let panel = "";
+  if (shopTab === "decor") {
+    panel = `<div class="shop-grid">${ITEMS.map((it) => {
+      const s = itemState(it);
+      const cls = `shop-item ${s.owned ? "owned" : ""} ${s.using ? "using" : ""} ${s.locked ? "locked" : ""}`;
+      const price = s.locked ? `<span class="price locked">${I.lock(9)} 进化解锁</span>`
+        : s.owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${it.price}</span>`;
+      const action = s.locked ? "locked-item" : s.owned ? "equip-item" : "buy-item";
+      return `<button class="${cls}" data-action="${action}" data-id="${it.id}">
+        <div class="thumb ${it.thumb}">${it.badge ? `<span class="badge">${it.badge}</span>` : ""}${it.art()}</div>
+        <div class="name">${it.name}${s.using ? `<span class="tag">穿着中</span>` : ""}</div>
+        <div class="sub">${it.sub}</div>
+        <div class="foot">${price}<span class="action">${s.using ? I.check(12) : s.owned ? I.arrow(12) : s.locked ? I.lock(12) : I.arrow(12)}</span></div>
+      </button>`;
+    }).join("")}</div>`;
+  } else if (shopTab === "bg") {
+    panel = `<div class="bg-grid">${BACKGROUNDS.map((bg) => {
+      const owned = state.bgOwned.includes(bg.id) || state.bg === bg.id;
+      const using = state.bg === bg.id;
+      const price = using ? `<span class="price owned">使用中</span>` : owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${bg.price}</span>`;
+      return `<button class="bg-item ${using ? "using" : ""}" data-action="${owned ? "equip-bg" : "buy-bg"}" data-id="${bg.id}">
+        <div class="bg-thumb ${bg.cls}"><div class="s"></div><div class="h"></div><div class="d">${dino(state.stage, { equipped: state.equipped })}</div></div>
+        <div class="bg-info"><b>${bg.name}</b><span>${bg.sub}</span>${price}</div>
+        ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:26px;height:26px;border-radius:9px;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
+      </button>`;
+    }).join("")}</div>`;
+  } else {
+    const found = DEX.filter((d) => state.dex.includes(d.key)).slice(0, 3);
+    panel = `<div class="card dex-teaser">
+      <div class="dt-top"><div class="t"><b>恐龙图鉴</b><p>已收集 ${state.dex.length} / ${DEX.length} 种形态</p></div><span style="font-size:11px;font-weight:900;color:var(--green-d)">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
+      <div class="dt-list">${(found.length ? found : DEX.slice(0, 3)).map((d) => `<div class="mini">${dino(d.key)}</div>`).join("")}</div>
+      <button class="btn ghost" data-action="tab" data-screen="dex">打开恐龙图鉴 ${I.arrow(14)}</button>
+    </div>`;
+  }
+  return `<section class="screen has-tab" data-screen="shop">
+    <div class="scroll">
+      <div class="shop-head">
+        <div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>
+        ${starPill()}
+      </div>
+      <div class="shop-preview ${bgClass(state.bg)}">
+        <div class="arch"></div><div class="podium"></div>
+        <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
+        <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
+        <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
+        <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
+        <div class="pet">${I.crownMini(12, "#C98B25")} 小诺 · LV.${stageIndex(state.stage) + 1}</div>
+      </div>
+      ${tabs}
+      ${panel}
+    </div>
+    ${tabbar("shop")}
   </section>`;
 }
 
-/* ------------------------------------------------ sheets */
-function openOverlay(html) { $("#overlay-root").innerHTML = html; }
-function closeOverlay() { $("#overlay-root").innerHTML = ""; }
 
 function openBuyItem(id) {
   const item = ITEMS.find((i) => i.id === id);
@@ -2122,7 +2860,7 @@ function openBuyItem(id) {
     <div class="dialog">
       <div class="d-ico">${item.art()}</div>
       <h3>解锁「${item.name}」？</h3>
-      <p>将花费 ${item.price} 星星，解锁后可随时给奇奇换上或取下。</p>
+      <p>将花费 ${item.price} 星星，解锁后可随时给小诺换上或取下。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">再想想</button>
         <button class="btn" data-action="confirm-buy">花 ${item.price} 星星解锁</button>
@@ -2196,270 +2934,7 @@ function equipBg(id) {
   toast(`场景已切换为「${bgMeta(id).name}」`);
 }
 
-function openDexDetail(key) {
-  const d = DEX.find((x) => x.key === key);
-  if (!d) return;
-  if (!state.dex.includes(key)) { toast("这只恐龙还在沉睡，继续闯关吧"); return; }
-  openOverlay(`<div class="overlay">
-    <div class="sheet">
-      <div class="grab"></div>
-      <div class="detail-hero"><div class="dino" style="width:170px;height:170px">${dino(key)}</div></div>
-      <div class="detail-meta"><b>${d.name}</b><span class="ph">${d.phase} · ★${d.rarity}</span></div>
-      <div class="detail-desc">${d.desc}</div>
-      <div class="detail-stats">
-        <div class="ds"><b>${d.height}</b><span>身高</span></div>
-        <div class="ds"><b>${d.weight}</b><span>体重</span></div>
-        <div class="ds"><b style="font-size:10px">${d.skill}</b><span>专属能力</span></div>
-      </div>
-      <div class="sheet-actions"><button class="btn" data-action="close-overlay">继续收集</button></div>
-    </div>
-  </div>`);
-}
-function openReview() {
-  const w = todayWord();
-  openOverlay(`<div class="overlay">
-    <div class="sheet word-sheet">
-      <div class="grab"></div>
-      <div class="eyebrow">TODAY'S REVIEW</div>
-      <div class="word-big">${w.word}</div>
-      <div class="word-phon">${w.phon}</div>
-      <div class="word-zh">n. ${w.zh}</div>
-      <div class="tip">例句：${w.example}</div>
-      <button class="btn speak-btn" data-action="speak-word" data-word="${w.word}">${I.speaker(18)} 听一听发音</button>
-      <div class="sheet-actions"><button class="btn ghost" data-action="close-overlay">我记住啦</button></div>
-    </div>
-  </div>`);
-}
-function openSettings() {
-  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
-  openOverlay(`<div class="overlay">
-    <div class="sheet">
-      <div class="grab"></div>
-      <h2>设置</h2>
-      <div class="sheet-sub">${standalone ? "当前已从主屏幕运行，体验和 App 一样。" : "调整声音、安装到主屏幕，或重置演示进度。"}</div>
-      <div style="margin-top:10px">
-        <div class="setting-row">
-          <div class="s-ic">${I.volume(18)}</div>
-          <div class="s-txt"><b>音效与发音</b><span>答对 / 答错 / 翻页的提示音</span></div>
-          <button class="switch ${state.sound ? "on" : ""}" data-action="toggle-sound" aria-label="音效开关"></button>
-        </div>
-        <div class="setting-row" data-action="install-guide" role="button">
-          <div class="s-ic">${I.share(18)}</div>
-          <div class="s-txt"><b>安装到主屏幕</b><span>全屏运行，像原生 App 一样</span></div>
-          <span style="color:#B3A78E">${I.chevron(12)}</span>
-        </div>
-        <div class="setting-row" data-action="reset-confirm" role="button">
-          <div class="s-ic">${I.refresh(18)}</div>
-          <div class="s-txt"><b>重置演示进度</b><span>回到 480 成长值、1,280 星星</span></div>
-          <span style="color:#B3A78E">${I.chevron(12)}</span>
-        </div>
-        <div class="setting-row">
-          <div class="s-ic">${I.info(18)}</div>
-          <div class="s-txt"><b>DinoGo · 恐龙英语</b><span>交互概念版 v1.0 · 离线可用</span></div>
-        </div>
-      </div>
-      <div class="sheet-actions"><button class="btn ghost" data-action="close-overlay">完成</button></div>
-    </div>
-  </div>`);
-}
-function openInstallGuide() {
-  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  openOverlay(`<div class="overlay">
-    <div class="sheet">
-      <div class="grab"></div>
-      <h2>把 DinoGo 装到主屏幕</h2>
-      <div class="sheet-sub">添加后会以全屏方式运行；通过 HTTPS 访问时还支持离线打开。</div>
-      ${ios ? `
-        <div class="install-step"><span class="n">1</span><p>用 <b>Safari</b> 打开本页（需要是本机或局域网地址，不能是本地文件）。</p></div>
-        <div class="install-step"><span class="n">2</span><p>点击底部工具栏的 <b>分享</b> 按钮。</p></div>
-        <div class="install-step"><span class="n">3</span><p>向上滑动，选择 <b>添加到主屏幕</b>，再点右上角「添加」。</p></div>
-        <div class="install-step"><span class="n">4</span><p>回到主屏幕，点击 DinoGo 图标即可全屏进入。</p></div>
-      ` : `
-        <div class="install-step"><span class="n">1</span><p>在 Chrome / Edge 中通过 <b>http 或 https</b> 打开本页。</p></div>
-        <div class="install-step"><span class="n">2</span><p>点击地址栏右侧的 <b>安装</b> 图标，或菜单里的「安装应用」。</p></div>
-        <div class="install-step"><span class="n">3</span><p>安装后可从桌面独立打开，并离线使用。</p></div>
-      `}
-      <div class="install-note">提示：直接双击本地 HTML 文件时，Safari 不会显示「添加到主屏幕」。请用项目里的 <b>start-ios.ps1</b> 启动本地服务，再用 iPad 访问电脑的局域网地址。局域网 HTTP 下不会启用离线缓存；需要离线请用单文件版，或部署到 HTTPS。</div>
-      <div class="sheet-actions"><button class="btn" data-action="close-overlay">知道了</button></div>
-    </div>
-  </div>`);
-}
-function openResetConfirm() {
-  openOverlay(`<div class="overlay dialog-wrap">
-    <div class="dialog">
-      <div class="d-ico">${I.refresh(24, "#B4811C")}</div>
-      <h3>重置演示进度？</h3>
-      <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
-      <div class="d-actions">
-        <button class="btn ghost" data-action="close-overlay">取消</button>
-        <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 5px 0 #B84435">确认重置</button>
-      </div>
-    </div>
-  </div>`);
-}
-
-/* ------------------------------------------------ toast */
-function toast(msg) {
-  const root = $("#toast-root");
-  const el = document.createElement("div");
-  el.className = "toast";
-  el.textContent = msg;
-  root.appendChild(el);
-  while (root.children.length > 3) root.removeChild(root.firstChild);
-  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 260); }, 2100);
-}
-
-/* ------------------------------------------------ events */
-document.addEventListener("click", (e) => {
-  if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
-  const el = e.target.closest("[data-action]");
-  if (!el) return;
-  const action = el.dataset.action;
-
-  if (action === "tab") {
-    closeOverlay();
-    go(el.dataset.screen, { replace: true });
-    sfx("tap");
-  } else if (action === "home") {
-    closeOverlay();
-    go("home", { replace: true });
-  } else if (action === "profile") {
-    go("profile");
-    sfx("tap");
-  } else if (action === "start-quiz") {
-    closeOverlay();
-    startQuiz();
-  } else if (action === "select") {
-    selectOption(el.dataset.word);
-  } else if (action === "check") {
-    checkAnswer();
-  } else if (action === "next") {
-    nextQuestion();
-  } else if (action === "close-quiz") {
-    quiz = null;
-    go("map", { replace: true });
-  } else if (action === "evolve") {
-    beginEvolution();
-  } else if (action === "shop-tab") {
-    shopTab = el.dataset.tab;
-    sfx("tap");
-    render();
-  } else if (action === "buy-item") {
-    openBuyItem(el.dataset.id);
-  } else if (action === "equip-item") {
-    toggleItem(el.dataset.id);
-  } else if (action === "locked-item") {
-    const item = ITEMS.find((i) => i.id === el.dataset.id);
-    if (item && item.unlockStage) toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
-  } else if (action === "buy-bg") {
-    openBuyBg(el.dataset.id);
-  } else if (action === "equip-bg") {
-    equipBg(el.dataset.id);
-  } else if (action === "confirm-buy") {
-    confirmBuy();
-  } else if (action === "dex-detail") {
-    openDexDetail(el.dataset.key);
-  } else if (action === "filter-dex") {
-    dexFilter = el.dataset.filter;
-    sfx("tap");
-    render();
-  } else if (action === "settings") {
-    openSettings();
-  } else if (action === "toggle-sound") {
-    state.sound = !state.sound;
-    save();
-    if (state.sound) { ensureAudio(); sfx("tap"); }
-    openSettings();
-    toast(state.sound ? "音效已开启" : "音效已关闭");
-  } else if (action === "install-guide") {
-    openInstallGuide();
-  } else if (action === "reset-confirm") {
-    openResetConfirm();
-  } else if (action === "confirm-reset") {
-    resetState();
-    closeOverlay();
-    go("home", { replace: true });
-    toast("已重置演示进度");
-  } else if (action === "close-overlay") {
-    closeOverlay();
-  } else if (action === "speak-word") {
-    speak(el.dataset.word);
-  } else if (action === "open-review") {
-    openReview();
-  } else if (action === "open-map") {
-    go("map");
-  }
-});
-
-window.addEventListener("popstate", (e) => {
-  const s = (e.state && e.state.screen) || "home";
-  if (s === "result" && !lastResult) { current = "home"; render(); return; }
-  if (s === "evolution" && !evolutionInfo) { current = "home"; render(); return; }
-  if (s === "quiz" && !quiz) { current = "map"; render(); return; }
-  clearTimers();
-  current = s;
-  render();
-});
-
-document.addEventListener("gesturestart", (e) => e.preventDefault());
-
-/* ------------------------------------------------ render */
-const SCREEN_FN = {
-  home: screenHome,
-  map: screenMap,
-  quiz: screenQuiz,
-  result: screenResult,
-  evolution: screenEvolution,
-  shop: screenShop,
-  dex: screenDex,
-  profile: screenProfile,
-};
-function render() {
-  const fn = SCREEN_FN[current] || screenHome;
-  $("#view").innerHTML = fn();
-}
-
-/* ------------------------------------------------ boot */
-(function boot() {
-  try {
-    if (!history.state || !history.state.screen) history.replaceState({ screen: "home" }, "");
-    else current = history.state.screen;
-  } catch (e) { current = "home"; }
-
-  // A result/evolution screen cannot be restored without runtime context.
-  if (current === "result" && !lastResult) current = "home";
-  if (current === "evolution" && !evolutionInfo) current = "home";
-  if (current === "quiz" && !quiz) current = "home";
-
-  render();
-
-  // Warm up the audio graph on the first touch (iOS requirement).
-  const wake = () => { ensureAudio(); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
-  document.addEventListener("touchstart", wake, { passive: true });
-  document.addEventListener("click", wake);
-
-  // iOS install hint — only once, and only in Safari (not standalone).
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
-  let seen = false;
-  try { seen = localStorage.getItem("dinogo.installHint") === "1"; } catch (e) {}
-  if (isIOS && !standalone && !seen) {
-    setTimeout(() => {
-      if (current !== "home") return;
-      try { localStorage.setItem("dinogo.installHint", "1"); } catch (e) {}
-      toast("提示：分享 → 添加到主屏幕，可全屏离线玩");
-    }, 2400);
-  }
-})();
-
-/* PWA: cache the app for offline use when served over http(s). */
-if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.test(location.protocol)) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  });
-}
-
-
 </script>
+  <script>boot();</script>
 </body>
 </html>
