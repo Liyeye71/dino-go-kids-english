@@ -1,0 +1,2465 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#FBF3E3">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DinoGo">
+  <meta name="format-detection" content="telephone=no">
+  <title>DinoGo · 恐龙英语</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <style>
+/* ============================================================
+   DinoGo · 恐龙英语 — interactive iOS / iPad app
+   ============================================================ */
+
+:root{
+  --ink:#1D3A2E;
+  --ink-2:#4F665A;
+  --muted:#87988D;
+  --cream:#FBF3E3;
+  --paper:#FFFFFF;
+  --line:#EDDFC7;
+  --green:#2E8B57;
+  --green-d:#1E6B47;
+  --green-dd:#17553A;
+  --green-l:#E9F7D9;
+  --lime:#B8E05A;
+  --yellow:#FFC94A;
+  --orange:#FF8A4C;
+  --coral:#FF6F61;
+  --sky:#9FDCF2;
+  --purple:#9D8CFF;
+  --shadow:0 10px 24px rgba(94,70,30,.08);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;padding:0;overscroll-behavior:none}
+body{
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif;
+  color:var(--ink);background:#EFE5D2;
+  -webkit-font-smoothing:antialiased;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
+input,textarea{font:inherit}
+svg{display:block}
+h1,h2,h3,h4,p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+
+/* ------------------------------------------------ app shell */
+.app{
+  position:relative;width:100%;max-width:820px;height:100vh;height:100dvh;
+  margin:0 auto;background:var(--cream);overflow:hidden;isolation:isolate;
+}
+.view{position:absolute;inset:0}
+.screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:var(--cream);overflow:hidden;
+  animation:screenIn .3s cubic-bezier(.22,.9,.3,1) both;
+}
+.scroll{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:calc(14px + var(--safe-top)) 20px calc(30px + var(--safe-bottom));
+}
+.scroll::-webkit-scrollbar{display:none}
+.has-tab .scroll{padding-bottom:calc(104px + var(--safe-bottom))}
+
+@media (min-width:700px) and (min-height:600px){
+  body{
+    background:
+      radial-gradient(1200px 800px at 10% -10%,#E4F1D2 0%,rgba(228,241,210,0) 60%),
+      radial-gradient(900px 700px at 110% 110%,#F8E3BE 0%,rgba(248,227,190,0) 60%),
+      #EFE5D2;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .app{
+    height:calc(100dvh - 48px);max-height:1120px;
+    border-radius:36px;border:1px solid rgba(255,255,255,.65);
+    box-shadow:0 40px 90px rgba(45,60,35,.22),0 2px 0 rgba(255,255,255,.8) inset;
+  }
+  .scroll{padding:calc(26px + var(--safe-top)) 32px calc(34px + var(--safe-bottom))}
+  .has-tab .scroll{padding-bottom:calc(112px + var(--safe-bottom))}
+}
+
+@media (min-width:1000px){
+  .app{max-width:880px}
+}
+
+/* ------------------------------------------------ status / tabbar */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:40;
+  height:calc(74px + var(--safe-bottom));
+  padding:8px 12px calc(8px + var(--safe-bottom));
+  display:flex;align-items:stretch;
+  background:rgba(255,251,243,.95);
+  border-top:1.5px solid #EFE2CB;
+  box-shadow:0 -10px 24px rgba(94,70,30,.05);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.tabbar .tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:10.5px;font-weight:700;color:#97A69B;letter-spacing:.3px;border-radius:14px;
+}
+.tabbar .tab .ic{width:40px;height:30px;border-radius:12px;display:grid;place-items:center;transition:background .18s ease}
+.tabbar .tab.on{color:var(--green-d)}
+.tabbar .tab.on .ic{background:#E4F6D5}
+.tabbar .tab:active .ic{transform:scale(.94)}
+
+/* ------------------------------------------------ shared atoms */
+.eyebrow{font-size:9.5px;font-weight:800;letter-spacing:1.7px;color:var(--muted);text-transform:uppercase}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:56px;
+  padding:0 18px;border-radius:18px;
+  background:linear-gradient(180deg,#3AA56B 0%,#28814F 100%);color:#fff;
+  font-size:16.5px;font-weight:800;letter-spacing:.4px;
+  box-shadow:0 5px 0 #1B6140,0 14px 24px rgba(32,110,70,.24);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1B6140,0 6px 14px rgba(32,110,70,.22)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn .hint{font-size:11px;font-weight:700;opacity:.85;background:rgba(255,255,255,.18);padding:3px 8px;border-radius:99px}
+.btn.yellow{background:linear-gradient(180deg,#FFD766,#F5B62F);color:#4C3306;box-shadow:0 5px 0 #D6971C,0 14px 24px rgba(214,151,28,.3)}
+.btn.ghost{background:#fff;color:var(--green-d);border:2px solid #DDEBD2;box-shadow:0 4px 0 #E3EDD6}
+.btn.small{min-height:44px;font-size:13px;border-radius:14px;box-shadow:0 4px 0 #1B6140}
+.btn.small:active{box-shadow:0 1px 0 #1B6140}
+
+.bar{height:12px;border-radius:99px;background:#EEE2CD;box-shadow:inset 0 2px 4px rgba(93,68,25,.08);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#A9D84B,#3AA56B);position:relative;transition:width .6s cubic-bezier(.22,.9,.3,1)}
+.bar>i::after{content:"";position:absolute;left:5px;right:7px;top:2px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
+.bar.gold>i{background:linear-gradient(90deg,#FFD86B,#FFB13D)}
+
+.star-pill{display:flex;align-items:center;gap:5px;height:34px;padding:0 11px 0 8px;border-radius:99px;
+  background:#fff;border:1.5px solid #EFE1C8;box-shadow:0 4px 10px rgba(94,70,30,.07);
+  font-size:13px;font-weight:900;letter-spacing:.2px;white-space:nowrap;flex:none}
+.circle-btn{width:38px;height:38px;border-radius:13px;background:#fff;border:1.5px solid var(--line);
+  display:grid;place-items:center;flex:none;box-shadow:0 4px 10px rgba(94,70,30,.06);color:var(--ink)}
+.circle-btn:active{transform:scale(.94)}
+
+.avatar{width:46px;height:46px;border-radius:16px;background:#FFF6E2;border:2px solid #fff;
+  box-shadow:0 5px 12px rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
+.avatar .crop{position:absolute;width:96px;height:96px;left:-39px;top:-7px}
+
+/* ------------------------------------------------ home */
+.home-top{display:flex;align-items:center;gap:11px;margin-top:2px;margin-bottom:14px}
+.home-top .greet{flex:1;min-width:0}
+.home-top .hi{font-size:17px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-top .hi b{color:var(--green)}
+.home-top .meta{display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--muted);margin-top:3px;white-space:nowrap}
+.home-top .meta .flame{color:var(--orange)}
+
+.hero{
+  position:relative;height:clamp(332px,40vh,420px);border-radius:30px;overflow:hidden;
+  border:1.5px solid #D9E8C2;
+  background:linear-gradient(168deg,#DDF2CE 0%,#EFF8D6 48%,#FDF2D9 100%);
+  transition:background .6s ease,border-color .6s ease;
+}
+.hero .scene{position:absolute;inset:0;transition:opacity .4s ease}
+.hero .sun{position:absolute;right:34px;top:24px;width:62px;height:62px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFF3B8,#FFD25E);
+  box-shadow:0 0 0 12px rgba(255,218,112,.16);transition:all .5s ease}
+.hero .moon{position:absolute;right:38px;top:28px;width:56px;height:56px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFFCE8,#FFE9A8);box-shadow:0 0 26px rgba(255,236,170,.5)}
+.hero .moon::after{content:"";position:absolute;left:-12px;top:4px;width:44px;height:44px;border-radius:50%;
+  background:#16382C;box-shadow:0 0 0 1px rgba(255,255,255,.02)}
+.hero .stars i{position:absolute;background:#FFF6D8;border-radius:50%}
+.hero .cloud{position:absolute;background:#fff;border-radius:99px;opacity:.72}
+.hero .cloud.a{width:58px;height:18px;left:28px;top:38px}
+.hero .cloud.b{width:40px;height:14px;left:48px;top:31px}
+.hero .hill{position:absolute;left:-10%;right:-10%;border-radius:50% 50% 0 0;transition:background .6s ease}
+.hero .hill.a{height:110px;bottom:-44px;background:#CDE9AC}
+.hero .hill.b{height:86px;bottom:-40px;background:#B9DF92;left:34%;right:-24%}
+.hero .leaves{position:absolute;pointer-events:none;opacity:.9}
+.hero .leaves.l{left:-8px;bottom:66px;width:96px}
+.hero .leaves.r{right:-12px;top:96px;width:86px;opacity:.75;transform:rotate(18deg)}
+.hero .dino-wrap{
+  position:absolute;left:calc(50% - 40px);bottom:82px;
+  width:clamp(218px,28vh,300px);height:clamp(218px,28vh,300px);
+  transform:translateX(-50%);
+  filter:drop-shadow(0 14px 18px rgba(48,104,64,.18));
+  animation:bob 4.2s ease-in-out infinite;
+}
+.hero .dino-wrap.ultra{filter:drop-shadow(0 0 26px rgba(255,210,90,.55)) drop-shadow(0 14px 18px rgba(48,104,64,.2))}
+.hero .dino-wrap.with-hat{bottom:66px}
+.hero .stage-tag{position:absolute;left:14px;top:14px;display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;
+  border-radius:99px;background:rgba(255,255,255,.84);border:1.5px solid rgba(255,255,255,.9);
+  font-size:10.5px;font-weight:800;color:var(--green-d);letter-spacing:.3px;backdrop-filter:blur(4px)}
+.hero .name{position:absolute;left:16px;top:52px}
+.hero .name b{display:block;font-size:27px;font-weight:900;letter-spacing:-.5px}
+.hero .bubble{position:absolute;right:12px;top:138px;width:112px;padding:8px 10px;
+  border-radius:12px 12px 12px 3px;background:#fff;font-size:9.5px;line-height:1.55;
+  font-weight:700;color:#57705B;box-shadow:0 5px 12px rgba(70,50,20,.1)}
+.hero .bubble b{color:var(--green);font-size:11px}
+.hero .bubble.max b{color:var(--orange)}
+
+.growth-panel{
+  position:absolute;left:12px;right:12px;bottom:12px;min-height:92px;border-radius:22px;
+  background:rgba(255,255,255,.94);border:1.5px solid rgba(255,255,255,.9);
+  box-shadow:0 8px 18px rgba(74,97,50,.12);backdrop-filter:blur(6px);
+  display:flex;align-items:center;gap:12px;padding:12px 12px 12px 15px;
+}
+.growth-panel .g-main{flex:1;min-width:0}
+.growth-panel .g-row{display:flex;align-items:baseline;gap:6px}
+.growth-panel .lb{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.4px}
+.growth-panel .val{font-size:15px;font-weight:900;color:var(--green-d)}
+.growth-panel .val em{font-style:normal;font-size:10px;color:var(--muted);font-weight:700}
+.growth-panel .g-next{font-size:9.5px;font-weight:600;color:#8A9B8D;margin-top:5px;display:flex;justify-content:space-between}
+.growth-panel .g-next b{color:var(--orange)}
+.growth-panel .g-bar{height:9px;margin-top:5px}
+.go-btn{width:48px;height:48px;border-radius:16px;flex:none;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 4px 0 #1A5E3D,0 8px 14px rgba(31,107,74,.28)}
+.go-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1A5E3D}
+.go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 4px 0 #C98A1C,0 8px 14px rgba(201,138,28,.3);color:#4A3206}
+
+.tasks{padding:13px 15px 12px;display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.tasks .head{display:flex;align-items:center;gap:8px}
+.tasks .head h3{font-size:14.5px;font-weight:900}
+.tasks .head .count{font-size:9.5px;font-weight:900;color:var(--green-d);background:var(--green-l);padding:2px 7px;border-radius:99px}
+.tasks .head .more{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:2px}
+.task{display:flex;align-items:center;gap:9px;height:32px}
+.task .ico{width:29px;height:29px;border-radius:10px;display:grid;place-items:center;flex:none}
+.task .ico.orange{background:#FFF0D2;color:#E69523}
+.task .ico.blue{background:#E6F4FF;color:#3D8FC4}
+.task .ico.coral{background:#FFE7DE;color:#E96A4B}
+.task .t-body{flex:1;min-width:0}
+.task .t-title{font-size:11.5px;font-weight:700;line-height:1.2}
+.task .t-sub{font-size:8.5px;font-weight:600;color:#A0AFA3;margin-top:2px}
+.task .t-sub b{color:var(--orange)}
+.task .reward{font-size:9px;font-weight:900;color:#A98425;background:#FFF4CE;border-radius:99px;padding:3px 7px;white-space:nowrap}
+.task .check{width:20px;height:20px;border-radius:50%;border:2px solid #E3D6BF;flex:none;display:grid;place-items:center;color:#fff}
+.task.done .check{background:var(--green);border-color:var(--green)}
+.task.done .t-title{color:#809184;text-decoration:line-through;text-decoration-thickness:1.5px}
+
+.word-card{min-height:104px;margin-top:12px;border-radius:24px;padding:14px 15px;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(120deg,#FFF4CF 0%,#FFE9B8 100%);border:1.5px solid #F3DFA6;
+  box-shadow:0 10px 22px rgba(196,146,41,.12);position:relative;overflow:hidden;width:100%;text-align:left}
+.word-card .ring{position:absolute;right:-26px;top:-30px;width:110px;height:110px;border-radius:50%;border:14px solid rgba(255,255,255,.35)}
+.word-card .spk{width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;color:#B4811C;
+  box-shadow:0 4px 10px rgba(180,129,28,.18);flex:none;position:relative}
+.word-card .w-main{flex:1;position:relative;min-width:0}
+.word-card .w-kicker{font-size:8px;font-weight:900;letter-spacing:1.4px;color:#B58A2E}
+.word-card .w-word{font-size:21px;font-weight:900;letter-spacing:-.3px;line-height:1.15;color:#4A360F}
+.word-card .w-phon{font-size:10px;font-weight:600;color:#A68A4E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.word-card .w-btn{position:relative;height:32px;padding:0 11px;border-radius:99px;background:#fff;color:#8A6415;
+  font-size:10px;font-weight:800;display:flex;align-items:center;gap:4px;box-shadow:0 3px 8px rgba(180,129,28,.15);flex:none}
+.word-card:active{transform:scale(.99)}
+
+.home-note{margin:12px 4px 0;font-size:9px;font-weight:600;color:#AC9C80;text-align:center;line-height:1.6}
+.wide-extra{display:none}
+@media (min-width:700px) and (min-height:600px){
+  .wide-extra{display:grid;grid-template-columns:1.35fr .65fr;gap:12px;margin-top:14px;height:140px}
+  .we-main{border-radius:22px;background:#fff;border:1.5px solid var(--line);box-shadow:var(--shadow);
+    padding:10px 16px;display:flex;flex-direction:column;min-width:0}
+  .we-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .we-head .lb{font-size:8px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
+  .we-head b{font-size:19px;font-weight:900;color:var(--green-d);line-height:1.1}
+  .we-head b small{font-size:9px;color:var(--muted);font-weight:700}
+  .we-head .goal{font-size:7.5px;font-weight:800;color:#8A6415;background:#FFF4CE;padding:3px 7px;border-radius:99px;white-space:nowrap}
+  .we-chart{flex:1;display:flex;align-items:flex-end;gap:10px;margin-top:4px;padding-top:2px;min-height:0}
+  .we-chart .wc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end}
+  .we-chart .wc .b{width:100%;max-width:26px;border-radius:6px;background:#DCEBCB;position:relative}
+  .we-chart .wc .b::after{content:"";position:absolute;left:3px;right:3px;top:2px;height:2px;border-radius:9px;background:rgba(255,255,255,.6)}
+  .we-chart .wc.today .b{background:linear-gradient(180deg,#FFD25A,#F2A93B);box-shadow:0 4px 8px rgba(242,169,59,.3)}
+  .we-chart .wc span{font-size:7px;font-weight:700;color:#A6B2A4}
+  .we-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .we-stat{flex:1;border-radius:16px;background:#fff;border:1.5px solid var(--line);box-shadow:0 5px 12px rgba(94,70,30,.05);
+    display:flex;flex-direction:column;justify-content:center;padding:6px 11px;position:relative;min-width:0}
+  .we-stat .si{position:absolute;right:11px;top:50%;transform:translateY(-50%);opacity:.85}
+  .we-stat b{font-size:10.5px;font-weight:900;display:block}
+  .we-stat span:last-child{font-size:7px;color:#A19278;font-weight:600;margin-top:1px;display:block}
+}
+
+/* hero background themes */
+.hero.bg-sunset{background:linear-gradient(170deg,#FFD9A8 0%,#FFC7A0 44%,#FFE4C0 100%);border-color:#F1CBA4}
+.hero.bg-sunset .sun{right:50px;top:70px;background:radial-gradient(circle at 38% 34%,#FFF3C4,#FF9E5C);
+  box-shadow:0 0 0 16px rgba(255,158,92,.16),0 0 60px rgba(255,158,92,.4)}
+.hero.bg-sunset .hill.a{background:#E7B68C}
+.hero.bg-sunset .hill.b{background:#D49A76}
+.hero.bg-night{background:linear-gradient(170deg,#183F38 0%,#1E4E40 45%,#2A5A46 100%);border-color:#2D5C4A}
+.hero.bg-night .hill.a{background:#245845}
+.hero.bg-night .hill.b{background:#1C4938}
+.hero.bg-night .name b{color:#FFF6DE}
+.hero.bg-night .bubble{background:rgba(255,255,255,.94);color:#57705B}
+.hero.bg-night .stage-tag{background:rgba(255,255,255,.9)}
+.hero.bg-night .cloud{opacity:.12}
+.hero.bg-night .leaves{opacity:.42;filter:brightness(.75)}
+
+/* ------------------------------------------------ map */
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.topbar .t{flex:1;min-width:0}
+.topbar h1{font-size:21px;font-weight:900;letter-spacing:-.3px;line-height:1.15}
+.topbar p{font-size:10px;font-weight:600;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unit-progress{min-height:64px;display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:20px}
+.unit-progress .up-main{flex:1;min-width:0}
+.unit-progress .up-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.unit-progress .up-row b{font-size:11.5px;font-weight:800}
+.unit-progress .up-row span{font-size:9.5px;font-weight:700;color:var(--muted)}
+.unit-progress .up-row span b{color:#B4811C}
+.unit-progress .bar{height:8px}
+.unit-progress .up-star{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:900;color:#8A6415;
+  background:#FFF4CE;padding:6px 9px;border-radius:12px;white-space:nowrap}
+
+.map-canvas{position:relative;height:clamp(390px,48vh,570px);margin-top:12px;border-radius:28px;overflow:hidden;
+  background:linear-gradient(180deg,#E9F6D6 0%,#F3F7DA 60%,#FBF2D8 100%);
+  border:1.5px solid #DCE9C6}
+.map-canvas .deco{position:absolute;pointer-events:none}
+.map-canvas .route{position:absolute;inset:0;width:100%;height:100%}
+.mnode{position:absolute;width:54px;height:54px;transform:translate(-50%,-50%);z-index:2;transition:transform .2s ease}
+.mnode:active{transform:translate(-50%,-50%) scale(.94)}
+.mnode .disc{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+  background:#fff;border:3px solid #fff;box-shadow:0 6px 12px rgba(79,110,58,.18);color:#fff}
+.mnode.done .disc{background:linear-gradient(180deg,#5CB87A,#2F9159)}
+.mnode.done.half .disc{background:linear-gradient(180deg,#9DC98B,#6EAE6B)}
+.mnode.locked .disc{background:#F1EADB;color:#B7B09C;box-shadow:0 4px 8px rgba(79,110,58,.1)}
+.mnode.now{width:78px;height:78px}
+.mnode.now .ring{position:absolute;inset:-9px;border-radius:50%;border:2px dashed rgba(46,139,87,.4);animation:spin 18s linear infinite}
+.mnode.now .disc{width:78px;height:78px;background:linear-gradient(180deg,#EAF9D2,#D6F0B4);border:4px solid #fff;
+  box-shadow:0 8px 18px rgba(31,107,74,.26),0 0 0 4px rgba(46,139,87,.18);overflow:hidden}
+.mnode.now .disc .dino{position:absolute;width:82px;height:82px;left:-2px;bottom:-12px}
+.mnode.now .go{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);height:21px;padding:0 9px;
+  border-radius:99px;background:var(--orange);color:#fff;font-size:9px;font-weight:900;letter-spacing:1px;
+  display:flex;align-items:center;box-shadow:0 3px 6px rgba(220,94,38,.3);border:2px solid #fff}
+.mnode .mlabel{position:absolute;left:50%;transform:translateX(-50%);bottom:-16px;font-size:9px;font-weight:900;
+  color:#7D907F;letter-spacing:.5px;white-space:nowrap}
+.mnode.now .mlabel{bottom:-31px}
+.mnode.done .mlabel{color:var(--green-d)}
+.mnode.chest .disc{background:linear-gradient(180deg,#FFDD85,#F3B43F);color:#7A4E08}
+.mnode.chest .mlabel{color:#A9771A}
+.mnode .mstars{position:absolute;top:-11px;left:50%;transform:translateX(-50%);display:flex;gap:1px;
+  background:#fff;padding:2px 5px;border-radius:99px;box-shadow:0 3px 6px rgba(79,110,58,.14);white-space:nowrap}
+.mnode .mstars span{font-size:8px;font-weight:900;color:#8A6415}
+.map-canvas .tree1{right:2%;bottom:8%;width:24%}
+.map-canvas .tree2{left:5%;top:27%;width:16%;opacity:.85}
+.map-canvas .mush{right:8%;top:60%;width:10%}
+.map-canvas .cloud{right:4%;top:4%;width:20%;opacity:.85}
+
+.next-level{min-height:126px;margin-top:12px;border-radius:24px;padding:14px 15px;display:flex;align-items:center;gap:12px;
+  background:#fff;border:1.5px solid var(--line);box-shadow:0 12px 24px rgba(74,97,50,.1)}
+.next-level .nl-main{flex:1;min-width:0}
+.next-level .nl-kicker{display:flex;align-items:center;gap:6px;font-size:8.5px;font-weight:900;letter-spacing:1.3px;color:var(--orange)}
+.next-level h3{font-size:17px;font-weight:900;letter-spacing:-.3px;margin-top:4px}
+.next-level .nl-meta{font-size:9.5px;font-weight:600;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.next-level .nl-btn{width:104px;min-height:48px;border-radius:15px;flex:none;background:linear-gradient(180deg,#3AA56B,#28814F);
+  color:#fff;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;
+  box-shadow:0 4px 0 #1B6140,0 8px 14px rgba(32,110,70,.22)}
+.next-level .nl-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1B6140}
+
+/* ------------------------------------------------ quiz */
+.quiz-page{display:flex;flex-direction:column;height:100%;padding-top:calc(8px + var(--safe-top))}
+.quiz-top{display:flex;align-items:center;gap:10px;padding:6px 20px 0;flex:none}
+.quiz-top .qbar{flex:1;height:12px}
+.quiz-top .qcount{font-size:11px;font-weight:900;color:var(--green-d);white-space:nowrap}
+.quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:700}
+.hearts{display:flex;align-items:center;gap:3px;flex:none}
+.heart-pop{animation:heartOut .4s ease forwards}
+.quiz-body{flex:1;min-height:0;overflow-y:auto;padding:8px 20px 0;display:flex;flex-direction:column;scrollbar-width:none}
+.quiz-body::-webkit-scrollbar{display:none}
+.quiz-prompt{display:flex;flex-direction:column;gap:7px;margin-top:4px;flex:none}
+.quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:7px;
+  background:#E8F5D8;color:var(--green-d);font-size:8.5px;font-weight:900;letter-spacing:1px}
+.quiz-prompt h2{font-size:clamp(19px,3.2vw,23px);font-weight:900;letter-spacing:-.4px}
+.quiz-art{
+  flex:1;min-height:230px;max-height:470px;margin-top:12px;border-radius:28px;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,#FFFDF2 0%,#FFF3D6 55%,#FBE8BE 100%);
+  border:1.5px solid #F2DFB2;display:grid;place-items:center
+}
+.quiz-art::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(190,150,60,.16) 1px,transparent 1px);background-size:22px 22px}
+.quiz-art .blob{position:absolute;width:250px;height:250px;border-radius:48% 52% 55% 45%/50% 46% 54% 50%;
+  background:#FFE6A9;opacity:.55}
+.quiz-art .fruit{position:relative;width:clamp(150px,24vh,210px);height:clamp(150px,24vh,210px);
+  filter:drop-shadow(0 16px 18px rgba(160,98,24,.2));animation:pop .45s cubic-bezier(.2,1.4,.4,1) both}
+.quiz-art .art-tag{position:absolute;left:14px;top:14px;font-size:8.5px;font-weight:900;letter-spacing:1.3px;color:#C49A3E}
+.quiz-art .art-spark{position:absolute;color:#E8C377;opacity:.8}
+.quiz-art .s1{left:34px;top:76px}
+.quiz-art .s2{right:38px;top:112px}
+.quiz-art .s3{left:52px;bottom:88px}
+.quiz-art .listen{position:absolute;right:14px;bottom:14px;height:34px;padding:0 12px;border-radius:99px;background:#fff;
+  display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;color:#9B7620;
+  box-shadow:0 5px 12px rgba(155,118,32,.16)}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none;margin-top:14px}
+.option{min-height:70px;border-radius:18px;background:#fff;border:2px solid #EFE2CB;display:flex;align-items:center;gap:9px;
+  padding:0 12px;box-shadow:0 4px 10px rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}
+.option .key{width:26px;height:26px;border-radius:9px;background:#F3EFE4;display:grid;place-items:center;
+  font-size:11px;font-weight:900;color:#A6987B;flex:none;transition:all .15s ease}
+.option .word{font-size:15px;font-weight:800;letter-spacing:-.1px}
+.option .mark{margin-left:auto;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.option .mark.radio{background:#fff;border:2px solid #3AA56B}
+.option .mark.radio i{display:block;width:10px;height:10px;border-radius:50%;background:#3AA56B}
+.option.sel{border-color:#3AA56B;background:#F4FBEC;box-shadow:0 4px 0 #D7EBC4,0 8px 16px rgba(58,165,107,.12)}
+.option.sel .key{background:#DFF2CC;color:var(--green-d)}
+.option.correct{border-color:#3AA56B;background:#EDF9E1}
+.option.correct .key{background:#3AA56B;color:#fff}
+.option.wrong{border-color:#F07A6A;background:#FFF0EC;animation:shake .4s ease}
+.option.wrong .key{background:#F07A6A;color:#fff}
+.option.dim{opacity:.55}
+.quiz-foot{flex:none;padding:10px 20px calc(18px + var(--safe-bottom));display:flex;flex-direction:column;gap:10px;background:var(--cream)}
+.combo{min-height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:linear-gradient(90deg,#FFF0C9,#FFE4A6);border:1.5px solid #F5D48B;
+  font-size:10.5px;font-weight:800;color:#95691A;padding:6px 10px;text-align:center}
+.combo b{color:#7C5209}
+.combo.silent{background:transparent;border-color:transparent;color:#A6987B}
+
+/* ------------------------------------------------ result */
+.result-page{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
+.result-scroll{flex:1;min-height:0;overflow-y:auto;padding:calc(18px + var(--safe-top)) 20px 8px;scrollbar-width:none;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:space-between}
+.result-scroll::-webkit-scrollbar{display:none}
+.confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.confetti i{position:absolute;display:block;border-radius:2px;opacity:.85;animation:confettiFall linear both}
+.result-head{text-align:center;margin-top:6px}
+.result-head .eyebrow{color:#B4A07B}
+.result-head h1{font-size:clamp(30px,5vw,38px);font-weight:900;letter-spacing:-1px;margin-top:6px}
+.result-stars{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:76px;margin-top:6px}
+.result-stars svg{animation:starPop .55s cubic-bezier(.2,1.5,.4,1) both}
+.result-stars svg:nth-child(1){transform:rotate(-14deg) translateY(4px);animation-delay:.10s}
+.result-stars svg:nth-child(2){animation-delay:.22s}
+.result-stars svg:nth-child(3){transform:rotate(14deg) translateY(4px);animation-delay:.34s}
+.result-sub{text-align:center;font-size:11px;font-weight:700;color:#96876A;margin-top:4px}
+
+.result-card{margin-top:18px;border-radius:26px;background:#fff;border:1.5px solid var(--line);
+  box-shadow:0 14px 30px rgba(94,70,30,.1);padding:16px}
+.rc-top{display:flex;align-items:center;justify-content:space-between}
+.rc-growth{display:flex;align-items:center;gap:10px}
+.rc-growth .g-ic{width:42px;height:42px;border-radius:14px;background:#E9F7D9;display:grid;place-items:center;color:var(--green-d)}
+.rc-growth .lb{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
+.rc-growth .v{font-size:23px;font-weight:900;color:var(--green-d);line-height:1.1}
+.rc-growth .v small{font-size:11px;font-weight:800}
+.rc-stars{display:flex;align-items:center;gap:5px;height:32px;padding:0 10px;border-radius:99px;background:#FFF5D1;
+  font-size:12px;font-weight:900;color:#8A6415}
+.rc-div{height:1.5px;background:#F3E8D4;margin:12px 0 10px}
+.rc-stats{display:flex}
+.rc-stat{flex:1;text-align:center;position:relative}
+.rc-stat+.rc-stat::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1.5px;background:#F3E8D4}
+.rc-stat b{display:block;font-size:15px;font-weight:900}
+.rc-stat span{display:block;font-size:9px;font-weight:700;color:var(--muted);margin-top:2px}
+.rc-words{display:flex;align-items:center;gap:5px;margin-top:11px;flex-wrap:wrap}
+.rc-words .lb{font-size:8.5px;font-weight:800;color:#A19278;letter-spacing:.5px;margin-right:2px}
+.rc-words .w{font-size:10px;font-weight:800;color:#5A6F60;background:#F5F0E3;border-radius:7px;padding:3px 7px}
+
+.evo-card{margin-top:12px;border-radius:22px;padding:13px 15px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#EAF7D8,#F6FBE7);border:1.5px solid #D5E9BF}
+.evo-card .evo-row{display:flex;align-items:center;justify-content:space-between}
+.evo-card .evo-lb{font-size:9px;font-weight:900;letter-spacing:1px;color:#75915F}
+.evo-card .evo-val{font-size:12px;font-weight:900;color:var(--green-d)}
+.evo-card .evo-name{font-size:11.5px;font-weight:800;margin-top:3px;color:#3D5B41}
+.evo-card .evo-name b{color:var(--green)}
+.evo-card .evo-bar{margin-top:8px;height:9px}
+.evo-card .evo-mini{position:absolute;right:12px;bottom:10px;width:56px;height:56px;opacity:.95}
+.evo-card .evo-tip{display:inline-flex;align-items:center;gap:4px;font-size:8.5px;font-weight:800;color:#fff;
+  background:var(--orange);padding:4px 8px;border-radius:99px;margin-top:7px}
+.result-cheer{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0;padding-top:8px}
+.result-cheer .cheer-dino{width:84px;height:84px;flex:none;filter:drop-shadow(0 8px 10px rgba(48,104,64,.14))}
+.result-cheer .cheer-say{background:#fff;border:1.5px solid var(--line);border-radius:14px 14px 14px 4px;
+  padding:8px 11px;box-shadow:0 5px 12px rgba(94,70,30,.07)}
+.result-cheer .cheer-say b{display:block;font-size:10.5px;font-weight:900;color:#405A46}
+.result-cheer .cheer-say span{display:block;font-size:9px;font-weight:600;color:#9A8B70;margin-top:2px}
+.result-foot{flex:none;padding:10px 20px calc(18px + var(--safe-bottom));display:flex;flex-direction:column;gap:8px;background:var(--cream);z-index:3}
+.result-foot .back{height:24px;font-size:11px;font-weight:700;color:#96876A;display:flex;align-items:center;justify-content:center;gap:4px}
+
+/* ------------------------------------------------ evolution */
+.evo-page{position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;
+  background:#0F2E24;color:#FFF7E4;padding:calc(10px + var(--safe-top)) 20px calc(20px + var(--safe-bottom))}
+.evo-page::-webkit-scrollbar{display:none}
+.evo-page .bg{position:absolute;inset:0;
+  background:
+    radial-gradient(58% 42% at 50% 42%,rgba(255,206,92,.24) 0%,rgba(255,206,92,.06) 46%,rgba(15,46,36,0) 70%),
+    radial-gradient(120% 80% at 50% 116%,#1E5B41 0%,#143A2C 52%,#0C241C 100%)}
+.evo-page .stars{position:absolute;inset:0;pointer-events:none}
+.evo-page .stars i{position:absolute;background:#FFF4CF;border-radius:50%}
+.evo-page .ring{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);border-radius:50%;
+  border:1.5px solid rgba(255,224,142,.26);pointer-events:none}
+.evo-page .ring.r1{width:min(86vw,330px);height:min(86vw,330px)}
+.evo-page .ring.r2{width:min(102vw,400px);height:min(102vw,400px);border-style:dashed;border-color:rgba(255,224,142,.16);animation:spin 60s linear infinite}
+.evo-page .ring.r3{width:min(120vw,470px);height:min(120vw,470px);border-color:rgba(255,224,142,.07)}
+.evo-inner{position:relative;z-index:3;display:flex;flex-direction:column;min-height:100%}
+.evo-top{display:flex;align-items:center;justify-content:space-between;flex:none}
+.evo-top .tag{height:28px;padding:0 11px;border-radius:99px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;gap:6px;
+  font-size:8.5px;font-weight:900;letter-spacing:1.6px;color:#E7DDBF}
+.evo-top .close{width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.1);color:#F2E9D2;display:grid;place-items:center}
+.evo-title{text-align:center;margin-top:clamp(10px,3vh,26px);flex:none}
+.evo-title .en{font-size:9px;font-weight:900;letter-spacing:4.5px;color:#F2C860}
+.evo-title h1{font-size:clamp(32px,6vw,42px);font-weight:900;color:#FFF8E6;letter-spacing:-.5px;margin-top:8px;
+  text-shadow:0 4px 30px rgba(255,198,71,.35)}
+.evo-title h1 em{font-style:normal;color:#FFD25A}
+.evo-stage{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.evo-stage .st{height:30px;padding:0 12px;border-radius:99px;display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:800;color:#CFE9CB;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.evo-stage .st.new{background:rgba(255,210,90,.16);border-color:rgba(255,210,90,.4);color:#FFD868}
+.evo-stage .arr{color:#F2C860;opacity:.8}
+.evo-dino{position:relative;height:clamp(220px,32vh,320px);margin-top:2px;display:grid;place-items:center;flex:none}
+.evo-dino .glow{position:absolute;width:min(74vw,290px);height:min(74vw,290px);border-radius:50%;
+  background:radial-gradient(circle,rgba(255,216,104,.34) 0%,rgba(255,216,104,.1) 45%,rgba(255,216,104,0) 70%)}
+.evo-dino .halo{position:absolute;width:min(64vw,246px);height:min(64vw,246px);border-radius:50%;border:1px solid rgba(255,226,150,.35)}
+.evo-dino .dino{position:relative;width:min(66vw,278px);height:min(66vw,278px);
+  filter:drop-shadow(0 16px 30px rgba(0,0,0,.32)) drop-shadow(0 0 26px rgba(255,210,90,.2));
+  animation:evoFloat 4s ease-in-out infinite}
+.evo-dino .spark{position:absolute;color:#FFE08A}
+.evo-unlock{margin-top:auto;border-radius:26px;padding:16px;flex:none;
+  background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 20px 40px rgba(0,0,0,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.evo-unlock .u-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.evo-unlock .u-head .lb{font-size:8px;font-weight:900;letter-spacing:1.8px;color:#D9CB9E}
+.evo-unlock .u-head .nv{font-size:8.5px;font-weight:800;color:#9FE3B7;background:rgba(93,208,139,.12);padding:3px 7px;border-radius:99px;white-space:nowrap}
+.evo-unlock .u-main{display:flex;align-items:center;gap:12px;margin-top:10px}
+.evo-unlock .u-ico{width:54px;height:54px;border-radius:17px;background:linear-gradient(160deg,#FFE6A9,#FFC65C);
+  display:grid;place-items:center;flex:none;box-shadow:0 8px 18px rgba(255,181,61,.25)}
+.evo-unlock .u-ico svg{width:44px;height:44px}
+.evo-unlock .u-txt{flex:1;min-width:0}
+.evo-unlock .u-txt b{display:block;font-size:15px;font-weight:900;color:#FFF7E4}
+.evo-unlock .u-txt span{display:block;font-size:9.5px;font-weight:600;color:#B9C9B6;margin-top:3px;line-height:1.45}
+.evo-unlock .u-skill{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:10px;
+  border-top:1px dashed rgba(255,255,255,.14);font-size:10px;font-weight:700;color:#EADDB9}
+.evo-unlock .u-skill b{color:#FFD25A}
+.evo-unlock .btn{margin-top:13px;min-height:50px;font-size:15px;color:#4C3306}
+
+/* ------------------------------------------------ shop */
+.shop-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.shop-head .t{flex:1;min-width:0}
+.shop-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.1}
+.shop-head p{font-size:10px;font-weight:600;color:var(--muted);margin-top:4px}
+.shop-preview{height:clamp(190px,26vh,250px);border-radius:28px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#DDF0CB 0%,#F6F8DA 62%,#FFF1D2 100%);border:1.5px solid #D9E7C1;
+  transition:background .5s ease}
+.shop-preview .arch{position:absolute;left:50%;top:22px;transform:translateX(-50%);width:188px;height:150px;
+  border-radius:94px 94px 22px 22px;background:linear-gradient(180deg,#CBE8B0,#EAF6D0);border:2px solid rgba(255,255,255,.7)}
+.shop-preview .arch::after{content:"";position:absolute;inset:9px;border-radius:85px 85px 16px 16px;border:1.5px dashed rgba(80,130,80,.28)}
+.shop-preview > .dino{position:absolute;left:50%;top:30px;width:clamp(160px,22vh,210px);height:clamp(160px,22vh,210px);transform:translateX(-50%);
+  filter:drop-shadow(0 12px 14px rgba(48,104,64,.18));animation:bob 4.6s ease-in-out infinite}
+.shop-preview .podium{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:210px;height:34px;
+  border-radius:50%;background:radial-gradient(ellipse at 50% 30%,#FFF6DC,#EAD9B4);box-shadow:0 8px 18px rgba(120,96,50,.18)}
+.shop-preview .wearing{position:absolute;left:14px;top:14px;min-height:28px;padding:0 10px;border-radius:99px;background:#fff;
+  display:flex;align-items:center;gap:5px;font-size:9px;font-weight:800;color:var(--green-d);
+  box-shadow:0 4px 10px rgba(94,70,30,.1);z-index:2}
+.shop-preview .pet{position:absolute;right:14px;bottom:14px;display:flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:800;color:#7B8E77;background:rgba(255,255,255,.82);padding:5px 9px;border-radius:99px;z-index:2}
+.shop-preview .spark{position:absolute;color:#F0B53B;opacity:.7}
+.shop-preview.bg-sunset{background:linear-gradient(160deg,#FFD9A8,#FFE9C6 60%,#FFF1D2)}
+.shop-preview.bg-sunset .arch{background:linear-gradient(180deg,#F4B98B,#FFDFB8)}
+.shop-preview.bg-night{background:linear-gradient(160deg,#1C453A,#2A5C48 60%,#1A4034)}
+.shop-preview.bg-night .arch{background:linear-gradient(180deg,#2E6A50,#1F4E3B);border-color:rgba(255,255,255,.18)}
+.shop-preview.bg-night .wearing{background:rgba(255,255,255,.9)}
+
+.shop-tabs{display:flex;align-items:center;gap:18px;padding:0 2px;height:44px;margin-top:4px}
+.shop-tabs .tab{font-size:13px;font-weight:800;color:#A3AF9F;position:relative;height:44px;display:flex;align-items:center}
+.shop-tabs .tab.on{font-size:14px;color:var(--ink)}
+.shop-tabs .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:3.5px;border-radius:99px;background:var(--green)}
+.shop-tabs .tab .tb{display:inline-flex;align-items:center;justify-content:center;min-width:14px;height:14px;padding:0 4px;
+  border-radius:5px;background:var(--coral);color:#fff;font-size:7px;font-weight:900;margin-left:4px;vertical-align:3px}
+.shop-tabs .all{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:3px}
+
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:6px}
+@media (min-width:620px){.shop-grid{grid-template-columns:repeat(4,1fr)}}
+.shop-item{border-radius:22px;background:#fff;border:1.5px solid var(--line);padding:10px;position:relative;
+  box-shadow:0 6px 14px rgba(94,70,30,.06);text-align:left;transition:transform .15s ease}
+.shop-item:active{transform:scale(.98)}
+.shop-item .thumb{height:86px;border-radius:16px;display:grid;place-items:center;position:relative;overflow:hidden}
+.shop-item .thumb.h1{background:#FFF1D4}
+.shop-item .thumb.h2{background:#E7F4FF}
+.shop-item .thumb.h3{background:#F1EBFF}
+.shop-item .thumb.h4{background:#FFF0E4}
+.shop-item .thumb svg{width:72px;height:72px}
+.shop-item .badge{position:absolute;left:16px;top:16px;height:19px;padding:0 6px;border-radius:6px;background:var(--coral);
+  color:#fff;font-size:8px;font-weight:900;letter-spacing:.6px;display:flex;align-items:center;box-shadow:0 3px 6px rgba(227,86,68,.3)}
+.shop-item .name{font-size:12px;font-weight:800;margin-top:8px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.shop-item .name .tag{font-size:7px;color:#fff;background:#2E8B57;padding:2px 5px;border-radius:5px}
+.shop-item .sub{font-size:8.5px;font-weight:600;color:#9AA89B;margin-top:2px;min-height:12px}
+.shop-item .foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.price{display:flex;align-items:center;gap:3px;font-size:11.5px;font-weight:900;color:#8A6415}
+.price.owned{color:var(--green-d);font-size:9px;background:#E9F7D9;padding:3px 7px;border-radius:7px}
+.price.locked{color:#A79C83;font-size:8.5px;background:#F4EFE3;padding:3px 6px;border-radius:7px}
+.shop-item .action{width:26px;height:26px;border-radius:9px;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.shop-item.owned{border-color:#CFE6BA}
+.shop-item.using{outline:2px solid rgba(46,139,87,.35);outline-offset:-2px}
+.shop-item.locked .thumb svg{opacity:.55;filter:grayscale(.4)}
+.bg-grid{display:grid;grid-template-columns:1fr;gap:11px;margin-top:6px}
+@media (min-width:560px){.bg-grid{grid-template-columns:1fr 1fr}}
+.bg-item{display:flex;align-items:center;gap:11px;border-radius:20px;background:#fff;border:1.5px solid var(--line);
+  padding:9px;text-align:left;box-shadow:0 6px 14px rgba(94,70,30,.05);transition:transform .15s ease}
+.bg-item:active{transform:scale(.98)}
+.bg-item .bg-thumb{width:88px;height:62px;border-radius:14px;flex:none;overflow:hidden;position:relative;border:1px solid rgba(0,0,0,.05)}
+.bg-thumb.jungle{background:linear-gradient(180deg,#DDF2CE,#FDF2D9)}
+.bg-thumb.sunset{background:linear-gradient(180deg,#FFD39C,#FFE7C4)}
+.bg-thumb.night{background:linear-gradient(180deg,#173F36,#2A5A46)}
+.bg-thumb .h{position:absolute;left:-10%;right:-10%;bottom:-18px;height:44px;border-radius:50% 50% 0 0;background:#B9DF92}
+.bg-thumb.sunset .h{background:#D49A76}
+.bg-thumb.night .h{background:#1C4938}
+.bg-thumb .s{position:absolute;right:12px;top:10px;width:20px;height:20px;border-radius:50%;background:#FFD25E}
+.bg-thumb.night .s{background:#FFEFC0;box-shadow:0 0 10px rgba(255,239,192,.6)}
+.bg-thumb .d{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);width:42px;height:42px}
+.bg-item .bg-info{flex:1;min-width:0}
+.bg-item .bg-info b{font-size:12px;font-weight:800;display:block}
+.bg-item .bg-info span{font-size:8.5px;color:#9AA89B;display:block;margin-top:2px}
+.bg-item .bg-info .price{margin-top:5px;display:inline-flex;width:fit-content}
+.bg-item.using{outline:2px solid rgba(46,139,87,.35);outline-offset:-2px}
+.bg-item .check-ico{width:26px;height:26px;border-radius:9px;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.dex-teaser{margin-top:6px;padding:16px;border-radius:22px}
+.dex-teaser .dt-top{display:flex;align-items:center;gap:10px}
+.dex-teaser .dt-top .t{flex:1}
+.dex-teaser .dt-top b{font-size:14px;font-weight:900}
+.dex-teaser .dt-top p{font-size:9px;color:var(--muted);margin-top:2px}
+.dex-teaser .dt-list{display:flex;gap:8px;margin-top:12px}
+.dex-teaser .dt-list .mini{flex:1;height:80px;border-radius:14px;display:grid;place-items:center;background:#F4F8EA;overflow:hidden}
+.dex-teaser .dt-list .mini svg{width:70px;height:70px;margin-bottom:-8px}
+.dex-teaser .btn{margin-top:12px;min-height:46px;font-size:13px}
+
+/* ------------------------------------------------ dex */
+.dex-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.dex-head .t{flex:1}
+.dex-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.05}
+.dex-head p{font-size:10px;font-weight:600;color:var(--muted);margin-top:3px}
+.dex-count{display:flex;align-items:baseline;gap:2px;font-size:13px;font-weight:900;color:var(--green-d);
+  background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:6px 10px;box-shadow:0 4px 10px rgba(94,70,30,.06);flex:none}
+.dex-count span{font-size:9px;color:var(--muted);font-weight:700}
+.dex-sum{border-radius:22px;padding:13px 15px;display:flex;align-items:center;gap:13px}
+.dex-sum .ds-main{flex:1;min-width:0}
+.dex-sum .ds-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.dex-sum .ds-row b{font-size:11px;font-weight:800}
+.dex-sum .ds-row span{font-size:10px;font-weight:900;color:var(--green-d)}
+.dex-sum .ds-foot{display:flex;align-items:center;gap:4px;margin-top:7px;font-size:8.5px;font-weight:700;color:#A19278}
+.dex-sum .ds-foot b{color:var(--orange)}
+.dex-sum .ds-badge{width:46px;height:46px;border-radius:15px;background:#FFF4CE;display:grid;place-items:center;flex:none;color:#B4811C}
+.dex-filters{display:flex;gap:6px;margin-top:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.dex-filters::-webkit-scrollbar{display:none}
+.dex-filters .f{height:30px;padding:0 11px;border-radius:9px;background:#fff;border:1.5px solid #EEE2CD;
+  font-size:9.5px;font-weight:700;color:#8C9B8C;display:flex;align-items:center;white-space:nowrap;flex:none}
+.dex-filters .f.on{background:var(--ink);border-color:var(--ink);color:#FFF6DF}
+
+.dex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
+@media (min-width:620px){.dex-grid{grid-template-columns:repeat(3,1fr)}}
+.dex-card{border-radius:18px;background:#fff;border:1.5px solid var(--line);padding:7px;text-align:center;position:relative;
+  box-shadow:0 5px 12px rgba(94,70,30,.05);transition:transform .15s ease}
+.dex-card:active{transform:scale(.97)}
+.dex-card .pic{height:108px;border-radius:12px;display:grid;place-items:center;position:relative;overflow:hidden}
+@media (min-width:620px){.dex-card .pic{height:84px}}
+.dex-card .pic.t1{background:#EAF7DA}
+.dex-card .pic.t2{background:#E6F4FF}
+.dex-card .pic.t3{background:#FFF2D8}
+.dex-card .pic.t4{background:#F0EBFF}
+.dex-card .pic.t5{background:#FFF0E2}
+.dex-card .pic svg{width:112px;height:112px;margin-bottom:-8px}
+@media (min-width:620px){.dex-card .pic svg{width:88px;height:88px}}
+.dex-card .nm{font-size:10px;font-weight:800;margin-top:5px}
+.dex-card .stg{font-size:7.5px;font-weight:700;color:#A0AE9F;margin-top:1px;letter-spacing:.3px}
+.dex-card.locked .pic{background:#F4EFE3}
+.dex-card.locked .pic svg{opacity:.2;filter:grayscale(1)}
+.dex-card.locked .nm{color:#B3AC9B}
+.dex-card .rare{position:absolute;right:8px;top:8px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:8px;font-weight:900;z-index:4;box-shadow:0 3px 6px rgba(94,70,30,.18)}
+.dex-card .rare.r3{background:#7FB4E8}
+.dex-card .rare.r4{background:#A78BFA}
+.dex-card .rare.r5{background:#F0A23B}
+.dex-card .lock-ic{position:absolute;right:9px;top:9px;color:#C6BDAA;z-index:4}
+.dex-card.current{outline:2px solid rgba(46,139,87,.45);outline-offset:-2px}
+.dex-card .now-tag{position:absolute;left:8px;top:8px;font-size:7px;font-weight:900;color:#fff;background:var(--green);
+  padding:2px 5px;border-radius:5px;z-index:4}
+.dex-reward{margin-top:14px;border-radius:20px;padding:10px 13px;display:flex;align-items:center;gap:11px;
+  background:#fff;border:1.5px solid var(--line);box-shadow:0 8px 18px rgba(94,70,30,.07)}
+.dex-reward .dr-ic{width:52px;height:52px;border-radius:14px;overflow:hidden;flex:none;position:relative;border:1px solid rgba(0,0,0,.05)}
+.dex-reward .dr-main{flex:1;min-width:0}
+.dex-reward .dr-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dex-reward .dr-row b{font-size:10.5px;font-weight:900}
+.dex-reward .dr-row span{font-size:9px;font-weight:900;color:var(--green-d);white-space:nowrap}
+.dex-reward .bar{height:7px;margin-top:5px}
+.dex-reward .dr-note{font-size:8px;font-weight:600;color:#A19278;margin-top:4px}
+.dex-reward .dr-lock{width:30px;height:30px;border-radius:10px;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
+
+/* ------------------------------------------------ profile */
+.profile-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.profile-head .t{flex:1;min-width:0}
+.profile-head h1{font-size:clamp(22px,3.6vw,28px);font-weight:900;letter-spacing:-.5px}
+.profile-head p{font-size:9.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.profile-card{border-radius:26px;padding:15px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;
+  background:linear-gradient(125deg,#FFF7E4,#F7EEDB);border:1.5px solid #EBDCC0}
+.profile-card .pc-ava{width:62px;height:62px;border-radius:20px;background:#E6F5D3;border:2.5px solid #fff;overflow:hidden;
+  position:relative;flex:none;box-shadow:0 6px 14px rgba(70,50,20,.12);z-index:1}
+.profile-card .pc-ava .crop{position:absolute;width:110px;height:110px;left:-45px;top:-4px}
+.profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
+.profile-card .pc-main b{font-size:18px;font-weight:900;letter-spacing:-.2px}
+.profile-card .pc-main .lv{font-size:8px;font-weight:900;color:#fff;background:var(--green);padding:2px 6px;border-radius:5px;margin-left:5px;vertical-align:2px}
+.profile-card .pc-main p{font-size:9.5px;font-weight:600;color:#8D7E62;margin-top:4px}
+.profile-card .pc-stage{text-align:right;flex:none;position:relative;z-index:1}
+.profile-card .pc-stage .chip{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:99px;
+  background:#fff;font-size:8.5px;font-weight:800;color:var(--green-d);border:1px solid #DDEBD0;white-space:nowrap}
+.profile-card .pc-stage p{font-size:7.5px;color:#A3927A;margin-top:5px;white-space:nowrap}
+.profile-card .leaf{position:absolute;right:-16px;bottom:-22px;width:96px;opacity:.2;z-index:0}
+
+.stat-row{display:flex;gap:9px;margin-top:12px}
+.stat-card{flex:1;min-height:68px;border-radius:18px;background:#fff;border:1.5px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 5px 12px rgba(94,70,30,.05)}
+.stat-card .v{font-size:17px;font-weight:900;display:flex;align-items:center;gap:3px}
+.stat-card .k{font-size:8px;font-weight:700;color:var(--muted);letter-spacing:.4px}
+
+.chart-card{border-radius:24px;padding:14px 16px 12px;margin-top:12px;height:216px;display:flex;flex-direction:column}
+@media (min-width:700px) and (min-height:600px){.chart-card{height:238px}}
+.chart-card .ch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.chart-card .ch-head .lb{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--muted)}
+.chart-card .ch-head .v{font-size:21px;font-weight:900;color:var(--green-d);margin-top:1px}
+.chart-card .ch-head .v small{font-size:9px;font-weight:700;color:var(--muted)}
+.chart-card .ch-head .goal{font-size:8px;font-weight:800;color:#8A6415;background:#FFF4CE;padding:3px 7px;border-radius:99px;white-space:nowrap}
+.chart{flex:1;display:flex;align-items:flex-end;gap:9px;margin-top:8px;position:relative;padding-top:10px;min-height:110px}
+.chart .gl{position:absolute;left:0;right:0;bottom:22px;border-top:1.5px dashed #E6D9C1}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;position:relative;z-index:2}
+.chart .col .b{width:22px;border-radius:7px;background:#DCEBCB;position:relative}
+.chart .col .b::after{content:"";position:absolute;left:4px;right:4px;top:3px;height:3px;border-radius:9px;background:rgba(255,255,255,.6)}
+.chart .col.today .b{background:linear-gradient(180deg,#FFD25A,#F2A93B);box-shadow:0 4px 8px rgba(242,169,59,.3)}
+.chart .col .d{font-size:8px;font-weight:700;color:#A6B2A4}
+.chart .col.today .d{color:#8A6415;font-weight:900}
+.chart .col .tip{position:absolute;top:-14px;font-size:7.5px;font-weight:900;color:#8A6415;background:#FFF4CE;padding:2px 5px;border-radius:5px;white-space:nowrap}
+
+.ach-card{border-radius:24px;padding:14px 16px 16px;margin-top:12px}
+.ach-card .ach-head{display:flex;align-items:center;justify-content:space-between}
+.ach-card .ach-head b{font-size:13px;font-weight:900}
+.ach-card .ach-head span{font-size:8.5px;font-weight:700;color:var(--muted)}
+.ach-list{display:flex;gap:10px;margin-top:12px}
+.ach{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.ach .medal{width:clamp(44px,9vw,54px);height:clamp(44px,9vw,54px);border-radius:50%;display:grid;place-items:center;position:relative}
+.ach .medal.a1{background:linear-gradient(160deg,#FFE39B,#F5B641);color:#7A4E08;box-shadow:0 5px 12px rgba(245,182,65,.3)}
+.ach .medal.a2{background:linear-gradient(160deg,#CFE9FF,#8EC7F2);color:#265A80;box-shadow:0 5px 12px rgba(142,199,242,.3)}
+.ach .medal.a3{background:linear-gradient(160deg,#E2D6FF,#AE96F5);color:#4B3585;box-shadow:0 5px 12px rgba(174,150,245,.3)}
+.ach .medal.lock{background:#F2ECDF;color:#C0B7A4;border:1.5px dashed #D9CFBB}
+.ach .medal .dot{position:absolute;right:0;bottom:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid #fff;display:grid;place-items:center;color:#fff}
+.ach b{font-size:8px;font-weight:800;color:#5E7263;text-align:center}
+.ach span{font-size:7px;font-weight:600;color:#AAB4A8;margin-top:-2px}
+
+.quote-card{min-height:64px;border-radius:20px;margin-top:12px;background:linear-gradient(120deg,#EAF7D9,#F7FBE9);border:1.5px solid #D8E9C4;
+  display:flex;align-items:center;gap:10px;padding:10px 14px}
+.quote-card .q{font-size:9px;font-weight:700;color:#6D8464;line-height:1.5}
+.quote-card .q b{color:var(--green-d)}
+.quote-card .qi{width:32px;height:32px;border-radius:11px;background:#fff;display:grid;place-items:center;color:#E2A62E;flex:none}
+.profile-cta{margin-top:12px}
+.profile-scroll{display:flex;flex-direction:column}
+.profile-scroll .quote-card{margin-top:auto}
+
+/* ------------------------------------------------ overlays */
+.overlay{position:absolute;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(19,38,29,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fadeIn .2s ease}
+.overlay.dialog-wrap{align-items:center}
+.sheet{width:100%;max-width:560px;max-height:88%;overflow-y:auto;background:#FFFBF3;border-radius:28px 28px 0 0;
+  padding:18px 20px calc(20px + var(--safe-bottom));box-shadow:0 -20px 50px rgba(20,40,30,.2);
+  animation:sheetUp .3s cubic-bezier(.22,.9,.3,1) both}
+.sheet .grab{width:38px;height:4px;border-radius:99px;background:#E0D2B8;margin:0 auto 14px}
+.sheet h2{font-size:19px;font-weight:900;letter-spacing:-.3px}
+.sheet .sheet-sub{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:4px;line-height:1.6}
+.sheet .sheet-actions{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+.sheet .sheet-actions .btn{min-height:50px;font-size:14px}
+.sheet .cancel{min-height:44px;font-size:12px;font-weight:700;color:#8D7E62;display:flex;align-items:center;justify-content:center}
+.dialog{width:calc(100% - 44px);max-width:380px;border-radius:26px;background:#FFFBF3;padding:22px 20px 18px;
+  box-shadow:0 24px 60px rgba(20,40,30,.25);animation:pop .25s cubic-bezier(.2,1.4,.4,1) both;margin:auto}
+.dialog .d-ico{width:52px;height:52px;border-radius:16px;background:#FFF4CE;display:grid;place-items:center;margin:0 auto}
+.dialog h3{font-size:17px;font-weight:900;text-align:center;margin-top:10px}
+.dialog p{font-size:10.5px;color:var(--muted);font-weight:600;text-align:center;line-height:1.65;margin-top:6px}
+.dialog .d-actions{display:flex;gap:8px;margin-top:16px}
+.dialog .d-actions .btn{min-height:46px;font-size:13px}
+.dialog .d-actions .btn.ghost{flex:1}
+.dialog .d-actions .btn:not(.ghost){flex:1.3}
+.detail-hero{height:190px;border-radius:20px;background:linear-gradient(160deg,#EAF7DA,#FDF7E4);display:grid;place-items:center;margin-top:12px;position:relative;overflow:hidden}
+.detail-hero .dino{width:170px;height:170px;filter:drop-shadow(0 12px 14px rgba(48,104,64,.2))}
+.detail-meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.detail-meta b{font-size:20px;font-weight:900}
+.detail-meta .ph{font-size:9px;font-weight:900;color:var(--green-d);background:#E9F7D9;padding:4px 8px;border-radius:7px}
+.detail-desc{font-size:10.5px;line-height:1.75;color:#657A6A;margin-top:8px;font-weight:600}
+.detail-stats{display:flex;gap:8px;margin-top:12px}
+.detail-stats .ds{flex:1;background:#F7F2E5;border-radius:12px;padding:8px 6px;text-align:center}
+.detail-stats .ds b{display:block;font-size:12px;font-weight:900}
+.detail-stats .ds span{display:block;font-size:7.5px;color:#A19278;margin-top:2px}
+
+.setting-row{display:flex;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid #F2E8D6}
+.setting-row:last-child{border-bottom:0}
+.setting-row .s-ic{width:34px;height:34px;border-radius:11px;background:#F4EFE3;display:grid;place-items:center;color:#7E8D7C;flex:none}
+.setting-row .s-txt{flex:1}
+.setting-row .s-txt b{display:block;font-size:12px;font-weight:800}
+.setting-row .s-txt span{display:block;font-size:8.5px;color:#A19278;margin-top:1px}
+.switch{width:46px;height:28px;border-radius:99px;background:#DCCFB7;position:relative;flex:none;transition:background .2s ease}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);transition:transform .2s ease}
+.switch.on{background:var(--green)}
+.switch.on::after{transform:translateX(18px)}
+.install-step{display:flex;gap:10px;margin-top:12px;align-items:flex-start}
+.install-step .n{width:22px;height:22px;border-radius:7px;background:var(--green);color:#fff;font-size:10px;font-weight:900;display:grid;place-items:center;flex:none;margin-top:1px}
+.install-step p{font-size:10.5px;line-height:1.65;color:#5F7364;font-weight:600}
+.install-step p b{color:var(--ink)}
+.install-note{margin-top:14px;border-radius:14px;background:#F5F0E3;padding:10px 12px;font-size:9px;line-height:1.6;color:#8E7D60;font-weight:600}
+.word-sheet .word-big{font-size:34px;font-weight:900;letter-spacing:-1px;margin-top:8px}
+.word-sheet .word-phon{font-size:12px;color:#A68A4E;margin-top:2px;font-weight:600}
+.word-sheet .word-zh{font-size:13px;color:#5F7364;margin-top:6px;font-weight:700}
+.word-sheet .speak-btn{margin-top:14px}
+.word-sheet .tip{margin-top:14px;font-size:9px;color:#A19278;text-align:center;line-height:1.6}
+
+/* toast */
+.toast-root{position:absolute;left:0;right:0;bottom:calc(94px + var(--safe-bottom));z-index:120;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;padding:0 20px}
+.toast{background:rgba(25,46,36,.94);color:#FFF6E2;font-size:11px;font-weight:700;padding:10px 14px;border-radius:12px;
+  box-shadow:0 10px 24px rgba(20,40,30,.25);animation:toastIn .25s ease both;max-width:100%;text-align:center}
+.toast.out{animation:toastOut .25s ease both}
+
+/* ------------------------------------------------ animations */
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+@keyframes evoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes heartOut{0%{transform:scale(1)}40%{transform:scale(1.35);opacity:1}100%{transform:scale(.6);opacity:.25}}
+@keyframes confettiFall{0%{opacity:0;transform:translateY(-30px) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(160px) rotate(240deg)}}
+@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
+
+/* ------------------------------------------------ larger screens */
+@media (min-width:700px) and (min-height:600px){
+  .home-top{margin-bottom:18px}
+  .home-top .hi{font-size:19px}
+  .hero{height:410px}
+  .hero .dino-wrap{width:290px;height:290px}
+  .hero .bubble{width:142px;font-size:10.5px;top:158px;right:22px;padding:10px 12px}
+  .hero .bubble b{font-size:12px}
+  .hero .name b{font-size:32px}
+  .growth-panel{left:16px;right:16px;bottom:16px;min-height:100px;padding:14px 16px 14px 18px}
+  .growth-panel .val{font-size:17px}
+  .growth-panel .lb,.growth-panel .g-next{font-size:11px}
+  .go-btn{width:54px;height:54px;border-radius:18px}
+  .tasks{padding:16px 18px;gap:10px;margin-top:16px}
+  .tasks .head h3{font-size:16px}
+  .task{height:38px}
+  .task .t-title{font-size:13px}
+  .task .t-sub{font-size:9.5px}
+  .word-card{padding:16px 18px;min-height:122px;margin-top:16px}
+  .word-card .w-word{font-size:24px}
+  .word-card .w-kicker{font-size:9px}
+  .word-card .w-phon{font-size:11px}
+  .option{min-height:78px}
+  .option .word{font-size:17px}
+  .quiz-art{max-height:none;min-height:430px}
+  .quiz-art .fruit{width:clamp(190px,26vh,260px);height:clamp(190px,26vh,260px)}
+  .quiz-art .blob{width:min(46vw,360px);height:min(46vw,360px)}
+  .chart .col .b{width:28px}
+  .result-scroll{padding-left:32px;padding-right:32px}
+  .result-foot{padding-left:32px;padding-right:32px}
+  .result-card{max-width:620px;margin-left:auto;margin-right:auto}
+  .evo-card{max-width:620px;margin-left:auto;margin-right:auto}
+  .result-head,.result-cheer{max-width:620px;margin-left:auto;margin-right:auto}
+  .result-cheer{margin-top:20px}
+  .shop-preview .arch{width:230px;height:180px;border-radius:115px 115px 24px 24px}
+  .shop-preview .podium{width:260px}
+  .shop-preview{height:290px}
+  .shop-preview > .dino{width:230px;height:230px;top:36px}
+  .shop-grid{grid-template-columns:repeat(2,1fr)}
+  .shop-item{padding:14px}
+  .shop-item .thumb{height:180px}
+  .shop-item .thumb svg{width:120px;height:120px}
+  .shop-item .name{font-size:14px}
+  .shop-item .sub{font-size:9.5px}
+  .shop-item .foot{margin-top:9px}
+  .dex-grid{grid-template-columns:repeat(2,1fr)}
+  .dex-card .pic{height:168px}
+  .dex-card .pic svg{width:168px;height:168px}
+  .dex-card .nm{font-size:12px}
+  .dex-card .stg{font-size:8.5px}
+}
+
+</style>
+</head>
+<body>
+  <div class="app" id="app">
+    <main class="view" id="view"></main>
+    <div id="overlay-root"></div>
+    <div class="toast-root" id="toast-root"></div>
+  </div>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — interactive app
+   ============================================================ */
+
+/* ------------------------------------------------ data */
+const STAGES = [
+  { key: "egg",   name: "恐龙蛋",       phase: "孵化期", min: 0,    rarity: 3, height: "18 cm", weight: "0.4 kg", skill: "等待破壳", desc: "一颗安静的恐龙蛋，表面有薄荷色斑点。每天认真学习，它就会听见你的声音。" },
+  { key: "baby",  name: "幼龙",         phase: "幼年期", min: 60,   rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
+  { key: "teen",  name: "少年龙",       phase: "成长期", min: 250,  rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "背上长出了第一排小刺，眼睛亮亮的。它已经能记住好多水果单词了。" },
+  { key: "adult", name: "成年龙",       phase: "成熟期", min: 600,  rarity: 4, height: "2.1 m", weight: "120 kg", skill: "星星加成 +10%", desc: "鼻尖长出了小角，步伐变得稳健。现在是森林里最可靠的伙伴。" },
+  { key: "super", name: "霸王龙",       phase: "完全体", min: 1200, rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "金色的背刺在阳光下闪闪发亮。它记得你陪它走过的每一次闯关。" },
+  { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 2000, rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "传说中的究极形态，身上环绕着星辉。只有最坚持的小探险家才能遇见它。" },
+];
+
+const ITEMS = [
+  { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
+  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 80,  thumb: "h2", art: itemGlasses },
+  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 150, thumb: "h3", badge: "NEW", art: itemWings },
+  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 200, thumb: "h4", art: itemCrown },
+];
+
+const BACKGROUNDS = [
+  { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
+  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 120, cls: "sunset" },
+  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 200, cls: "night" },
+];
+
+const WORDS = [
+  { word: "apple",      zh: "苹果", phon: "/ˈæpəl/",     example: "I eat an apple every day.", art: appleSVG },
+  { word: "banana",     zh: "香蕉", phon: "/bəˈnɑːnə/",  example: "The monkey likes bananas.", art: bananaSVG },
+  { word: "orange",     zh: "橙子", phon: "/ˈɒrɪndʒ/",   example: "This orange is sweet.", art: orangeSVG },
+  { word: "grape",      zh: "葡萄", phon: "/ɡreɪp/",     example: "Grapes grow on a vine.", art: grapeSVG },
+  { word: "strawberry", zh: "草莓", phon: "/ˈstrɔːbəri/", example: "I want a strawberry.", art: strawberrySVG },
+];
+
+const DEX = STAGES.map((s) => ({ ...s }));
+
+/* ------------------------------------------------ helpers */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function stageIndex(key) { return Math.max(0, STAGES.findIndex((s) => s.key === key)); }
+function stageMeta(key) { return STAGES[stageIndex(key)] || STAGES[0]; }
+function nextStage(key) { return STAGES[stageIndex(key) + 1] || null; }
+function stageForGrowth(growth) {
+  let out = STAGES[0];
+  for (const s of STAGES) if (growth >= s.min) out = s;
+  return out;
+}
+function fmt(n) { return Number(n).toLocaleString("en-US"); }
+function todayWord() { return WORDS[new Date().getDate() % WORDS.length]; }
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 11) return "早上好";
+  if (h < 14) return "中午好";
+  if (h < 18) return "下午好";
+  return "晚上好";
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function bgClass(bg) { return bg === "sunset" ? "bg-sunset" : bg === "night" ? "bg-night" : "bg-jungle"; }
+function bgMeta(id) { return BACKGROUNDS.find((b) => b.id === id) || BACKGROUNDS[0]; }
+
+/* ------------------------------------------------ icons */
+const starPath = "M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z";
+const star = (s = 16, fill = "#FFC94A", stroke = "#E9A93C", opacity = 1) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="opacity:${opacity}" aria-hidden="true"><path d="${starPath}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
+const spark = (s = 16, fill = "#FFD25A") =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.4 9.6L24 12l-9.6 2.4L12 24l-2.4-9.6L0 12l9.6-2.4z" fill="${fill}"/></svg>`;
+
+const I = {
+  home: (s = 23, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 10.7 12 3.7l8.4 7v9.3a1 1 0 0 1-1 1h-4.9v-6.3H9.5V21H4.6a1 1 0 0 1-1-1z"/></svg>`,
+  flag: (s = 23, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"/><path d="M6 4.5h11.2l-2.3 3.7 2.3 3.8H6z" fill="${c}" fill-opacity=".16"/></svg>`,
+  book: (s = 23, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.6A2.6 2.6 0 0 1 6.6 3H20v15.5H6.6A2.6 2.6 0 0 0 4 21z"/><path d="M20 18.5v2.2H6.6A2.6 2.6 0 0 1 4 18.1"/><path d="M8 7.5h8"/></svg>`,
+  bag: (s = 23, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 8h13.2l1 12.2a.9.9 0 0 1-.9 1H5.3a.9.9 0 0 1-.9-1z"/><path d="M9 8V6.2A3 3 0 0 1 12 3a3 3 0 0 1 3 3.2V8"/></svg>`,
+  check: (s = 13, c = "#fff") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg>`,
+  lock: (s = 16, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="3"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>`,
+  close: (s = 17, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  arrow: (s = 14, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+  back: (s = 18, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`,
+  speaker: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.4L12.5 5v14L7.4 14.5H4z" fill="${c}" fill-opacity=".14"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18.2 6.5a7.6 7.6 0 0 1 0 11"/></svg>`,
+  heart: (s = 17, c = "#FF6F61", opacity = 1) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="opacity:${opacity}"><path d="M12 21s-8.4-5.2-8.4-11A4.8 4.8 0 0 1 12 6.8 4.8 4.8 0 0 1 20.4 10c0 5.8-8.4 11-8.4 11z" fill="${c}"/></svg>`,
+  flame: (s = 14, c = "#FF7A45") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12.6 2c.4 3.4-.9 5.2-2.6 6.8C8.4 10.3 7 12.1 7 14.2A5.2 5.2 0 0 0 12.6 19c3 0 5.4-2.2 5.4-5.2 0-2.3-1-4.2-2.4-5.9-.2 1.6-.8 2.7-1.6 3.3.1-2.7-.3-5.6-1.4-9.2z" fill="${c}"/></svg>`,
+  gear: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/></svg>`,
+  gift: (s = 22, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="4" rx="1.2"/><path d="M5 12.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7.5M12 8.5V21"/><path d="M12 8.5S10.8 4 8.3 4a2.3 2.3 0 0 0 0 4.5zM12 8.5S13.2 4 15.7 4a2.3 2.3 0 0 1 0 4.5z"/></svg>`,
+  crownMini: (s = 18, c = "#C98B25") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 4l4.5 8L21 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="${c}"/></svg>`,
+  chevron: (s = 10, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l7 7-7 7"/></svg>`,
+  leaf: (s = 24, c = "#2E8B57") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M20 4C10 4 4 9 4 16c0 2 1 4 1 4s2-9 11-11c-5 3-9 7-9 11 0 0 8 2 13-4 3-4 2-9 0-12z" fill="${c}"/></svg>`,
+  medal: (s = 26, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14.5" r="6"/><path d="M8.2 3h7.6l-2.6 5.6h-2.4z"/><path d="M12 11.5l1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2L9 13.8l2-.3z" fill="${c}" fill-opacity=".14"/></svg>`,
+  share: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`,
+  refresh: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/></svg>`,
+  info: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".9" fill="${c}"/></svg>`,
+  volume: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h4L14 5v14l-6-4.5H4z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>`,
+};
+
+/* ------------------------------------------------ dino art */
+const DINO_PAL = {
+  baby:  { body: "#7ED46F", dark: "#5CB65A", belly: "#F1FBD6", accent: "#FFB347" },
+  teen:  { body: "#5BC178", dark: "#3E9F5D", belly: "#EFFBD1", accent: "#FFB347" },
+  adult: { body: "#3AA56D", dark: "#257B51", belly: "#E8F9C9", accent: "#FFC24D" },
+  super: { body: "#247F59", dark: "#155B3D", belly: "#DCF3BC", accent: "#FFD25A" },
+};
+
+function nestSVG() {
+  return `
+    <path d="M48 198C64 184 92 178 120 180s58 6 72 20c-8 16-34 24-72 24s-64-10-72-26z" fill="#8CC06B"/>
+    <path d="M52 200c14 10 40 15 68 15s54-5 68-15c-6 12-32 20-68 20s-62-8-68-20z" fill="#6BA552"/>
+    <path d="M64 194c-6-10-4-18 2-24 2 10 6 16 12 20zM170 192c8-10 8-18 4-26-4 10-8 16-14 20z" fill="#5E9547"/>`;
+}
+
+function eggSVG() {
+  return `<svg class="dino" viewBox="0 0 240 240" width="100%" height="100%" aria-label="恐龙蛋">
+    <ellipse cx="120" cy="216" rx="58" ry="9" fill="#2F6B4A" opacity=".12"/>
+    ${nestSVG()}
+    <path d="M120 26C156 26 182 82 182 130s-28 78-62 78-62-30-62-78S84 26 120 26z" fill="#FFF7E4" stroke="#E9D7B4" stroke-width="3"/>
+    <path d="M120 34c-24 0-44 34-51 68 14-20 30-30 51-30 20 0 37 10 51 31-7-35-27-69-51-69z" fill="#FFFDF3" opacity=".8"/>
+    <ellipse cx="94" cy="88" rx="9" ry="12" fill="#CFE8B0" transform="rotate(-18 94 88)"/>
+    <ellipse cx="148" cy="106" rx="11" ry="8" fill="#CFE8B0" transform="rotate(14 148 106)"/>
+    <ellipse cx="104" cy="152" rx="8" ry="6" fill="#FFD79B" transform="rotate(-24 104 152)"/>
+    <ellipse cx="147" cy="164" rx="10" ry="7" fill="#CFE8B0" transform="rotate(20 147 164)"/>
+    <ellipse cx="168" cy="78" rx="5" ry="7" fill="#FFD79B" transform="rotate(18 168 78)"/>
+    <path d="M78 120l16-12 10 16 15-14 12 17 15-13 10 15" fill="none" stroke="#DEC9A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="82" cy="128" rx="12" ry="22" fill="#fff" opacity=".45" transform="rotate(24 82 128)"/>
+  </svg>`;
+}
+
+function dinoHat() {
+  return `<g>
+    <path d="M112 48c0-24 14-36 36-36s36 12 36 36z" fill="#F2CB8D"/>
+    <path d="M112 40c22 8 50 8 72 0v9c-22 8-50 8-72 0z" fill="#C98744"/>
+    <ellipse cx="148" cy="50" rx="60" ry="8" fill="#E8B877"/>
+    <ellipse cx="148" cy="50" rx="60" ry="8" fill="none" stroke="#C98744" stroke-width="2" opacity=".55"/>
+    <path d="M148 13v32" stroke="#E3B678" stroke-width="2.6" opacity=".5"/>
+    <circle cx="148" cy="31" r="5.5" fill="#2E8B57"/>
+    <path d="M126 20c5-6 12-9 20-9" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="4" stroke-linecap="round"/>
+  </g>`;
+}
+function dinoGlasses() {
+  return `<g>
+    <rect x="144" y="49" width="30" height="23" rx="9" fill="#20322B"/>
+    <rect x="179" y="53" width="23" height="20" rx="8" fill="#20322B"/>
+    <path d="M174 56h5" stroke="#20322B" stroke-width="4"/>
+    <path d="M149 54l8-3" stroke="#9FDCF2" stroke-width="2.4" opacity=".8" stroke-linecap="round"/>
+    <path d="M184 58l6-3" stroke="#9FDCF2" stroke-width="2.2" opacity=".7" stroke-linecap="round"/>
+  </g>`;
+}
+function dinoCrown() {
+  return `<g>
+    <path d="M116 40l6-28 15 16 11-22 12 22 15-16 6 28z" fill="#FFD25A" stroke="#E3A332" stroke-width="2.6" stroke-linejoin="round"/>
+    <rect x="114" y="36" width="68" height="9" rx="4.5" fill="#F2B23E"/>
+    <circle cx="148" cy="30" r="5.2" fill="#FF6F61"/>
+    <circle cx="130" cy="32" r="3.6" fill="#7FD1F0"/>
+    <circle cx="167" cy="32" r="3.6" fill="#7FD1F0"/>
+  </g>`;
+}
+function dinoWings() {
+  return `<g opacity=".96">
+    <path d="M92 132C70 112 42 88 18 78c-4 26 16 52 46 66-12-4-24-12-32-22 10 24 30 36 62 36z" fill="#B8A7FF"/>
+    <path d="M148 132c22-20 50-44 74-54 4 26-16 52-46 66 12-4 24-12 32-22-10 24-30 36-62 36z" fill="#B8A7FF"/>
+    <path d="M30 92c14 8 32 22 50 38" stroke="#8E76F0" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>
+    <path d="M210 92c-14 8-32 22-50 38" stroke="#8E76F0" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/>
+    <circle cx="52" cy="106" r="4" fill="#fff" opacity=".65"/><circle cx="188" cy="106" r="4" fill="#fff" opacity=".65"/>
+  </g>`;
+}
+
+function dino(stage = "teen", opts = {}) {
+  if (stage === "egg") return eggSVG();
+  const artStage = stage === "ultra" ? "super" : stage;
+  const p = DINO_PAL[artStage] || DINO_PAL.teen;
+  const scale = { baby: 0.8, teen: 1, adult: 1.04, super: 1.08, ultra: 1.08 }[stage] || 1;
+  const tx = 120 - 120 * scale;
+  const ty = 214 - 214 * scale;
+  const eq = opts.equipped || {};
+  const head = eq.head === "hat" ? dinoHat() : eq.head === "crown" ? dinoCrown() : "";
+  const face = eq.face === "glasses" ? dinoGlasses() : "";
+  const back = eq.back === "wings" ? dinoWings() : "";
+  const shell = stage === "baby"
+    ? `<g>
+        <path d="M56 166l14-14 12 12 14-15 13 14 14-13 12 12 14-13 12 13c4 22-16 38-57 38s-62-16-58-38z" fill="#FFF8E8" stroke="#EAD8B5" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M80 188c4 6 10 9 18 10M120 198c6 0 11-2 15-5" stroke="#E4D0AA" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+        <circle cx="88" cy="178" r="3" fill="#CFE8B0"/><circle cx="150" cy="180" r="4" fill="#FFD79B"/>
+      </g>`
+    : "";
+  const extra = stage === "super" || stage === "ultra"
+    ? `<g><path d="M120 112l10 10-10 10-10-10z" fill="#FFD25A" opacity=".85"/><path d="M120 126l7 7-7 7-7-7z" fill="#FFD25A" opacity=".5"/></g>`
+    : "";
+  const horn = artStage === "adult" || artStage === "super"
+    ? `<path d="M198 62l4-13 8 12z" fill="#FFF1C9" stroke="#E8D6AE" stroke-width="1.5" stroke-linejoin="round"/>`
+    : "";
+  return `<svg class="dino" viewBox="0 0 240 240" width="100%" height="100%" aria-label="恐龙">
+    <ellipse cx="122" cy="216" rx="64" ry="10" fill="#1F6B4A" opacity=".13"/>
+    <g transform="translate(${tx} ${ty}) scale(${scale})">
+      ${back}
+      <path d="M82 148C54 146 30 130 14 100c22 6 38 18 50 32C50 112 46 90 52 68c14 24 30 44 48 58z" fill="${p.dark}"/>
+      <path d="M90 168h26c4 0 7 3 7 7v20c0 9-7 15-16 15s-15-6-15-15v-22c0-3 0-5 0-5z" fill="${p.dark}"/>
+      <ellipse cx="107" cy="204" rx="23" ry="9" fill="${p.dark}"/>
+      <path d="M89 206l-5 8h7zM104 208l-5 8h7zM119 206l-5 8h7z" fill="#FFF3D6"/>
+      <path d="M120 82c38 0 60 28 60 64 0 32-26 48-60 48s-60-16-60-48c0-36 22-64 60-64z" fill="${p.body}"/>
+      <path d="M96 124c-4 26 6 54 24 62 18-8 28-36 24-62-10 12-38 12-48 0z" fill="${p.belly}"/>
+      <path d="M128 170h26c4 0 7 3 7 7v18c0 9-7 15-16 15s-15-6-15-15v-25z" fill="${p.body}"/>
+      <ellipse cx="143" cy="204" rx="23" ry="9" fill="${p.body}"/>
+      <path d="M125 206l-5 8h7zM140 208l-5 8h7zM155 206l-5 8h7z" fill="#FFF3D6"/>
+      <path d="M66 132c-11 5-17 15-13 25 9 3 17-3 20-12z" fill="${p.body}"/>
+      <path d="M174 132c11 5 17 15 13 25-9 3-17-3-20-12z" fill="${p.body}"/>
+      <path d="M56 153l-4 7h6zM183 153l4 7h-6z" fill="#FFF3D6"/>
+      <path d="M112 40L104 15 91 44zM92 57L77 39l2 29zM82 79L64 69l8 25z" fill="${p.accent}"/>
+      ${extra}
+      <path d="M148 26c36 0 60 22 62 50 2 16-6 28-18 32l-20 1c-4 11-16 17-30 15-28-4-42-24-42-50 0-28 18-48 48-48z" fill="${p.body}"/>
+      <path d="M126 38c10-8 23-11 36-8" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="164" cy="63" rx="13.5" ry="15.5" fill="#FFFDF4"/>
+      <circle cx="168" cy="66" r="7.2" fill="#1D3A2E"/>
+      <circle cx="165.3" cy="61.5" r="2.7" fill="#fff"/>
+      <path d="M150 43c10-5 22-4 31 3" fill="none" stroke="#1D3A2E" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="198" cy="79" r="2.8" fill="#1D3A2E" opacity=".55"/>
+      <path d="M174 100c10 4 22 2 31-6" fill="none" stroke="#1D3A2E" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M180 102l3.5 6 3.5-5zM192 103l3.5 5 3.5-4z" fill="#fff"/>
+      <path d="M186 104c3 3 6 3 9 1" stroke="#E8695B" stroke-width="2.6" stroke-linecap="round" opacity=".55" fill="none"/>
+      <ellipse cx="143" cy="99" rx="11" ry="7" fill="#FF9273" opacity=".4"/>
+      ${horn}
+      ${head}
+      ${face}
+      ${shell}
+    </g>
+  </svg>`;
+}
+
+/* ------------------------------------------------ shop art */
+function itemHat() {
+  return `<svg viewBox="0 0 80 80">
+    <path d="M18 52c0-21 10-33 22-33s22 12 22 33z" fill="#F2CB8D"/>
+    <path d="M18 44c13 6 31 6 44 0l1 8c-13 6-33 6-46 0z" fill="#C98744"/>
+    <ellipse cx="40" cy="56" rx="31" ry="7" fill="#E0AC6A"/>
+    <ellipse cx="40" cy="56" rx="31" ry="7" fill="none" stroke="#B97636" stroke-width="2" opacity=".7"/>
+    <path d="M40 19v26" stroke="#E3B678" stroke-width="2.4" opacity=".55"/>
+    <circle cx="40" cy="38" r="5" fill="#2E8B57"/>
+    <path d="M26 27c4-6 9-9 15-10" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
+  </svg>`;
+}
+function itemGlasses() {
+  return `<svg viewBox="0 0 80 80">
+    <rect x="9" y="28" width="27" height="22" rx="10" fill="#20322B"/>
+    <rect x="43" y="30" width="27" height="21" rx="10" fill="#20322B"/>
+    <path d="M36 35h7" stroke="#20322B" stroke-width="4"/>
+    <path d="M14 33l8-3" stroke="#9FDCF2" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M48 35l7-2.5" stroke="#9FDCF2" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M13 50c2 6 7 9 12 8" fill="none" stroke="#3E5A4E" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>`;
+}
+function itemWings() {
+  return `<svg viewBox="0 0 80 80">
+    <path d="M39 54C31 36 20 22 8 16c-3 13 5 27 18 35-6-1-11-4-15-8 5 10 14 16 28 18z" fill="#B8A7FF"/>
+    <path d="M41 54c8-18 19-32 31-38 3 13-5 27-18 35 6-1 11-4 15-8-5 10-14 16-28 18z" fill="#B8A7FF"/>
+    <path d="M11 20c8 2 17 10 25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
+    <path d="M69 20c-8 2-17 10-25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
+    <path d="M33 54c2 6 5 10 7 14 2-4 5-8 7-14z" fill="#8E76F0"/>
+    <circle cx="22" cy="38" r="2.6" fill="#fff" opacity=".8"/><circle cx="58" cy="38" r="2.6" fill="#fff" opacity=".8"/>
+  </svg>`;
+}
+function itemCrown() {
+  return `<svg viewBox="0 0 80 80">
+    <path d="M12 58l3-32 15 15L40 14l10 27 15-15 3 32z" fill="#FFD25A" stroke="#E3A332" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="12" y="55" width="56" height="10" rx="5" fill="#F2B23E"/>
+    <circle cx="40" cy="42" r="5" fill="#FF6F61"/>
+    <circle cx="23" cy="50" r="3.6" fill="#7FD1F0"/><circle cx="57" cy="50" r="3.6" fill="#7FD1F0"/>
+    <path d="M26 22l4 10" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* ------------------------------------------------ fruit art */
+function appleSVG() {
+  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="苹果">
+    <path d="M80 40c-4-12-12-18-22-20 2 10 8 17 18 22z" fill="#8CC063"/>
+    <path d="M80 41c1-9 5-16 13-22 1 11-3 19-11 24z" fill="#6BA552"/>
+    <path d="M80 44c-4-10-4-16-2-22" stroke="#8A5B32" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M80 42c17-13 48-7 58 23 10 32-10 70-33 76-11 3-18-2-25-2s-14 5-25 2C32 135 12 97 22 65 32 35 63 29 80 42z" fill="#F4603F"/>
+    <path d="M80 50c14-10 36-8 47 10-12-6-28-6-40 2z" fill="#FF8A66" opacity=".75"/>
+    <path d="M36 74c4-14 14-22 24-24-12 8-18 18-20 32z" fill="#fff" opacity=".35"/>
+    <path d="M120 118c8-10 12-24 12-36" stroke="#C33F26" stroke-width="4" stroke-linecap="round" opacity=".4" fill="none"/>
+  </svg>`;
+}
+function bananaSVG() {
+  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="香蕉">
+    <path d="M42 36c6 50 42 82 88 66 12-4 20-13 24-26-28 18-64 8-82-20-10-15-14-32-14-46-8 2-14 12-16 26z" fill="#FFD25A" stroke="#E3A93C" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M58 52c8 34 32 58 62 60" fill="none" stroke="#FFF0B8" stroke-width="8" stroke-linecap="round" opacity=".7"/>
+    <path d="M42 36c-2-8-8-12-16-12 1 9 5 15 12 18z" fill="#8A5B32"/>
+    <path d="M154 76c6 1 10 5 10 9-5 2-10 0-13-4z" fill="#8A5B32"/>
+    <circle cx="128" cy="96" r="3" fill="#D99A2F" opacity=".6"/><circle cx="112" cy="104" r="2.4" fill="#D99A2F" opacity=".5"/>
+  </svg>`;
+}
+function orangeSVG() {
+  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="橙子">
+    <circle cx="80" cy="90" r="52" fill="#FF9A3D"/>
+    <circle cx="80" cy="90" r="52" fill="none" stroke="#E2781F" stroke-width="3"/>
+    <path d="M80 38c-2-10 2-18 10-24 0 10-4 18-10 24z" fill="#6BA552"/>
+    <path d="M80 38c2-9 8-16 16-18-1 9-7 16-16 18z" fill="#8CC063"/>
+    <path d="M80 40v-4" stroke="#8A5B32" stroke-width="5" stroke-linecap="round"/>
+    <path d="M48 62c6-14 18-22 30-24-12 8-20 20-24 34z" fill="#FFC27A" opacity=".8"/>
+    <circle cx="112" cy="72" r="3" fill="#E2781F" opacity=".45"/><circle cx="118" cy="96" r="4" fill="#E2781F" opacity=".35"/>
+    <circle cx="58" cy="110" r="3.4" fill="#E2781F" opacity=".35"/><circle cx="92" cy="122" r="3" fill="#E2781F" opacity=".4"/>
+    <circle cx="70" cy="72" r="2.6" fill="#E2781F" opacity=".3"/><circle cx="102" cy="108" r="2.4" fill="#E2781F" opacity=".35"/>
+  </svg>`;
+}
+function grapeSVG() {
+  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="葡萄">
+    <path d="M80 38c-2-12 4-20 14-26 1 10-4 20-14 26z" fill="#8CC063"/>
+    <path d="M80 40c-6-8-14-12-24-12 2 10 10 16 24 16z" fill="#6BA552"/>
+    <path d="M80 42c-2-6-2-10 0-14" stroke="#8A5B32" stroke-width="5" stroke-linecap="round"/>
+    <g fill="#8E76F0" stroke="#7A5FD8" stroke-width="2">
+      <circle cx="62" cy="62" r="15"/><circle cx="86" cy="58" r="14"/><circle cx="108" cy="66" r="13"/>
+      <circle cx="50" cy="86" r="14"/><circle cx="74" cy="82" r="15"/><circle cx="98" cy="84" r="14"/><circle cx="120" cy="88" r="12"/>
+      <circle cx="62" cy="108" r="14"/><circle cx="86" cy="104" r="15"/><circle cx="108" cy="108" r="13"/>
+      <circle cx="76" cy="126" r="13"/><circle cx="98" cy="126" r="11"/>
+    </g>
+    <circle cx="62" cy="57" r="4" fill="#C9BEFF" opacity=".75"/><circle cx="74" cy="77" r="4" fill="#C9BEFF" opacity=".65"/>
+    <circle cx="86" cy="99" r="3.5" fill="#C9BEFF" opacity=".6"/>
+  </svg>`;
+}
+function strawberrySVG() {
+  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="草莓">
+    <path d="M80 42c18-12 44-4 46 22 2 24-24 58-46 72-22-14-48-48-46-72 2-26 28-34 46-22z" fill="#F25450"/>
+    <path d="M80 42c-10-4-16-10-18-18 10-1 18 3 24 12 6-9 14-13 24-12-2 8-10 14-20 18z" fill="#5FAE5A"/>
+    <path d="M80 44V30" stroke="#3E8F45" stroke-width="4" stroke-linecap="round"/>
+    <g fill="#FFE3B0">
+      <ellipse cx="62" cy="66" rx="2" ry="3.4"/><ellipse cx="84" cy="60" rx="2" ry="3.4"/><ellipse cx="102" cy="72" rx="2" ry="3.4"/>
+      <ellipse cx="54" cy="88" rx="2" ry="3.4"/><ellipse cx="76" cy="84" rx="2" ry="3.4"/><ellipse cx="96" cy="92" rx="2" ry="3.4"/>
+      <ellipse cx="64" cy="108" rx="2" ry="3.4"/><ellipse cx="86" cy="110" rx="2" ry="3.4"/><ellipse cx="76" cy="126" rx="2" ry="3.4"/>
+      <ellipse cx="112" cy="86" rx="2" ry="3.4"/>
+    </g>
+    <path d="M40 66c4-14 14-22 24-24-12 8-18 18-20 32z" fill="#fff" opacity=".22"/>
+  </svg>`;
+}
+
+/* ------------------------------------------------ state */
+const STORE_KEY = "dinogo.v2";
+try {
+  if (new URLSearchParams(location.search).get("fresh") === "1") localStorage.removeItem(STORE_KEY);
+} catch (e) { /* private mode */ }
+const DEFAULT_STATE = {
+  v: 2,
+  name: "小宇",
+  stars: 1280,
+  growth: 480,
+  stage: "teen",
+  level: 13,
+  levelStars: {},
+  words: 126,
+  minutes: 8,
+  threeStars: 0,
+  tasks: { level: false },
+  owned: [],
+  equipped: { head: null, face: null, back: null },
+  bg: "jungle",
+  bgOwned: ["jungle"],
+  dex: ["egg", "baby", "teen"],
+  sound: true,
+  starBonus: 0,
+};
+
+let state = loadState();
+let current = "home";
+let quiz = null;
+let lastResult = null;
+let evolutionInfo = null;
+let shopTab = "decor";
+let dexFilter = "all";
+let pendingBuy = null;
+let timers = [];
+let audioCtx = null;
+let installDismissed = false;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_STATE,
+      ...parsed,
+      tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
+      equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
+      levelStars: parsed.levelStars || {},
+      bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
+      dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
+      owned: Array.isArray(parsed.owned) ? parsed.owned : [],
+    };
+  } catch (e) {
+    return { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+  }
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* private mode */ }
+}
+function resetState() {
+  state = { ...DEFAULT_STATE, tasks: { ...DEFAULT_STATE.tasks }, equipped: { ...DEFAULT_STATE.equipped }, levelStars: {}, bgOwned: [...DEFAULT_STATE.bgOwned], dex: [...DEFAULT_STATE.dex], owned: [] };
+  lastResult = null;
+  evolutionInfo = null;
+  quiz = null;
+  save();
+}
+
+/* ------------------------------------------------ timers / sound */
+function setTimer(fn, ms) {
+  const id = setTimeout(() => { timers = timers.filter((t) => t !== id); fn(); }, ms);
+  timers.push(id);
+  return id;
+}
+function clearTimers() { timers.forEach((t) => clearTimeout(t)); timers = []; }
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) audioCtx = new AC();
+  }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+}
+function tone(freq, dur = 0.12, type = "sine", vol = 0.05, delay = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+function sfx(name) {
+  if (!state.sound) return;
+  try {
+    ensureAudio();
+    if (name === "tap") tone(520, 0.05, "sine", 0.025);
+    else if (name === "correct") { tone(660, 0.12, "sine", 0.05); tone(880, 0.16, "sine", 0.05, 0.1); }
+    else if (name === "wrong") { tone(190, 0.2, "sawtooth", 0.035); tone(150, 0.24, "sawtooth", 0.03, 0.12); }
+    else if (name === "coin") { tone(988, 0.08, "triangle", 0.05); tone(1318, 0.14, "triangle", 0.045, 0.07); }
+    else if (name === "star") { tone(740, 0.1, "sine", 0.05); tone(1108, 0.14, "sine", 0.04, 0.09); }
+    else if (name === "evolve") { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.24, "triangle", 0.05, i * 0.13)); }
+    else if (name === "win") { [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.3, "sine", 0.045, i * 0.1)); }
+  } catch (e) { /* no audio */ }
+}
+function speak(text) {
+  try {
+    if (!("speechSynthesis" in window)) { toast("当前浏览器不支持发音"); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = 0.82;
+    u.pitch = 1.08;
+    window.speechSynthesis.speak(u);
+  } catch (e) { /* ignore */ }
+}
+
+/* ------------------------------------------------ router */
+function go(name, opts = {}) {
+  if (name === current && !opts.replace && !opts.force) { render(); return; }
+  clearTimers();
+  current = name;
+  try {
+    if (opts.replace) history.replaceState({ screen: name }, "");
+    else history.pushState({ screen: name }, "");
+  } catch (e) { /* local file / restricted history */ }
+  render();
+  requestAnimationFrame(() => {
+    const sc = $(".scroll");
+    if (sc) sc.scrollTop = 0;
+  });
+}
+function back() {
+  clearTimers();
+  if (quiz && current === "quiz") { quiz = null; go("map", { replace: true }); return; }
+  if (history.length > 1) history.back();
+  else go("home", { replace: true });
+}
+
+/* ------------------------------------------------ common UI */
+const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["dex", "图鉴", I.book], ["shop", "小铺", I.bag]];
+function tabbar(active) {
+  return `<nav class="tabbar">${TABS.map(([id, label, ic]) =>
+    `<button class="tab ${active === id ? "on" : ""}" data-action="tab" data-screen="${id}" aria-label="${label}">
+      <span class="ic">${ic(22)}</span><span>${label}</span>
+    </button>`).join("")}</nav>`;
+}
+function starPill() {
+  return `<div class="star-pill">${star(17)}<span class="num">${fmt(state.stars)}</span></div>`;
+}
+function stageChip() {
+  const st = stageMeta(state.stage);
+  return `${I.leaf(11)} ${st.phase} · ${st.name}`;
+}
+
+function sceneHTML() {
+  const bg = state.bg;
+  if (bg === "night") {
+    const dots = Array.from({ length: 16 }, (_, i) => {
+      const x = (i * 37 + 11) % 100, y = (i * 23 + 7) % 70, s = (i % 3) + 1.2;
+      return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.3 + (i % 4) * 0.16}"></i>`;
+    }).join("");
+    return `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
+      <div class="hill a"></div><div class="hill b"></div>
+      <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#2E6B4E"/></svg>
+      <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#347454"/></svg>
+    </div>`;
+  }
+  return `<div class="scene">
+    <div class="sun"></div><div class="cloud a"></div><div class="cloud b"></div>
+    <div class="hill a"></div><div class="hill b"></div>
+    <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#62A968"/><path d="M0 120C18 92 44 70 80 56 60 82 34 104 0 120z" fill="#4E9459"/></svg>
+    <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#6DB270"/></svg>
+  </div>`;
+}
+
+/* ------------------------------------------------ home */
+function tasksData() {
+  return [
+    { done: !!state.tasks.level, color: "orange", icon: I.flag, title: "完成 1 次闯关", sub: state.tasks.level ? "今日目标已达成" : "还差 1 次，约 3 分钟", reward: "+60 成长值" },
+    { done: true, color: "blue", icon: I.book, title: "学会 5 个新单词", sub: "已掌握 5 / 5 个", reward: "+40 成长值" },
+    { done: true, color: "coral", icon: I.flame, title: "连续学习 7 天", sub: "太棒了，明天继续！", reward: "+20 星星" },
+  ];
+}
+
+function screenHome() {
+  const st = stageMeta(state.stage);
+  const next = nextStage(st.key);
+  const pending = next && state.growth >= next.min;
+  const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+  const tasks = tasksData();
+  const doneCount = tasks.filter((t) => t.done).length;
+  const word = todayWord();
+  const remain = next ? Math.max(0, next.min - state.growth) : 0;
+  let bubble;
+  if (!next) bubble = `已经成长为<br><b>超级霸王龙</b>！<br>继续收集星星吧`;
+  else if (pending) bubble = `成长值已满<br>快去<b>进化</b>吧！`;
+  else bubble = `再获得 <b>${remain}</b> 成长值<br>就能进化成<br><b>${next.name}</b>！`;
+  const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  return `<section class="screen has-tab" data-screen="home">
+    <div class="scroll">
+      <div class="home-top">
+        <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
+        <div class="greet">
+          <div class="hi">${greeting()}，<b>${state.name}</b></div>
+          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 7 天 · 今日已学 ${state.minutes} 分钟</div>
+        </div>
+        ${starPill()}
+      </div>
+
+      <section class="hero ${bgClass(state.bg)}">
+        ${sceneHTML()}
+        <div class="stage-tag">${stageChip()}</div>
+        <div class="name"><b>奇奇</b></div>
+        <div class="bubble ${pending ? "max" : ""}">${bubble}</div>
+        <div class="dino-wrap ${dinoCls} ${state.equipped.head ? "with-hat" : ""}">${dino(state.stage, { equipped: state.equipped })}</div>
+        <div class="growth-panel">
+          <div class="g-main">
+            <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
+            <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
+            <div class="g-next">
+              <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
+              <span>${Math.round(pct * 100)}%</span>
+            </div>
+          </div>
+          <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
+            ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
+          </button>
+        </div>
+      </section>
+
+      <section class="card tasks">
+        <div class="head">
+          <h3>今日任务</h3><span class="count">${doneCount}/3</span>
+          <span class="more">每日 0 点刷新</span>
+        </div>
+        ${tasks.map((t) => `<div class="task ${t.done ? "done" : ""}">
+          <div class="ico ${t.color}">${t.icon(16)}</div>
+          <div class="t-body"><div class="t-title">${t.title}</div><div class="t-sub">${t.sub}</div></div>
+          <span class="reward">${t.reward}</span>
+          <span class="check">${t.done ? I.check(11) : ""}</span>
+        </div>`).join("")}
+      </section>
+
+      <button class="word-card" data-action="open-review" aria-label="复习单词 ${word.word}">
+        <div class="ring"></div>
+        <div class="spk">${I.speaker(21, "#B4811C")}</div>
+        <div class="w-main">
+          <div class="w-kicker">TODAY'S REVIEW · 今日复习</div>
+          <div class="w-word">${word.word}</div>
+          <div class="w-phon">${word.phon} · n. ${word.zh}</div>
+        </div>
+        <div class="w-btn">去复习 ${I.arrow(11)}</div>
+      </button>
+      <div class="home-note">已连续学习 7 天 · 再学 7 分钟可领取 +20 星星</div>
+    </div>
+    ${tabbar("home")}
+  </section>`;
+}
+
+/* ------------------------------------------------ map */
+const MAP_POS = [
+  [16.6, 15.4], [42.9, 11.9], [69.1, 19.9], [79.4, 40.3], [57.1, 55.7], [29.7, 70.1], [58.9, 85.6],
+];
+const MAP_ROUTE = "M58,62C92,44 122,40 150,48 190,58 226,60 242,80 266,106 284,128 278,162 272,196 240,210 200,224 160,238 126,254 104,282 90,308 150,326 206,344";
+const MAP_ROUTE_DONE = "M58,62C92,44 122,40 150,48 190,58 226,60 242,80 266,106 284,128 278,162 272,196 240,210 200,224";
+
+function screenMap() {
+  const start = Math.max(1, state.level - 4);
+  const levels = Array.from({ length: 6 }, (_, i) => start + i);
+  const starTotal = 32 + Object.values(state.levelStars).reduce((a, b) => a + b, 0);
+  const nodes = levels.map((lvl, i) => {
+    const pos = MAP_POS[i];
+    const done = lvl < state.level;
+    const cur = lvl === state.level;
+    const s = state.levelStars[lvl] || (cur ? 0 : 3);
+    let inner;
+    if (cur) {
+      inner = `<div class="mnode now" style="left:${pos[0]}%;top:${pos[1]}%">
+        <div class="ring"></div><div class="disc">${dino(state.stage, { equipped: state.equipped })}</div><div class="go">GO</div>
+        <div class="mlabel">${String(lvl).padStart(2, "0")} · 当前</div></div>`;
+    } else if (done) {
+      inner = `<div class="mnode done ${s === 2 ? "half" : ""}" style="left:${pos[0]}%;top:${pos[1]}%">
+        <div class="mstars">${star(9)}<span>${s}</span></div>
+        <div class="disc"><span class="num" style="font-size:13px;font-weight:900">${String(lvl).padStart(2, "0")}</span></div>
+        <div class="mlabel">第 ${String(lvl).padStart(2, "0")} 关</div></div>`;
+    } else {
+      inner = `<div class="mnode locked" style="left:${pos[0]}%;top:${pos[1]}%">
+        <div class="disc">${I.lock(20, "#B7B09C")}</div><div class="mlabel">${String(lvl).padStart(2, "0")} · 未解锁</div></div>`;
+    }
+    return inner;
+  }).join("");
+  const chest = `<div class="mnode chest" style="left:${MAP_POS[6][0]}%;top:${MAP_POS[6][1]}%">
+    <div class="disc">${I.gift(24, "#7A4E08")}</div><div class="mlabel">宝箱</div></div>`;
+  return `<section class="screen has-tab" data-screen="map">
+    <div class="scroll">
+      <div class="topbar">
+        <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
+        <div class="t"><h1>词汇森林</h1><p>Unit 3 · 动物朋友 · 第 ${state.level} / 20 关</p></div>
+        ${starPill()}
+      </div>
+
+      <section class="wide-extra">
+        <div class="we-main">
+          <div class="we-head">
+            <div><div class="lb">WEEKLY REPORT · 本周学习</div><b>84 <small>分钟</small></b></div>
+            <div class="goal">目标 70 分钟 ✓</div>
+          </div>
+          <div class="we-chart">
+            ${[44, 32, 56, 42, 30, 42, 42].map((h, i) => `<div class="wc ${i === 4 ? "today" : ""}"><div class="b" style="height:${h}px"></div><span>${["一", "二", "三", "四", "五", "六", "日"][i]}</span></div>`).join("")}
+          </div>
+        </div>
+        <div class="we-side">
+          <div class="we-stat"><span class="si">${I.flame(16)}</span><b>连续 7 天</b><span>学习不断档</span></div>
+          <div class="we-stat"><span class="si">${I.book(16)}</span><b>图鉴 ${state.dex.length} / ${DEX.length}</b><span>继续进化收集</span></div>
+          <div class="we-stat"><span class="si">${star(15)}</span><b>三星 ${state.threeStars} 次</b><span>最佳表现</span></div>
+        </div>
+      </section>
+
+      <div class="card unit-progress">
+        <div class="up-main">
+          <div class="up-row"><b>本单元进度</b><span><b>${state.level - 1}</b> / 20 关</span></div>
+          <div class="bar"><i style="width:${Math.round(((state.level - 1) / 20) * 100)}%"></i></div>
+        </div>
+        <div class="up-star">${star(14)}<span class="num">${starTotal}</span><span style="font-size:8px;color:#A68A4E">/ 60</span></div>
+      </div>
+
+      <div class="map-canvas">
+        <svg class="deco cloud" viewBox="0 0 90 44" style="right:4%;top:4%"><ellipse cx="28" cy="30" rx="22" ry="12" fill="#fff"/><ellipse cx="50" cy="23" rx="20" ry="14" fill="#fff"/><ellipse cx="69" cy="30" rx="16" ry="10" fill="#fff"/></svg>
+        <svg class="deco tree1" viewBox="0 0 100 120"><rect x="45" y="70" width="10" height="40" rx="4" fill="#B98A58"/><circle cx="50" cy="46" r="30" fill="#7DB968"/><circle cx="28" cy="58" r="20" fill="#6FAE5E"/><circle cx="72" cy="56" r="22" fill="#88C275"/></svg>
+        <svg class="deco tree2" viewBox="0 0 70 100"><rect x="31" y="56" width="8" height="38" rx="3" fill="#B98A58"/><path d="M35 4l26 46H9z" fill="#77B563"/><path d="M35 30l22 36H13z" fill="#8CC478"/></svg>
+        <svg class="deco mush" viewBox="0 0 50 50"><rect x="20" y="24" width="10" height="20" rx="4" fill="#F7E7C8"/><path d="M4 26C4 12 14 4 25 4s21 8 21 22z" fill="#F08A72"/><circle cx="16" cy="16" r="3.5" fill="#FFE7D2"/><circle cx="32" cy="19" r="2.6" fill="#FFE7D2"/></svg>
+        <svg class="deco" viewBox="0 0 90 60" style="left:4%;bottom:3%;width:22%;opacity:.9"><path d="M12 58c0-16 4-27 11-36M30 58c0-10 2-18 7-25M50 58c0-8 2-13 5-18" stroke="#86BD72" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="23" cy="18" r="3.4" fill="#FFC94A"/><circle cx="23" cy="10" r="3.4" fill="#FFC94A"/><circle cx="16" cy="14" r="3.4" fill="#FFC94A"/><circle cx="30" cy="14" r="3.4" fill="#FFC94A"/><circle cx="23" cy="14" r="2.2" fill="#F08A72"/><circle cx="59" cy="30" r="2.8" fill="#FF9E9E"/><circle cx="59" cy="23" r="2.8" fill="#FF9E9E"/><circle cx="53" cy="27" r="2.8" fill="#FF9E9E"/><circle cx="65" cy="27" r="2.8" fill="#FF9E9E"/></svg>
+        <svg class="route" viewBox="0 0 350 402" preserveAspectRatio="none">
+          <path d="${MAP_ROUTE}" fill="none" stroke="#D6E6B8" stroke-width="9" stroke-linecap="round" stroke-dasharray="2 13"/>
+          <path d="${MAP_ROUTE_DONE}" fill="none" stroke="#8CC46C" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 11"/>
+        </svg>
+        ${nodes}${chest}
+      </div>
+
+      <div class="next-level">
+        <div class="nl-main">
+          <div class="nl-kicker">UP NEXT ${I.chevron(8)} 第 ${state.level} 关</div>
+          <h3>水果单词大冒险</h3>
+          <div class="nl-meta"><span>5 道题 · 约 2 分钟</span><span style="display:flex;gap:1px">${star(9)}${star(9)}${star(9)}</span></div>
+        </div>
+        <button class="nl-btn" data-action="start-quiz">开始闯关</button>
+      </div>
+    </div>
+    ${tabbar("map")}
+  </section>`;
+}
+
+/* ------------------------------------------------ quiz */
+function startQuiz() {
+  quiz = {
+    index: 0,
+    correct: 0,
+    hearts: 3,
+    combo: 0,
+    selected: null,
+    revealed: false,
+    choiceCorrect: null,
+    startedAt: Date.now(),
+    words: [],
+    order: shuffle(WORDS).map((w) => ({ ...w, options: shuffle([w.word, ...shuffle(WORDS.filter((x) => x.word !== w.word)).slice(0, 3).map((x) => x.word)]) })),
+  };
+  lastResult = null;
+  go("quiz");
+}
+
+function screenQuiz() {
+  if (!quiz) {
+    setTimeout(() => go("home", { replace: true }), 0);
+    return `<section class="screen"></section>`;
+  }
+  const total = quiz.order.length;
+  const q = quiz.order[quiz.index];
+  const selected = quiz.selected;
+  const revealed = quiz.revealed;
+  const hearts = [0, 1, 2].map((i) => I.heart(16, "#FF6F61", i < quiz.hearts ? 1 : 0.22)).join("");
+  const letters = ["A", "B", "C", "D"];
+  const options = q.options.map((opt, i) => {
+    let cls = "option";
+    if (revealed) {
+      if (opt === q.word) cls += " correct";
+      else if (opt === selected) cls += " wrong";
+      else cls += " dim";
+    } else if (opt === selected) cls += " sel";
+    const mark = revealed && opt === q.word ? `<span class="mark">${I.check(11)}</span>`
+      : !revealed && opt === selected ? `<span class="mark radio"><i></i></span>` : "";
+    return `<button class="${cls}" data-action="select" data-word="${opt}">
+      <span class="key">${letters[i]}</span><span class="word">${opt}</span>${mark}
+    </button>`;
+  }).join("");
+  let combo;
+  if (revealed) {
+    combo = quiz.choiceCorrect
+      ? `太棒了！连对 <b>${quiz.combo}</b> 题${quiz.combo >= 2 ? ` · 结算星星 <b>x${(1 + state.starBonus).toFixed(1)}</b>` : ""}`
+      : `答错啦，正确答案是 <b>${q.word}</b>`;
+  } else if (quiz.combo >= 2) {
+    combo = `连对 <b>${quiz.combo}</b> 题 · 保持节奏！`;
+  } else {
+    combo = `连续答对 3 题，结算星星有加成`;
+  }
+  let btn;
+  if (!selected) btn = `<button class="btn" disabled>选一个答案 ${I.arrow(18)}</button>`;
+  else if (!revealed) btn = `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`;
+  else btn = `<button class="btn" data-action="next">${quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题"} ${I.arrow(18)}</button>`;
+  return `<section class="screen quiz-page" data-screen="quiz">
+    <div class="quiz-top">
+      <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
+      <div class="bar qbar"><i style="width:${Math.round((quiz.index / total) * 100)}%"></i></div>
+      <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
+      <div class="hearts">${hearts}</div>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-prompt">
+        <div class="chip">VOCABULARY · 水果单词</div>
+        <h2>看图，选出正确的单词</h2>
+      </div>
+      <div class="quiz-art">
+        <div class="blob"></div>
+        <div class="art-tag">WHAT IS IT?</div>
+        <span class="art-spark s1">${spark(15, "#E8C377")}</span>
+        <span class="art-spark s2">${spark(11, "#E8C377")}</span>
+        <span class="art-spark s3">${spark(8, "#E8C377")}</span>
+        ${q.art()}
+        ${revealed ? `<button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} ${q.word}</button>` : `<div class="listen" style="pointer-events:none">${I.speaker(14)} 答完听发音</div>`}
+      </div>
+      <div class="options">${options}</div>
+    </div>
+    <div class="quiz-foot">
+      <div class="combo ${revealed && !quiz.choiceCorrect ? "silent" : ""}">${I.flame(13)} ${combo}</div>
+      ${btn}
+    </div>
+  </section>`;
+}
+
+function selectOption(word) {
+  if (!quiz || quiz.revealed) return;
+  quiz.selected = word;
+  sfx("tap");
+  render();
+}
+function checkAnswer() {
+  if (!quiz || quiz.revealed || !quiz.selected) return;
+  const q = quiz.order[quiz.index];
+  const ok = quiz.selected === q.word;
+  quiz.revealed = true;
+  quiz.choiceCorrect = ok;
+  if (ok) {
+    quiz.correct++;
+    quiz.combo++;
+    quiz.words.push(q.word);
+    sfx("correct");
+  } else {
+    quiz.hearts = Math.max(0, quiz.hearts - 1);
+    quiz.combo = 0;
+    sfx("wrong");
+  }
+  render();
+  if (quiz && (quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0)) {
+    setTimer(() => nextQuestion(), 1800);
+  } else {
+    setTimer(() => nextQuestion(), 2200);
+  }
+}
+function nextQuestion() {
+  if (!quiz) return;
+  clearTimers();
+  if (quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0) { finishQuiz(); return; }
+  quiz.index++;
+  quiz.selected = null;
+  quiz.revealed = false;
+  quiz.choiceCorrect = null;
+  render();
+}
+function finishQuiz() {
+  if (!quiz) return;
+  const total = quiz.order.length;
+  const accuracy = quiz.correct / total;
+  const stars = accuracy >= 0.9 ? 3 : accuracy >= 0.6 ? 2 : 1;
+  const growthGain = quiz.correct * 24;
+  const base = [0, 5, 10, 15][stars];
+  const starGain = Math.round(base * (1 + (state.starBonus || 0)));
+  const completedLevel = state.level;
+  const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
+  state.growth += growthGain;
+  state.stars += starGain;
+  state.levelStars[completedLevel] = stars;
+  state.level += 1;
+  state.words += quiz.correct;
+  state.minutes += Math.max(1, Math.round(elapsed / 60));
+  state.threeStars += stars === 3 ? 1 : 0;
+  state.tasks.level = true;
+  const target = stageForGrowth(state.growth);
+  const canEvolve = stageIndex(target.key) > stageIndex(state.stage);
+  lastResult = {
+    level: completedLevel,
+    correct: quiz.correct,
+    total,
+    accuracy: Math.round(accuracy * 100),
+    stars,
+    growthGain,
+    starGain,
+    seconds: elapsed,
+    newWords: quiz.correct,
+    canEvolve,
+    targetStage: target.key,
+    wordList: [...new Set(quiz.words)].slice(0, 3),
+  };
+  quiz = null;
+  save();
+  sfx(stars === 3 ? "win" : "coin");
+  go("result", { replace: true });
+}
+
+/* ------------------------------------------------ result */
+function screenResult() {
+  if (!lastResult) {
+    setTimeout(() => go("home", { replace: true }), 0);
+    return `<section class="screen"></section>`;
+  }
+  const r = lastResult;
+  const st = stageMeta(state.stage);
+  const next = nextStage(st.key);
+  const pending = r.canEvolve && r.targetStage;
+  const target = pending ? stageMeta(r.targetStage) : null;
+  const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+  const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
+  const ss = String(r.seconds % 60).padStart(2, "0");
+  const starRow = [0, 1, 2].map((i) => star(i === 1 ? 66 : 52, i < r.stars ? "#FFC94A" : "#F1E7D2", i < r.stars ? "#E9A93C" : "#E5D7BC", i < r.stars ? 1 : 0.55)).join("");
+  const confettiPieces = Array.from({ length: 26 }, (_, i) => {
+    const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
+    const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
+    return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${w}px;height:${h}px;background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "2px"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
+  }).join("");
+  return `<section class="screen result-page" data-screen="result">
+    <div class="confetti">${confettiPieces}</div>
+    <div class="result-scroll">
+      <div class="result-head">
+        <div class="eyebrow">LEVEL ${String(r.level).padStart(2, "0")} · COMPLETE</div>
+        <h1>闯关完成！</h1>
+        <div class="result-stars">${starRow}</div>
+        <div class="result-sub">${r.stars === 3 ? "三星通关 · 今天的你超厉害" : r.stars === 2 ? "两星通关 · 再细心一点就满星啦" : "完成比完美更重要，继续加油"}</div>
+      </div>
+
+      <div class="result-card">
+        <div class="rc-top">
+          <div class="rc-growth">
+            <div class="g-ic">${I.leaf(24)}</div>
+            <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
+          </div>
+          <div class="rc-stars">${star(17)}<span class="num">+${r.starGain}</span></div>
+        </div>
+        <div class="rc-div"></div>
+        <div class="rc-stats">
+          <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
+          <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
+          <div class="rc-stat"><b class="num">${r.newWords}</b><span>答对单词</span></div>
+        </div>
+        <div class="rc-words">
+          <span class="lb">WORDS</span>
+          ${(r.wordList.length ? r.wordList : WORDS.slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="evo-card">
+        <div class="evo-row"><span class="evo-lb">EVOLUTION · 进化进度</span><span class="evo-val num">${state.growth} / ${next ? next.min : "MAX"}</span></div>
+        <div class="evo-name">${pending ? `${st.name} <b>→</b> ${target.name} · <span style="color:#E2691F">可以进化啦！</span>` : next ? `再获得 ${Math.max(0, next.min - state.growth)} 成长值进化为 ${next.name}` : "已经达到最高形态"}</div>
+        <div class="bar gold evo-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
+        <div class="evo-tip">${pending ? `${spark(11, "#fff")} 点击见证奇奇的成长时刻` : `${spark(11, "#fff")} 继续闯关，离进化更近一步`}</div>
+        <div class="evo-mini">${dino(state.stage)}</div>
+      </div>
+
+      <div class="result-cheer">
+        <div class="cheer-dino">${dino(state.stage)}</div>
+        <div class="cheer-say"><b>${pending ? "奇奇已经等不及啦！" : "奇奇今天也很开心！"}</b><span>${pending ? "再点一下，就能看到全新的我" : `再闯一关，就能继续长大`}</span></div>
+      </div>
+    </div>
+
+    <div class="result-foot">
+      ${pending ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz">再闯一关 ${I.arrow(18)}</button>`}
+      <button class="back" data-action="home">回到恐龙乐园</button>
+    </div>
+  </section>`;
+}
+
+/* ------------------------------------------------ evolution */
+function beginEvolution() {
+  const from = stageMeta(state.stage);
+  const to = stageForGrowth(state.growth);
+  if (stageIndex(to.key) <= stageIndex(from.key)) {
+    toast("成长值还不够，再去闯一关吧");
+    go("home", { replace: true });
+    return;
+  }
+  const newDex = [...new Set([...state.dex, to.key])];
+  const unlockItem = to.key === "adult" ? "hat" : to.key === "super" ? "crown" : to.key === "ultra" ? "wings" : null;
+  const item = unlockItem ? ITEMS.find((it) => it.id === unlockItem) : null;
+  const wasOwned = item ? state.owned.includes(item.id) : false;
+  state.stage = to.key;
+  state.dex = newDex;
+  if (item && !wasOwned) {
+    state.owned.push(item.id);
+    if (!state.equipped[item.slot]) state.equipped[item.slot] = item.id;
+  }
+  if (stageIndex(to.key) >= 3) state.starBonus = 0.1;
+  let dexReward = null;
+  if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
+    state.bgOwned.push("sunset");
+    dexReward = "落日山谷";
+  }
+  if (state.dex.length >= 6 && !state.bgOwned.includes("night")) {
+    state.bgOwned.push("night");
+    dexReward = "星空营地";
+  }
+  save();
+  evolutionInfo = { from, to, item, wasOwned, dexReward };
+  sfx("evolve");
+  go("evolution");
+}
+
+function screenEvolution() {
+  if (!evolutionInfo) {
+    setTimeout(() => go("home", { replace: true }), 0);
+    return `<section class="screen"></section>`;
+  }
+  const info = evolutionInfo;
+  const dots = Array.from({ length: 34 }, (_, i) => {
+    const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
+    return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
+  }).join("");
+  const item = info.item;
+  return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
+    <div class="evo-page">
+      <div class="bg"></div><div class="stars">${dots}</div>
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <div class="evo-inner">
+        <div class="evo-top">
+          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / 05</div>
+          <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
+        </div>
+        <div class="evo-title">
+          <div class="en">EVOLUTION COMPLETE</div>
+          <h1>进化<em>成功</em>！</h1>
+          <div class="evo-stage">
+            <span class="st">${info.from.name} · LV.${stageIndex(info.from.key) + 1}</span>
+            <span class="arr">${I.arrow(15, "#F2C860")}</span>
+            <span class="st new">${I.crownMini(13, "#FFD25A")} ${info.to.name} · LV.${stageIndex(info.to.key) + 1}</span>
+          </div>
+        </div>
+        <div class="evo-dino">
+          <div class="glow"></div><div class="halo"></div>
+          <span class="spark" style="left:8%;top:18%">${spark(22, "#FFE08A")}</span>
+          <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
+          <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
+          <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
+          ${dino(info.to.key, { equipped: state.equipped })}
+        </div>
+        <div class="evo-unlock">
+          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">+1 图鉴收录</span></div>
+          <div class="u-main">
+            <div class="u-ico">${item ? item.art() : I.crownMini(30, "#8A5B15")}</div>
+            <div class="u-txt">
+              <b>${item ? (info.wasOwned ? item.name + "（已拥有）" : item.name) : "成长礼包"}</b>
+              <span>${item ? (info.wasOwned ? "这次进化没有新的装扮，但能力又变强了" : "已自动换上，也可以去小铺更换") : "解锁了新的成长阶段"}</span>
+            </div>
+            <div style="color:#FFD25A">${I.chevron(12)}</div>
+          </div>
+          <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
+          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:2px">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
+          <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+/* ------------------------------------------------ shop */
+function itemState(item) {
+  const locked = item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage);
+  const owned = state.owned.includes(item.id);
+  const using = state.equipped[item.slot] === item.id;
+  return { locked, owned, using };
+}
+
+function screenShop() {
+  const eq = state.equipped;
+  const wearing = ITEMS.filter((it) => eq[it.slot] === it.id).map((it) => it.name);
+  const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  const tabs = `<div class="shop-tabs">
+    <button class="tab ${shopTab === "decor" ? "on" : ""}" data-action="shop-tab" data-tab="decor">装扮</button>
+    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景<span class="tb">${BACKGROUNDS.length - 1}</span></button>
+    <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
+    <span class="all">全部 ${I.chevron(9)}</span>
+  </div>`;
+  let panel = "";
+  if (shopTab === "decor") {
+    panel = `<div class="shop-grid">${ITEMS.map((it) => {
+      const s = itemState(it);
+      const cls = `shop-item ${s.owned ? "owned" : ""} ${s.using ? "using" : ""} ${s.locked ? "locked" : ""}`;
+      const price = s.locked ? `<span class="price locked">${I.lock(9)} 进化解锁</span>`
+        : s.owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${it.price}</span>`;
+      const action = s.locked ? "locked-item" : s.owned ? "equip-item" : "buy-item";
+      return `<button class="${cls}" data-action="${action}" data-id="${it.id}">
+        <div class="thumb ${it.thumb}">${it.badge ? `<span class="badge">${it.badge}</span>` : ""}${it.art()}</div>
+        <div class="name">${it.name}${s.using ? `<span class="tag">穿着中</span>` : ""}</div>
+        <div class="sub">${it.sub}</div>
+        <div class="foot">${price}<span class="action">${s.using ? I.check(12) : s.owned ? I.arrow(12) : s.locked ? I.lock(12) : I.arrow(12)}</span></div>
+      </button>`;
+    }).join("")}</div>`;
+  } else if (shopTab === "bg") {
+    panel = `<div class="bg-grid">${BACKGROUNDS.map((bg) => {
+      const owned = state.bgOwned.includes(bg.id) || state.bg === bg.id;
+      const using = state.bg === bg.id;
+      const price = using ? `<span class="price owned">使用中</span>` : owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${bg.price}</span>`;
+      return `<button class="bg-item ${using ? "using" : ""}" data-action="${owned ? "equip-bg" : "buy-bg"}" data-id="${bg.id}">
+        <div class="bg-thumb ${bg.cls}"><div class="s"></div><div class="h"></div><div class="d">${dino(state.stage, { equipped: state.equipped })}</div></div>
+        <div class="bg-info"><b>${bg.name}</b><span>${bg.sub}</span>${price}</div>
+        ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:26px;height:26px;border-radius:9px;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
+      </button>`;
+    }).join("")}</div>`;
+  } else {
+    const found = DEX.filter((d) => state.dex.includes(d.key)).slice(0, 3);
+    panel = `<div class="card dex-teaser">
+      <div class="dt-top"><div class="t"><b>恐龙图鉴</b><p>已收集 ${state.dex.length} / ${DEX.length} 种形态</p></div><span style="font-size:11px;font-weight:900;color:var(--green-d)">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
+      <div class="dt-list">${(found.length ? found : DEX.slice(0, 3)).map((d) => `<div class="mini">${dino(d.key)}</div>`).join("")}</div>
+      <button class="btn ghost" data-action="tab" data-screen="dex">打开恐龙图鉴 ${I.arrow(14)}</button>
+    </div>`;
+  }
+  return `<section class="screen has-tab" data-screen="shop">
+    <div class="scroll">
+      <div class="shop-head">
+        <div class="t"><h1>装饰小铺</h1><p>用星星把奇奇打扮得更酷一点</p></div>
+        ${starPill()}
+      </div>
+      <div class="shop-preview ${bgClass(state.bg)}">
+        <div class="arch"></div><div class="podium"></div>
+        <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
+        <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
+        <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
+        <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
+        <div class="pet">${I.crownMini(12, "#C98B25")} 奇奇 · LV.${stageIndex(state.stage) + 1}</div>
+      </div>
+      ${tabs}
+      ${panel}
+    </div>
+    ${tabbar("shop")}
+  </section>`;
+}
+
+/* ------------------------------------------------ dex */
+function dexRewardInfo() {
+  if (state.dex.length >= 6) return { title: "图鉴全收集 · 星空营地", note: "所有形态都已收录，奇奇为你骄傲", cur: 6, max: 6, reward: "全部完成" };
+  if (state.dex.length >= 4) return { title: "收集奖励 · 星空营地", note: `再发现 ${6 - state.dex.length} 种形态，解锁「星空营地」背景`, cur: state.dex.length, max: 6, reward: "星空营地" };
+  return { title: "收集奖励 · 落日山谷", note: `再发现 ${4 - state.dex.length} 种形态，解锁「落日山谷」背景`, cur: state.dex.length, max: 4, reward: "落日山谷" };
+}
+
+function screenDex() {
+  const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["legend", "传说"]];
+  const list = DEX.filter((d) => {
+    if (dexFilter === "all") return true;
+    if (dexFilter === "legend") return d.rarity >= 5;
+    if (dexFilter === "baby") return d.key === "egg" || d.key === "baby";
+    return d.key === dexFilter;
+  });
+  const reward = dexRewardInfo();
+  return `<section class="screen has-tab" data-screen="dex">
+    <div class="scroll">
+      <div class="dex-head">
+        <div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div>
+        <div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>
+      </div>
+
+      <div class="card dex-sum">
+        <div class="ds-main">
+          <div class="ds-row"><b>图鉴收集度</b><span class="num">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
+          <div class="bar"><i style="width:${Math.round((state.dex.length / DEX.length) * 100)}%"></i></div>
+          <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} 种形态 · 继续成长解锁传说</div>
+        </div>
+        <div class="ds-badge">${I.book(26)}</div>
+      </div>
+
+      <div class="dex-filters">${filters.map(([id, label]) => `<button class="f ${dexFilter === id ? "on" : ""}" data-action="filter-dex" data-filter="${id}">${label}</button>`).join("")}</div>
+
+      <div class="dex-grid">
+        ${list.map((d) => {
+          const found = state.dex.includes(d.key);
+          const isNow = d.key === state.stage;
+          const bgT = (DEX.findIndex((x) => x.key === d.key) % 5) + 1;
+          return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
+            ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+            ${isNow ? `<span class="now-tag">当前</span>` : ""}
+            <div class="pic t${bgT}">${dino(d.key)}</div>
+            <div class="nm">${found ? d.name : "未发现"}</div>
+            <div class="stg">${found ? d.phase : "???"}</div>
+          </button>`;
+        }).join("")}
+      </div>
+
+      <div class="dex-reward">
+        <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"><div class="s"></div><div class="h"></div></div></div>
+        <div class="dr-main">
+          <div class="dr-row"><b>${reward.title}</b><span>${reward.cur} / ${reward.max}</span></div>
+          <div class="bar"><i style="width:${Math.round((reward.cur / reward.max) * 100)}%"></i></div>
+          <div class="dr-note">${reward.note}</div>
+        </div>
+        <div class="dr-lock">${reward.cur >= reward.max ? I.check(14, "#B4811C") : I.lock(14, "#B4811C")}</div>
+      </div>
+    </div>
+    ${tabbar("dex")}
+  </section>`;
+}
+
+/* ------------------------------------------------ profile */
+function screenProfile() {
+  const st = stageMeta(state.stage);
+  const days = [["一", 14, 66], ["二", 10, 48], ["三", 16, 76], ["四", 12, 58], ["五", state.minutes, 42, true], ["六", 12, 58], ["日", 12, 58]];
+  const ach = [
+    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", sub: "已获得" },
+    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", sub: "100 词" },
+    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", sub: `${state.threeStars} 次` },
+    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", sub: "???" },
+  ];
+  const decorCount = state.owned.length;
+  return `<section class="screen" data-screen="profile">
+    <div class="scroll profile-scroll">
+      <div class="profile-head">
+        <button class="circle-btn" data-action="home" aria-label="返回">${I.back(18)}</button>
+        <div class="t"><h1>成长档案</h1><p>${state.name} · 和奇奇一起长大的第 21 天</p></div>
+        <button class="circle-btn" data-action="settings" aria-label="设置">${I.gear(19)}</button>
+      </div>
+
+      <div class="profile-card">
+        <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
+        <div class="pc-ava"><div class="crop">${dino(state.stage)}</div></div>
+        <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 21 天 · 累计闯关 ${state.level - 1} 次</p></div>
+        <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(state.stars)}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
+        <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
+      </div>
+
+      <div class="card chart-card">
+        <div class="ch-head">
+          <div><div class="lb">WEEKLY REPORT · 本周学习</div><div class="v">84 <small>分钟</small></div></div>
+          <div class="goal">目标 70 分钟 ✓</div>
+        </div>
+        <div class="chart">
+          <div class="gl"></div>
+          ${days.map(([d, mins, h, today]) => `<div class="col ${today ? "today" : ""}">
+            ${today ? `<span class="tip">${mins}′</span>` : ""}
+            <div class="b" style="height:${h}px"></div><span class="d">${d}</span>
+          </div>`).join("")}
+        </div>
+      </div>
+
+      <div class="card ach-card">
+        <div class="ach-head"><b>成就徽章</b><span>3 / 12 已点亮</span></div>
+        <div class="ach-list">${ach.map((a) => `<div class="ach">
+          <div class="medal ${a.cls}">${a.icon}${a.cls !== "lock" ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
+          <b>${a.name}</b><span>${a.sub}</span>
+        </div>`).join("")}</div>
+      </div>
+
+      <div class="quote-card">
+        <div class="qi">${I.flame(18, "#E2A62E")}</div>
+        <div class="q">奇奇说：「今天也一起学 10 分钟吧，<br>我离超级霸王龙又近了一步！」</div>
+      </div>
+
+      <div class="profile-cta"><button class="btn" data-action="start-quiz">去闯关，帮奇奇进化 <span class="hint">+120 EXP</span></button></div>
+    </div>
+  </section>`;
+}
+
+/* ------------------------------------------------ sheets */
+function openOverlay(html) { $("#overlay-root").innerHTML = html; }
+function closeOverlay() { $("#overlay-root").innerHTML = ""; }
+
+function openBuyItem(id) {
+  const item = ITEMS.find((i) => i.id === id);
+  if (!item) return;
+  if (item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage)) return toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
+  if (state.owned.includes(id)) return;
+  if (state.stars < item.price) { toast("星星不够啦，再去闯一关吧"); return; }
+  pendingBuy = { type: "item", id };
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="d-ico">${item.art()}</div>
+      <h3>解锁「${item.name}」？</h3>
+      <p>将花费 ${item.price} 星星，解锁后可随时给奇奇换上或取下。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">再想想</button>
+        <button class="btn" data-action="confirm-buy">花 ${item.price} 星星解锁</button>
+      </div>
+    </div>
+  </div>`);
+}
+function openBuyBg(id) {
+  const bg = bgMeta(id);
+  if (!bg || bg.price === 0) return;
+  if (state.stars < bg.price) { toast("星星不够啦，再去闯一关吧"); return; }
+  pendingBuy = { type: "bg", id };
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="bg-thumb ${bg.cls}" style="width:100%;height:96px;border-radius:16px"><div class="s"></div><div class="h"></div></div>
+      <h3>解锁「${bg.name}」？</h3>
+      <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和装饰小铺。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">再想想</button>
+        <button class="btn" data-action="confirm-buy">花 ${bg.price} 星星解锁</button>
+      </div>
+    </div>
+  </div>`);
+}
+function confirmBuy() {
+  if (!pendingBuy) return;
+  if (pendingBuy.type === "item") {
+    const item = ITEMS.find((i) => i.id === pendingBuy.id);
+    if (!item || state.owned.includes(item.id)) { pendingBuy = null; closeOverlay(); return; }
+    if (state.stars < item.price) { toast("星星不够啦"); return; }
+    state.stars -= item.price;
+    state.owned.push(item.id);
+    state.equipped[item.slot] = item.id;
+    sfx("coin");
+    toast(`已解锁「${item.name}」并换上`);
+  } else {
+    const bg = bgMeta(pendingBuy.id);
+    if (state.bgOwned.includes(bg.id)) { state.bg = bg.id; pendingBuy = null; closeOverlay(); render(); return; }
+    if (state.stars < bg.price) { toast("星星不够啦"); return; }
+    state.stars -= bg.price;
+    state.bgOwned.push(bg.id);
+    state.bg = bg.id;
+    sfx("coin");
+    toast(`已解锁「${bg.name}」背景`);
+  }
+  pendingBuy = null;
+  closeOverlay();
+  save();
+  render();
+}
+function toggleItem(id) {
+  const item = ITEMS.find((i) => i.id === id);
+  if (!item || !state.owned.includes(id)) return;
+  if (state.equipped[item.slot] === id) {
+    state.equipped[item.slot] = null;
+    toast(`已取下「${item.name}」`);
+  } else {
+    state.equipped[item.slot] = id;
+    toast(`已换上「${item.name}」`);
+  }
+  sfx("tap");
+  save();
+  render();
+}
+function equipBg(id) {
+  if (!state.bgOwned.includes(id)) return;
+  state.bg = id;
+  sfx("tap");
+  save();
+  render();
+  toast(`场景已切换为「${bgMeta(id).name}」`);
+}
+
+function openDexDetail(key) {
+  const d = DEX.find((x) => x.key === key);
+  if (!d) return;
+  if (!state.dex.includes(key)) { toast("这只恐龙还在沉睡，继续闯关吧"); return; }
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <div class="detail-hero"><div class="dino" style="width:170px;height:170px">${dino(key)}</div></div>
+      <div class="detail-meta"><b>${d.name}</b><span class="ph">${d.phase} · ★${d.rarity}</span></div>
+      <div class="detail-desc">${d.desc}</div>
+      <div class="detail-stats">
+        <div class="ds"><b>${d.height}</b><span>身高</span></div>
+        <div class="ds"><b>${d.weight}</b><span>体重</span></div>
+        <div class="ds"><b style="font-size:10px">${d.skill}</b><span>专属能力</span></div>
+      </div>
+      <div class="sheet-actions"><button class="btn" data-action="close-overlay">继续收集</button></div>
+    </div>
+  </div>`);
+}
+function openReview() {
+  const w = todayWord();
+  openOverlay(`<div class="overlay">
+    <div class="sheet word-sheet">
+      <div class="grab"></div>
+      <div class="eyebrow">TODAY'S REVIEW</div>
+      <div class="word-big">${w.word}</div>
+      <div class="word-phon">${w.phon}</div>
+      <div class="word-zh">n. ${w.zh}</div>
+      <div class="tip">例句：${w.example}</div>
+      <button class="btn speak-btn" data-action="speak-word" data-word="${w.word}">${I.speaker(18)} 听一听发音</button>
+      <div class="sheet-actions"><button class="btn ghost" data-action="close-overlay">我记住啦</button></div>
+    </div>
+  </div>`);
+}
+function openSettings() {
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>设置</h2>
+      <div class="sheet-sub">${standalone ? "当前已从主屏幕运行，体验和 App 一样。" : "调整声音、安装到主屏幕，或重置演示进度。"}</div>
+      <div style="margin-top:10px">
+        <div class="setting-row">
+          <div class="s-ic">${I.volume(18)}</div>
+          <div class="s-txt"><b>音效与发音</b><span>答对 / 答错 / 翻页的提示音</span></div>
+          <button class="switch ${state.sound ? "on" : ""}" data-action="toggle-sound" aria-label="音效开关"></button>
+        </div>
+        <div class="setting-row" data-action="install-guide" role="button">
+          <div class="s-ic">${I.share(18)}</div>
+          <div class="s-txt"><b>安装到主屏幕</b><span>全屏运行，像原生 App 一样</span></div>
+          <span style="color:#B3A78E">${I.chevron(12)}</span>
+        </div>
+        <div class="setting-row" data-action="reset-confirm" role="button">
+          <div class="s-ic">${I.refresh(18)}</div>
+          <div class="s-txt"><b>重置演示进度</b><span>回到 480 成长值、1,280 星星</span></div>
+          <span style="color:#B3A78E">${I.chevron(12)}</span>
+        </div>
+        <div class="setting-row">
+          <div class="s-ic">${I.info(18)}</div>
+          <div class="s-txt"><b>DinoGo · 恐龙英语</b><span>交互概念版 v1.0 · 离线可用</span></div>
+        </div>
+      </div>
+      <div class="sheet-actions"><button class="btn ghost" data-action="close-overlay">完成</button></div>
+    </div>
+  </div>`);
+}
+function openInstallGuide() {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>把 DinoGo 装到主屏幕</h2>
+      <div class="sheet-sub">添加后会以全屏方式运行；通过 HTTPS 访问时还支持离线打开。</div>
+      ${ios ? `
+        <div class="install-step"><span class="n">1</span><p>用 <b>Safari</b> 打开本页（需要是本机或局域网地址，不能是本地文件）。</p></div>
+        <div class="install-step"><span class="n">2</span><p>点击底部工具栏的 <b>分享</b> 按钮。</p></div>
+        <div class="install-step"><span class="n">3</span><p>向上滑动，选择 <b>添加到主屏幕</b>，再点右上角「添加」。</p></div>
+        <div class="install-step"><span class="n">4</span><p>回到主屏幕，点击 DinoGo 图标即可全屏进入。</p></div>
+      ` : `
+        <div class="install-step"><span class="n">1</span><p>在 Chrome / Edge 中通过 <b>http 或 https</b> 打开本页。</p></div>
+        <div class="install-step"><span class="n">2</span><p>点击地址栏右侧的 <b>安装</b> 图标，或菜单里的「安装应用」。</p></div>
+        <div class="install-step"><span class="n">3</span><p>安装后可从桌面独立打开，并离线使用。</p></div>
+      `}
+      <div class="install-note">提示：直接双击本地 HTML 文件时，Safari 不会显示「添加到主屏幕」。请用项目里的 <b>start-ios.ps1</b> 启动本地服务，再用 iPad 访问电脑的局域网地址。局域网 HTTP 下不会启用离线缓存；需要离线请用单文件版，或部署到 HTTPS。</div>
+      <div class="sheet-actions"><button class="btn" data-action="close-overlay">知道了</button></div>
+    </div>
+  </div>`);
+}
+function openResetConfirm() {
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="d-ico">${I.refresh(24, "#B4811C")}</div>
+      <h3>重置演示进度？</h3>
+      <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">取消</button>
+        <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 5px 0 #B84435">确认重置</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+/* ------------------------------------------------ toast */
+function toast(msg) {
+  const root = $("#toast-root");
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  root.appendChild(el);
+  while (root.children.length > 3) root.removeChild(root.firstChild);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 260); }, 2100);
+}
+
+/* ------------------------------------------------ events */
+document.addEventListener("click", (e) => {
+  if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const action = el.dataset.action;
+
+  if (action === "tab") {
+    closeOverlay();
+    go(el.dataset.screen, { replace: true });
+    sfx("tap");
+  } else if (action === "home") {
+    closeOverlay();
+    go("home", { replace: true });
+  } else if (action === "profile") {
+    go("profile");
+    sfx("tap");
+  } else if (action === "start-quiz") {
+    closeOverlay();
+    startQuiz();
+  } else if (action === "select") {
+    selectOption(el.dataset.word);
+  } else if (action === "check") {
+    checkAnswer();
+  } else if (action === "next") {
+    nextQuestion();
+  } else if (action === "close-quiz") {
+    quiz = null;
+    go("map", { replace: true });
+  } else if (action === "evolve") {
+    beginEvolution();
+  } else if (action === "shop-tab") {
+    shopTab = el.dataset.tab;
+    sfx("tap");
+    render();
+  } else if (action === "buy-item") {
+    openBuyItem(el.dataset.id);
+  } else if (action === "equip-item") {
+    toggleItem(el.dataset.id);
+  } else if (action === "locked-item") {
+    const item = ITEMS.find((i) => i.id === el.dataset.id);
+    if (item && item.unlockStage) toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
+  } else if (action === "buy-bg") {
+    openBuyBg(el.dataset.id);
+  } else if (action === "equip-bg") {
+    equipBg(el.dataset.id);
+  } else if (action === "confirm-buy") {
+    confirmBuy();
+  } else if (action === "dex-detail") {
+    openDexDetail(el.dataset.key);
+  } else if (action === "filter-dex") {
+    dexFilter = el.dataset.filter;
+    sfx("tap");
+    render();
+  } else if (action === "settings") {
+    openSettings();
+  } else if (action === "toggle-sound") {
+    state.sound = !state.sound;
+    save();
+    if (state.sound) { ensureAudio(); sfx("tap"); }
+    openSettings();
+    toast(state.sound ? "音效已开启" : "音效已关闭");
+  } else if (action === "install-guide") {
+    openInstallGuide();
+  } else if (action === "reset-confirm") {
+    openResetConfirm();
+  } else if (action === "confirm-reset") {
+    resetState();
+    closeOverlay();
+    go("home", { replace: true });
+    toast("已重置演示进度");
+  } else if (action === "close-overlay") {
+    closeOverlay();
+  } else if (action === "speak-word") {
+    speak(el.dataset.word);
+  } else if (action === "open-review") {
+    openReview();
+  } else if (action === "open-map") {
+    go("map");
+  }
+});
+
+window.addEventListener("popstate", (e) => {
+  const s = (e.state && e.state.screen) || "home";
+  if (s === "result" && !lastResult) { current = "home"; render(); return; }
+  if (s === "evolution" && !evolutionInfo) { current = "home"; render(); return; }
+  if (s === "quiz" && !quiz) { current = "map"; render(); return; }
+  clearTimers();
+  current = s;
+  render();
+});
+
+document.addEventListener("gesturestart", (e) => e.preventDefault());
+
+/* ------------------------------------------------ render */
+const SCREEN_FN = {
+  home: screenHome,
+  map: screenMap,
+  quiz: screenQuiz,
+  result: screenResult,
+  evolution: screenEvolution,
+  shop: screenShop,
+  dex: screenDex,
+  profile: screenProfile,
+};
+function render() {
+  const fn = SCREEN_FN[current] || screenHome;
+  $("#view").innerHTML = fn();
+}
+
+/* ------------------------------------------------ boot */
+(function boot() {
+  try {
+    if (!history.state || !history.state.screen) history.replaceState({ screen: "home" }, "");
+    else current = history.state.screen;
+  } catch (e) { current = "home"; }
+
+  // A result/evolution screen cannot be restored without runtime context.
+  if (current === "result" && !lastResult) current = "home";
+  if (current === "evolution" && !evolutionInfo) current = "home";
+  if (current === "quiz" && !quiz) current = "home";
+
+  render();
+
+  // Warm up the audio graph on the first touch (iOS requirement).
+  const wake = () => { ensureAudio(); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
+  document.addEventListener("touchstart", wake, { passive: true });
+  document.addEventListener("click", wake);
+
+  // iOS install hint — only once, and only in Safari (not standalone).
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  let seen = false;
+  try { seen = localStorage.getItem("dinogo.installHint") === "1"; } catch (e) {}
+  if (isIOS && !standalone && !seen) {
+    setTimeout(() => {
+      if (current !== "home") return;
+      try { localStorage.setItem("dinogo.installHint", "1"); } catch (e) {}
+      toast("提示：分享 → 添加到主屏幕，可全屏离线玩");
+    }, 2400);
+  }
+})();
+
+/* PWA: cache the app for offline use when served over http(s). */
+if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+
+
+</script>
+</body>
+</html>
