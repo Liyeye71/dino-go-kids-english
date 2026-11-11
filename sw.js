@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "dinogo-v1";
+const VERSION = "dinogo-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -37,6 +37,18 @@ self.addEventListener("fetch", (event) => {
           return res;
         })
         .catch(() => caches.match("./index.html").then((r) => r || caches.match("./")))
+    );
+    return;
+  }
+  if (/\.(js|css)$/.test(new URL(req.url).pathname)) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(VERSION).then((cache) => cache.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => caches.match(req))
     );
     return;
   }
