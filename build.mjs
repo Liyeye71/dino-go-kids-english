@@ -24,20 +24,26 @@ for (const file of JS_FILES) {
   inlined = inlined.replace(`<script src="${file}"></script>`, () => `<script>\n${src}\n</script>`);
 }
 
-// ---- PWA build (dist/) -------------------------------------------------
-if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
-// 保留 .git 以便后续 git push 不用 force
-for (const e of fs.readdirSync(distDir)) {
-  if (e === ".git") continue;
-  fs.rmSync(path.join(distDir, e), { recursive: true, force: true });
-}
-fs.mkdirSync(path.join(distDir, "images", "icons"), { recursive: true });
-fs.writeFileSync(path.join(distDir, "index.html"), inlined);
-for (const file of ["manifest.webmanifest", "sw.js"]) {
-  fs.copyFileSync(path.join(appDir, file), path.join(distDir, file));
-}
-for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
-  fs.copyFileSync(path.join(iconsDir, file), path.join(distDir, "images", "icons", file));
+// ---- PWA build (dist/ + 根目录，供 GitHub Pages branch root 使用) -------
+const KEEP_AT_ROOT = new Set([
+  ".git", ".github", "app", "dist", "node_modules",
+  ".gitignore", "README.md", "build.mjs", "serve.mjs", "package.json",
+]);
+for (const target of [distDir, root]) {
+  if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
+  const keep = target === distDir ? [".git"] : [...KEEP_AT_ROOT];
+  for (const e of fs.readdirSync(target)) {
+    if (keep.includes(e)) continue;
+    fs.rmSync(path.join(target, e), { recursive: true, force: true });
+  }
+  fs.mkdirSync(path.join(target, "images", "icons"), { recursive: true });
+  fs.writeFileSync(path.join(target, "index.html"), inlined);
+  for (const file of ["manifest.webmanifest", "sw.js"]) {
+    fs.copyFileSync(path.join(appDir, file), path.join(target, file));
+  }
+  for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
+    fs.copyFileSync(path.join(iconsDir, file), path.join(target, "images", "icons", file));
+  }
 }
 
 const kb = (n) => (n / 1024).toFixed(0) + " KB";
