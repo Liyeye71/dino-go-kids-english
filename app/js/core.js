@@ -336,11 +336,24 @@ function emojiArt(ch) {
     <text x="60" y="64" font-size="78" text-anchor="middle" dominant-baseline="middle">${ch}</text>
   </svg>`;
 }
-const WORD_SETS = (window.DINO_WORD_SETS || []).map((set) => ({
-  ...set,
-  words: set.words.map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) })),
-}));
-const ALL_WORDS = WORD_SETS.flatMap((set) => set.words);
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 attrs 标注），合并去重 */
+const POS_POOL = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isPool)
+  .flatMap((s) => s.words || [])
+  .map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 attrs 从 POS_POOL 匹配 */
+const WORD_SETS = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isTheme)
+  .map((set) => {
+    const own = (set.words || []).map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+    let words = own;
+    if (words.length === 0 && Array.isArray(set.attrs) && set.attrs.length) {
+      words = POS_POOL.filter((w) => set.attrs.some((a) => w.attrs && w.attrs.includes(a)));
+    }
+    return { ...set, words };
+  });
+/* 单词本用所有原子词（不重复），关卡进度等只关联 WORD_SETS */
+const ALL_WORDS = POS_POOL;
 /* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
 const LEVELS_PER_THEME = 10;
 const PASS_STARS = 2;
@@ -706,13 +719,16 @@ document.addEventListener("click", (e) => {
     go("home", { replace: true });
     toast("已重置演示进度");
   } else if (action === "close-overlay") {
+    if (typeof cancelVoice === "function") cancelVoice();
     closeOverlay();
   } else if (action === "speak-word") {
     speak(el.dataset.word);
   } else if (action === "open-review") {
     openReview();
-  } else if (action === "random-word") {
-    openReview(true);
+  } else if (action === "record-say") {
+    recordSay();
+  } else if (action === "play-voice") {
+    playVoice();
   } else if (action === "open-map") {
     go("map");
   }

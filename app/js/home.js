@@ -5,6 +5,72 @@
 
 /* ------------------------------------------------ home */
 let reviewWord = null;
+let voiceRec = null;
+let voiceChunks = [];
+let voiceUrl = "";
+let voiceTimer = null;
+
+function resetVoice() {
+  if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+  if (voiceRec && voiceRec.state !== "inactive") {
+    try { voiceRec.stop(); } catch (e) {}
+  }
+  voiceRec = null;
+  voiceChunks = [];
+  if (voiceUrl) { URL.revokeObjectURL(voiceUrl); voiceUrl = ""; }
+}
+
+function cancelVoice() { resetVoice(); }
+
+function setRecBtn(label, recording) {
+  const btn = $('[data-action="record-say"]');
+  if (!btn) return;
+  btn.classList.toggle("recording", !!recording);
+  btn.innerHTML = recording ? `<span class="rec-dot"></span>${label}` : `${I.speaker(18)} ${label}`;
+}
+
+async function recordSay() {
+  if (voiceRec && voiceRec.state === "recording") return;
+  if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
+  setRecBtn("准备录音…", true);
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    voiceChunks = [];
+    voiceRec = new MediaRecorder(stream);
+    voiceRec.ondataavailable = (e) => { if (e.data && e.data.size) voiceChunks.push(e.data); };
+    voiceRec.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      if (voiceUrl) URL.revokeObjectURL(voiceUrl);
+      const blob = new Blob(voiceChunks, voiceRec.mimeType ? { type: voiceRec.mimeType } : {});
+      voiceUrl = URL.createObjectURL(blob);
+      setRecBtn("重录 · 5 秒", false);
+      if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+      toast("录好啦，点「回放声音」听一听");
+    };
+    voiceRec.start();
+    let left = 5;
+    setRecBtn(`录音中 ${left}s`, true);
+    voiceTimer = setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(voiceTimer); voiceTimer = null;
+        if (voiceRec && voiceRec.state === "recording") voiceRec.stop();
+        return;
+      }
+      setRecBtn(`录音中 ${left}s`, true);
+    }, 1000);
+  } catch (e) {
+    setRecBtn("跟着读", false);
+    toast("无法使用麦克风，请允许录音权限");
+  }
+}
+
+function playVoice() {
+  if (!voiceUrl) { toast("还没有录音，先跟着读一次吧"); return; }
+  const audio = new Audio(voiceUrl);
+  audio.play().catch(() => toast("播放失败，请再试一次"));
+}
+
 function randomWord() { return ALL_WORDS[Math.floor(Math.random() * ALL_WORDS.length)]; }
 
 function todayLevels() {
@@ -185,17 +251,19 @@ function screenProfile() {
 function openReview(next) {
   if (next) reviewWord = null;
   const w = reviewWord || (reviewWord = randomWord());
+  resetVoice();
   openOverlay(`<div class="overlay">
     <div class="sheet word-sheet">
       <div class="grab"></div>
       <div class="eyebrow">RANDOM WORDS</div>
-      <div class="word-big">${w.word}</div>
+      <button class="word-art" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.art()}</button>
+      <button class="word-big" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.word}</button>
       <div class="word-phon">${w.phon}</div>
       <div class="word-zh">n. ${w.zh}</div>
       <div class="tip">例句：${w.example}</div>
-      <button class="btn speak-btn" data-action="speak-word" data-word="${w.word}">${I.speaker(18)} 听一听发音</button>
+      <button class="btn speak-btn" data-action="record-say">${I.speaker(18)} 跟着读</button>
       <div class="sheet-actions">
-        <button class="btn ghost" data-action="random-word">换一个单词</button>
+        <button class="btn ghost" data-action="play-voice">${I.speaker(18)} 回放声音</button>
         <button class="btn" data-action="close-overlay">我记住啦</button>
       </div>
     </div>

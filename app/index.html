@@ -30,13 +30,24 @@
     <div class="toast-root" id="toast-root"></div>
   </div>
   <!-- 主题词汇：每个主题一个文件，新增主题在此登记（build.mjs 的 JS_FILES 也要同步） -->
-  <script src="words/fruits.js"></script>
-  <script src="words/cars.js"></script>
-  <script src="words/zoo.js"></script>
-  <script src="words/food.js"></script>
+  <!-- 词性词汇池（原子词，带 attrs 分类标签） -->
+  <script src="data/words/noun.js"></script>
+  <script src="data/words/verb.js"></script>
+  <script src="data/words/adj.js"></script>
+  <script src="data/words/adv.js"></script>
+  <script src="data/words/pron.js"></script>
+  <script src="data/words/prep.js"></script>
+  <script src="data/words/conj.js"></script>
+  <script src="data/words/interj.js"></script>
+  <script src="data/words/num.js"></script>
+  <!-- 主题关卡筛选器（按 attrs 从词汇池匹配单词，保留关卡进度身份） -->
+  <script src="data/level/beginner/fruits.js"></script>
+  <script src="data/level/beginner/cars.js"></script>
+  <script src="data/level/beginner/zoo.js"></script>
+  <script src="data/level/beginner/food.js"></script>
   <!-- 声音：音效 / 语音 / 关卡提示音 + 主题背景音乐 -->
-  <script src="sounds/sfx.js"></script>
-  <script src="sounds/bgm.js"></script>
+  <script src="data/sounds/sfx.js"></script>
+  <script src="data/sounds/bgm.js"></script>
   <!-- 公共：数据 / 图标 / 状态 / 路由 / 事件；四个 Tab 各自一个文件 -->
   <script src="js/core.js"></script>
   <script src="js/home.js"></script>

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.join(root, "app");
 const distDir = path.join(root, "dist");
-const iconsDir = path.join(appDir, "images", "icons");
+const iconsDir = path.join(appDir, "data", "images", "icons");
 
 // 依次内联拆分后的样式，顺序必须与 index.html 一致（responsive 放最后）
 const CSS_FILES = ["base", "home", "map", "dex", "shop", "overlays", "responsive"];
@@ -14,8 +14,10 @@ const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
 
 // 依次内联主题词汇 + 声音模块 + core + 四个 Tab 文件，顺序必须与 index.html 一致
 const JS_FILES = [
-  "words/fruits.js", "words/cars.js", "words/zoo.js", "words/food.js",
-  "sounds/sfx.js", "sounds/bgm.js",
+  "data/words/noun.js", "data/words/verb.js", "data/words/adj.js", "data/words/adv.js",
+  "data/words/pron.js", "data/words/prep.js", "data/words/conj.js", "data/words/interj.js", "data/words/num.js",
+  "data/level/beginner/fruits.js", "data/level/beginner/cars.js", "data/level/beginner/zoo.js", "data/level/beginner/food.js",
+  "data/sounds/sfx.js", "data/sounds/bgm.js",
   "js/core.js", "js/home.js", "js/map.js", "js/dex.js", "js/shop.js",
 ];
 let inlined = html.replace(/(?:\n\s*<link rel="stylesheet" href="css\/[\w.-]+\.css">)+/, () => `\n  <style>\n${css}\n  </style>`);

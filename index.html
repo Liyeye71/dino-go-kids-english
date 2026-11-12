@@ -735,21 +735,21 @@ h1,h2,h3,h4,p{margin:0}
 .wg-letter{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:900;color:var(--green-d);letter-spacing:.5px}
 .wg-letter::after{content:"";flex:1;height:1.5px;border-radius:2px;background:#EADFC9}
 .wg-letter span{font-size:9px;font-weight:900;color:#B3A184;background:#F4EFE3;border-radius:7px;padding:1px 6px;letter-spacing:0}
-.wg-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:7px}
-.word-row{position:relative;display:flex;align-items:center;gap:7px;padding:9px 8px;min-height:74px;text-align:left;
+.wg-list{display:grid;grid-template-columns:1fr;gap:8px;margin-top:7px}
+.word-row{position:relative;display:flex;align-items:center;gap:14px;padding:10px 10px;min-height:82px;text-align:left;
   background:#fff;border:1.5px solid var(--line);border-radius:16px;box-shadow:0 4px 10px rgba(94,70,30,.04)}
 .word-row:active{transform:scale(.985);background:#FBFDF6}
-.wr-pic{width:40px;height:40px;border-radius:11px;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
+.wr-pic{width:48px;height:48px;border-radius:13px;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
 .wr-pic svg{width:100%;height:100%;display:block}
 .wr-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
-.wr-line{display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0}
-.wr-line b{font-size:20.5px;font-weight:900;letter-spacing:-.4px;line-height:1.12;min-width:0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wr-line i{font-style:normal;font-size:12px;font-weight:800;color:var(--ink-2);white-space:nowrap;flex:none}
+.wr-line{display:flex;align-items:baseline;justify-content:flex-start;gap:4px;min-width:0}
+.wr-line b{font-size:22px;font-weight:900;letter-spacing:-.4px;line-height:1.12;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
+.wr-line i{font-style:normal;font-size:13.5px;font-weight:800;color:var(--ink-2);white-space:nowrap;flex:none}
 .wr-line.sub{align-items:center}
 .wr-line.sub em{font-style:normal;font-size:10px;font-weight:700;color:#A19278;min-width:0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wr-tag{flex:none;font-size:7.5px;font-weight:900;padding:2px 4px;border-radius:6px;letter-spacing:.2px}
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
+.wr-tag{flex:none;font-size:9px;font-weight:900;padding:3px 6px;border-radius:6px;letter-spacing:.2px}
 .wr-tag.t-fruit{background:#EAF7DA;color:#4C7A3A}
 .wr-tag.t-cars{background:#E3F1FB;color:#3D6C8C}
 .wr-tag.t-zoo{background:#FFF0DA;color:#9A6A24}
@@ -906,10 +906,20 @@ h1,h2,h3,h4,p{margin:0}
 .install-step p{font-size:11.5px;line-height:1.65;color:#5F7364;font-weight:600}
 .install-step p b{color:var(--ink)}
 .install-note{margin-top:14px;border-radius:14px;background:#F5F0E3;padding:10px 12px;font-size:10px;line-height:1.6;color:#8E7D60;font-weight:600}
-.word-sheet .word-big{font-size:36px;font-weight:900;letter-spacing:-1px;margin-top:8px}
-.word-sheet .word-phon{font-size:13px;color:#A68A4E;margin-top:2px;font-weight:600}
-.word-sheet .word-zh{font-size:14px;color:#5F7364;margin-top:6px;font-weight:700}
-.word-sheet .speak-btn{margin-top:14px}
+.word-sheet .word-art{width:88px;height:88px;margin:10px auto 0;display:grid;place-items:center;flex:none;
+  background:#F5F9EC;border:none;border-radius:22px;box-shadow:inset 0 0 0 1.5px #E7F0D8}
+.word-sheet .word-art svg{width:84%;height:84%;display:block}
+.word-sheet .word-art:active{transform:scale(.96)}
+.word-sheet .word-big{display:block;margin:8px auto 0;padding:0;border:none;background:none;
+  font-family:inherit;font-size:36px;font-weight:900;letter-spacing:-1px;color:var(--ink);line-height:1.1}
+.word-sheet .word-big:active{transform:scale(.97)}
+.word-sheet .word-phon{font-size:13px;color:#A68A4E;margin-top:2px;font-weight:600;text-align:center}
+.word-sheet .word-zh{font-size:14px;color:#5F7364;margin-top:6px;font-weight:700;text-align:center}
+.word-sheet .speak-btn{margin-top:14px;transition:all .15s ease}
+.word-sheet .speak-btn.recording{background:linear-gradient(180deg,#F58C7C,#DC5E46);box-shadow:0 4px 0 #B23F2C,0 8px 14px rgba(220,94,70,.25)}
+.rec-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;margin-right:3px;
+  animation:recPulse .9s ease-in-out infinite}
+@keyframes recPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
 .word-sheet .tip{margin-top:14px;font-size:10px;color:#A19278;text-align:center;line-height:1.6}
 
 /* toast */
@@ -1005,10 +1015,776 @@ h1,h2,h3,h4,p{margin:0}
     <div class="toast-root" id="toast-root"></div>
   </div>
   <!-- 主题词汇：每个主题一个文件，新增主题在此登记（build.mjs 的 JS_FILES 也要同步） -->
+  <!-- 词性词汇池（原子词，带 attrs 分类标签） -->
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 主题词汇：水果大冒险
-   新增主题只需在同目录添加一个文件，并在 index.html / build.mjs 里登记
+   DinoGo · 恐龙英语 — 词性词汇：名词集
+   attrs 分类：fruit / vehicle / animal / food / school / body / color / people
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "noun",
+  name: "名词集",
+  chip: "名词单词",
+  unit: "Nouns · 名词集",
+  emoji: "📦",
+  isPool: true,
+  dialog: { q: "What's this?", a: "It's a {word}." },
+  words: [
+    // ---- 水果 fruit ----
+    { word: "apple",      zh: "苹果", phon: "/ˈæpəl/",         example: "I eat an apple every day.",      emoji: "🍎", attrs: ["fruit"] },
+    { word: "banana",     zh: "香蕉", phon: "/bəˈnɑːnə/",      example: "The monkey likes bananas.",       emoji: "🍌", attrs: ["fruit"] },
+    { word: "orange",     zh: "橙子", phon: "/ˈɒrɪndʒ/",       example: "This orange is sweet.",           emoji: "🍊", attrs: ["fruit"] },
+    { word: "grape",      zh: "葡萄", phon: "/ɡreɪp/",         example: "Grapes grow on a vine.",          emoji: "🍇", attrs: ["fruit"] },
+    { word: "strawberry", zh: "草莓", phon: "/ˈstrɔːbəri/",    example: "I want a strawberry.",            emoji: "🍓", attrs: ["fruit"] },
+    { word: "pear",       zh: "梨",   phon: "/peə(r)/",        example: "This pear is juicy.",             emoji: "🍐", attrs: ["fruit"] },
+    { word: "peach",      zh: "桃子", phon: "/piːtʃ/",         example: "The peach is soft and sweet.",    emoji: "🍑", attrs: ["fruit"] },
+    { word: "lemon",      zh: "柠檬", phon: "/ˈlemən/",        example: "The lemon tastes sour.",          emoji: "🍋", attrs: ["fruit"] },
+    { word: "watermelon", zh: "西瓜", phon: "/ˈwɔːtərmelən/",  example: "We eat watermelon in summer.",    emoji: "🍉", attrs: ["fruit"] },
+    { word: "cherry",     zh: "樱桃", phon: "/ˈtʃeri/",        example: "She has two cherries.",           emoji: "🍒", attrs: ["fruit"] },
+    // ---- 交通 vehicle ----
+    { word: "car",    zh: "小汽车", phon: "/kɑːr/",          example: "My dad drives a red car.",           emoji: "🚗", attrs: ["vehicle"] },
+    { word: "bus",    zh: "公交车", phon: "/bʌs/",           example: "I take the bus to school.",          emoji: "🚌", attrs: ["vehicle"] },
+    { word: "bike",   zh: "自行车", phon: "/baɪk/",          example: "I ride my bike in the park.",        emoji: "🚲", attrs: ["vehicle"] },
+    { word: "train",  zh: "火车",   phon: "/treɪn/",         example: "The train goes very fast.",           emoji: "🚂", attrs: ["vehicle"] },
+    { word: "plane",  zh: "飞机",   phon: "/pleɪn/",         example: "The plane flies in the sky.",        emoji: "✈️", attrs: ["vehicle"] },
+    { word: "boat",   zh: "小船",   phon: "/bəʊt/",          example: "A boat sails on the lake.",           emoji: "⛵", attrs: ["vehicle"] },
+    { word: "taxi",   zh: "出租车", phon: "/ˈtæksi/",        example: "We take a taxi to the station.",     emoji: "🚕", attrs: ["vehicle"] },
+    { word: "truck",  zh: "卡车",   phon: "/trʌk/",          example: "The truck carries big boxes.",        emoji: "🚚", attrs: ["vehicle"] },
+    { word: "ship",   zh: "轮船",   phon: "/ʃɪp/",           example: "The ship crosses the sea.",          emoji: "🚢", attrs: ["vehicle"] },
+    { word: "rocket", zh: "火箭",   phon: "/ˈrɒkɪt/",        example: "The rocket flies to the moon.",       emoji: "🚀", attrs: ["vehicle"] },
+    // ---- 动物 animal ----
+    { word: "lion",     zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion has a big mane.",                emoji: "🦁", attrs: ["animal"] },
+    { word: "tiger",    zh: "老虎",   phon: "/ˈtaɪɡər/",      example: "The tiger runs very fast.",               emoji: "🐯", attrs: ["animal"] },
+    { word: "monkey",   zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey likes bananas.",               emoji: "🐵", attrs: ["animal"] },
+    { word: "elephant", zh: "大象",   phon: "/ˈelɪfənt/",     example: "An elephant has a long nose.",            emoji: "🐘", attrs: ["animal"] },
+    { word: "panda",    zh: "熊猫",   phon: "/ˈpændə/",       example: "The panda eats bamboo.",                  emoji: "🐼", attrs: ["animal"] },
+    { word: "giraffe",  zh: "长颈鹿", phon: "/dʒəˈrɑːf/",     example: "The giraffe has a long neck.",            emoji: "🦒", attrs: ["animal"] },
+    { word: "zebra",    zh: "斑马",   phon: "/ˈzebrə/",       example: "The zebra has black and white stripes.",  emoji: "🦓", attrs: ["animal"] },
+    { word: "bear",     zh: "熊",     phon: "/beər/",         example: "The bear sleeps in winter.",              emoji: "🐻", attrs: ["animal"] },
+    { word: "rabbit",   zh: "兔子",   phon: "/ˈræbɪt/",       example: "The rabbit jumps in the grass.",          emoji: "🐰", attrs: ["animal"] },
+    { word: "penguin",  zh: "企鹅",   phon: "/ˈpeŋɡwɪn/",     example: "The penguin lives in the cold.",          emoji: "🐧", attrs: ["animal"] },
+    { word: "cat",      zh: "猫",     phon: "/kæt/",          example: "The cat is sleeping on the sofa.",       emoji: "🐱", attrs: ["animal"] },
+    { word: "dog",      zh: "狗",     phon: "/dɒɡ/",          example: "My dog likes to play fetch.",            emoji: "🐶", attrs: ["animal"] },
+    { word: "pig",      zh: "猪",     phon: "/pɪɡ/",          example: "The pig lives on the farm.",             emoji: "🐷", attrs: ["animal"] },
+    { word: "duck",     zh: "鸭",     phon: "/dʌk/",          example: "The duck swims in the pond.",            emoji: "🦆", attrs: ["animal"] },
+    { word: "horse",    zh: "马",     phon: "/hɔːs/",         example: "I can ride a horse.",                    emoji: "🐴", attrs: ["animal"] },
+    { word: "ant",      zh: "蚂蚁",   phon: "/ænt/",          example: "Ants work together.",                    emoji: "🐜", attrs: ["animal"] },
+    { word: "fish",     zh: "鱼",     phon: "/fɪʃ/",          example: "Fish swim in the water.",                emoji: "🐟", attrs: ["animal"] },
+    { word: "bird",     zh: "鸟",     phon: "/bɜːd/",         example: "A bird is singing in the tree.",         emoji: "🐦", attrs: ["animal"] },
+    { word: "snake",    zh: "蛇",     phon: "/sneɪk/",        example: "A snake can be very long.",              emoji: "🐍", attrs: ["animal"] },
+    { word: "mouse",    zh: "鼠",     phon: "/maʊs/",         example: "The mouse is small and quick.",          emoji: "🐭", attrs: ["animal"] },
+    { word: "kangaroo", zh: "袋鼠",   phon: "/ˌkæŋɡəˈruː/",   example: "A kangaroo can jump far.",               emoji: "🦘", attrs: ["animal"] },
+    { word: "fox",      zh: "狐狸",   phon: "/fɒks/",         example: "The fox is very clever.",                emoji: "🦊", attrs: ["animal"] },
+    { word: "deer",     zh: "鹿",     phon: "/dɪə(r)/",       example: "A deer has beautiful antlers.",          emoji: "🦌", attrs: ["animal"] },
+    { word: "goose",    zh: "鹅",     phon: "/ɡuːs/",         example: "The goose has a long neck.",             emoji: "🦢", attrs: ["animal"] },
+    { word: "hen",      zh: "母鸡",   phon: "/hen/",          example: "The hen lays eggs.",                     emoji: "🐔", attrs: ["animal"] },
+    { word: "turkey",   zh: "火鸡",   phon: "/ˈtɜːki/",       example: "We eat turkey on Thanksgiving.",         emoji: "🦃", attrs: ["animal"] },
+    { word: "lamb",     zh: "小羊",   phon: "/læm/",          example: "A little lamb is cute.",                 emoji: "🐑", attrs: ["animal"] },
+    { word: "sheep",    zh: "绵羊",   phon: "/ʃiːp/",         example: "Sheep have soft wool.",                 emoji: "🐑", attrs: ["animal"] },
+    { word: "goat",     zh: "山羊",   phon: "/ɡəʊt/",         example: "The goat eats grass.",                   emoji: "🐐", attrs: ["animal"] },
+    { word: "cow",      zh: "奶牛",   phon: "/kaʊ/",          example: "Cows give us milk.",                     emoji: "🐮", attrs: ["animal"] },
+    { word: "shark",    zh: "鲨鱼",   phon: "/ʃɑːk/",         example: "A shark is a big fish.",                 emoji: "🦈", attrs: ["animal"] },
+    { word: "seal",     zh: "海豹",   phon: "/siːl/",         example: "The seal can swim fast.",                emoji: "🦭", attrs: ["animal"] },
+    // ---- 食物 food ----
+    { word: "bread",     zh: "面包",   phon: "/bred/",             example: "I eat bread for breakfast.",   emoji: "🍞", attrs: ["food"] },
+    { word: "cake",      zh: "蛋糕",   phon: "/keɪk/",             example: "We share a birthday cake.",    emoji: "🍰", attrs: ["food"] },
+    { word: "rice",      zh: "米饭",   phon: "/raɪs/",             example: "We have rice for dinner.",     emoji: "🍚", attrs: ["food"] },
+    { word: "noodles",   zh: "面条",   phon: "/ˈnuːdlz/",          example: "These noodles are hot.",       emoji: "🍜", attrs: ["food"] },
+    { word: "egg",       zh: "鸡蛋",   phon: "/eɡ/",               example: "I eat an egg every morning.",  emoji: "🥚", attrs: ["food"] },
+    { word: "milk",      zh: "牛奶",   phon: "/mɪlk/",             example: "I drink milk before bed.",     emoji: "🥛", attrs: ["food"] },
+    { word: "juice",     zh: "果汁",   phon: "/dʒuːs/",            example: "This apple juice is sweet.",   emoji: "🧃", attrs: ["food"] },
+    { word: "hamburger", zh: "汉堡",   phon: "/ˈhæmbɜːɡər/",       example: "He orders a hamburger.",       emoji: "🍔", attrs: ["food"] },
+    { word: "ice cream", zh: "冰淇淋", phon: "/ˌaɪs ˈkriːm/",      example: "Ice cream melts in the sun.",  emoji: "🍦", attrs: ["food"] },
+    { word: "pizza",     zh: "披萨",   phon: "/ˈpiːtsə/",          example: "We eat pizza on Friday.",      emoji: "🍕", attrs: ["food"] },
+    // ---- 学习用品 school ----
+    { word: "pen",         zh: "钢笔",   phon: "/pen/",             example: "I write with a pen.",               emoji: "🖊️", attrs: ["school"] },
+    { word: "pencil",      zh: "铅笔",   phon: "/ˈpensl/",          example: "This pencil is sharp.",             emoji: "✏️", attrs: ["school"] },
+    { word: "pencil-case", zh: "铅笔盒", phon: "/ˈpensl keɪs/",     example: "My pencil-case is pink.",           emoji: "📦", attrs: ["school"] },
+    { word: "ruler",       zh: "尺子",   phon: "/ˈruːlə(r)/",       example: "Use a ruler to draw a line.",       emoji: "📏", attrs: ["school"] },
+    { word: "book",        zh: "书",     phon: "/bʊk/",             example: "I love reading books.",             emoji: "📖", attrs: ["school"] },
+    { word: "bag",         zh: "包",     phon: "/bæɡ/",             example: "Put it in your bag.",               emoji: "👜", attrs: ["school"] },
+    { word: "postcard",    zh: "明信片", phon: "/ˈpəʊstkɑːd/",      example: "I send a postcard to Mom.",         emoji: "📮", attrs: ["school"] },
+    { word: "newspaper",   zh: "报纸",   phon: "/ˈnjuːzˌpeɪpə(r)/", example: "Dad reads the newspaper.",          emoji: "📰", attrs: ["school"] },
+    { word: "schoolbag",   zh: "书包",   phon: "/ˈskuːlˌbæɡ/",      example: "My schoolbag is heavy.",            emoji: "🎒", attrs: ["school"] },
+    { word: "eraser",      zh: "橡皮",   phon: "/ɪˈreɪzə(r)/",      example: "Use an eraser to fix mistakes.",    emoji: "🧽", attrs: ["school"] },
+    { word: "crayon",      zh: "蜡笔",   phon: "/ˈkreɪən/",         example: "Draw a picture with crayons.",      emoji: "🖍️", attrs: ["school"] },
+    { word: "sharpener",   zh: "卷笔刀", phon: "/ˈʃɑːpnə(r)/",      example: "Sharpen your pencil with it.",      emoji: "🗡️", attrs: ["school"] },
+    { word: "storybook",   zh: "故事书", phon: "/ˈstɔːri bʊk/",     example: "This storybook is fun.",            emoji: "📚", attrs: ["school"] },
+    { word: "notebook",    zh: "笔记本", phon: "/ˈnəʊtbʊk/",        example: "I write in my notebook.",           emoji: "📓", attrs: ["school"] },
+    { word: "Chinese book", zh: "语文书", phon: "/ˈtʃaɪˈniːz bʊk/",  example: "Open your Chinese book.",          emoji: "📘", attrs: ["school"] },
+    { word: "English book", zh: "英语书", phon: "/ˈɪŋɡlɪʃ bʊk/",     example: "Read your English book.",           emoji: "📗", attrs: ["school"] },
+    { word: "math book",   zh: "数学书", phon: "/mæθ bʊk/",          example: "My math book is new.",              emoji: "📕", attrs: ["school"] },
+    { word: "magazine",    zh: "杂志",   phon: "/ˌmæɡəˈziːn/",      example: "This magazine has many pictures.",  emoji: "📖", attrs: ["school"] },
+    { word: "dictionary",  zh: "词典",   phon: "/ˈdɪkʃənəri/",      example: "Look it up in the dictionary.",     emoji: "📚", attrs: ["school"] },
+    // ---- 身体部位 body ----
+    { word: "foot",   zh: "脚", phon: "/fʊt/",      example: "My foot is sore.",      emoji: "🦶", attrs: ["body"] },
+    { word: "head",   zh: "头", phon: "/hed/",      example: "My head hurts.",        emoji: "🫵", attrs: ["body"] },
+    { word: "face",   zh: "脸", phon: "/feɪs/",     example: "Wash your face.",       emoji: "😊", attrs: ["body"] },
+    { word: "hair",   zh: "头发", phon: "/heə(r)/",  example: "Her hair is long.",     emoji: "💇", attrs: ["body"] },
+    { word: "nose",   zh: "鼻子", phon: "/nəʊz/",    example: "Touch your nose.",     emoji: "👃", attrs: ["body"] },
+    { word: "mouth",  zh: "嘴", phon: "/maʊθ/",    example: "Open your mouth.",      emoji: "👄", attrs: ["body"] },
+    { word: "eye",    zh: "眼睛", phon: "/aɪ/",      example: "Close your eyes.",     emoji: "👀", attrs: ["body"] },
+    { word: "ear",    zh: "耳朵", phon: "/ɪə(r)/",   example: "Touch your ear.",      emoji: "👂", attrs: ["body"] },
+    { word: "arm",    zh: "手臂", phon: "/ɑːm/",     example: "Raise your arms.",     emoji: "💪", attrs: ["body"] },
+    { word: "hand",   zh: "手", phon: "/hænd/",    example: "Clap your hands.",     emoji: "✋", attrs: ["body"] },
+    { word: "finger", zh: "手指", phon: "/ˈfɪŋɡə(r)/", example: "How many fingers?",  emoji: "👆", attrs: ["body"] },
+    { word: "leg",    zh: "腿", phon: "/leɡ/",     example: "My leg is tired.",     emoji: "🦵", attrs: ["body"] },
+    { word: "tail",   zh: "尾巴", phon: "/teɪl/",    example: "The dog has a tail.",  emoji: "🐾", attrs: ["body"] },
+    // ---- 颜色 color ----
+    { word: "red",    zh: "红", phon: "/red/",      example: "The apple is red.",        emoji: "🔴", attrs: ["color"] },
+    { word: "blue",   zh: "蓝", phon: "/bluː/",     example: "The sky is blue.",         emoji: "🔵", attrs: ["color"] },
+    { word: "yellow", zh: "黄", phon: "/ˈjeləʊ/",   example: "The sun is yellow.",       emoji: "🟡", attrs: ["color"] },
+    { word: "green",  zh: "绿", phon: "/ɡriːn/",    example: "The grass is green.",      emoji: "🟢", attrs: ["color"] },
+    { word: "white",  zh: "白", phon: "/waɪt/",     example: "Snow is white.",           emoji: "⚪", attrs: ["color"] },
+    { word: "black",  zh: "黑", phon: "/blæk/",     example: "My hair is black.",        emoji: "⚫", attrs: ["color"] },
+    { word: "pink",   zh: "粉红", phon: "/pɪŋk/",   example: "The flower is pink.",      emoji: "🌸", attrs: ["color"] },
+    { word: "purple", zh: "紫", phon: "/ˈpɜːpl/",    example: "Grapes are purple.",       emoji: "🟣", attrs: ["color"] },
+    { word: "orange", zh: "橙", phon: "/ˈɒrɪndʒ/",   example: "An orange is orange.",      emoji: "🟠", attrs: ["color"] },
+    { word: "brown",  zh: "棕", phon: "/braʊn/",    example: "The bear is brown.",       emoji: "🟤", attrs: ["color"] },
+    // ---- 人物 people ----
+    { word: "friend",  zh: "朋友", phon: "/frend/",       example: "She is my friend.",         emoji: "🤝", attrs: ["people"] },
+    { word: "boy",     zh: "男孩", phon: "/bɔɪ/",         example: "The boy likes soccer.",      emoji: "👦", attrs: ["people"] },
+    { word: "girl",    zh: "女孩", phon: "/ɡɜːl/",         example: "The girl loves cats.",       emoji: "👧", attrs: ["people"] },
+    { word: "mother",  zh: "母亲", phon: "/ˈmʌðə(r)/",    example: "I love my mother.",          emoji: "👩", attrs: ["people"] },
+    { word: "father",  zh: "父亲", phon: "/ˈfɑːðə(r)/",    example: "My father is tall.",         emoji: "👨", attrs: ["people"] },
+    { word: "sister",  zh: "姐妹", phon: "/ˈsɪstə(r)/",    example: "My sister is kind.",         emoji: "👧", attrs: ["people"] },
+    { word: "brother", zh: "兄弟", phon: "/ˈbrʌðə(r)/",    example: "My brother plays football.", emoji: "👦", attrs: ["people"] },
+    { word: "uncle",   zh: "叔叔", phon: "/ˈʌŋkl/",        example: "My uncle is funny.",         emoji: "🧔", attrs: ["people"] },
+    { word: "man",     zh: "男人", phon: "/mæn/",          example: "The man is reading.",        emoji: "🧑", attrs: ["people"] },
+    { word: "woman",   zh: "女人", phon: "/ˈwʊmən/",       example: "The woman is smiling.",      emoji: "👩", attrs: ["people"] },
+    { word: "mom",     zh: "妈妈", phon: "/mɒm/",          example: "Mom makes dinner.",          emoji: "👩", attrs: ["people"] },
+    { word: "dad",     zh: "爸爸", phon: "/dæd/",          example: "Dad drives me to school.",   emoji: "👨", attrs: ["people"] },
+    { word: "parents", zh: "父母", phon: "/ˈpeərənts/",    example: "My parents love me.",        emoji: "👪", attrs: ["people"] },
+    { word: "grandma", zh: "奶奶", phon: "/ˈɡrænmɑː/",    example: "Grandma makes cookies.",     emoji: "👵", attrs: ["people"] },
+    { word: "grandmother", zh: "外祖母", phon: "/ˈɡrænmʌðə(r)/", example: "My grandmother is kind.", emoji: "👵", attrs: ["people"] },
+    { word: "grandpa", zh: "外公", phon: "/ˈɡrænpɑː/",       example: "Grandpa tells stories.",        emoji: "👴", attrs: ["people"] },
+    { word: "grandfather", zh: "祖父", phon: "/ˈɡrænfɑːðə(r)/", example: "My grandfather is old.",      emoji: "👴", attrs: ["people"] },
+    { word: "aunt",  zh: "阿姨", phon: "/ɑːnt/",             example: "My aunt is nice.",             emoji: "👩", attrs: ["people"] },
+    { word: "cousin", zh: "堂兄妹", phon: "/ˈkʌzn/",           example: "My cousin is my age.",         emoji: "👦", attrs: ["people"] },
+    { word: "son",   zh: "儿子", phon: "/sʌn/",              example: "Their son is a baby.",         emoji: "👶", attrs: ["people"] },
+    { word: "baby",  zh: "婴儿", phon: "/ˈbeɪbi/",           example: "The baby is sleeping.",         emoji: "👶", attrs: ["people"] },
+    { word: "kid",   zh: "小孩", phon: "/kɪd/",              example: "The kid is playing.",           emoji: "🧒", attrs: ["people"] },
+    { word: "classmate", zh: "同学", phon: "/ˈklɑːsmeɪt/",    example: "She is my classmate.",          emoji: "🧑‍🎓", attrs: ["people"] },
+    { word: "queen", zh: "女王", phon: "/kwiːn/",            example: "The queen is beautiful.",       emoji: "👸", attrs: ["people"] },
+    { word: "visitor", zh: "参观者", phon: "/ˈvɪzɪtə(r)/",   example: "We are visitors here.",         emoji: "🧑", attrs: ["people"] },
+    { word: "neighbor", zh: "邻居", phon: "/ˈneɪbə(r)/",     example: "My neighbor is friendly.",      emoji: "🏘️", attrs: ["people"] },
+    { word: "pen pal", zh: "笔友", phon: "/pen pæl/",         example: "I have a pen pal in Japan.",     emoji: "✉️", attrs: ["people"] },
+    { word: "tourist", zh: "旅行者", phon: "/ˈtʊərɪst/",      example: "Many tourists visit the park.", emoji: "🧳", attrs: ["people"] },
+    { word: "principal", zh: "校长", phon: "/ˈprɪnsəpl/",   example: "Our principal is strict.",      emoji: "🎓", attrs: ["people"] },
+    { word: "robot", zh: "机器人", phon: "/ˈrəʊbɒt/",        example: "The robot can help us.",        emoji: "🤖", attrs: ["people"] },
+    // ---- 职业 job ----
+    { word: "teacher", zh: "教师", phon: "/ˈtiːtʃə(r)/",     example: "My teacher is kind.",           emoji: "👩‍🏫", attrs: ["job"] },
+    { word: "student", zh: "学生", phon: "/ˈstjuːdnt/",      example: "I am a student.",               emoji: "🧑‍🎓", attrs: ["job"] },
+    { word: "doctor", zh: "医生", phon: "/ˈdɒktə(r)/",      example: "The doctor helps sick people.", emoji: "👨‍⚕️", attrs: ["job"] },
+    { word: "nurse",  zh: "护士", phon: "/nɜːs/",            example: "The nurse is gentle.",          emoji: "👩‍⚕️", attrs: ["job"] },
+    { word: "driver", zh: "司机", phon: "/ˈdraɪvə(r)/",      example: "The driver is careful.",        emoji: "🚗", attrs: ["job"] },
+    { word: "farmer", zh: "农民", phon: "/ˈfɑːmə(r)/",       example: "Farmers grow food.",            emoji: "👨‍🌾", attrs: ["job"] },
+    { word: "singer", zh: "歌唱家", phon: "/ˈsɪŋə(r)/",     example: "She is a good singer.",         emoji: "🎤", attrs: ["job"] },
+    { word: "writer", zh: "作家", phon: "/ˈraɪtə(r)/",       example: "He writes books.",              emoji: "✍️", attrs: ["job"] },
+    { word: "artist", zh: "画家", phon: "/ˈɑːtɪst/",        example: "The artist paints pictures.",   emoji: "🎨", attrs: ["job"] },
+    { word: "actor",  zh: "男演员", phon: "/ˈæktə(r)/",     example: "He is an actor.",               emoji: "🎭", attrs: ["job"] },
+    { word: "actress", zh: "女演员", phon: "/ˈæktrəs/",     example: "She is an actress.",             emoji: "🎭", attrs: ["job"] },
+    { word: "TV reporter", zh: "电视台记者", phon: "/ˌtiː ˈviː rɪˈpɔːtə(r)/", example: "The TV reporter is here.", emoji: "📺", attrs: ["job"] },
+    { word: "engineer", zh: "工程师", phon: "/ˌendʒɪˈnɪə(r)/", example: "He is an engineer.",          emoji: "⚙️", attrs: ["job"] },
+    { word: "policeman", zh: "男警察", phon: "/pəˈliːsmən/",  example: "The policeman helps people.",   emoji: "👮", attrs: ["job"] },
+    { word: "salesperson", zh: "销售员", phon: "/ˈseɪlzpɜːsn/", example: "She is a salesperson.",        emoji: "💼", attrs: ["job"] },
+    { word: "cleaner", zh: "清洁工", phon: "/ˈkliːnə(r)/",    example: "The cleaner keeps things tidy.", emoji: "🧹", attrs: ["job"] },
+    { word: "baseball player", zh: "棒球运动员", phon: "/ˈbeɪsbɔːl ˈpleɪə(r)/", example: "He is a baseball player.", emoji: "⚾", attrs: ["job"] },
+    { word: "assistant", zh: "助手", phon: "/əˈsɪstənt/",     example: "She is my assistant.",          emoji: "🧑‍💼", attrs: ["job"] },
+    { word: "clown",  zh: "小丑", phon: "/klaʊn/",            example: "The clown makes kids laugh.",   emoji: "🤡", attrs: ["job"] },
+    // ---- 蔬菜 vegetable ----
+    { word: "vegetable", zh: "蔬菜", phon: "/ˈvedʒtəbl/",     example: "Eat more vegetables.",          emoji: "🥦", attrs: ["vegetable"] },
+    { word: "eggplant", zh: "茄子", phon: "/ˈeɡplɑːnt/",      example: "I like eggplant.",              emoji: "🍆", attrs: ["vegetable"] },
+    { word: "green beans", zh: "青豆", phon: "/ɡriːn biːnz/", example: "Green beans are fresh.",        emoji: "🫛", attrs: ["vegetable"] },
+    { word: "tomato", zh: "西红柿", phon: "/təˈmɑːtəʊ/",     example: "Tomatoes are red.",             emoji: "🍅", attrs: ["vegetable"] },
+    { word: "potato", zh: "土豆", phon: "/pəˈteɪtəʊ/",       example: "I eat potatoes for dinner.",    emoji: "🥔", attrs: ["vegetable"] },
+    { word: "cucumber", zh: "黄瓜", phon: "/ˈkjuːkʌmbə(r)/",  example: "Cucumbers are crunchy.",        emoji: "🥒", attrs: ["vegetable"] },
+    { word: "onion", zh: "洋葱", phon: "/ˈʌnjən/",          example: "Onions make me cry.",           emoji: "🧅", attrs: ["vegetable"] },
+    { word: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",        example: "Rabbits like carrots.",         emoji: "🥕", attrs: ["vegetable"] },
+    { word: "cabbage", zh: "卷心菜", phon: "/ˈkæbɪdʒ/",      example: "Cabbage is healthy.",           emoji: "🥬", attrs: ["vegetable"] },
+    { word: "pumpkin", zh: "南瓜", phon: "/ˈpʌmpkɪn/",       example: "We make pumpkin pie.",          emoji: "🎃", attrs: ["vegetable"] },
+    { word: "sweet potato", zh: "红薯", phon: "/swiːt pəˈteɪtəʊ/", example: "Sweet potato is sweet.",    emoji: "🍠", attrs: ["vegetable"] },
+    // ---- 衣服 clothes ----
+    { word: "jacket", zh: "夹克", phon: "/ˈdʒækɪt/",         example: "Wear your jacket.",             emoji: "🧥", attrs: ["clothes"] },
+    { word: "coat",   zh: "外套", phon: "/kəʊt/",            example: "Put on your coat.",             emoji: "🧥", attrs: ["clothes"] },
+    { word: "shirt",  zh: "衬衫", phon: "/ʃɜːt/",            example: "He wears a white shirt.",       emoji: "👔", attrs: ["clothes"] },
+    { word: "T-shirt", zh: "T恤", phon: "/ˈtiː ʃɜːt/",       example: "I like this T-shirt.",          emoji: "👕", attrs: ["clothes"] },
+    { word: "dress",  zh: "连衣裙", phon: "/dres/",          example: "She wears a pretty dress.",     emoji: "👗", attrs: ["clothes"] },
+    { word: "skirt",  zh: "短裙子", phon: "/skɜːt/",          example: "Her skirt is pink.",            emoji: "👚", attrs: ["clothes"] },
+    { word: "pants",  zh: "裤子", phon: "/pænts/",           example: "My pants are blue.",            emoji: "👖", attrs: ["clothes"] },
+    { word: "jeans",  zh: "牛仔裤", phon: "/dʒiːnz/",         example: "I like my jeans.",              emoji: "👖", attrs: ["clothes"] },
+    { word: "shorts", zh: "短裤", phon: "/ʃɔːts/",           example: "Wear shorts in summer.",        emoji: "🩳", attrs: ["clothes"] },
+    { word: "socks",  zh: "袜子", phon: "/sɒks/",            example: "My socks are red.",             emoji: "🧦", attrs: ["clothes"] },
+    { word: "shoes",  zh: "鞋子", phon: "/ʃuːz/",            example: "My new shoes are nice.",        emoji: "👟", attrs: ["clothes"] },
+    { word: "boots",  zh: "靴子", phon: "/buːts/",           example: "I wear boots in winter.",        emoji: "🥾", attrs: ["clothes"] },
+    { word: "raincoat", zh: "雨衣", phon: "/ˈreɪnkəʊt/",     example: "Take your raincoat.",           emoji: "🧥", attrs: ["clothes"] },
+    { word: "sandals", zh: "凉鞋", phon: "/ˈsændlz/",        example: "Sandals are for summer.",       emoji: "🩴", attrs: ["clothes"] },
+    { word: "hat",    zh: "帽子", phon: "/hæt/",             example: "My hat is brown.",              emoji: "🧢", attrs: ["clothes"] },
+    { word: "cap",    zh: "无边帽", phon: "/kæp/",           example: "He wears a cap.",               emoji: "🧢", attrs: ["clothes"] },
+    { word: "tie",    zh: "领带", phon: "/taɪ/",             example: "Dad wears a tie to work.",       emoji: "👔", attrs: ["clothes"] },
+    { word: "scarf",  zh: "围巾", phon: "/skɑːf/",           example: "Wear a scarf in winter.",        emoji: "🧣", attrs: ["clothes"] },
+    { word: "sunglasses", zh: "太阳镜", phon: "/ˈsʌŋɡlɑːsɪz/", example: "I wear sunglasses.",           emoji: "🕶️", attrs: ["clothes"] },
+    { word: "gloves", zh: "手套", phon: "/ɡlʌvz/",           example: "Wear gloves to keep warm.",      emoji: "🧤", attrs: ["clothes"] },
+    // ---- 交通工具 vehicle（扩充）----
+    { word: "yacht",      zh: "快艇",   phon: "/jɒt/",              example: "A yacht is a fast boat.",        emoji: "🛥️", attrs: ["vehicle"] },
+    { word: "van",        zh: "小货车", phon: "/væn/",              example: "The van carries boxes.",         emoji: "🚐", attrs: ["vehicle"] },
+    { word: "subway",     zh: "地铁",   phon: "/ˈsʌbweɪ/",         example: "Take the subway downtown.",     emoji: "🚇", attrs: ["vehicle"] },
+    { word: "jeep",       zh: "吉普车", phon: "/dʒiːp/",            example: "A jeep can go off road.",        emoji: "🚙", attrs: ["vehicle"] },
+    { word: "motorcycle", zh: "摩托车", phon: "/ˈməʊtəˌsaɪkl/",    example: "He rides a motorcycle.",         emoji: "🏍️", attrs: ["vehicle"] },
+    // ---- 地点 place ----
+    { word: "home",   zh: "家",     phon: "/həʊm/",              example: "I love my home.",                emoji: "🏠", attrs: ["place"] },
+    { word: "room",   zh: "房间",   phon: "/ruːm/",              example: "This is my room.",               emoji: "🚪", attrs: ["place"] },
+    { word: "bedroom", zh: "卧室",  phon: "/ˈbedruːm/",          example: "My bedroom is clean.",           emoji: "🛏️", attrs: ["place"] },
+    { word: "bathroom", zh: "卫生间", phon: "/ˈbɑːθruːm/",       example: "Wash your hands in the bathroom.", emoji: "🚿", attrs: ["place"] },
+    { word: "living room", zh: "起居室", phon: "/ˈlɪvɪŋ ruːm/",  example: "We watch TV in the living room.", emoji: "🛋️", attrs: ["place"] },
+    { word: "kitchen", zh: "厨房",  phon: "/ˈkɪtʃɪn/",          example: "Mom cooks in the kitchen.",      emoji: "🍳", attrs: ["place"] },
+    { word: "classroom", zh: "教室", phon: "/ˈklɑːsruːm/",       example: "Our classroom is big.",          emoji: "🏫", attrs: ["place"] },
+    { word: "school", zh: "学校",  phon: "/skuːl/",             example: "I go to school by bus.",          emoji: "🏫", attrs: ["place"] },
+    { word: "library", zh: "图书馆", phon: "/ˈlaɪbrəri/",        example: "I read books in the library.",    emoji: "📚", attrs: ["place"] },
+    { word: "post office", zh: "邮政局", phon: "/pəʊst ˈɒfɪs/", example: "Mail letters at the post office.", emoji: "📮", attrs: ["place"] },
+    { word: "hospital", zh: "医院", phon: "/ˈhɒspɪtl/",         example: "The doctor works in a hospital.", emoji: "🏥", attrs: ["place"] },
+    { word: "cinema", zh: "电影院", phon: "/ˈsɪnɪmə/",          example: "Let's go to the cinema.",         emoji: "🎬", attrs: ["place"] },
+    { word: "bookstore", zh: "书店", phon: "/ˈbʊkstɔː(r)/",      example: "I buy books at the bookstore.",  emoji: "📕", attrs: ["place"] },
+    { word: "farm",   zh: "农场", phon: "/fɑːm/",              example: "We visit the farm.",              emoji: "🌾", attrs: ["place"] },
+    { word: "garden", zh: "花园", phon: "/ˈɡɑːdn/",            example: "There are flowers in the garden.", emoji: "🌷", attrs: ["place"] },
+    { word: "playground", zh: "操场", phon: "/ˈpleɪɡraʊnd/",   example: "We play on the playground.",      emoji: "🏃", attrs: ["place"] },
+    { word: "canteen", zh: "餐厅", phon: "/kænˈtiːn/",          example: "We eat at the school canteen.",   emoji: "🍽️", attrs: ["place"] },
+    { word: "teacher's office", zh: "教师办公室", phon: "/ˈtiːtʃə(r)z ˈɒfɪs/", example: "Go to the teacher's office.", emoji: "📋", attrs: ["place"] },
+    { word: "gym",    zh: "体育馆", phon: "/dʒɪm/",             example: "We exercise in the gym.",         emoji: "🏋️", attrs: ["place"] },
+    { word: "washroom", zh: "盥洗室", phon: "/ˈwɒʃruːm/",       example: "Wash your face in the washroom.", emoji: "🚻", attrs: ["place"] },
+    { word: "art room", zh: "美术室", phon: "/ɑːt ruːm/",        example: "We draw in the art room.",        emoji: "🎨", attrs: ["place"] },
+    { word: "computer room", zh: "电脑房", phon: "/kəmˈpjuːtə(r) ruːm/", example: "We use computers there.", emoji: "💻", attrs: ["place"] },
+    { word: "music room", zh: "音乐教室", phon: "/ˈmjuːzɪk ruːm/", example: "We sing in the music room.",     emoji: "🎵", attrs: ["place"] },
+    { word: "TV room", zh: "电视房", phon: "/ˌtiː ˈviː ruːm/",    example: "Watch TV in the TV room.",        emoji: "📺", attrs: ["place"] },
+    { word: "company", zh: "公司", phon: "/ˈkʌmpəni/",          example: "My dad works at a company.",      emoji: "🏢", attrs: ["place"] },
+    { word: "factory", zh: "工厂", phon: "/ˈfæktri/",           example: "Goods are made in a factory.",    emoji: "🏭", attrs: ["place"] },
+    { word: "pet shop", zh: "宠物店", phon: "/pet ʃɒp/",       example: "Buy pets at the pet shop.",       emoji: "🐾", attrs: ["place"] },
+    { word: "science museum", zh: "科学博物馆", phon: "/ˈsaɪəns mjuˈziəm/", example: "Let's go to the science museum.", emoji: "🔬", attrs: ["place"] },
+    { word: "the Great Wall", zh: "长城", phon: "/ðə ɡreɪt wɔːl/", example: "We visited the Great Wall.",    emoji: "🧱", attrs: ["place"] },
+    { word: "supermarket", zh: "超市", phon: "/ˈsuːpəˌmɑːkɪt/",  example: "We shop at the supermarket.",     emoji: "🛒", attrs: ["place"] },
+    { word: "bank",   zh: "银行", phon: "/bæŋk/",              example: "Money is kept in a bank.",        emoji: "🏦", attrs: ["place"] },
+    { word: "country", zh: "乡村", phon: "/ˈkʌntri/",           example: "The country is quiet.",           emoji: "🌾", attrs: ["place"] },
+    { word: "village", zh: "村庄", phon: "/ˈvɪlɪdʒ/",           example: "A small village is peaceful.",    emoji: "🏘️", attrs: ["place"] },
+    { word: "city",   zh: "城市", phon: "/ˈsɪti/",             example: "The city is noisy.",              emoji: "🏙️", attrs: ["place"] },
+    // ---- 季节 season ----
+    { word: "spring", zh: "春季", phon: "/sprɪŋ/",             example: "Spring is warm.",                 emoji: "🌸", attrs: ["season"] },
+    { word: "summer", zh: "夏季", phon: "/ˈsʌmə(r)/",          example: "Summer is hot.",                  emoji: "☀️", attrs: ["season"] },
+    { word: "fall",   zh: "秋季", phon: "/fɔːl/",              example: "Leaves fall in fall.",            emoji: "🍁", attrs: ["season"] },
+    { word: "autumn", zh: "秋季", phon: "/ˈɔːtəm/",            example: "Autumn is cool.",                 emoji: "🍂", attrs: ["season"] },
+    { word: "winter", zh: "冬季", phon: "/ˈwɪntə(r)/",         example: "Winter is cold.",                 emoji: "❄️", attrs: ["season"] },
+    // ---- 景物 nature ----
+    { word: "river",   zh: "河", phon: "/ˈrɪvə(r)/",           example: "A river flows.",                  emoji: "🏞️", attrs: ["nature"] },
+    { word: "stream",  zh: "小溪", phon: "/striːm/",          example: "A small stream runs through.",    emoji: "💧", attrs: ["nature"] },
+    { word: "path",    zh: "小路", phon: "/pɑːθ/",            example: "Walk along the path.",            emoji: "🚶", attrs: ["nature"] },
+    { word: "house",   zh: "房子", phon: "/haʊs/",            example: "We live in a house.",             emoji: "🏠", attrs: ["nature"] },
+    { word: "building", zh: "建筑物", phon: "/ˈbɪldɪŋ/",      example: "Tall buildings are in the city.", emoji: "🏢", attrs: ["nature"] },
+    { word: "cloud",   zh: "云", phon: "/klaʊd/",              example: "There are white clouds.",         emoji: "☁️", attrs: ["nature"] },
+    { word: "mountain", zh: "大山", phon: "/ˈmaʊntɪn/",       example: "We climbed the mountain.",        emoji: "⛰️", attrs: ["nature"] },
+    { word: "rainbow", zh: "彩虹", phon: "/ˈreɪnbəʊ/",        example: "Look at the rainbow!",            emoji: "🌈", attrs: ["nature"] },
+    { word: "air",     zh: "空气", phon: "/eə(r)/",            example: "The air is fresh.",               emoji: "💨", attrs: ["nature"] },
+    { word: "lake",    zh: "湖泊", phon: "/leɪk/",              example: "The lake is calm.",               emoji: "🏞️", attrs: ["nature"] },
+    { word: "forest",  zh: "森林", phon: "/ˈfɒrɪst/",           example: "Trees grow in the forest.",       emoji: "🌲", attrs: ["nature"] },
+    { word: "road",    zh: "马路", phon: "/rəʊd/",              example: "Cars drive on the road.",         emoji: "🛣️", attrs: ["nature"] },
+    { word: "rain",    zh: "雨", phon: "/reɪn/",               example: "It is raining.",                  emoji: "🌧️", attrs: ["nature"] },
+    { word: "wind",    zh: "风", phon: "/wɪnd/",               example: "The wind is strong.",             emoji: "🌬️", attrs: ["nature"] },
+    { word: "sun",     zh: "太阳", phon: "/sʌn/",             example: "The sun is bright.",              emoji: "☀️", attrs: ["nature"] },
+    { word: "sky",     zh: "天空", phon: "/skaɪ/",             example: "The sky is blue.",                emoji: "🌌", attrs: ["nature"] },
+    // ---- 植物 plant ----
+    { word: "flower", zh: "花", phon: "/ˈflaʊə(r)/",          example: "Flowers are beautiful.",          emoji: "🌸", attrs: ["plant"] },
+    { word: "grass",  zh: "草", phon: "/ɡrɑːs/",              example: "Grass is green.",                 emoji: "🌱", attrs: ["plant"] },
+    { word: "tree",   zh: "树", phon: "/triː/",               example: "Birds live in trees.",            emoji: "🌳", attrs: ["plant"] },
+    { word: "seed",   zh: "种子", phon: "/siːd/",             example: "A seed grows into a plant.",      emoji: "🌰", attrs: ["plant"] },
+    { word: "leaf",   zh: "树叶", phon: "/liːf/",             example: "Leaves turn red in fall.",        emoji: "🍁", attrs: ["plant"] },
+    { word: "plant",  zh: "植物", phon: "/plɑːnt/",            example: "Water the plant.",                emoji: "🌿", attrs: ["plant"] },
+    { word: "rose",   zh: "玫瑰", phon: "/rəʊz/",              example: "A rose smells sweet.",            emoji: "🌹", attrs: ["plant"] },
+    // ---- 星期 week ----
+    { word: "Monday",  zh: "星期一", phon: "/ˈmʌndi/",        example: "Monday is the first day.",        emoji: "📅", attrs: ["week"] },
+    { word: "Tuesday", zh: "星期二", phon: "/ˈtjuːzdi/",       example: "I have music on Tuesday.",        emoji: "📅", attrs: ["week"] },
+    { word: "Wednesday", zh: "星期三", phon: "/ˈwenzdi/",    example: "Wednesday is a school day.",      emoji: "📅", attrs: ["week"] },
+    { word: "Thursday", zh: "星期四", phon: "/ˈθɜːzdi/",       example: "We play sports on Thursday.",     emoji: "📅", attrs: ["week"] },
+    { word: "Friday",  zh: "星期五", phon: "/ˈfraɪdi/",        example: "Friday is fun.",                  emoji: "📅", attrs: ["week"] },
+    { word: "Saturday", zh: "星期六", phon: "/ˈsætədi/",      example: "Saturday is the weekend.",        emoji: "📅", attrs: ["week"] },
+    { word: "Sunday",  zh: "星期日", phon: "/ˈsʌndi/",        example: "Sunday is family day.",           emoji: "📅", attrs: ["week"] },
+    { word: "weekend", zh: "周末",   phon: "/ˌwiːkˈend/",     example: "We relax on the weekend.",        emoji: "🎉", attrs: ["week"] },
+    // ---- 月份 month ----
+    { word: "January",   zh: "1月", phon: "/ˈdʒænjuəri/",     example: "January is the first month.",     emoji: "❄️", attrs: ["month"] },
+    { word: "February",  zh: "2月", phon: "/ˈfebruəri/",      example: "February is short.",              emoji: "💝", attrs: ["month"] },
+    { word: "March",     zh: "3月", phon: "/mɑːtʃ/",          example: "March is in spring.",             emoji: "🌱", attrs: ["month"] },
+    { word: "April",     zh: "4月", phon: "/ˈeɪprəl/",        example: "Flowers bloom in April.",         emoji: "🌷", attrs: ["month"] },
+    { word: "May",       zh: "5月", phon: "/meɪ/",            example: "May is warm.",                    emoji: "🌺", attrs: ["month"] },
+    { word: "June",      zh: "6月", phon: "/dʒuːn/",           example: "School ends in June.",            emoji: "🌞", attrs: ["month"] },
+    { word: "July",      zh: "7月", phon: "/dʒuˈlaɪ/",         example: "July is hot.",                    emoji: "🔥", attrs: ["month"] },
+    { word: "August",    zh: "8月", phon: "/ˈɔːɡəst/",         example: "August is summer.",               emoji: "🏖️", attrs: ["month"] },
+    { word: "September", zh: "9月", phon: "/sepˈtembə(r)/",   example: "School starts in September.",     emoji: "📚", attrs: ["month"] },
+    { word: "October",   zh: "10月", phon: "/ɒkˈtəʊbə(r)/",  example: "October is cool.",                emoji: "🍂", attrs: ["month"] },
+    { word: "November",  zh: "11月", phon: "/nəʊˈvembə(r)/",  example: "November has cold days.",         emoji: "🍃", attrs: ["month"] },
+    { word: "December",  zh: "12月", phon: "/dɪˈsembə(r)/",   example: "December is winter.",             emoji: "🎄", attrs: ["month"] },
+    // ---- 气象 weather ----
+    { word: "weather", zh: "天气", phon: "/ˈweðə(r)/",         example: "How is the weather?",             emoji: "🌤️", attrs: ["weather"] },
+    // ---- 方位 direction ----
+    { word: "south", zh: "南", phon: "/saʊθ/",                example: "The south is warm.",              emoji: "🧭", attrs: ["direction"] },
+    { word: "north", zh: "北", phon: "/nɔːθ/",                example: "The north is cold.",              emoji: "🧭", attrs: ["direction"] },
+    { word: "east",  zh: "东", phon: "/iːst/",                example: "The sun rises in the east.",      emoji: "🧭", attrs: ["direction"] },
+    { word: "west",  zh: "西", phon: "/west/",                example: "The sun sets in the west.",       emoji: "🧭", attrs: ["direction"] },
+    // ---- 患病 illness ----
+    { word: "fever",      zh: "发烧",   phon: "/ˈfiːvə(r)/",   example: "I have a fever.",                 emoji: "🤒", attrs: ["illness"] },
+    { word: "cold",       zh: "伤风",   phon: "/kəʊld/",        example: "I have a cold.",                  emoji: "🤧", attrs: ["illness"] },
+    { word: "toothache",  zh: "牙疼",   phon: "/ˈtuːθeɪk/",     example: "I have a toothache.",             emoji: "🦷", attrs: ["illness"] },
+    { word: "headache",   zh: "头疼",   phon: "/ˈhedeɪk/",      example: "I have a headache.",              emoji: "🤕", attrs: ["illness"] },
+    { word: "sore throat", zh: "喉咙疼", phon: "/sɔː θrəʊt/",  example: "I have a sore throat.",           emoji: "🗣️", attrs: ["illness"] },
+    { word: "sore",       zh: "疼痛的", phon: "/sɔː(r)/",       example: "My leg is sore.",                 emoji: "😣", attrs: ["illness"] },
+    { word: "stomachache", zh: "胃疼", phon: "/ˈstʌməkeɪk/",   example: "I have a stomachache.",           emoji: "🫃", attrs: ["illness"] },
+    { word: "hurt",       zh: "疼痛",   phon: "/hɜːt/",         example: "My arm hurts.",                   emoji: "😖", attrs: ["illness"] },
+    // ---- 食物 food（扩充）----
+    { word: "breakfast", zh: "早餐", phon: "/ˈbrekfəst/",     example: "I have breakfast at 7.",          emoji: "🥞", attrs: ["food"] },
+    { word: "lunch",     zh: "中餐", phon: "/lʌntʃ/",          example: "Lunch is at school.",             emoji: "🍱", attrs: ["food"] },
+    { word: "dinner",    zh: "晚餐", phon: "/ˈdɪnə(r)/",       example: "Dinner is at 6 pm.",              emoji: "🍲", attrs: ["food"] },
+    { word: "rice",      zh: "米饭", phon: "/raɪs/",           example: "We have rice for dinner.",        emoji: "🍚", attrs: ["food"] },
+    { word: "cake",      zh: "蛋糕", phon: "/keɪk/",           example: "We share a birthday cake.",       emoji: "🍰", attrs: ["food"] },
+    { word: "jam",       zh: "果酱", phon: "/dʒæm/",           example: "Jam tastes sweet.",               emoji: "🍯", attrs: ["food"] },
+    { word: "sausage",   zh: "香肠", phon: "/ˈsɒsɪdʒ/",        example: "I like sausages.",                emoji: "🌭", attrs: ["food"] },
+    { word: "sandwich",  zh: "三明治", phon: "/ˈsænwɪtʃ/",     example: "Have a sandwich for lunch.",      emoji: "🥪", attrs: ["food"] },
+    { word: "dumpling",  zh: "饺子", phon: "/ˈdʌmplɪŋ/",       example: "We eat dumplings at New Year.",   emoji: "🥟", attrs: ["food"] },
+    { word: "French fries", zh: "薯条", phon: "/frentʃ fraɪz/", example: "I love French fries.",           emoji: "🍟", attrs: ["food"] },
+    { word: "meat",      zh: "肉",   phon: "/miːt/",           example: "Meat is delicious.",              emoji: "🥩", attrs: ["food"] },
+    { word: "chicken",   zh: "鸡肉", phon: "/ˈtʃɪkɪn/",        example: "Chicken is healthy.",             emoji: "🍗", attrs: ["food"] },
+    { word: "mutton",    zh: "羊肉", phon: "/ˈmʌtn/",          example: "Mutton is hot pot.",              emoji: "🐑", attrs: ["food"] },
+    { word: "beef",      zh: "牛肉", phon: "/biːf/",           example: "Beef is tasty.",                  emoji: "🥩", attrs: ["food"] },
+    { word: "pork",      zh: "猪肉", phon: "/pɔːk/",           example: "Pork is common.",                 emoji: "🥓", attrs: ["food"] },
+    { word: "noodle",    zh: "面条", phon: "/ˈnuːdl/",         example: "A bowl of noodles.",              emoji: "🍜", attrs: ["food"] },
+    { word: "soup",      zh: "汤",   phon: "/suːp/",           example: "The soup is hot.",                emoji: "🍲", attrs: ["food"] },
+    { word: "salad",     zh: "沙拉", phon: "/ˈsæləd/",         example: "I like vegetable salad.",         emoji: "🥗", attrs: ["food"] },
+    { word: "water",     zh: "水",   phon: "/ˈwɔːtə(r)/",      example: "Drink more water.",               emoji: "💧", attrs: ["food"] },
+    { word: "ice-cream", zh: "冰淇淋", phon: "/ˌaɪs ˈkriːm/",  example: "Ice-cream is cold.",              emoji: "🍦", attrs: ["food"] },
+    { word: "cola",      zh: "可乐", phon: "/ˈkəʊlə/",         example: "Cola has bubbles.",               emoji: "🥤", attrs: ["food"] },
+    { word: "tea",       zh: "茶",   phon: "/tiː/",            example: "I drink tea every day.",          emoji: "🍵", attrs: ["food"] },
+    { word: "coffee",    zh: "咖啡", phon: "/ˈkɒfi/",          example: "Coffee smells good.",             emoji: "☕", attrs: ["food"] },
+    // ---- 水果 fruit（扩充）----
+    { word: "mango",    zh: "芒果", phon: "/ˈmæŋɡəʊ/",        example: "A mango is sweet.",               emoji: "🥭", attrs: ["fruit"] },
+    { word: "coconut",  zh: "椰子", phon: "/ˈkəʊkənʌt/",      example: "Coconut water is fresh.",         emoji: "🥥", attrs: ["fruit"] },
+    { word: "peach",    zh: "桃",   phon: "/piːtʃ/",          example: "Peaches are juicy.",              emoji: "🍑", attrs: ["fruit"] },
+    // ---- 杂物 other ----
+    { word: "window", zh: "窗户", phon: "/ˈwɪndəʊ/",         example: "Open the window.",                emoji: "🪟", attrs: ["other"] },
+    { word: "desk",   zh: "书桌", phon: "/desk/",            example: "Put it on the desk.",             emoji: "🪑", attrs: ["other"] },
+    { word: "door",   zh: "门",   phon: "/dɔː(r)/",          example: "Close the door.",                 emoji: "🚪", attrs: ["other"] },
+    { word: "chair",  zh: "椅子", phon: "/tʃeə(r)/",         example: "Sit on the chair.",               emoji: "🪑", attrs: ["other"] },
+    { word: "bed",    zh: "床",   phon: "/bed/",             example: "Go to bed.",                      emoji: "🛏️", attrs: ["other"] },
+    { word: "board",  zh: "写字板", phon: "/bɔːd/",           example: "Write on the board.",             emoji: "📋", attrs: ["other"] },
+    { word: "light",  zh: "灯",   phon: "/laɪt/",            example: "Turn on the light.",              emoji: "💡", attrs: ["other"] },
+    { word: "fan",    zh: "风扇", phon: "/fæn/",             example: "The fan blows cool air.",         emoji: "🌀", attrs: ["other"] },
+    { word: "mirror", zh: "镜子", phon: "/ˈmɪrə(r)/",        example: "Look in the mirror.",             emoji: "🪞", attrs: ["other"] },
+    { word: "teacher's desk", zh: "讲台", phon: "/ˈtiːtʃə(r)z desk/", example: "Put it on the teacher's desk.", emoji: "📚", attrs: ["other"] },
+    { word: "photo",  zh: "照片", phon: "/ˈfəʊtəʊ/",         example: "Take a photo.",                   emoji: "📷", attrs: ["other"] },
+    { word: "picture", zh: "图画", phon: "/ˈpɪktʃə(r)/",     example: "Draw a picture.",                 emoji: "🖼️", attrs: ["other"] },
+    { word: "computer", zh: "计算机", phon: "/kəmˈpjuːtə(r)/", example: "Use a computer.",              emoji: "💻", attrs: ["other"] },
+    { word: "wall",   zh: "墙壁", phon: "/wɔːl/",            example: "Hang it on the wall.",            emoji: "🧱", attrs: ["other"] },
+    { word: "floor",  zh: "地板", phon: "/flɔː(r)/",         example: "Sweep the floor.",                emoji: "🧹", attrs: ["other"] },
+    { word: "football", zh: "足球", phon: "/ˈfʊtbɔːl/",       example: "Play football.",                  emoji: "⚽", attrs: ["other"] },
+    { word: "gift",   zh: "礼物", phon: "/ɡɪft/",            example: "This is my gift.",                emoji: "🎁", attrs: ["other"] },
+    { word: "present", zh: "礼物", phon: "/ˈpreznt/",        example: "Open your present.",              emoji: "🎁", attrs: ["other"] },
+    { word: "walkman", zh: "随身听", phon: "/ˈwɔːkmən/",      example: "Listen to music on the walkman.", emoji: "📻", attrs: ["other"] },
+    { word: "lamp",   zh: "台灯", phon: "/læmp/",            example: "Turn on the lamp.",               emoji: "💡", attrs: ["other"] },
+    { word: "phone",  zh: "电话", phon: "/fəʊn/",            example: "Answer the phone.",               emoji: "📱", attrs: ["other"] },
+    { word: "sofa",   zh: "沙发", phon: "/ˈsəʊfə/",          example: "Sit on the sofa.",                emoji: "🛋️", attrs: ["other"] },
+    { word: "fridge", zh: "冰箱", phon: "/frɪdʒ/",           example: "Put it in the fridge.",           emoji: "🧊", attrs: ["other"] },
+    { word: "shelf",  zh: "书架", phon: "/ʃelf/",            example: "Put it on the shelf.",            emoji: "📚", attrs: ["other"] },
+    { word: "table",  zh: "桌子", phon: "/ˈteɪbl/",          example: "Put it on the table.",            emoji: "🪑", attrs: ["other"] },
+    { word: "air-conditioner", zh: "空调", phon: "/eə(r) kənˈdɪʃənə(r)/", example: "Turn on the air-conditioner.", emoji: "❄️", attrs: ["other"] },
+    { word: "key",    zh: "钥匙", phon: "/kiː/",             example: "Here is the key.",                emoji: "🔑", attrs: ["other"] },
+    { word: "lock",   zh: "锁",   phon: "/lɒk/",             example: "Lock the door.",                  emoji: "🔒", attrs: ["other"] },
+    { word: "plate",  zh: "盘子", phon: "/pleɪt/",            example: "Wash the plate.",                 emoji: "🍽️", attrs: ["other"] },
+    { word: "knife",  zh: "刀子", phon: "/naɪf/",             example: "Use a knife.",                    emoji: "🔪", attrs: ["other"] },
+    { word: "fork",   zh: "叉子", phon: "/fɔːk/",             example: "Eat with a fork.",                emoji: "🍴", attrs: ["other"] },
+    { word: "spoon",  zh: "勺子", phon: "/spuːn/",            example: "Use a spoon for soup.",           emoji: "🥄", attrs: ["other"] },
+    { word: "chopsticks", zh: "筷子", phon: "/ˈtʃɒpstɪks/",   example: "Eat with chopsticks.",            emoji: "🥢", attrs: ["other"] },
+    { word: "pot",    zh: "锅",   phon: "/pɒt/",              example: "Cook in a pot.",                  emoji: "🍲", attrs: ["other"] },
+    { word: "doll",   zh: "洋娃娃", phon: "/dɒl/",           example: "My doll is pretty.",              emoji: "🎎", attrs: ["other"] },
+    { word: "toy",    zh: "玩具", phon: "/tɔɪ/",             example: "This toy is fun.",                emoji: "🧸", attrs: ["other"] },
+    { word: "ball",   zh: "球",   phon: "/bɔːl/",             example: "Play with the ball.",             emoji: "⚽", attrs: ["other"] },
+    { word: "balloon", zh: "气球", phon: "/bəˈluːn/",        example: "My balloon is red.",              emoji: "🎈", attrs: ["other"] },
+    { word: "kite",   zh: "风筝", phon: "/kaɪt/",             example: "Fly a kite.",                     emoji: "🪁", attrs: ["other"] },
+    { word: "jigsaw puzzle", zh: "拼图游戏", phon: "/ˈdʒɪɡsɔː ˈpʌzl/", example: "Do a jigsaw puzzle.",     emoji: "🧩", attrs: ["other"] },
+    { word: "box",    zh: "盒子", phon: "/bɒks/",             example: "Put it in the box.",              emoji: "📦", attrs: ["other"] },
+    { word: "umbrella", zh: "伞", phon: "/ʌmˈbrelə/",        example: "Take an umbrella.",               emoji: "☂️", attrs: ["other"] },
+    { word: "zipper", zh: "拉链", phon: "/ˈzɪpə(r)/",         example: "Zip up your coat.",               emoji: "🤐", attrs: ["other"] },
+    { word: "violin", zh: "小提琴", phon: "/ˌvaɪəˈlɪn/",     example: "Play the violin.",                emoji: "🎻", attrs: ["other"] },
+    { word: "nest",   zh: "鸟窝", phon: "/nest/",             example: "A bird lives in a nest.",         emoji: "🪺", attrs: ["other"] },
+    { word: "hole",   zh: "洞",   phon: "/həʊl/",             example: "A rabbit has a hole.",            emoji: "🕳️", attrs: ["other"] },
+    { word: "toothbrush", zh: "牙刷", phon: "/ˈtuːθbrʌʃ/",    example: "Brush your teeth.",               emoji: "🪥", attrs: ["other"] },
+    { word: "menu",   zh: "菜单", phon: "/ˈmenjuː/",          example: "Look at the menu.",               emoji: "📋", attrs: ["other"] },
+    { word: "e-card", zh: "电子卡片", phon: "/ˈiː kɑːd/",    example: "Send an e-card.",                 emoji: "💌", attrs: ["other"] },
+    { word: "e-mail", zh: "电子邮件", phon: "/ˈiː meɪl/",    example: "Check your e-mail.",              emoji: "📧", attrs: ["other"] },
+    { word: "money",  zh: "钱",   phon: "/ˈmʌni/",            example: "Save your money.",                emoji: "💰", attrs: ["other"] },
+    { word: "traffic light", zh: "交通灯", phon: "/ˈtræfɪk laɪt/", example: "Stop at the traffic light.", emoji: "🚦", attrs: ["other"] },
+    { word: "medicine", zh: "药", phon: "/ˈmedsn/",          example: "Take your medicine.",             emoji: "💊", attrs: ["other"] },
+  ]
+});
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：动词集
+   attrs: action（单动词）/ phrase（动词短语）
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "verb",
+  name: "动词集",
+  chip: "动词单词",
+  unit: "Verbs · 动词集",
+  isPool: true,
+  dialog: { q: "What can you do?", a: "I can {word}." },
+  words: [
+    // ---- 单动词 action ----
+    { word: "play",   zh: "玩",   phon: "/pleɪ/",    example: "I play with my friend.", attrs: ["action"] },
+    { word: "skate",  zh: "溜冰", phon: "/skeɪt/",   example: "She can skate well.", attrs: ["action"] },
+    { word: "jump",   zh: "跳",   phon: "/dʒʌmp/",   example: "Rabbits jump high.", attrs: ["action"] },
+    { word: "walk",   zh: "走",   phon: "/wɔːk/",    example: "We walk to school.", attrs: ["action"] },
+    { word: "swim",   zh: "游泳", phon: "/swɪm/",    example: "Fish swim in the water.", attrs: ["action"] },
+    { word: "fly",    zh: "飞",   phon: "/flaɪ/",    example: "Birds can fly.", attrs: ["action"] },
+    { word: "run",    zh: "跑",   phon: "/rʌn/",     example: "Run fast!", attrs: ["action"] },
+    { word: "climb",  zh: "爬",   phon: "/klaɪm/",   example: "Monkeys climb trees.", attrs: ["action"] },
+    { word: "fight",  zh: "打架", phon: "/faɪt/",    example: "Don't fight.", attrs: ["action"] },
+    { word: "eat",    zh: "吃",   phon: "/iːt/",     example: "Eat your dinner.", attrs: ["action"] },
+    { word: "like",   zh: "喜欢", phon: "/laɪk/",    example: "I like apples.", attrs: ["action"] },
+    { word: "buy",    zh: "买",   phon: "/baɪ/",     example: "I buy it for you.", attrs: ["action"] },
+    { word: "live",   zh: "居住", phon: "/lɪv/",     example: "I live in China.", attrs: ["action"] },
+    { word: "go",     zh: "去",   phon: "/ɡəʊ/",     example: "Let's go home.", attrs: ["action"] },
+    { word: "learn",  zh: "学习", phon: "/lɜːn/",    example: "We learn English.", attrs: ["action"] },
+    { word: "dance",  zh: "跳舞", phon: "/dɑːns/",   example: "She likes to dance.", attrs: ["action"] },
+    { word: "sing",   zh: "唱歌", phon: "/sɪŋ/",     example: "Let's sing a song.", attrs: ["action"] },
+    { word: "read",   zh: "读",   phon: "/riːd/",    example: "Read a book.", attrs: ["action"] },
+    { word: "watch",  zh: "看",   phon: "/wɒtʃ/",    example: "Watch TV.", attrs: ["action"] },
+    { word: "cook",   zh: "做饭", phon: "/kʊk/",     example: "Mom cooks dinner.", attrs: ["action"] },
+    { word: "water",  zh: "浇花", phon: "/ˈwɔːtə(r)/", example: "Water the flowers.", attrs: ["action"] },
+    { word: "sweep",  zh: "扫地", phon: "/swiːp/",   example: "Sweep the floor.", attrs: ["action"] },
+    { word: "clean",  zh: "打扫", phon: "/kliːn/",   example: "Clean the room.", attrs: ["action"] },
+    { word: "make",   zh: "制作", phon: "/meɪk/",    example: "Make a cake.", attrs: ["action"] },
+    { word: "set",    zh: "摆放", phon: "/set/",     example: "Set the table.", attrs: ["action"] },
+    { word: "wash",   zh: "洗",   phon: "/wɒʃ/",     example: "Wash your hands.", attrs: ["action"] },
+    { word: "use",    zh: "用",   phon: "/juːz/",    example: "Use a computer.", attrs: ["action"] },
+    { word: "do",     zh: "做",   phon: "/duː/",     example: "Do your homework.", attrs: ["action"] },
+    { word: "have",   zh: "有/吃", phon: "/hæv/",    example: "Have breakfast.", attrs: ["action"] },
+    { word: "get up", zh: "起床", phon: "/ɡet ʌp/",  example: "Get up at 7.", attrs: ["action"] },
+    { word: "study",  zh: "学习", phon: "/ˈstʌdi/",  example: "Study hard.", attrs: ["action"] },
+    { word: "take",   zh: "带走/拍", phon: "/teɪk/",  example: "Take a photo.", attrs: ["action"] },
+    // ---- 动词短语 phrase ----
+    { word: "row the boat",      zh: "划船",     phon: "/rəʊ ðə bəʊt/",       example: "Let's row the boat.", attrs: ["phrase"] },
+    { word: "read books",        zh: "读书",     phon: "/riːd bʊks/",         example: "I love to read books.", attrs: ["phrase"] },
+    { word: "do homework",       zh: "做作业",   phon: "/duː ˈhəʊmwɜːk/",     example: "Do your homework first.", attrs: ["phrase"] },
+    { word: "watch TV",          zh: "看电视",   phon: "/wɒtʃ ˌtiː ˈviː/",    example: "Watch TV after dinner.", attrs: ["phrase"] },
+    { word: "cook the meals",    zh: "做饭",     phon: "/kʊk ðə miːlz/",      example: "Dad cooks the meals.", attrs: ["phrase"] },
+    { word: "water the flowers", zh: "浇花",     phon: "/ˈwɔːtə(r) ðə ˈflaʊəz/", example: "Water the flowers.", attrs: ["phrase"] },
+    { word: "sweep the floor",   zh: "拖地",     phon: "/swiːp ðə flɔː(r)/",  example: "Sweep the floor.", attrs: ["phrase"] },
+    { word: "clean the bedroom", zh: "打扫卧室", phon: "/kliːn ðə ˈbedruːm/", example: "Clean the bedroom.", attrs: ["phrase"] },
+    { word: "make the bed",      zh: "铺床",     phon: "/meɪk ðə bed/",       example: "Make the bed in the morning.", attrs: ["phrase"] },
+    { word: "set the table",     zh: "摆餐桌",   phon: "/set ðə ˈteɪbl/",     example: "Set the table for dinner.", attrs: ["phrase"] },
+    { word: "wash the clothes",  zh: "洗衣服",   phon: "/wɒʃ ðə kləʊðz/",     example: "Wash the clothes.", attrs: ["phrase"] },
+    { word: "wash the dishes",   zh: "洗盘子",   phon: "/wɒʃ ðə ˈdɪʃɪz/",    example: "Wash the dishes.", attrs: ["phrase"] },
+    { word: "use a computer",    zh: "用电脑",   phon: "/juːz ə kəmˈpjuːtə(r)/", example: "Use a computer at school.", attrs: ["phrase"] },
+    { word: "do morning exercises", zh: "做早操", phon: "/duː ˈmɔːnɪŋ ˈeksəsaɪzɪz/", example: "Do morning exercises.", attrs: ["phrase"] },
+    { word: "eat breakfast",     zh: "吃早餐",   phon: "/iːt ˈbrekfəst/",     example: "Eat breakfast at home.", attrs: ["phrase"] },
+    { word: "eat dinner",        zh: "吃晚餐",   phon: "/iːt ˈdɪnə(r)/",      example: "Eat dinner at 6.", attrs: ["phrase"] },
+    { word: "go to school",      zh: "去上学",   phon: "/ɡəʊ tuː skuːl/",      example: "Go to school by bus.", attrs: ["phrase"] },
+    { word: "have English class", zh: "上英语课", phon: "/hæv ˈɪŋɡlɪʃ klɑːs/", example: "We have English class.", attrs: ["phrase"] },
+    { word: "play sports",       zh: "体育运动", phon: "/pleɪ spɔːts/",       example: "Play sports after school.", attrs: ["phrase"] },
+    { word: "climb mountains",   zh: "爬山",     phon: "/klaɪm ˈmaʊntɪnz/",   example: "Go climb mountains.", attrs: ["phrase"] },
+    { word: "go shopping",       zh: "去购物",   phon: "/ɡəʊ ˈʃɒpɪŋ/",       example: "Mom goes shopping.", attrs: ["phrase"] },
+    { word: "play the piano",    zh: "弹钢琴",   phon: "/pleɪ ðə piˈænəʊ/",   example: "She plays the piano.", attrs: ["phrase"] },
+    { word: "visit grandparents", zh: "拜访祖父母", phon: "/ˈvɪzɪt ˈɡrænpɛərənts/", example: "Visit grandparents.", attrs: ["phrase"] },
+    { word: "go hiking",         zh: "去远足",   phon: "/ɡəʊ ˈhaɪkɪŋ/",       example: "Let's go hiking.", attrs: ["phrase"] },
+    { word: "fly kites",         zh: "放风筝",   phon: "/flaɪ kaɪts/",        example: "Fly kites in the park.", attrs: ["phrase"] },
+    { word: "make a snowman",    zh: "堆雪人",   phon: "/meɪk ə ˈsnəʊmæn/",   example: "Make a snowman in winter.", attrs: ["phrase"] },
+  ]
+});
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：形容词集
+   attrs: basic（原级）/ comparative（比较级）
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "adj",
+  name: "形容词集",
+  chip: "形容词单词",
+  unit: "Adjectives · 形容词集",
+  isPool: true,
+  dialog: { q: "How is it?", a: "It's {word}." },
+  words: [
+    // ---- 原级 basic ----
+    { word: "big",       zh: "大的", phon: "/bɪɡ/",        example: "The elephant is big.", attrs: ["basic"] },
+    { word: "small",     zh: "小的", phon: "/smɔːl/",      example: "The ant is small.", attrs: ["basic"] },
+    { word: "long",      zh: "长的", phon: "/lɒŋ/",        example: "A crocodile has a long body.", attrs: ["basic"] },
+    { word: "short",     zh: "短的", phon: "/ʃɔːt/",       example: "A rabbit has a short tail.", attrs: ["basic"] },
+    { word: "tall",      zh: "高的", phon: "/tɔːl/",       example: "He is tall.", attrs: ["basic"] },
+    { word: "young",     zh: "年轻的", phon: "/jʌŋ/",      example: "She is young.", attrs: ["basic"] },
+    { word: "old",       zh: "年老的", phon: "/əʊld/",      example: "My grandma is old.", attrs: ["basic"] },
+    { word: "thin",      zh: "瘦的", phon: "/θɪn/",        example: "He is thin.", attrs: ["basic"] },
+    { word: "fat",       zh: "胖的", phon: "/fæt/",        example: "The bear is fat.", attrs: ["basic"] },
+    { word: "active",    zh: "活跃的", phon: "/ˈæktɪv/",     example: "He is very active.", attrs: ["basic"] },
+    { word: "quiet",     zh: "安静的", phon: "/ˈkwaɪət/",    example: "The library is quiet.", attrs: ["basic"] },
+    { word: "kind",      zh: "善良的", phon: "/kaɪnd/",      example: "She is kind.", attrs: ["basic"] },
+    { word: "nice",      zh: "好的", phon: "/naɪs/",       example: "It is a nice day.", attrs: ["basic"] },
+    { word: "strict",    zh: "严厉的", phon: "/strɪkt/",     example: "My teacher is strict.", attrs: ["basic"] },
+    { word: "smart",     zh: "聪明的", phon: "/smɑːt/",      example: "He is smart.", attrs: ["basic"] },
+    { word: "funny",     zh: "有趣的", phon: "/ˈfʌni/",      example: "The clown is funny.", attrs: ["basic"] },
+    { word: "sweet",     zh: "甜的", phon: "/swiːt/",      example: "Cake is sweet.", attrs: ["basic"] },
+    { word: "salty",     zh: "咸的", phon: "/ˈsɔːlti/",    example: "The soup is salty.", attrs: ["basic"] },
+    { word: "sour",      zh: "酸的", phon: "/ˈsaʊə(r)/",   example: "The lemon is sour.", attrs: ["basic"] },
+    { word: "fresh",     zh: "新鲜的", phon: "/freʃ/",       example: "These vegetables are fresh.", attrs: ["basic"] },
+    { word: "favorite",  zh: "最喜欢的", phon: "/ˈfeɪvərɪt/",  example: "This is my favorite.", attrs: ["basic"] },
+    { word: "clean",     zh: "干净的", phon: "/kliːn/",      example: "The room is clean.", attrs: ["basic"] },
+    { word: "dirty",     zh: "脏的", phon: "/ˈdɜːti/",     example: "Your hands are dirty.", attrs: ["basic"] },
+    { word: "tired",     zh: "累的", phon: "/ˈtaɪəd/",     example: "I am tired.", attrs: ["basic"] },
+    { word: "excited",   zh: "兴奋的", phon: "/ɪkˈsaɪtɪd/",  example: "We are excited.", attrs: ["basic"] },
+    { word: "angry",     zh: "生气的", phon: "/ˈæŋɡri/",     example: "He is angry.", attrs: ["basic"] },
+    { word: "happy",     zh: "高兴的", phon: "/ˈhæpi/",      example: "I am happy today.", attrs: ["basic"] },
+    { word: "sad",       zh: "伤心的", phon: "/sæd/",        example: "She is sad.", attrs: ["basic"] },
+    { word: "bored",     zh: "无聊的", phon: "/bɔːd/",       example: "I am bored.", attrs: ["basic"] },
+    { word: "busy",      zh: "忙的", phon: "/ˈbɪzi/",      example: "Mom is busy.", attrs: ["basic"] },
+    { word: "hot",       zh: "热的", phon: "/hɒt/",        example: "Summer is hot.", attrs: ["basic"] },
+    { word: "cold",      zh: "冷的", phon: "/kəʊld/",      example: "Winter is cold.", attrs: ["basic"] },
+    { word: "warm",      zh: "温暖的", phon: "/wɔːm/",      example: "Spring is warm.", attrs: ["basic"] },
+    { word: "cool",      zh: "凉爽的", phon: "/kuːl/",      example: "Autumn is cool.", attrs: ["basic"] },
+    { word: "fine",      zh: "好的", phon: "/faɪn/",       example: "I'm fine, thanks.", attrs: ["basic"] },
+    { word: "heavy",     zh: "重的", phon: "/ˈhevi/",      example: "The box is heavy.", attrs: ["basic"] },
+    { word: "hungry",    zh: "饿的", phon: "/ˈhʌŋɡri/",    example: "I am hungry.", attrs: ["basic"] },
+    { word: "beautiful", zh: "美丽的", phon: "/ˈbjuːtɪfl/", example: "The flower is beautiful.", attrs: ["basic"] },
+    { word: "colorful",  zh: "色彩鲜艳的", phon: "/ˈkʌləfl/",  example: "The rainbow is colorful.", attrs: ["basic"] },
+    { word: "pretty",    zh: "漂亮的", phon: "/ˈprɪti/",     example: "She is pretty.", attrs: ["basic"] },
+    { word: "expensive", zh: "贵的", phon: "/ɪkˈspensɪv/", example: "This watch is expensive.", attrs: ["basic"] },
+    { word: "juicy",     zh: "多汁的", phon: "/ˈdʒuːsi/",   example: "The orange is juicy.", attrs: ["basic"] },
+    { word: "helpful",   zh: "有用的", phon: "/ˈhelpfl/",    example: "He is helpful.", attrs: ["basic"] },
+    { word: "easy",      zh: "容易的", phon: "/ˈiːzi/",      example: "This question is easy.", attrs: ["basic"] },
+    { word: "good",      zh: "好的", phon: "/ɡʊd/",        example: "Good job!", attrs: ["basic"] },
+    { word: "new",       zh: "新的", phon: "/njuː/",       example: "This is my new bag.", attrs: ["basic"] },
+    { word: "right",     zh: "对的", phon: "/raɪt/",       example: "You are right.", attrs: ["basic"] },
+    { word: "cute",      zh: "可爱的", phon: "/kjuːt/",     example: "The baby is cute.", attrs: ["basic"] },
+    { word: "lovely",    zh: "可爱的", phon: "/ˈlʌvli/",    example: "A lovely cat.", attrs: ["basic"] },
+    { word: "cheap",     zh: "便宜的", phon: "/tʃiːp/",     example: "This is cheap.", attrs: ["basic"] },
+    { word: "healthy",   zh: "健康的", phon: "/ˈhelθi/",    example: "Vegetables are healthy.", attrs: ["basic"] },
+    { word: "high",      zh: "高的", phon: "/haɪ/",        example: "The mountain is high.", attrs: ["basic"] },
+    { word: "proud",     zh: "自豪的", phon: "/praʊd/",     example: "I am proud of you.", attrs: ["basic"] },
+    { word: "little",    zh: "小的", phon: "/ˈlɪtl/",      example: "A little cat.", attrs: ["basic"] },
+    // ---- 比较级 comparative ----
+    { word: "bigger",    zh: "更大的", phon: "/ˈbɪɡə(r)/",    example: "Elephant is bigger than me.", attrs: ["comparative"] },
+    { word: "smaller",   zh: "更小的", phon: "/ˈsmɔːlə(r)/",  example: "Ant is smaller than bee.", attrs: ["comparative"] },
+    { word: "longer",    zh: "更长的", phon: "/ˈlɒŋɡə(r)/",   example: "Crocodile's tail is longer.", attrs: ["comparative"] },
+    { word: "shorter",   zh: "更短的", phon: "/ˈʃɔːtə(r)/",   example: "Rabbit's tail is shorter.", attrs: ["comparative"] },
+    { word: "taller",    zh: "更高的", phon: "/ˈtɔːlə(r)/",   example: "He is taller than me.", attrs: ["comparative"] },
+    { word: "younger",   zh: "更年轻的", phon: "/ˈjʌŋɡə(r)/", example: "My sister is younger.", attrs: ["comparative"] },
+    { word: "older",     zh: "更年老的", phon: "/ˈəʊldə(r)/",  example: "Dad is older than Mom.", attrs: ["comparative"] },
+    { word: "thinner",   zh: "更瘦的", phon: "/ˈθɪnə(r)/",    example: "He is thinner.", attrs: ["comparative"] },
+    { word: "fatter",    zh: "更胖的", phon: "/ˈfætə(r)/",    example: "The bear is fatter.", attrs: ["comparative"] },
+    { word: "heavier",   zh: "更重的", phon: "/ˈheviə(r)/",   example: "This one is heavier.", attrs: ["comparative"] },
+    { word: "lighter",   zh: "更轻的", phon: "/ˈlaɪtə(r)/",   example: "This bag is lighter.", attrs: ["comparative"] },
+    { word: "better",    zh: "更好的", phon: "/ˈbetə(r)/",    example: "This one is better.", attrs: ["comparative"] },
+    { word: "worse",     zh: "更差的", phon: "/wɜːs/",        example: "This is worse.", attrs: ["comparative"] },
+    { word: "faster",    zh: "更快的", phon: "/ˈfɑːstə(r)/",  example: "Cheetah is faster.", attrs: ["comparative"] },
+    { word: "slower",    zh: "更慢的", phon: "/ˈsləʊə(r)/",   example: "Turtle is slower.", attrs: ["comparative"] },
+    { word: "bigger",    zh: "更大的", phon: "/ˈbɪɡə(r)/",    example: "This one is bigger.", attrs: ["comparative"] },
+    { word: "smaller",   zh: "更小的", phon: "/ˈsmɔːlə(r)/",  example: "This one is smaller.", attrs: ["comparative"] },
+  ]
+});
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：副词
+   按词性分类的词汇集，words 数组初始为空，后续按需补充
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "adv",
+  name: "副词集",
+  chip: "副词单词",
+  unit: "Unit · 副词集",
+  emoji: "⚡",
+  isPool: true,
+  dialog: { q: "How do you do it?", a: "Do it {word}." },
+  words: [
+    // { word: "", zh: "", phon: "", example: "", emoji: "" },
+  ]
+});
+
+
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：代词集
+   attrs: subject（主格）/ object（宾格）/ possessive（形容词性物主代词）
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "pron",
+  name: "代词集",
+  chip: "代词单词",
+  unit: "Pronouns · 代词集",
+  isPool: true,
+  dialog: { q: "Who is it?", a: "It's {word}." },
+  words: [
+    { word: "I",    zh: "我",   phon: "/aɪ/",    example: "I am a student.", attrs: ["subject"] },
+    { word: "you",  zh: "你",   phon: "/juː/",   example: "You are my friend.", attrs: ["subject"] },
+    { word: "he",   zh: "他",   phon: "/hiː/",   example: "He is tall.", attrs: ["subject"] },
+    { word: "she",  zh: "她",   phon: "/ʃiː/",   example: "She is kind.", attrs: ["subject"] },
+    { word: "it",   zh: "它",   phon: "/ɪt/",    example: "It is a cat.", attrs: ["subject"] },
+    { word: "we",   zh: "我们", phon: "/wiː/",   example: "We like apples.", attrs: ["subject"] },
+    { word: "they", zh: "他们", phon: "/ðeɪ/",   example: "They are happy.", attrs: ["subject"] },
+    { word: "me",   zh: "我(宾)", phon: "/miː/", example: "Help me, please.", attrs: ["object"] },
+    { word: "him",  zh: "他(宾)", phon: "/hɪm/", example: "I like him.", attrs: ["object"] },
+    { word: "her",  zh: "她(宾)", phon: "/hɜː(r)/", example: "Help her.", attrs: ["object"] },
+    { word: "us",   zh: "我们(宾)", phon: "/ʌs/", example: "Let us go.", attrs: ["object"] },
+    { word: "them", zh: "他们(宾)", phon: "/ðem/", example: "Help them.", attrs: ["object"] },
+    { word: "my",   zh: "我的", phon: "/maɪ/",   example: "This is my book.", attrs: ["possessive"] },
+    { word: "your", zh: "你的", phon: "/jɔː(r)/", example: "Is this your pen?", attrs: ["possessive"] },
+    { word: "his",  zh: "他的", phon: "/hɪz/",   example: "This is his bag.", attrs: ["possessive"] },
+    { word: "her",  zh: "她的", phon: "/hɜː(r)/", example: "This is her toy.", attrs: ["possessive"] },
+    { word: "our",  zh: "我们的", phon: "/ˈaʊə(r)/", example: "This is our room.", attrs: ["possessive"] },
+    { word: "their", zh: "他们的", phon: "/ðeə(r)/", example: "This is their car.", attrs: ["possessive"] },
+  ]
+});
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：介词集
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "prep",
+  name: "介词集",
+  chip: "介词单词",
+  unit: "Prepositions · 介词集",
+  isPool: true,
+  dialog: { q: "Where is it?", a: "It's {word} the box." },
+  words: [
+    { word: "in",        zh: "在…里面", phon: "/ɪn/",        example: "It is in the box.", attrs: [] },
+    { word: "on",        zh: "在…上面", phon: "/ɒn/",       example: "The book is on the desk.", attrs: [] },
+    { word: "under",     zh: "在…下面", phon: "/ˈʌndə(r)/", example: "The cat is under the table.", attrs: [] },
+    { word: "near",      zh: "靠近",   phon: "/nɪə(r)/",   example: "I live near the school.", attrs: [] },
+    { word: "behind",    zh: "在…后面", phon: "/bɪˈhaɪnd/", example: "Who is behind me?", attrs: [] },
+    { word: "over",      zh: "在…上方", phon: "/ˈəʊvə(r)/", example: "The plane flies over the mountain.", attrs: [] },
+    { word: "in front of", zh: "在…前面", phon: "/ɪn frʌnt ɒv/", example: "I sit in front of her.", attrs: [] },
+    { word: "between",   zh: "在…之间", phon: "/bɪˈtwiːn/", example: "It is between A and B.", attrs: [] },
+    { word: "next to",   zh: "紧挨着", phon: "/nekst tuː/", example: "Sit next to me.", attrs: [] },
+    { word: "at",        zh: "在…",   phon: "/æt/",       example: "Look at me.", attrs: [] },
+    { word: "to",        zh: "到",     phon: "/tuː/",      example: "Go to school.", attrs: [] },
+    { word: "from",      zh: "从",     phon: "/frɒm/",     example: "I'm from China.", attrs: [] },
+    { word: "with",      zh: "和",     phon: "/wɪð/",      example: "I play with friends.", attrs: [] },
+    { word: "for",       zh: "为了",   phon: "/fɔː(r)/",   example: "This is for you.", attrs: [] },
+  ]
+});
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：连词
+   按词性分类的词汇集，words 数组初始为空，后续按需补充
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "conj",
+  name: "连词集",
+  chip: "连词单词",
+  unit: "Unit · 连词集",
+  emoji: "🔀",
+  isPool: true,
+  dialog: { q: "Which one?", a: "This {word} that." },
+  words: [
+    // { word: "", zh: "", phon: "", example: "", emoji: "" },
+  ]
+});
+
+
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：感叹词
+   按词性分类的词汇集，words 数组初始为空，后续按需补充
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "interj",
+  name: "感叹词集",
+  chip: "感叹词单词",
+  unit: "Unit · 感叹词集",
+  emoji: "❗",
+  isPool: true,
+  dialog: { q: "How do you feel?", a: "{word}! It is great!" },
+  words: [
+    // { word: "", zh: "", phon: "", example: "", emoji: "" },
+  ]
+});
+
+
+
+</script>
+  <script>
+﻿/* ============================================================
+   DinoGo · 恐龙英语 — 词性词汇：数词集
+   attrs: cardinal（基数词）/ ordinal（序数词）
+   ============================================================ */
+window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+window.DINO_WORD_SETS.push({
+  id: "num",
+  name: "数词集",
+  chip: "数词单词",
+  unit: "Numbers · 数词集",
+  isPool: true,
+  dialog: { q: "How many?", a: "{word}." },
+  words: [
+    // ---- 基数词 cardinal ----
+    { word: "one",    zh: "一",    phon: "/wʌn/",     example: "One apple.", attrs: ["cardinal"] },
+    { word: "two",    zh: "二",    phon: "/tuː/",     example: "Two cats.", attrs: ["cardinal"] },
+    { word: "three",  zh: "三",    phon: "/θriː/",    example: "Three little pigs.", attrs: ["cardinal"] },
+    { word: "four",   zh: "四",    phon: "/fɔː(r)/",  example: "Four seasons.", attrs: ["cardinal"] },
+    { word: "five",   zh: "五",    phon: "/faɪv/",    example: "Five days.", attrs: ["cardinal"] },
+    { word: "six",    zh: "六",    phon: "/sɪks/",    example: "Six apples.", attrs: ["cardinal"] },
+    { word: "seven",  zh: "七",    phon: "/ˈsevn/",   example: "Seven days a week.", attrs: ["cardinal"] },
+    { word: "eight",  zh: "八",    phon: "/eɪt/",     example: "Eight elephants.", attrs: ["cardinal"] },
+    { word: "nine",   zh: "九",    phon: "/naɪn/",    example: "Nine children.", attrs: ["cardinal"] },
+    { word: "ten",    zh: "十",    phon: "/ten/",     example: "Ten fingers.", attrs: ["cardinal"] },
+    { word: "eleven", zh: "十一",  phon: "/ɪˈlevn/",  example: "Eleven balls.", attrs: ["cardinal"] },
+    { word: "twelve", zh: "十二",  phon: "/twelv/",   example: "Twelve months.", attrs: ["cardinal"] },
+    { word: "thirteen", zh: "十三", phon: "/ˌθɜːˈtiːn/", example: "Thirteen kites.", attrs: ["cardinal"] },
+    { word: "fourteen", zh: "十四", phon: "/ˌfɔːˈtiːn/", example: "Fourteen ducks.", attrs: ["cardinal"] },
+    { word: "fifteen", zh: "十五",  phon: "/ˌfɪfˈtiːn/", example: "Fifteen stars.", attrs: ["cardinal"] },
+    { word: "twenty", zh: "二十", phon: "/ˈtwenti/",    example: "Twenty books.", attrs: ["cardinal"] },
+    { word: "thirty", zh: "三十", phon: "/ˈθɜːti/",     example: "Thirty flowers.", attrs: ["cardinal"] },
+    { word: "forty",  zh: "四十", phon: "/ˈfɔːti/",     example: "Forty apples.", attrs: ["cardinal"] },
+    { word: "fifty",  zh: "五十", phon: "/ˈfɪfti/",     example: "Fifty children.", attrs: ["cardinal"] },
+    { word: "sixty",  zh: "六十", phon: "/ˈsɪksti/",    example: "Sixty days.", attrs: ["cardinal"] },
+    { word: "seventy", zh: "七十", phon: "/ˈsevnti/",   example: "Seventy years.", attrs: ["cardinal"] },
+    { word: "eighty", zh: "八十", phon: "/ˈeɪti/",      example: "Eighty cakes.", attrs: ["cardinal"] },
+    { word: "ninety", zh: "九十", phon: "/ˈnaɪnti/",    example: "Ninety trees.", attrs: ["cardinal"] },
+    { word: "one hundred", zh: "一百", phon: "/wʌn ˈhʌndrəd/", example: "One hundred students.", attrs: ["cardinal"] },
+    // ---- 序数词 ordinal ----
+    { word: "first",  zh: "第一", phon: "/fɜːst/",       example: "January is the first month.", attrs: ["ordinal"] },
+    { word: "second", zh: "第二", phon: "/ˈsekənd/",    example: "You are the second.", attrs: ["ordinal"] },
+    { word: "third",  zh: "第三", phon: "/θɜːd/",        example: "He is the third.", attrs: ["ordinal"] },
+    { word: "fourth", zh: "第四", phon: "/fɔːθ/",        example: "April is the fourth month.", attrs: ["ordinal"] },
+    { word: "fifth",  zh: "第五", phon: "/fɪfθ/",        example: "He is the fifth.", attrs: ["ordinal"] },
+    { word: "sixth",  zh: "第六", phon: "/sɪksθ/",       example: "June is the sixth month.", attrs: ["ordinal"] },
+    { word: "seventh", zh: "第七", phon: "/ˈsevnθ/",     example: "Saturday is the seventh day.", attrs: ["ordinal"] },
+    { word: "eighth", zh: "第八", phon: "/eɪtθ/",        example: "He is the eighth.", attrs: ["ordinal"] },
+    { word: "ninth",  zh: "第九", phon: "/naɪnθ/",       example: "September is the ninth month.", attrs: ["ordinal"] },
+    { word: "tenth",  zh: "第十", phon: "/tenθ/",        example: "He is the tenth.", attrs: ["ordinal"] },
+    { word: "eleventh", zh: "第十一", phon: "/ɪˈlevnθ/",  example: "He is the eleventh.", attrs: ["ordinal"] },
+    { word: "twelfth", zh: "第十二", phon: "/twelfθ/",   example: "December is the twelfth.", attrs: ["ordinal"] },
+  ]
+});
+
+</script>
+  <!-- 主题关卡筛选器（按 attrs 从词汇池匹配单词，保留关卡进度身份） -->
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题关卡筛选器：水果大冒险
+   words 为空，按 attrs 从 pos 文件中自动匹配对应单词
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
@@ -1017,25 +1793,17 @@ window.DINO_WORD_SETS.push({
   chip: "水果单词",
   unit: "Unit 1 · 水果乐园",
   emoji: "🍎",
+  attrs: ["fruit"],
+  isTheme: true,
   dialog: { q: "What's this?", a: "It's a {word}." },
-  words: [
-    { word: "apple",      zh: "苹果", phon: "/ˈæpəl/",         example: "I eat an apple every day.",   art: () => appleSVG() },
-    { word: "banana",     zh: "香蕉", phon: "/bəˈnɑːnə/",      example: "The monkey likes bananas.",   art: () => bananaSVG() },
-    { word: "orange",     zh: "橙子", phon: "/ˈɒrɪndʒ/",       example: "This orange is sweet.",       art: () => orangeSVG() },
-    { word: "grape",      zh: "葡萄", phon: "/ɡreɪp/",         example: "Grapes grow on a vine.",      art: () => grapeSVG() },
-    { word: "strawberry", zh: "草莓", phon: "/ˈstrɔːbəri/",    example: "I want a strawberry.",        art: () => strawberrySVG() },
-    { word: "pear",       zh: "梨",   phon: "/peə(r)/",        example: "This pear is juicy.",         emoji: "🍐" },
-    { word: "peach",      zh: "桃子", phon: "/piːtʃ/",         example: "The peach is soft and sweet.", emoji: "🍑" },
-    { word: "lemon",      zh: "柠檬", phon: "/ˈlemən/",        example: "The lemon tastes sour.",      emoji: "🍋" },
-    { word: "watermelon", zh: "西瓜", phon: "/ˈwɔːtərmelən/",  example: "We eat watermelon in summer.", emoji: "🍉" },
-    { word: "cherry",     zh: "樱桃", phon: "/ˈtʃeri/",        example: "She has two cherries.",       emoji: "🍒" },
-  ],
+  words: []
 });
 
 </script>
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 主题词汇：汽车派对
+   DinoGo · 恐龙英语 — 主题关卡筛选器：汽车派对
+   words 为空，按 attrs 从 pos 文件中自动匹配对应单词
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
@@ -1044,73 +1812,48 @@ window.DINO_WORD_SETS.push({
   chip: "交通单词",
   unit: "Unit 2 · 汽车派对",
   emoji: "🚗",
+  attrs: ["vehicle"],
+  isTheme: true,
   dialog: { q: "How do we get there?", a: "Let's take a {word}." },
-  words: [
-    { word: "car",    zh: "小汽车", phon: "/kɑːr/",          example: "My dad drives a red car.",      emoji: "🚗" },
-    { word: "bus",    zh: "公交车", phon: "/bʌs/",           example: "I take the bus to school.",     emoji: "🚌" },
-    { word: "bike",   zh: "自行车", phon: "/baɪk/",          example: "I ride my bike in the park.",   emoji: "🚲" },
-    { word: "train",  zh: "火车",   phon: "/treɪn/",         example: "The train goes very fast.",     emoji: "🚂" },
-    { word: "plane",  zh: "飞机",   phon: "/pleɪn/",         example: "The plane flies in the sky.",   emoji: "✈️" },
-    { word: "boat",   zh: "小船",   phon: "/bəʊt/",          example: "A boat sails on the lake.",     emoji: "⛵" },
-    { word: "taxi",   zh: "出租车", phon: "/ˈtæksi/",        example: "We take a taxi to the station.", emoji: "🚕" },
-    { word: "truck",  zh: "卡车",   phon: "/trʌk/",          example: "The truck carries big boxes.",  emoji: "🚚" },
-    { word: "ship",   zh: "轮船",   phon: "/ʃɪp/",           example: "The ship crosses the sea.",     emoji: "🚢" },
-    { word: "rocket", zh: "火箭",   phon: "/ˈrɒkɪt/",        example: "The rocket flies to the moon.", emoji: "🚀" },
-  ],
+  words: []
 });
 
 </script>
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 主题词汇：动物园奇遇
+   DinoGo · 恐龙英语 — 主题关卡筛选器：动物王国
+   words 为空，按 attrs 从 pos 文件中自动匹配对应单词
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
   id: "zoo",
-  name: "动物园奇遇",
+  name: "动物王国",
   chip: "动物单词",
-  unit: "Unit 3 · 动物园奇遇",
+  unit: "Unit 3 · 动物王国",
   emoji: "🦁",
-  dialog: { q: "What can you see?", a: "I can see a {word}." },
-  words: [
-    { word: "lion",     zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion has a big mane.",          emoji: "🦁" },
-    { word: "tiger",    zh: "老虎",   phon: "/ˈtaɪɡər/",      example: "The tiger runs very fast.",         emoji: "🐯" },
-    { word: "monkey",   zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey likes bananas.",         emoji: "🐵" },
-    { word: "elephant", zh: "大象",   phon: "/ˈelɪfənt/",     example: "An elephant has a long nose.",      emoji: "🐘" },
-    { word: "panda",    zh: "熊猫",   phon: "/ˈpændə/",       example: "The panda eats bamboo.",            emoji: "🐼" },
-    { word: "giraffe",  zh: "长颈鹿", phon: "/dʒəˈrɑːf/",     example: "The giraffe has a long neck.",      emoji: "🦒" },
-    { word: "zebra",    zh: "斑马",   phon: "/ˈzebrə/",       example: "The zebra has black and white stripes.", emoji: "🦓" },
-    { word: "bear",     zh: "熊",     phon: "/beər/",         example: "The bear sleeps in winter.",        emoji: "🐻" },
-    { word: "rabbit",   zh: "兔子",   phon: "/ˈræbɪt/",       example: "The rabbit jumps in the grass.",    emoji: "🐰" },
-    { word: "penguin",  zh: "企鹅",   phon: "/ˈpeŋɡwɪn/",     example: "The penguin lives in the cold.",    emoji: "🐧" },
-  ],
+  attrs: ["animal"],
+  isTheme: true,
+  dialog: { q: "What animal is this?", a: "It's a {word}." },
+  words: []
 });
 
 </script>
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 主题词汇：美食街
+   DinoGo · 恐龙英语 — 主题关卡筛选器：美食餐厅
+   words 为空，按 attrs 从 pos 文件中自动匹配对应单词
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
   id: "food",
-  name: "美食街",
+  name: "美食餐厅",
   chip: "食物单词",
-  unit: "Unit 4 · 美食街",
-  emoji: "🍕",
-  dialog: { q: "What would you like?", a: "I'd like some {word}." },
-  words: [
-    { word: "bread",     zh: "面包",   phon: "/bred/",             example: "I eat bread for breakfast.",   emoji: "🍞" },
-    { word: "cake",      zh: "蛋糕",   phon: "/keɪk/",             example: "We share a birthday cake.",    emoji: "🍰" },
-    { word: "rice",      zh: "米饭",   phon: "/raɪs/",             example: "We have rice for dinner.",     emoji: "🍚" },
-    { word: "noodles",   zh: "面条",   phon: "/ˈnuːdlz/",          example: "These noodles are hot.",       emoji: "🍜" },
-    { word: "egg",       zh: "鸡蛋",   phon: "/eɡ/",               example: "I eat an egg every morning.",  emoji: "🥚" },
-    { word: "milk",      zh: "牛奶",   phon: "/mɪlk/",             example: "I drink milk before bed.",     emoji: "🥛" },
-    { word: "juice",     zh: "果汁",   phon: "/dʒuːs/",            example: "This apple juice is sweet.",   emoji: "🧃" },
-    { word: "hamburger", zh: "汉堡",   phon: "/ˈhæmbɜːɡər/",       example: "He orders a hamburger.",       emoji: "🍔" },
-    { word: "ice cream", zh: "冰淇淋", phon: "/ˌaɪs ˈkriːm/",      example: "Ice cream melts in the sun.",  emoji: "🍦" },
-    { word: "pizza",     zh: "披萨",   phon: "/ˈpiːtsə/",          example: "We eat pizza on Friday.",      emoji: "🍕" },
-  ],
+  unit: "Unit 4 · 美食餐厅",
+  emoji: "🍔",
+  attrs: ["food"],
+  isTheme: true,
+  dialog: { q: "What would you like?", a: "I want some {word}." },
+  words: []
 });
 
 </script>
@@ -1701,11 +2444,24 @@ function emojiArt(ch) {
     <text x="60" y="64" font-size="78" text-anchor="middle" dominant-baseline="middle">${ch}</text>
   </svg>`;
 }
-const WORD_SETS = (window.DINO_WORD_SETS || []).map((set) => ({
-  ...set,
-  words: set.words.map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) })),
-}));
-const ALL_WORDS = WORD_SETS.flatMap((set) => set.words);
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 attrs 标注），合并去重 */
+const POS_POOL = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isPool)
+  .flatMap((s) => s.words || [])
+  .map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 attrs 从 POS_POOL 匹配 */
+const WORD_SETS = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isTheme)
+  .map((set) => {
+    const own = (set.words || []).map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+    let words = own;
+    if (words.length === 0 && Array.isArray(set.attrs) && set.attrs.length) {
+      words = POS_POOL.filter((w) => set.attrs.some((a) => w.attrs && w.attrs.includes(a)));
+    }
+    return { ...set, words };
+  });
+/* 单词本用所有原子词（不重复），关卡进度等只关联 WORD_SETS */
+const ALL_WORDS = POS_POOL;
 /* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
 const LEVELS_PER_THEME = 10;
 const PASS_STARS = 2;
@@ -2071,13 +2827,16 @@ document.addEventListener("click", (e) => {
     go("home", { replace: true });
     toast("已重置演示进度");
   } else if (action === "close-overlay") {
+    if (typeof cancelVoice === "function") cancelVoice();
     closeOverlay();
   } else if (action === "speak-word") {
     speak(el.dataset.word);
   } else if (action === "open-review") {
     openReview();
-  } else if (action === "random-word") {
-    openReview(true);
+  } else if (action === "record-say") {
+    recordSay();
+  } else if (action === "play-voice") {
+    playVoice();
   } else if (action === "open-map") {
     go("map");
   }
@@ -2166,6 +2925,72 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
 
 /* ------------------------------------------------ home */
 let reviewWord = null;
+let voiceRec = null;
+let voiceChunks = [];
+let voiceUrl = "";
+let voiceTimer = null;
+
+function resetVoice() {
+  if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+  if (voiceRec && voiceRec.state !== "inactive") {
+    try { voiceRec.stop(); } catch (e) {}
+  }
+  voiceRec = null;
+  voiceChunks = [];
+  if (voiceUrl) { URL.revokeObjectURL(voiceUrl); voiceUrl = ""; }
+}
+
+function cancelVoice() { resetVoice(); }
+
+function setRecBtn(label, recording) {
+  const btn = $('[data-action="record-say"]');
+  if (!btn) return;
+  btn.classList.toggle("recording", !!recording);
+  btn.innerHTML = recording ? `<span class="rec-dot"></span>${label}` : `${I.speaker(18)} ${label}`;
+}
+
+async function recordSay() {
+  if (voiceRec && voiceRec.state === "recording") return;
+  if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
+  setRecBtn("准备录音…", true);
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    voiceChunks = [];
+    voiceRec = new MediaRecorder(stream);
+    voiceRec.ondataavailable = (e) => { if (e.data && e.data.size) voiceChunks.push(e.data); };
+    voiceRec.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      if (voiceUrl) URL.revokeObjectURL(voiceUrl);
+      const blob = new Blob(voiceChunks, voiceRec.mimeType ? { type: voiceRec.mimeType } : {});
+      voiceUrl = URL.createObjectURL(blob);
+      setRecBtn("重录 · 5 秒", false);
+      if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+      toast("录好啦，点「回放声音」听一听");
+    };
+    voiceRec.start();
+    let left = 5;
+    setRecBtn(`录音中 ${left}s`, true);
+    voiceTimer = setInterval(() => {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(voiceTimer); voiceTimer = null;
+        if (voiceRec && voiceRec.state === "recording") voiceRec.stop();
+        return;
+      }
+      setRecBtn(`录音中 ${left}s`, true);
+    }, 1000);
+  } catch (e) {
+    setRecBtn("跟着读", false);
+    toast("无法使用麦克风，请允许录音权限");
+  }
+}
+
+function playVoice() {
+  if (!voiceUrl) { toast("还没有录音，先跟着读一次吧"); return; }
+  const audio = new Audio(voiceUrl);
+  audio.play().catch(() => toast("播放失败，请再试一次"));
+}
+
 function randomWord() { return ALL_WORDS[Math.floor(Math.random() * ALL_WORDS.length)]; }
 
 function todayLevels() {
@@ -2346,17 +3171,19 @@ function screenProfile() {
 function openReview(next) {
   if (next) reviewWord = null;
   const w = reviewWord || (reviewWord = randomWord());
+  resetVoice();
   openOverlay(`<div class="overlay">
     <div class="sheet word-sheet">
       <div class="grab"></div>
       <div class="eyebrow">RANDOM WORDS</div>
-      <div class="word-big">${w.word}</div>
+      <button class="word-art" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.art()}</button>
+      <button class="word-big" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.word}</button>
       <div class="word-phon">${w.phon}</div>
       <div class="word-zh">n. ${w.zh}</div>
       <div class="tip">例句：${w.example}</div>
-      <button class="btn speak-btn" data-action="speak-word" data-word="${w.word}">${I.speaker(18)} 听一听发音</button>
+      <button class="btn speak-btn" data-action="record-say">${I.speaker(18)} 跟着读</button>
       <div class="sheet-actions">
-        <button class="btn ghost" data-action="random-word">换一个单词</button>
+        <button class="btn ghost" data-action="play-voice">${I.speaker(18)} 回放声音</button>
         <button class="btn" data-action="close-overlay">我记住啦</button>
       </div>
     </div>
