@@ -50,7 +50,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\render.ps1
 
 ## 可运行 App
 
-- [`app/index.html`](app/index.html) / [`app/js/`](app/js) / [`app/css/`](app/css) / [`app/words/`](app/words) — 响应式源码（iPhone 单列 + iPad 双区布局），JS 按底部四个 Tab 拆分：`core.js`（公共数据/图标/状态/路由/事件）+ `home.js` / `map.js` / `dex.js` / `shop.js`；CSS 按模块拆分：`base` / `home` / `map` / `dex` / `shop` / `overlays` / `responsive`；主题词汇一个主题一个文件放在 `words/`（fruits / cars / zoo / food）
+- [`app/index.html`](app/index.html) / [`app/frame/`](app/frame) / [`app/css/`](app/css) / [`app/words/`](app/words) — 响应式源码（iPhone 单列 + iPad 双区布局），JS 按底部四个 Tab 拆分：`core.js`（公共数据/图标/状态/路由/事件）+ `home.js` / `map.js` / `dex.js` / `shop.js`；CSS 按模块拆分：`base` / `home` / `map` / `dex` / `shop` / `overlays` / `responsive`；主题词汇一个主题一个文件放在 `words/`（fruits / cars / zoo / food）
 - [`build.mjs`](build.mjs) — 生成单文件 `DinoGo.html` 与 PWA 目录 `dist/`
 - [`package.mjs`](package.mjs) — 打包为 `DinoGo-iOS.zip`
 - [`serve.mjs`](serve.mjs) / [`start-ios.ps1`](start-ios.ps1) — 零依赖静态服务

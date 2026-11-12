@@ -20,8 +20,6 @@ function resetVoice() {
   if (voiceUrl) { URL.revokeObjectURL(voiceUrl); voiceUrl = ""; }
 }
 
-function cancelVoice() { resetVoice(); }
-
 function setRecBtn(label, recording) {
   const btn = $('[data-action="record-say"]');
   if (!btn) return;
@@ -71,7 +69,8 @@ function playVoice() {
   audio.play().catch(() => toast("播放失败，请再试一次"));
 }
 
-function randomWord() { return ALL_WORDS[Math.floor(Math.random() * ALL_WORDS.length)]; }
+function randomWord() { return REVIEW_WORDS[Math.floor(Math.random() * REVIEW_WORDS.length)]; }
+function wordPosLabel(w) { return w.pos === "verb" ? "phr." : "n."; }
 
 function todayLevels() {
   return (state.log[dateKey()] || {}).levels || 0;
@@ -86,9 +85,7 @@ function streakDays() {
   }
   return n;
 }
-function tasksData() {
-  const lv = todayLevels();
-  const streak = streakDays();
+function tasksData(lv, streak) {
   return [
     { done: !!state.tasks.level, color: "orange", icon: I.flag, title: "完成 1 次闯关", sub: state.tasks.level ? "今日目标已达成" : "还差 1 次，约 3 分钟", reward: "+60 成长值" },
     { done: lv >= 1, color: "blue", icon: I.book, title: "学会 5 个新单词", sub: `已掌握 ${Math.min(5, lv * 5)} / 5 个`, reward: "+40 成长值" },
@@ -101,7 +98,9 @@ function screenHome() {
   const next = nextStage(st.key);
   const pending = next && state.growth >= next.min;
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
-  const tasks = tasksData();
+  const lv = todayLevels();
+  const streak = streakDays();
+  const tasks = tasksData(lv, streak);
   const doneCount = tasks.filter((t) => t.done).length;
   const word = reviewWord = randomWord();
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
@@ -116,7 +115,7 @@ function screenHome() {
         <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
-          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streakDays()} 天 · 今日已学 ${todayLevels() * 2} 分钟</div>
+          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
         </div>
         ${starPill()}
       </div>
@@ -149,8 +148,8 @@ function screenHome() {
         <div class="spk">${I.speaker(21, "#B4811C")}</div>
         <div class="w-main">
           <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
-          <div class="w-word">${word.word}</div>
-          <div class="w-phon">${word.phon} · n. ${word.zh}</div>
+          <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
+          <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
         </div>
         <div class="w-btn">去记单词 ${I.arrow(11)}</div>
       </button>
@@ -167,7 +166,7 @@ function screenHome() {
           <span class="check">${t.done ? I.check(11) : ""}</span>
         </div>`).join("")}
       </section>
-      <div class="home-note">${todayLevels() ? `今天已学 ${todayLevels() * 2} 分钟 · 再闯 ${Math.max(0, 2 - todayLevels())} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
+      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 再闯 ${Math.max(0, 2 - lv)} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
   </section>`;
@@ -248,8 +247,7 @@ function screenProfile() {
 }
 
 
-function openReview(next) {
-  if (next) reviewWord = null;
+function openReview() {
   const w = reviewWord || (reviewWord = randomWord());
   resetVoice();
   openOverlay(`<div class="overlay">
@@ -259,7 +257,7 @@ function openReview(next) {
       <button class="word-art" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.art()}</button>
       <button class="word-big" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.word}</button>
       <div class="word-phon">${w.phon}</div>
-      <div class="word-zh">n. ${w.zh}</div>
+      <div class="word-zh">${wordPosLabel(w)} ${w.zh}</div>
       <div class="tip">例句：${w.example}</div>
       <button class="btn speak-btn" data-action="record-say">${I.speaker(18)} 跟着读</button>
       <div class="sheet-actions">

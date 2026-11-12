@@ -6,6 +6,7 @@
 
 let dexFilter = "all";
 let wordsLetter = "all";
+let wordsAlphaCache = null;
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
@@ -24,10 +25,11 @@ function dexBody() {
     return d.key === dexFilter;
   });
   const reward = dexRewardInfo();
+  const pct = Math.round((state.dex.length / DEX.length) * 100);
   return `<div class="dex-sum card">
       <div class="ds-main">
-        <div class="ds-row"><b>图鉴收集度</b><span class="num">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-        <div class="bar"><i style="width:${Math.round((state.dex.length / DEX.length) * 100)}%"></i></div>
+        <div class="ds-row"><b>图鉴收集度</b><span class="num">${pct}%</span></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
         <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} / ${DEX.length} 种形态 · 继续成长解锁传说</div>
       </div>
       <div class="ds-badge">${I.book(26)}</div>
@@ -62,8 +64,9 @@ function dexBody() {
 }
 
 /* ------------------------------------------------ words */
-/* 所有主题词汇按首字母 A–Z 分组，共 40 个 */
+/* 所有主题词汇按首字母 A–Z 分组：词汇池在运行期不变，首次计算后缓存 */
 function allWordsAlpha() {
+  if (wordsAlphaCache) return wordsAlphaCache;
   const all = WORD_SETS.flatMap((set) =>
     set.words.map((w) => ({ ...w, themeId: set.id, themeName: set.name, themeEmoji: set.emoji || "🔤" })));
   all.sort((a, b) => a.word.localeCompare(b.word, "en"));
@@ -74,13 +77,14 @@ function allWordsAlpha() {
     if (!g) groups.push((g = { letter: L, words: [] }));
     g.words.push(w);
   });
-  return groups;
+  return (wordsAlphaCache = groups);
 }
+
+const THEME_SHORT = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
 
 function screenWords() {
   const groups = allWordsAlpha();
   const total = groups.reduce((n, g) => n + g.words.length, 0);
-  const themeShort = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
   const letters = groups.map((g) => g.letter);
   const shown = wordsLetter === "all" ? groups : groups.filter((g) => g.letter === wordsLetter);
   const index = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
@@ -104,7 +108,7 @@ function screenWords() {
             <span class="wr-pic">${w.art()}</span>
             <span class="wr-main">
               <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
-              <span class="wr-line sub"><em>${w.phon || ""}</em><span class="wr-tag t-${w.themeId}">${themeShort[w.themeId] || w.themeName}</span></span>
+              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}<span class="wr-tag t-${w.themeId}">${THEME_SHORT[w.themeId] || w.themeName}</span></span>
             </span>
           </button>`).join("")}
         </div>

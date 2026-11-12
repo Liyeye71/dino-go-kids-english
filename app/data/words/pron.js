@@ -1,6 +1,6 @@
 ﻿/* ============================================================
    DinoGo · 恐龙英语 — 词性词汇：代词集
-   attrs: subject（主格）/ object（宾格）/ possessive（形容词性物主代词）
+   attrs: subject（主格）/ object（宾格）/ possessive（形容词性物主代词）/ interrogative（疑问词）
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
@@ -29,5 +29,14 @@ window.DINO_WORD_SETS.push({
     { word: "her",  zh: "她的", phon: "/hɜː(r)/", example: "This is her toy.", attrs: ["possessive"] },
     { word: "our",  zh: "我们的", phon: "/ˈaʊə(r)/", example: "This is our room.", attrs: ["possessive"] },
     { word: "their", zh: "他们的", phon: "/ðeə(r)/", example: "This is their car.", attrs: ["possessive"] },
+    // ---- 疑问词 interrogative ----
+    { word: "what",        zh: "什么",       phon: "/wɒt/",                 example: "What is this?",            attrs: ["interrogative"] },
+    { word: "what colour", zh: "什么颜色",   phon: "/wɒt ˈkʌlə(r)/",        example: "What colour is the sky?",   attrs: ["interrogative", "phrase"] },
+    { word: "what time",   zh: "几点",       phon: "/wɒt taɪm/",            example: "What time is it now?",      attrs: ["interrogative", "phrase"] },
+    { word: "what day",    zh: "星期几",     phon: "/wɒt deɪ/",             example: "What day is it today?",     attrs: ["interrogative", "phrase"] },
+    { word: "who",         zh: "谁",         phon: "/huː/",                 example: "Who is that girl?",         attrs: ["interrogative"] },
+    { word: "whom",        zh: "谁(宾格)",   phon: "/huːm/",                example: "Whom do you like?",         attrs: ["interrogative"] },
+    { word: "whose",       zh: "谁的",       phon: "/huːz/",                example: "Whose book is this?",       attrs: ["interrogative"] },
+    { word: "which",       zh: "哪一个",     phon: "/wɪtʃ/",                example: "Which one is yours?",       attrs: ["interrogative"] },
   ]
 });

@@ -18,7 +18,9 @@ const JS_FILES = [
   "data/words/pron.js", "data/words/prep.js", "data/words/conj.js", "data/words/interj.js", "data/words/num.js",
   "data/level/beginner/fruits.js", "data/level/beginner/cars.js", "data/level/beginner/zoo.js", "data/level/beginner/food.js",
   "data/sounds/sfx.js", "data/sounds/bgm.js",
-  "js/core.js", "js/home.js", "js/map.js", "js/dex.js", "js/shop.js",
+  "frame/core/utils.js", "frame/core/visual.js", "frame/core/data.js", "frame/core/words.js",
+  "frame/core/state.js", "frame/core/ui.js", "frame/core/events.js", "frame/core/boot.js",
+  "frame/home.js", "frame/map.js", "frame/dex.js", "frame/shop.js",
 ];
 let inlined = html.replace(/(?:\n\s*<link rel="stylesheet" href="css\/[\w.-]+\.css">)+/, () => `\n  <style>\n${css}\n  </style>`);
 for (const file of JS_FILES) {
@@ -28,7 +30,7 @@ for (const file of JS_FILES) {
 
 // ---- PWA build (dist/ + 根目录，供 GitHub Pages branch root 使用) -------
 const KEEP_AT_ROOT = new Set([
-  ".git", ".github", "app", "dist", "node_modules", "preview",
+  ".git", ".github", ".screenshots", ".trae-html-share-packages", "app", "dist", "node_modules", "preview",
   ".gitignore", "README.md", "build.mjs", "serve.mjs", "package.json",
 ]);
 for (const target of [distDir, root]) {

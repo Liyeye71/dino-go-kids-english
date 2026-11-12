@@ -164,9 +164,7 @@ h1,h2,h3,h4,p{margin:0}
 @keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 @keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
-@keyframes heartOut{0%{transform:scale(1)}40%{transform:scale(1.35);opacity:1}100%{transform:scale(.6);opacity:.25}}
 @keyframes confettiFall{0%{opacity:0;transform:translateY(-30px) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(160px) rotate(240deg)}}
-@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1}}
 
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
@@ -278,6 +276,7 @@ h1,h2,h3,h4,p{margin:0}
 .word-card .w-main{flex:1;position:relative;min-width:0}
 .word-card .w-kicker{font-size:9px;font-weight:900;letter-spacing:1.4px;color:#B58A2E}
 .word-card .w-word{font-size:23px;font-weight:900;letter-spacing:-.3px;line-height:1.15;color:#4A360F}
+.word-card .w-emoji{margin-right:6px;font-size:20px;vertical-align:-1px}
 .word-card .w-phon{font-size:11px;font-weight:600;color:#A68A4E;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .word-card .w-btn{position:relative;height:32px;padding:0 11px;border-radius:99px;background:#fff;color:#8A6415;
   font-size:11px;font-weight:800;display:flex;align-items:center;gap:4px;box-shadow:0 3px 8px rgba(180,129,28,.15);flex:none}
@@ -449,7 +448,6 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-top .qcount{font-size:12px;font-weight:900;color:var(--green-d);white-space:nowrap}
 .quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:700}
 .hearts{display:flex;align-items:center;gap:3px;flex:none}
-.heart-pop{animation:heartOut .4s ease forwards}
 .quiz-body{flex:1;min-height:0;overflow:hidden;padding:8px 20px 2px;display:flex;flex-direction:column;scrollbar-width:none}
 .quiz-body::-webkit-scrollbar{display:none}
 .quiz-prompt{display:flex;flex-direction:column;gap:7px;margin-top:4px;flex:none}
@@ -657,10 +655,6 @@ h1,h2,h3,h4,p{margin:0}
    ============================================================ */
 
 /* ------------------------------------------------ dex */
-.dex-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
-.dex-head .t{flex:1}
-.dex-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.05}
-.dex-head p{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
 .dex-count{display:flex;align-items:baseline;gap:2px;font-size:14px;font-weight:900;color:var(--green-d);
   background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:6px 10px;box-shadow:0 4px 10px rgba(94,70,30,.06);flex:none}
 .dex-count span{font-size:10px;color:var(--muted);font-weight:700}
@@ -750,6 +744,7 @@ h1,h2,h3,h4,p{margin:0}
 .wr-line.sub em{font-style:normal;font-size:10px;font-weight:700;color:#A19278;min-width:0;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
 .wr-tag{flex:none;font-size:9px;font-weight:900;padding:3px 6px;border-radius:6px;letter-spacing:.2px}
+.wr-tag.pos{background:#F2EEE4;color:#8A7B62}
 .wr-tag.t-fruit{background:#EAF7DA;color:#4C7A3A}
 .wr-tag.t-cars{background:#E3F1FB;color:#3D6C8C}
 .wr-tag.t-zoo{background:#FFF0DA;color:#9A6A24}
@@ -844,15 +839,6 @@ h1,h2,h3,h4,p{margin:0}
 .bg-item .bg-info .price{margin-top:5px;display:inline-flex;width:fit-content}
 .bg-item.using{outline:2px solid rgba(46,139,87,.35);outline-offset:-2px}
 .bg-item .check-ico{width:26px;height:26px;border-radius:9px;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
-.dex-teaser{margin-top:6px;padding:16px;border-radius:22px}
-.dex-teaser .dt-top{display:flex;align-items:center;gap:10px}
-.dex-teaser .dt-top .t{flex:1}
-.dex-teaser .dt-top b{font-size:15px;font-weight:900}
-.dex-teaser .dt-top p{font-size:10px;color:var(--muted);margin-top:2px}
-.dex-teaser .dt-list{display:flex;gap:8px;margin-top:12px}
-.dex-teaser .dt-list .mini{flex:1;height:80px;border-radius:14px;display:grid;place-items:center;background:#F4F8EA;overflow:hidden}
-.dex-teaser .dt-list .mini svg{width:70px;height:70px;margin-bottom:-8px}
-.dex-teaser .btn{margin-top:12px;min-height:46px;font-size:14px}
 
 /* ============================================================
    DinoGo · 恐龙英语 — overlays：弹层 / 设置 / toast
@@ -880,17 +866,6 @@ h1,h2,h3,h4,p{margin:0}
 .dialog .d-actions .btn{min-height:46px;font-size:14px}
 .dialog .d-actions .btn.ghost{flex:1}
 .dialog .d-actions .btn:not(.ghost){flex:1.3}
-.detail-hero{height:190px;border-radius:20px;background:linear-gradient(160deg,#EAF7DA,#FDF7E4);display:grid;place-items:center;margin-top:12px;position:relative;overflow:hidden}
-.detail-hero .dino{width:170px;height:170px;filter:drop-shadow(0 12px 14px rgba(48,104,64,.2))}
-.detail-meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
-.detail-meta b{font-size:22px;font-weight:900}
-.detail-meta .ph{font-size:10px;font-weight:900;color:var(--green-d);background:#E9F7D9;padding:4px 8px;border-radius:7px}
-.detail-desc{font-size:11.5px;line-height:1.75;color:#657A6A;margin-top:8px;font-weight:600}
-.detail-stats{display:flex;gap:8px;margin-top:12px}
-.detail-stats .ds{flex:1;background:#F7F2E5;border-radius:12px;padding:8px 6px;text-align:center}
-.detail-stats .ds b{display:block;font-size:13px;font-weight:900}
-.detail-stats .ds span{display:block;font-size:8.5px;color:#A19278;margin-top:2px}
-
 .setting-row{display:flex;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid #F2E8D6}
 .setting-row:last-child{border-bottom:0}
 .setting-row .s-ic{width:34px;height:34px;border-radius:11px;background:#F4EFE3;display:grid;place-items:center;color:#7E8D7C;flex:none}
@@ -1340,8 +1315,6 @@ window.DINO_WORD_SETS.push({
     { word: "breakfast", zh: "早餐", phon: "/ˈbrekfəst/",     example: "I have breakfast at 7.",          emoji: "🥞", attrs: ["food"] },
     { word: "lunch",     zh: "中餐", phon: "/lʌntʃ/",          example: "Lunch is at school.",             emoji: "🍱", attrs: ["food"] },
     { word: "dinner",    zh: "晚餐", phon: "/ˈdɪnə(r)/",       example: "Dinner is at 6 pm.",              emoji: "🍲", attrs: ["food"] },
-    { word: "rice",      zh: "米饭", phon: "/raɪs/",           example: "We have rice for dinner.",        emoji: "🍚", attrs: ["food"] },
-    { word: "cake",      zh: "蛋糕", phon: "/keɪk/",           example: "We share a birthday cake.",       emoji: "🍰", attrs: ["food"] },
     { word: "jam",       zh: "果酱", phon: "/dʒæm/",           example: "Jam tastes sweet.",               emoji: "🍯", attrs: ["food"] },
     { word: "sausage",   zh: "香肠", phon: "/ˈsɒsɪdʒ/",        example: "I like sausages.",                emoji: "🌭", attrs: ["food"] },
     { word: "sandwich",  zh: "三明治", phon: "/ˈsænwɪtʃ/",     example: "Have a sandwich for lunch.",      emoji: "🥪", attrs: ["food"] },
@@ -1352,7 +1325,6 @@ window.DINO_WORD_SETS.push({
     { word: "mutton",    zh: "羊肉", phon: "/ˈmʌtn/",          example: "Mutton is hot pot.",              emoji: "🐑", attrs: ["food"] },
     { word: "beef",      zh: "牛肉", phon: "/biːf/",           example: "Beef is tasty.",                  emoji: "🥩", attrs: ["food"] },
     { word: "pork",      zh: "猪肉", phon: "/pɔːk/",           example: "Pork is common.",                 emoji: "🥓", attrs: ["food"] },
-    { word: "noodle",    zh: "面条", phon: "/ˈnuːdl/",         example: "A bowl of noodles.",              emoji: "🍜", attrs: ["food"] },
     { word: "soup",      zh: "汤",   phon: "/suːp/",           example: "The soup is hot.",                emoji: "🍲", attrs: ["food"] },
     { word: "salad",     zh: "沙拉", phon: "/ˈsæləd/",         example: "I like vegetable salad.",         emoji: "🥗", attrs: ["food"] },
     { word: "water",     zh: "水",   phon: "/ˈwɔːtə(r)/",      example: "Drink more water.",               emoji: "💧", attrs: ["food"] },
@@ -1363,7 +1335,6 @@ window.DINO_WORD_SETS.push({
     // ---- 水果 fruit（扩充）----
     { word: "mango",    zh: "芒果", phon: "/ˈmæŋɡəʊ/",        example: "A mango is sweet.",               emoji: "🥭", attrs: ["fruit"] },
     { word: "coconut",  zh: "椰子", phon: "/ˈkəʊkənʌt/",      example: "Coconut water is fresh.",         emoji: "🥥", attrs: ["fruit"] },
-    { word: "peach",    zh: "桃",   phon: "/piːtʃ/",          example: "Peaches are juicy.",              emoji: "🍑", attrs: ["fruit"] },
     // ---- 杂物 other ----
     { word: "window", zh: "窗户", phon: "/ˈwɪndəʊ/",         example: "Open the window.",                emoji: "🪟", attrs: ["other"] },
     { word: "desk",   zh: "书桌", phon: "/desk/",            example: "Put it on the desk.",             emoji: "🪑", attrs: ["other"] },
@@ -1469,33 +1440,103 @@ window.DINO_WORD_SETS.push({
     { word: "get up", zh: "起床", phon: "/ɡet ʌp/",  example: "Get up at 7.", attrs: ["action"] },
     { word: "study",  zh: "学习", phon: "/ˈstʌdi/",  example: "Study hard.", attrs: ["action"] },
     { word: "take",   zh: "带走/拍", phon: "/teɪk/",  example: "Take a photo.", attrs: ["action"] },
+    // ---- 补充单动词 action ----
+    { word: "welcome", zh: "欢迎", phon: "/ˈwelkəm/", example: "Welcome to my home.", attrs: ["action"] },
+    { word: "thank",  zh: "谢谢", phon: "/θæŋk/",     example: "Thank you for your help.", attrs: ["action"] },
+    { word: "work",   zh: "工作", phon: "/wɜːk/",     example: "They work hard.", attrs: ["action"] },
+    { word: "drink",  zh: "喝",   phon: "/drɪŋk/",    example: "Drink some water.", attrs: ["action"] },
+    { word: "taste",  zh: "尝",   phon: "/teɪst/",    example: "Taste the soup.", attrs: ["action"] },
+    { word: "smell",  zh: "闻",   phon: "/smel/",     example: "Smell the flowers.", attrs: ["action"] },
+    { word: "feed",   zh: "喂",   phon: "/fiːd/",     example: "Feed the fish.", attrs: ["action"] },
+    { word: "milk",   zh: "挤牛奶", phon: "/mɪlk/",   example: "Milk the cow.", attrs: ["action"] },
+    { word: "look",   zh: "看",   phon: "/lʊk/",      example: "Look at the blackboard.", attrs: ["action"] },
+    { word: "guess",  zh: "猜",   phon: "/ges/",      example: "Guess the answer.", attrs: ["action"] },
+    { word: "pass",   zh: "传递", phon: "/pɑːs/",     example: "Pass me the pen.", attrs: ["action"] },
+    { word: "show",   zh: "表演，给……看", phon: "/ʃəʊ/", example: "Show me your picture.", attrs: ["action"] },
+    { word: "open",   zh: "打开", phon: "/ˈəʊpən/",   example: "Open the window.", attrs: ["action"] },
+    { word: "close",  zh: "关",   phon: "/kləʊz/",    example: "Close the door.", attrs: ["action"] },
+    { word: "put",    zh: "放",   phon: "/pʊt/",      example: "Put the book on the desk.", attrs: ["action"] },
+    { word: "write",  zh: "写",   phon: "/raɪt/",     example: "Write your name.", attrs: ["action"] },
+    { word: "paint",  zh: "画画", phon: "/peɪnt/",    example: "Paint a picture.", attrs: ["action"] },
+    { word: "tell",   zh: "告诉", phon: "/tel/",      example: "Tell me a story.", attrs: ["action"] },
+    { word: "kick",   zh: "踢",   phon: "/kɪk/",      example: "Kick the ball.", attrs: ["action"] },
+    { word: "ride",   zh: "骑",   phon: "/raɪd/",     example: "Ride a horse.", attrs: ["action"] },
+    { word: "stop",   zh: "停",   phon: "/stɒp/",     example: "Stop here, please.", attrs: ["action"] },
+    { word: "wait",   zh: "等",   phon: "/weɪt/",     example: "Wait for me.", attrs: ["action"] },
+    { word: "find",   zh: "找",   phon: "/faɪnd/",    example: "Find your book.", attrs: ["action"] },
+    { word: "drive",  zh: "驾驶", phon: "/draɪv/",    example: "Drive the car.", attrs: ["action"] },
+    { word: "fold",   zh: "折叠", phon: "/fəʊld/",    example: "Fold the clothes.", attrs: ["action"] },
+    { word: "send",   zh: "送，寄", phon: "/send/",   example: "Send a letter.", attrs: ["action"] },
+    { word: "shine",  zh: "照耀", phon: "/ʃaɪn/",     example: "The stars shine at night.", attrs: ["action"] },
+    { word: "become", zh: "变成", phon: "/bɪˈkʌm/",   example: "Caterpillars become butterflies.", attrs: ["action"] },
+    { word: "feel",   zh: "感觉", phon: "/fiːl/",     example: "I feel happy.", attrs: ["action"] },
+    { word: "fall",   zh: "掉下", phon: "/fɔːl/",     example: "Leaves fall in autumn.", attrs: ["action"] },
+    { word: "wear",   zh: "穿",   phon: "/weə(r)/",   example: "Wear a coat.", attrs: ["action"] },
+    { word: "help",   zh: "帮助", phon: "/help/",     example: "Help your friend.", attrs: ["action"] },
+    { word: "think",  zh: "想",   phon: "/θɪŋk/",     example: "Think before you speak.", attrs: ["action"] },
+    { word: "leave",  zh: "离开", phon: "/liːv/",     example: "Leave the room.", attrs: ["action"] },
+    { word: "meet",   zh: "遇见", phon: "/miːt/",     example: "Nice to meet you.", attrs: ["action"] },
     // ---- 动词短语 phrase ----
-    { word: "row the boat",      zh: "划船",     phon: "/rəʊ ðə bəʊt/",       example: "Let's row the boat.", attrs: ["phrase"] },
-    { word: "read books",        zh: "读书",     phon: "/riːd bʊks/",         example: "I love to read books.", attrs: ["phrase"] },
-    { word: "do homework",       zh: "做作业",   phon: "/duː ˈhəʊmwɜːk/",     example: "Do your homework first.", attrs: ["phrase"] },
-    { word: "watch TV",          zh: "看电视",   phon: "/wɒtʃ ˌtiː ˈviː/",    example: "Watch TV after dinner.", attrs: ["phrase"] },
-    { word: "cook the meals",    zh: "做饭",     phon: "/kʊk ðə miːlz/",      example: "Dad cooks the meals.", attrs: ["phrase"] },
-    { word: "water the flowers", zh: "浇花",     phon: "/ˈwɔːtə(r) ðə ˈflaʊəz/", example: "Water the flowers.", attrs: ["phrase"] },
-    { word: "sweep the floor",   zh: "拖地",     phon: "/swiːp ðə flɔː(r)/",  example: "Sweep the floor.", attrs: ["phrase"] },
-    { word: "clean the bedroom", zh: "打扫卧室", phon: "/kliːn ðə ˈbedruːm/", example: "Clean the bedroom.", attrs: ["phrase"] },
-    { word: "make the bed",      zh: "铺床",     phon: "/meɪk ðə bed/",       example: "Make the bed in the morning.", attrs: ["phrase"] },
-    { word: "set the table",     zh: "摆餐桌",   phon: "/set ðə ˈteɪbl/",     example: "Set the table for dinner.", attrs: ["phrase"] },
-    { word: "wash the clothes",  zh: "洗衣服",   phon: "/wɒʃ ðə kləʊðz/",     example: "Wash the clothes.", attrs: ["phrase"] },
-    { word: "wash the dishes",   zh: "洗盘子",   phon: "/wɒʃ ðə ˈdɪʃɪz/",    example: "Wash the dishes.", attrs: ["phrase"] },
-    { word: "use a computer",    zh: "用电脑",   phon: "/juːz ə kəmˈpjuːtə(r)/", example: "Use a computer at school.", attrs: ["phrase"] },
-    { word: "do morning exercises", zh: "做早操", phon: "/duː ˈmɔːnɪŋ ˈeksəsaɪzɪz/", example: "Do morning exercises.", attrs: ["phrase"] },
-    { word: "eat breakfast",     zh: "吃早餐",   phon: "/iːt ˈbrekfəst/",     example: "Eat breakfast at home.", attrs: ["phrase"] },
-    { word: "eat dinner",        zh: "吃晚餐",   phon: "/iːt ˈdɪnə(r)/",      example: "Eat dinner at 6.", attrs: ["phrase"] },
-    { word: "go to school",      zh: "去上学",   phon: "/ɡəʊ tuː skuːl/",      example: "Go to school by bus.", attrs: ["phrase"] },
-    { word: "have English class", zh: "上英语课", phon: "/hæv ˈɪŋɡlɪʃ klɑːs/", example: "We have English class.", attrs: ["phrase"] },
-    { word: "play sports",       zh: "体育运动", phon: "/pleɪ spɔːts/",       example: "Play sports after school.", attrs: ["phrase"] },
-    { word: "climb mountains",   zh: "爬山",     phon: "/klaɪm ˈmaʊntɪnz/",   example: "Go climb mountains.", attrs: ["phrase"] },
-    { word: "go shopping",       zh: "去购物",   phon: "/ɡəʊ ˈʃɒpɪŋ/",       example: "Mom goes shopping.", attrs: ["phrase"] },
-    { word: "play the piano",    zh: "弹钢琴",   phon: "/pleɪ ðə piˈænəʊ/",   example: "She plays the piano.", attrs: ["phrase"] },
-    { word: "visit grandparents", zh: "拜访祖父母", phon: "/ˈvɪzɪt ˈɡrænpɛərənts/", example: "Visit grandparents.", attrs: ["phrase"] },
-    { word: "go hiking",         zh: "去远足",   phon: "/ɡəʊ ˈhaɪkɪŋ/",       example: "Let's go hiking.", attrs: ["phrase"] },
-    { word: "fly kites",         zh: "放风筝",   phon: "/flaɪ kaɪts/",        example: "Fly kites in the park.", attrs: ["phrase"] },
-    { word: "make a snowman",    zh: "堆雪人",   phon: "/meɪk ə ˈsnəʊmæn/",   example: "Make a snowman in winter.", attrs: ["phrase"] },
+    { word: "row the boat",      zh: "划船",     phon: "/rəʊ ðə bəʊt/",       example: "Let's row the boat.",        emoji: "🚣", attrs: ["phrase"] },
+    { word: "read books",        zh: "读书",     phon: "/riːd bʊks/",         example: "I love to read books.",      emoji: "📚", attrs: ["phrase"] },
+    { word: "do homework",       zh: "做作业",   phon: "/duː ˈhəʊmwɜːk/",     example: "Do your homework first.",    emoji: "📝", attrs: ["phrase"] },
+    { word: "watch TV",          zh: "看电视",   phon: "/wɒtʃ ˌtiː ˈviː/",    example: "Watch TV after dinner.",     emoji: "📺", attrs: ["phrase"] },
+    { word: "cook the meals",    zh: "做饭",     phon: "/kʊk ðə miːlz/",      example: "Dad cooks the meals.",       emoji: "🍳", attrs: ["phrase"] },
+    { word: "water the flowers", zh: "浇花",     phon: "/ˈwɔːtə(r) ðə ˈflaʊəz/", example: "Water the flowers.",     emoji: "🌷", attrs: ["phrase"] },
+    { word: "sweep the floor",   zh: "拖地",     phon: "/swiːp ðə flɔː(r)/",  example: "Sweep the floor.",           emoji: "🧹", attrs: ["phrase"] },
+    { word: "clean the bedroom", zh: "打扫卧室", phon: "/kliːn ðə ˈbedruːm/", example: "Clean the bedroom.",         emoji: "🧼", attrs: ["phrase"] },
+    { word: "make the bed",      zh: "铺床",     phon: "/meɪk ðə bed/",       example: "Make the bed in the morning.", emoji: "🛏️", attrs: ["phrase"] },
+    { word: "set the table",     zh: "摆餐桌",   phon: "/set ðə ˈteɪbl/",     example: "Set the table for dinner.",  emoji: "🍽️", attrs: ["phrase"] },
+    { word: "wash the clothes",  zh: "洗衣服",   phon: "/wɒʃ ðə kləʊðz/",     example: "Wash the clothes.",          emoji: "👕", attrs: ["phrase"] },
+    { word: "wash the dishes",   zh: "洗盘子",   phon: "/wɒʃ ðə ˈdɪʃɪz/",    example: "Wash the dishes.",           emoji: "🧽", attrs: ["phrase"] },
+    { word: "use a computer",    zh: "用电脑",   phon: "/juːz ə kəmˈpjuːtə(r)/", example: "Use a computer at school.", emoji: "💻", attrs: ["phrase"] },
+    { word: "do morning exercises", zh: "做早操", phon: "/duː ˈmɔːnɪŋ ˈeksəsaɪzɪz/", example: "Do morning exercises.", emoji: "🤸", attrs: ["phrase"] },
+    { word: "eat breakfast",     zh: "吃早餐",   phon: "/iːt ˈbrekfəst/",     example: "Eat breakfast at home.",     emoji: "🥣", attrs: ["phrase"] },
+    { word: "eat dinner",        zh: "吃晚餐",   phon: "/iːt ˈdɪnə(r)/",      example: "Eat dinner at 6.",           emoji: "🍛", attrs: ["phrase"] },
+    { word: "go to school",      zh: "去上学",   phon: "/ɡəʊ tuː skuːl/",      example: "Go to school by bus.",       emoji: "🏫", attrs: ["phrase"] },
+    { word: "have English class", zh: "上英语课", phon: "/hæv ˈɪŋɡlɪʃ klɑːs/", example: "We have English class.",    emoji: "🔤", attrs: ["phrase"] },
+    { word: "play sports",       zh: "体育运动", phon: "/pleɪ spɔːts/",       example: "Play sports after school.",  emoji: "⚽", attrs: ["phrase"] },
+    { word: "climb mountains",   zh: "爬山",     phon: "/klaɪm ˈmaʊntɪnz/",   example: "Go climb mountains.",        emoji: "⛰️", attrs: ["phrase"] },
+    { word: "go shopping",       zh: "去购物",   phon: "/ɡəʊ ˈʃɒpɪŋ/",       example: "Mom goes shopping.",         emoji: "🛒", attrs: ["phrase"] },
+    { word: "play the piano",    zh: "弹钢琴",   phon: "/pleɪ ðə piˈænəʊ/",   example: "She plays the piano.",       emoji: "🎹", attrs: ["phrase"] },
+    { word: "visit grandparents", zh: "拜访祖父母", phon: "/ˈvɪzɪt ˈɡrænpɛərənts/", example: "Visit grandparents.",   emoji: "👵", attrs: ["phrase"] },
+    { word: "go hiking",         zh: "去远足",   phon: "/ɡəʊ ˈhaɪkɪŋ/",       example: "Let's go hiking.",           emoji: "🥾", attrs: ["phrase"] },
+    { word: "fly kites",         zh: "放风筝",   phon: "/flaɪ kaɪts/",        example: "Fly kites in the park.",     emoji: "🪁", attrs: ["phrase"] },
+    { word: "make a snowman",    zh: "堆雪人",   phon: "/meɪk ə ˈsnəʊmæn/",   example: "Make a snowman in winter.",  emoji: "⛄", attrs: ["phrase"] },
+    // ---- 补充动词短语 phrase ----
+    { word: "plant trees",        zh: "植树",     phon: "/plɑːnt triːz/",      example: "Plant trees in spring.",        emoji: "🌳", attrs: ["phrase"] },
+    { word: "draw pictures",      zh: "画画",     phon: "/drɔː ˈpɪktʃəz/",     example: "Draw pictures with crayons.",   emoji: "🎨", attrs: ["phrase"] },
+    { word: "cook dinner",        zh: "烧晚饭",   phon: "/kʊk ˈdɪnə(r)/",      example: "Mom cooks dinner.",             emoji: "🍲", attrs: ["phrase"] },
+    { word: "read a book",        zh: "读书",     phon: "/riːd ə bʊk/",        example: "Read a book before bed.",       emoji: "📖", attrs: ["phrase"] },
+    { word: "answer the phone",   zh: "接电话",   phon: "/ˈɑːnsə(r) ðə fəʊn/", example: "Answer the phone, please.",     emoji: "📞", attrs: ["phrase"] },
+    { word: "listen to music",    zh: "听音乐",   phon: "/ˈlɪsn tuː ˈmjuːzɪk/", example: "I listen to music every day.", emoji: "🎵", attrs: ["phrase"] },
+    { word: "clean the room",     zh: "打扫房间", phon: "/kliːn ðə ruːm/",     example: "Clean the room on Sunday.",     emoji: "🧹", attrs: ["phrase"] },
+    { word: "write a letter",     zh: "写信",     phon: "/raɪt ə ˈletə(r)/",   example: "Write a letter to Grandma.",    emoji: "✉️", attrs: ["phrase"] },
+    { word: "write an e-mail",    zh: "写电子邮件", phon: "/raɪt ən ˈiːmeɪl/", example: "Write an e-mail to your teacher.", emoji: "📧", attrs: ["phrase"] },
+    { word: "drink water",        zh: "喝水",     phon: "/drɪŋk ˈwɔːtə(r)/",   example: "Drink water after sports.",     emoji: "💧", attrs: ["phrase"] },
+    { word: "take a picture",     zh: "拍照片",   phon: "/teɪk ə ˈpɪktʃə(r)/", example: "Take a picture of the panda.",  emoji: "📷", attrs: ["phrase"] },
+    { word: "pick up leaves",     zh: "摘树叶",   phon: "/pɪk ʌp liːvz/",      example: "Pick up leaves in the park.",   emoji: "🍂", attrs: ["phrase"] },
+    { word: "write a report",     zh: "写报告",   phon: "/raɪt ə rɪˈpɔːt/",    example: "Write a report about animals.", emoji: "📄", attrs: ["phrase"] },
+    { word: "play chess",         zh: "下棋",     phon: "/pleɪ tʃes/",         example: "They play chess after school.", emoji: "♟️", attrs: ["phrase"] },
+    { word: "have a picnic",      zh: "野餐",     phon: "/hæv ə ˈpɪknɪk/",     example: "We have a picnic in the park.", emoji: "🧺", attrs: ["phrase"] },
+    { word: "get to",             zh: "到达",     phon: "/ɡet tuː/",           example: "We get to school at eight.",    emoji: "📍", attrs: ["phrase"] },
+    { word: "ride a bike",        zh: "骑自行车", phon: "/raɪd ə baɪk/",       example: "I ride a bike to school.",      emoji: "🚲", attrs: ["phrase"] },
+    { word: "play the violin",    zh: "拉小提琴", phon: "/pleɪ ðə ˌvaɪəˈlɪn/", example: "She plays the violin well.",    emoji: "🎻", attrs: ["phrase"] },
+    { word: "collect stamps",     zh: "集邮",     phon: "/kəˈlekt stæmps/",    example: "I collect stamps as a hobby.",  emoji: "📮", attrs: ["phrase"] },
+    { word: "wake up",            zh: "醒过来",   phon: "/weɪk ʌp/",          example: "I wake up at six.",             emoji: "⏰", attrs: ["phrase"] },
+    { word: "take off",           zh: "脱下",     phon: "/teɪk ɒf/",          example: "Take off your coat.",           emoji: "🧥", attrs: ["phrase"] },
+    { word: "go to bed",          zh: "去睡觉",   phon: "/ɡəʊ tə bed/",       example: "Go to bed early.",              emoji: "🛏️", attrs: ["phrase"] },
+    { word: "play computer games", zh: "玩电脑游戏", phon: "/pleɪ kəmˈpjuːtə(r) ɡeɪmz/", example: "Don't play computer games too long.", emoji: "🎮", attrs: ["phrase"] },
+    { word: "do housework",       zh: "做家务",   phon: "/duː ˈhaʊswɜːk/",     example: "I do housework on weekends.",   emoji: "🧽", attrs: ["phrase"] },
+    { word: "empty the trash",    zh: "倒垃圾",   phon: "/ˈempti ðə træʃ/",    example: "Empty the trash every day.",    emoji: "🗑️", attrs: ["phrase"] },
+    { word: "put away the clothes", zh: "放好衣服", phon: "/pʊt əˈweɪ ðə kləʊðz/", example: "Put away the clothes, please.", emoji: "🧺", attrs: ["phrase"] },
+    { word: "get off",            zh: "下车",     phon: "/ɡet ɒf/",           example: "Get off at the next stop.",     emoji: "🚌", attrs: ["phrase"] },
+    { word: "take a trip",        zh: "去郊游",   phon: "/teɪk ə trɪp/",      example: "We take a trip in spring.",     emoji: "🧳", attrs: ["phrase"] },
+    { word: "read a magazine",    zh: "读杂志",   phon: "/riːd ə ˌmæɡəˈziːn/", example: "Dad reads a magazine.",        emoji: "🗞️", attrs: ["phrase"] },
+    { word: "go to the cinema",   zh: "去电影院", phon: "/ɡəʊ tə ðə ˈsɪnəmə/", example: "We go to the cinema on Sunday.", emoji: "🎬", attrs: ["phrase"] },
+    { word: "put on",             zh: "穿上",     phon: "/pʊt ɒn/",           example: "Put on your shoes.",            emoji: "👕", attrs: ["phrase"] },
+    { word: "hang up",            zh: "挂起来",   phon: "/hæŋ ʌp/",           example: "Hang up your coat.",            emoji: "🪝", attrs: ["phrase"] },
+    { word: "go home",            zh: "回家",     phon: "/ɡəʊ həʊm/",         example: "Let's go home.",                emoji: "🏠", attrs: ["phrase"] },
   ]
 });
 
@@ -1585,8 +1626,6 @@ window.DINO_WORD_SETS.push({
     { word: "worse",     zh: "更差的", phon: "/wɜːs/",        example: "This is worse.", attrs: ["comparative"] },
     { word: "faster",    zh: "更快的", phon: "/ˈfɑːstə(r)/",  example: "Cheetah is faster.", attrs: ["comparative"] },
     { word: "slower",    zh: "更慢的", phon: "/ˈsləʊə(r)/",   example: "Turtle is slower.", attrs: ["comparative"] },
-    { word: "bigger",    zh: "更大的", phon: "/ˈbɪɡə(r)/",    example: "This one is bigger.", attrs: ["comparative"] },
-    { word: "smaller",   zh: "更小的", phon: "/ˈsmɔːlə(r)/",  example: "This one is smaller.", attrs: ["comparative"] },
   ]
 });
 
@@ -1594,7 +1633,7 @@ window.DINO_WORD_SETS.push({
   <script>
 ﻿/* ============================================================
    DinoGo · 恐龙英语 — 词性词汇：副词
-   按词性分类的词汇集，words 数组初始为空，后续按需补充
+   attrs: interrogative（疑问词）；words 数组后续按需补充
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
@@ -1607,6 +1646,20 @@ window.DINO_WORD_SETS.push({
   dialog: { q: "How do you do it?", a: "Do it {word}." },
   words: [
     // { word: "", zh: "", phon: "", example: "", emoji: "" },
+    // ---- 疑问词 interrogative ----
+    { word: "how",      zh: "怎样",         phon: "/haʊ/",          example: "How are you?",               attrs: ["interrogative"] },
+    { word: "when",     zh: "什么时候",     phon: "/wen/",          example: "When do you get up?",        attrs: ["interrogative"] },
+    { word: "where",    zh: "在哪里",       phon: "/weə(r)/",       example: "Where is my bag?",           attrs: ["interrogative"] },
+    { word: "why",      zh: "为什么",       phon: "/waɪ/",          example: "Why are you sad?",           attrs: ["interrogative"] },
+    { word: "how old",  zh: "年龄多大、几岁", phon: "/haʊ əʊld/",   example: "How old are you?",           attrs: ["interrogative", "phrase"] },
+    { word: "how many", zh: "多少",         phon: "/haʊ ˈmeni/",    example: "How many books do you have?", attrs: ["interrogative", "phrase"] },
+    { word: "how much", zh: "多少钱",       phon: "/haʊ mʌtʃ/",     example: "How much is the cake?",      attrs: ["interrogative", "phrase"] },
+    { word: "how tall", zh: "多高",         phon: "/haʊ tɔːl/",     example: "How tall is the tree?",      attrs: ["interrogative", "phrase"] },
+    { word: "how heavy", zh: "多重",        phon: "/haʊ ˈhevi/",    example: "How heavy is the box?",      attrs: ["interrogative", "phrase"] },
+    { word: "how long", zh: "多长",         phon: "/haʊ lɒŋ/",      example: "How long is the river?",     attrs: ["interrogative", "phrase"] },
+    { word: "how big",  zh: "多大",         phon: "/haʊ bɪɡ/",      example: "How big is your school?",    attrs: ["interrogative", "phrase"] },
+    { word: "how wide", zh: "多宽",         phon: "/haʊ waɪd/",     example: "How wide is the road?",      attrs: ["interrogative", "phrase"] },
+    { word: "how large", zh: "面积多大",    phon: "/haʊ lɑːdʒ/",    example: "How large is the park?",     attrs: ["interrogative", "phrase"] },
   ]
 });
 
@@ -1616,7 +1669,7 @@ window.DINO_WORD_SETS.push({
   <script>
 ﻿/* ============================================================
    DinoGo · 恐龙英语 — 词性词汇：代词集
-   attrs: subject（主格）/ object（宾格）/ possessive（形容词性物主代词）
+   attrs: subject（主格）/ object（宾格）/ possessive（形容词性物主代词）/ interrogative（疑问词）
    ============================================================ */
 window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 window.DINO_WORD_SETS.push({
@@ -1645,6 +1698,15 @@ window.DINO_WORD_SETS.push({
     { word: "her",  zh: "她的", phon: "/hɜː(r)/", example: "This is her toy.", attrs: ["possessive"] },
     { word: "our",  zh: "我们的", phon: "/ˈaʊə(r)/", example: "This is our room.", attrs: ["possessive"] },
     { word: "their", zh: "他们的", phon: "/ðeə(r)/", example: "This is their car.", attrs: ["possessive"] },
+    // ---- 疑问词 interrogative ----
+    { word: "what",        zh: "什么",       phon: "/wɒt/",                 example: "What is this?",            attrs: ["interrogative"] },
+    { word: "what colour", zh: "什么颜色",   phon: "/wɒt ˈkʌlə(r)/",        example: "What colour is the sky?",   attrs: ["interrogative", "phrase"] },
+    { word: "what time",   zh: "几点",       phon: "/wɒt taɪm/",            example: "What time is it now?",      attrs: ["interrogative", "phrase"] },
+    { word: "what day",    zh: "星期几",     phon: "/wɒt deɪ/",             example: "What day is it today?",     attrs: ["interrogative", "phrase"] },
+    { word: "who",         zh: "谁",         phon: "/huː/",                 example: "Who is that girl?",         attrs: ["interrogative"] },
+    { word: "whom",        zh: "谁(宾格)",   phon: "/huːm/",                example: "Whom do you like?",         attrs: ["interrogative"] },
+    { word: "whose",       zh: "谁的",       phon: "/huːz/",                example: "Whose book is this?",       attrs: ["interrogative"] },
+    { word: "which",       zh: "哪一个",     phon: "/wɪtʃ/",                example: "Which one is yours?",       attrs: ["interrogative"] },
   ]
 });
 
@@ -2104,40 +2166,13 @@ function syncMusic(screen, themeId) {
 }
 
 </script>
-  <!-- 公共：数据 / 图标 / 状态 / 路由 / 事件；四个 Tab 各自一个文件 -->
+  <!-- 公共：工具 / 视觉 / 配置 / 词汇 / 状态 / 界面 / 事件 / 启动；四个 Tab 各自一个文件 -->
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — interactive app
+   通用工具：DOM 查询、转义、阶段计算、格式化与背景映射
    ============================================================ */
 
-/* ------------------------------------------------ data */
-const STAGES = [
-  { key: "egg",   name: "恐龙蛋",       phase: "孵化期", min: 0,    rarity: 3, height: "18 cm", weight: "0.4 kg", skill: "等待破壳", desc: "一颗安静的恐龙蛋，表面有薄荷色斑点。每天认真学习，它就会听见你的声音。" },
-  { key: "baby",  name: "幼龙",         phase: "幼年期", min: 240,  rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
-  { key: "teen",  name: "少年龙",       phase: "成长期", min: 900,  rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "背上长出了第一排小刺，眼睛亮亮的。它已经能记住好多水果单词了。" },
-  { key: "adult", name: "成年龙",       phase: "成熟期", min: 2100, rarity: 4, height: "2.1 m", weight: "120 kg", skill: "星星加成 +10%", desc: "鼻尖长出了小角，步伐变得稳健。现在是森林里最可靠的伙伴。" },
-  { key: "super", name: "霸王龙",       phase: "完全体", min: 4200, rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "金色的背刺在阳光下闪闪发亮。它记得你陪它走过的每一次闯关。" },
-  { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "传说中的究极形态，身上环绕着星辉。只有最坚持的小探险家才能遇见它。" },
-];
-
-const ITEMS = [
-  { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
-  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 80,  thumb: "h2", art: itemGlasses },
-  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 150, thumb: "h3", badge: "NEW", art: itemWings },
-  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 200, thumb: "h4", art: itemCrown },
-];
-
-const BACKGROUNDS = [
-  { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 120, cls: "sunset" },
-  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 200, cls: "night" },
-];
-
-const DEX = STAGES.map((s) => ({ ...s }));
-
-/* ------------------------------------------------ helpers */
 const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -2168,7 +2203,12 @@ function shuffle(arr) {
 function bgClass(bg) { return bg === "sunset" ? "bg-sunset" : bg === "night" ? "bg-night" : "bg-jungle"; }
 function bgMeta(id) { return BACKGROUNDS.find((b) => b.id === id) || BACKGROUNDS[0]; }
 
-/* ------------------------------------------------ icons */
+</script>
+  <script>
+/* ============================================================
+   视觉资源：星标、界面图标、恐龙 / 商店 / 水果 SVG 与 emoji 插图
+   ============================================================ */
+
 const starPath = "M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z";
 const star = (s = 16, fill = "#FFC94A", stroke = "#E9A93C", opacity = 1) =>
   `<svg width="${s}" height="${s}" viewBox="0 0 24 24" style="opacity:${opacity}" aria-hidden="true"><path d="${starPath}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
@@ -2193,7 +2233,6 @@ const I = {
   crownMini: (s = 18, c = "#C98B25") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 4l4.5 8L21 8v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="${c}"/></svg>`,
   chevron: (s = 10, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l7 7-7 7"/></svg>`,
   leaf: (s = 24, c = "#2E8B57") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M20 4C10 4 4 9 4 16c0 2 1 4 1 4s2-9 11-11c-5 3-9 7-9 11 0 0 8 2 13-4 3-4 2-9 0-12z" fill="${c}"/></svg>`,
-  medal: (s = 26, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14.5" r="6"/><path d="M8.2 3h7.6l-2.6 5.6h-2.4z"/><path d="M12 11.5l1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2L9 13.8l2-.3z" fill="${c}" fill-opacity=".14"/></svg>`,
   share: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`,
   refresh: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/></svg>`,
   info: (s = 20, c = "currentColor") => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".9" fill="${c}"/></svg>`,
@@ -2373,70 +2412,6 @@ function itemCrown() {
   </svg>`;
 }
 
-/* ------------------------------------------------ fruit art */
-function appleSVG() {
-  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="苹果">
-    <path d="M80 40c-4-12-12-18-22-20 2 10 8 17 18 22z" fill="#8CC063"/>
-    <path d="M80 41c1-9 5-16 13-22 1 11-3 19-11 24z" fill="#6BA552"/>
-    <path d="M80 44c-4-10-4-16-2-22" stroke="#8A5B32" stroke-width="5" stroke-linecap="round" fill="none"/>
-    <path d="M80 42c17-13 48-7 58 23 10 32-10 70-33 76-11 3-18-2-25-2s-14 5-25 2C32 135 12 97 22 65 32 35 63 29 80 42z" fill="#F4603F"/>
-    <path d="M80 50c14-10 36-8 47 10-12-6-28-6-40 2z" fill="#FF8A66" opacity=".75"/>
-    <path d="M36 74c4-14 14-22 24-24-12 8-18 18-20 32z" fill="#fff" opacity=".35"/>
-    <path d="M120 118c8-10 12-24 12-36" stroke="#C33F26" stroke-width="4" stroke-linecap="round" opacity=".4" fill="none"/>
-  </svg>`;
-}
-function bananaSVG() {
-  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="香蕉">
-    <path d="M42 36c6 50 42 82 88 66 12-4 20-13 24-26-28 18-64 8-82-20-10-15-14-32-14-46-8 2-14 12-16 26z" fill="#FFD25A" stroke="#E3A93C" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M58 52c8 34 32 58 62 60" fill="none" stroke="#FFF0B8" stroke-width="8" stroke-linecap="round" opacity=".7"/>
-    <path d="M42 36c-2-8-8-12-16-12 1 9 5 15 12 18z" fill="#8A5B32"/>
-    <path d="M154 76c6 1 10 5 10 9-5 2-10 0-13-4z" fill="#8A5B32"/>
-    <circle cx="128" cy="96" r="3" fill="#D99A2F" opacity=".6"/><circle cx="112" cy="104" r="2.4" fill="#D99A2F" opacity=".5"/>
-  </svg>`;
-}
-function orangeSVG() {
-  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="橙子">
-    <circle cx="80" cy="90" r="52" fill="#FF9A3D"/>
-    <circle cx="80" cy="90" r="52" fill="none" stroke="#E2781F" stroke-width="3"/>
-    <path d="M80 38c-2-10 2-18 10-24 0 10-4 18-10 24z" fill="#6BA552"/>
-    <path d="M80 38c2-9 8-16 16-18-1 9-7 16-16 18z" fill="#8CC063"/>
-    <path d="M80 40v-4" stroke="#8A5B32" stroke-width="5" stroke-linecap="round"/>
-    <path d="M48 62c6-14 18-22 30-24-12 8-20 20-24 34z" fill="#FFC27A" opacity=".8"/>
-    <circle cx="112" cy="72" r="3" fill="#E2781F" opacity=".45"/><circle cx="118" cy="96" r="4" fill="#E2781F" opacity=".35"/>
-    <circle cx="58" cy="110" r="3.4" fill="#E2781F" opacity=".35"/><circle cx="92" cy="122" r="3" fill="#E2781F" opacity=".4"/>
-    <circle cx="70" cy="72" r="2.6" fill="#E2781F" opacity=".3"/><circle cx="102" cy="108" r="2.4" fill="#E2781F" opacity=".35"/>
-  </svg>`;
-}
-function grapeSVG() {
-  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="葡萄">
-    <path d="M80 38c-2-12 4-20 14-26 1 10-4 20-14 26z" fill="#8CC063"/>
-    <path d="M80 40c-6-8-14-12-24-12 2 10 10 16 24 16z" fill="#6BA552"/>
-    <path d="M80 42c-2-6-2-10 0-14" stroke="#8A5B32" stroke-width="5" stroke-linecap="round"/>
-    <g fill="#8E76F0" stroke="#7A5FD8" stroke-width="2">
-      <circle cx="62" cy="62" r="15"/><circle cx="86" cy="58" r="14"/><circle cx="108" cy="66" r="13"/>
-      <circle cx="50" cy="86" r="14"/><circle cx="74" cy="82" r="15"/><circle cx="98" cy="84" r="14"/><circle cx="120" cy="88" r="12"/>
-      <circle cx="62" cy="108" r="14"/><circle cx="86" cy="104" r="15"/><circle cx="108" cy="108" r="13"/>
-      <circle cx="76" cy="126" r="13"/><circle cx="98" cy="126" r="11"/>
-    </g>
-    <circle cx="62" cy="57" r="4" fill="#C9BEFF" opacity=".75"/><circle cx="74" cy="77" r="4" fill="#C9BEFF" opacity=".65"/>
-    <circle cx="86" cy="99" r="3.5" fill="#C9BEFF" opacity=".6"/>
-  </svg>`;
-}
-function strawberrySVG() {
-  return `<svg viewBox="0 0 160 160" class="fruit" aria-label="草莓">
-    <path d="M80 42c18-12 44-4 46 22 2 24-24 58-46 72-22-14-48-48-46-72 2-26 28-34 46-22z" fill="#F25450"/>
-    <path d="M80 42c-10-4-16-10-18-18 10-1 18 3 24 12 6-9 14-13 24-12-2 8-10 14-20 18z" fill="#5FAE5A"/>
-    <path d="M80 44V30" stroke="#3E8F45" stroke-width="4" stroke-linecap="round"/>
-    <g fill="#FFE3B0">
-      <ellipse cx="62" cy="66" rx="2" ry="3.4"/><ellipse cx="84" cy="60" rx="2" ry="3.4"/><ellipse cx="102" cy="72" rx="2" ry="3.4"/>
-      <ellipse cx="54" cy="88" rx="2" ry="3.4"/><ellipse cx="76" cy="84" rx="2" ry="3.4"/><ellipse cx="96" cy="92" rx="2" ry="3.4"/>
-      <ellipse cx="64" cy="108" rx="2" ry="3.4"/><ellipse cx="86" cy="110" rx="2" ry="3.4"/><ellipse cx="76" cy="126" rx="2" ry="3.4"/>
-      <ellipse cx="112" cy="86" rx="2" ry="3.4"/>
-    </g>
-    <path d="M40 66c4-14 14-22 24-24-12 8-18 18-20 32z" fill="#fff" opacity=".22"/>
-  </svg>`;
-}
-
 /* ------------------------------------------------ theme words */
 /* 主题词汇由 app/words/*.js 注册；有精绘 SVG 的用 art，其余用 emoji 插图 */
 function emojiArt(ch) {
@@ -2444,65 +2419,37 @@ function emojiArt(ch) {
     <text x="60" y="64" font-size="78" text-anchor="middle" dominant-baseline="middle">${ch}</text>
   </svg>`;
 }
-/* 单词池：所有 isPool:true 的词性文件里的原子词（带 attrs 标注），合并去重 */
-const POS_POOL = (window.DINO_WORD_SETS || [])
-  .filter((s) => s.isPool)
-  .flatMap((s) => s.words || [])
-  .map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
-/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 attrs 从 POS_POOL 匹配 */
-const WORD_SETS = (window.DINO_WORD_SETS || [])
-  .filter((s) => s.isTheme)
-  .map((set) => {
-    const own = (set.words || []).map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
-    let words = own;
-    if (words.length === 0 && Array.isArray(set.attrs) && set.attrs.length) {
-      words = POS_POOL.filter((w) => set.attrs.some((a) => w.attrs && w.attrs.includes(a)));
-    }
-    return { ...set, words };
-  });
-/* 单词本用所有原子词（不重复），关卡进度等只关联 WORD_SETS */
-const ALL_WORDS = POS_POOL;
-/* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
-const LEVELS_PER_THEME = 10;
-const PASS_STARS = 2;
-function currentTheme() {
-  return WORD_SETS.find((set) => set.id === state.theme) || WORD_SETS[0];
-}
-function themeWords() {
-  return currentTheme().words;
-}
-/* 每个主题独立关卡进度：{ level, stars }，互不影响 */
-function themeProgress(id) {
-  const key = id || (state && state.theme) || "fruit";
-  if (!state.progress) state.progress = {};
-  if (!state.progress[key]) state.progress[key] = { level: 1, stars: {} };
-  return state.progress[key];
-}
-function themeStars(p) {
-  return Object.values(p.stars).reduce((a, b) => a + b, 0);
-}
-function totalLevelsDone() {
-  return WORD_SETS.reduce((n, t) => n + (state.progress && state.progress[t.id] ? state.progress[t.id].level - 1 : 0), 0);
-}
-/* 全新存档：零星星、零成长、零记录，所有主题从第 1 关开始 */
-function initialState() {
-  return {
-    ...DEFAULT_STATE,
-    tasks: { ...DEFAULT_STATE.tasks },
-    equipped: { ...DEFAULT_STATE.equipped },
-    progress: {},
-    log: {},
-    bgOwned: [...DEFAULT_STATE.bgOwned],
-    dex: [...DEFAULT_STATE.dex],
-    owned: [],
-  };
-}
 
-/* ------------------------------------------------ state */
-const STORE_KEY = "dinogo.v3";
-try {
-  if (new URLSearchParams(location.search).get("fresh") === "1") localStorage.removeItem(STORE_KEY);
-} catch (e) { /* private mode */ }
+</script>
+  <script>
+/* ============================================================
+   静态配置：进化阶段、商店道具、背景、图鉴与默认存档
+   ============================================================ */
+
+const STAGES = [
+  { key: "egg",   name: "恐龙蛋",       phase: "孵化期", min: 0,    rarity: 3, height: "18 cm", weight: "0.4 kg", skill: "等待破壳", desc: "一颗安静的恐龙蛋，表面有薄荷色斑点。每天认真学习，它就会听见你的声音。" },
+  { key: "baby",  name: "幼龙",         phase: "幼年期", min: 240,  rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
+  { key: "teen",  name: "少年龙",       phase: "成长期", min: 900,  rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "背上长出了第一排小刺，眼睛亮亮的。它已经能记住好多水果单词了。" },
+  { key: "adult", name: "成年龙",       phase: "成熟期", min: 2100, rarity: 4, height: "2.1 m", weight: "120 kg", skill: "星星加成 +10%", desc: "鼻尖长出了小角，步伐变得稳健。现在是森林里最可靠的伙伴。" },
+  { key: "super", name: "霸王龙",       phase: "完全体", min: 4200, rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "金色的背刺在阳光下闪闪发亮。它记得你陪它走过的每一次闯关。" },
+  { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "传说中的究极形态，身上环绕着星辉。只有最坚持的小探险家才能遇见它。" },
+];
+
+const ITEMS = [
+  { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
+  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 80,  thumb: "h2", art: itemGlasses },
+  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 150, thumb: "h3", badge: "NEW", art: itemWings },
+  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 200, thumb: "h4", art: itemCrown },
+];
+
+const BACKGROUNDS = [
+  { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
+  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 120, cls: "sunset" },
+  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 200, cls: "night" },
+];
+
+const DEX = STAGES.map((s) => ({ ...s }));
+
 const DEFAULT_STATE = {
   v: 3,
   name: "毛肚",
@@ -2524,6 +2471,76 @@ const DEFAULT_STATE = {
   sound: true,
   starBonus: 0,
 };
+
+</script>
+  <script>
+/* ============================================================
+   词汇池与关卡规则：词性池、随机复习词、主题筛选与进度计算
+   ============================================================ */
+
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 attrs 标注），合并去重 */
+const POS_POOL = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isPool)
+  .flatMap((s) => (s.words || []).map((w) => ({ ...w, pos: s.id })))
+  .map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+/* 随机记单词只取名词与动词短语 */
+const REVIEW_WORDS = POS_POOL.filter(
+  (w) => w.pos === "noun" || (w.pos === "verb" && (w.attrs || []).includes("phrase"))
+);
+/* 词性中文名（单词本页签展示用） */
+const POS_ZH = { noun: "名词", verb: "动词", adj: "形容词", adv: "副词", pron: "代词", prep: "介词", conj: "连词", interj: "感叹词", num: "数词" };
+function posZh(w) {
+  if (!w || !w.pos) return "";
+  if (w.pos === "verb" && (w.attrs || []).includes("phrase")) return "动词短语";
+  return POS_ZH[w.pos] || "";
+}
+/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 attrs 从 POS_POOL 匹配 */
+const WORD_SETS = (window.DINO_WORD_SETS || [])
+  .filter((s) => s.isTheme)
+  .map((set) => {
+    const own = (set.words || []).map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
+    let words = own;
+    if (words.length === 0 && Array.isArray(set.attrs) && set.attrs.length) {
+      words = POS_POOL.filter((w) => set.attrs.some((a) => w.attrs && w.attrs.includes(a)));
+    }
+    return { ...set, words };
+  });
+/* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
+const LEVELS_PER_THEME = 10;
+const PASS_STARS = 2;
+/* 主题按 id 建索引，避免每次渲染都线性查找 */
+const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
+function currentTheme() {
+  return THEME_BY_ID.get(state.theme) || WORD_SETS[0];
+}
+function themeWords() {
+  return currentTheme().words;
+}
+/* 每个主题独立关卡进度：{ level, stars }，互不影响 */
+function themeProgress(id) {
+  const key = id || (state && state.theme) || "fruit";
+  if (!state.progress) state.progress = {};
+  if (!state.progress[key]) state.progress[key] = { level: 1, stars: {} };
+  return state.progress[key];
+}
+function themeStars(p) {
+  return Object.values(p.stars).reduce((a, b) => a + b, 0);
+}
+function totalLevelsDone() {
+  return WORD_SETS.reduce((n, t) => n + (state.progress && state.progress[t.id] ? state.progress[t.id].level - 1 : 0), 0);
+}
+
+</script>
+  <script>
+/* ============================================================
+   应用状态：存档读写、学习记录、计时器与路由
+   ============================================================ */
+
+/* ------------------------------------------------ state */
+const STORE_KEY = "dinogo.v3";
+try {
+  if (new URLSearchParams(location.search).get("fresh") === "1") localStorage.removeItem(STORE_KEY);
+} catch (e) { /* private mode */ }
 
 let state = loadState();
 let current = "home";
@@ -2582,6 +2599,20 @@ function setTimer(fn, ms) {
 }
 function clearTimers() { timers.forEach((t) => clearTimeout(t)); timers = []; }
 
+/* 全新存档：零星星、零成长、零记录，所有主题从第 1 关开始 */
+function initialState() {
+  return {
+    ...DEFAULT_STATE,
+    tasks: { ...DEFAULT_STATE.tasks },
+    equipped: { ...DEFAULT_STATE.equipped },
+    progress: {},
+    log: {},
+    bgOwned: [...DEFAULT_STATE.bgOwned],
+    dex: [...DEFAULT_STATE.dex],
+    owned: [],
+  };
+}
+
 /* ------------------------------------------------ router */
 function go(name, opts = {}) {
   if (name === current && !opts.replace && !opts.force) { render(); return; }
@@ -2604,6 +2635,12 @@ function back() {
   else go("home", { replace: true });
 }
 
+</script>
+  <script>
+/* ============================================================
+   通用界面：底部导航、状态胶囊、场景、弹层与提示
+   ============================================================ */
+
 /* ------------------------------------------------ common UI */
 const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["words", "词汇", I.book], ["shop", "小铺", I.bag]];
 function tabbar(active) {
@@ -2625,24 +2662,28 @@ function isNightNow() {
   const h = new Date().getHours();
   return h >= 19 || h < 6;
 }
+/* 天空场景只随昼夜变化，首次渲染后缓存，避免重复拼接星星与叶片 SVG */
+const SCENE_HTML = { day: "", night: "" };
 function sceneHTML() {
   if (isNightNow()) {
+    if (SCENE_HTML.night) return SCENE_HTML.night;
     const dots = Array.from({ length: 18 }, (_, i) => {
       const x = (i * 37 + 11) % 100, y = (i * 23 + 7) % 70, s = (i % 3) + 1.2;
       return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.3 + (i % 4) * 0.16}"></i>`;
     }).join("");
-    return `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
+    return (SCENE_HTML.night = `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
       <div class="hill a"></div><div class="hill b"></div>
       <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#2E6B4E"/></svg>
       <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#347454"/></svg>
-    </div>`;
+    </div>`);
   }
-  return `<div class="scene">
+  if (SCENE_HTML.day) return SCENE_HTML.day;
+  return (SCENE_HTML.day = `<div class="scene">
     <div class="sun"></div><div class="cloud a"></div><div class="cloud b"></div>
     <div class="hill a"></div><div class="hill b"></div>
     <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#62A968"/><path d="M0 120C18 92 44 70 80 56 60 82 34 104 0 120z" fill="#4E9459"/></svg>
     <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#6DB270"/></svg>
-  </div>`;
+  </div>`);
 }
 /* 天空外观由真实时间决定：夜晚统一夜空，白天沿用已购买的背景色调 */
 function heroSkyClass() {
@@ -2732,6 +2773,12 @@ function toast(msg) {
   while (root.children.length > 3) root.removeChild(root.firstChild);
   setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 260); }, 2100);
 }
+
+</script>
+  <script>
+/* ============================================================
+   全局事件：点击动作分发、浏览器后退与手势拦截
+   ============================================================ */
 
 /* ------------------------------------------------ events */
 document.addEventListener("click", (e) => {
@@ -2827,7 +2874,7 @@ document.addEventListener("click", (e) => {
     go("home", { replace: true });
     toast("已重置演示进度");
   } else if (action === "close-overlay") {
-    if (typeof cancelVoice === "function") cancelVoice();
+    resetVoice();
     closeOverlay();
   } else if (action === "speak-word") {
     speak(el.dataset.word);
@@ -2853,6 +2900,12 @@ window.addEventListener("popstate", (e) => {
 });
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());
+
+</script>
+  <script>
+/* ============================================================
+   启动与渲染：屏幕注册、首屏渲染与 PWA 注册
+   ============================================================ */
 
 /* ------------------------------------------------ render */
 /* 页面渲染表在 boot() 里装配，保证四个 Tab 文件都已加载 */
@@ -2915,7 +2968,6 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   });
 }
 
-
 </script>
   <script>
 /* ============================================================
@@ -2939,8 +2991,6 @@ function resetVoice() {
   voiceChunks = [];
   if (voiceUrl) { URL.revokeObjectURL(voiceUrl); voiceUrl = ""; }
 }
-
-function cancelVoice() { resetVoice(); }
 
 function setRecBtn(label, recording) {
   const btn = $('[data-action="record-say"]');
@@ -2991,7 +3041,8 @@ function playVoice() {
   audio.play().catch(() => toast("播放失败，请再试一次"));
 }
 
-function randomWord() { return ALL_WORDS[Math.floor(Math.random() * ALL_WORDS.length)]; }
+function randomWord() { return REVIEW_WORDS[Math.floor(Math.random() * REVIEW_WORDS.length)]; }
+function wordPosLabel(w) { return w.pos === "verb" ? "phr." : "n."; }
 
 function todayLevels() {
   return (state.log[dateKey()] || {}).levels || 0;
@@ -3006,9 +3057,7 @@ function streakDays() {
   }
   return n;
 }
-function tasksData() {
-  const lv = todayLevels();
-  const streak = streakDays();
+function tasksData(lv, streak) {
   return [
     { done: !!state.tasks.level, color: "orange", icon: I.flag, title: "完成 1 次闯关", sub: state.tasks.level ? "今日目标已达成" : "还差 1 次，约 3 分钟", reward: "+60 成长值" },
     { done: lv >= 1, color: "blue", icon: I.book, title: "学会 5 个新单词", sub: `已掌握 ${Math.min(5, lv * 5)} / 5 个`, reward: "+40 成长值" },
@@ -3021,7 +3070,9 @@ function screenHome() {
   const next = nextStage(st.key);
   const pending = next && state.growth >= next.min;
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
-  const tasks = tasksData();
+  const lv = todayLevels();
+  const streak = streakDays();
+  const tasks = tasksData(lv, streak);
   const doneCount = tasks.filter((t) => t.done).length;
   const word = reviewWord = randomWord();
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
@@ -3036,7 +3087,7 @@ function screenHome() {
         <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
-          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streakDays()} 天 · 今日已学 ${todayLevels() * 2} 分钟</div>
+          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
         </div>
         ${starPill()}
       </div>
@@ -3069,8 +3120,8 @@ function screenHome() {
         <div class="spk">${I.speaker(21, "#B4811C")}</div>
         <div class="w-main">
           <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
-          <div class="w-word">${word.word}</div>
-          <div class="w-phon">${word.phon} · n. ${word.zh}</div>
+          <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
+          <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
         </div>
         <div class="w-btn">去记单词 ${I.arrow(11)}</div>
       </button>
@@ -3087,7 +3138,7 @@ function screenHome() {
           <span class="check">${t.done ? I.check(11) : ""}</span>
         </div>`).join("")}
       </section>
-      <div class="home-note">${todayLevels() ? `今天已学 ${todayLevels() * 2} 分钟 · 再闯 ${Math.max(0, 2 - todayLevels())} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
+      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 再闯 ${Math.max(0, 2 - lv)} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
   </section>`;
@@ -3168,8 +3219,7 @@ function screenProfile() {
 }
 
 
-function openReview(next) {
-  if (next) reviewWord = null;
+function openReview() {
   const w = reviewWord || (reviewWord = randomWord());
   resetVoice();
   openOverlay(`<div class="overlay">
@@ -3179,7 +3229,7 @@ function openReview(next) {
       <button class="word-art" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.art()}</button>
       <button class="word-big" data-action="speak-word" data-word="${w.word}" aria-label="播放 ${w.word} 发音">${w.word}</button>
       <div class="word-phon">${w.phon}</div>
-      <div class="word-zh">n. ${w.zh}</div>
+      <div class="word-zh">${wordPosLabel(w)} ${w.zh}</div>
       <div class="tip">例句：${w.example}</div>
       <button class="btn speak-btn" data-action="record-say">${I.speaker(18)} 跟着读</button>
       <div class="sheet-actions">
@@ -3321,6 +3371,7 @@ function screenMap() {
   const start = Math.max(1, level - 4);
   const levels = Array.from({ length: 6 }, (_, i) => start + i).filter((lvl) => lvl <= LEVELS_PER_THEME);
   const starTotal = themeStars(prog);
+  const theme = currentTheme();
   const cfg = mapTheme();
   /* 关卡少于 6 个时整体下移，宝箱始终落在最后一个点位上 */
   const shown = levels.length;
@@ -3352,12 +3403,12 @@ function screenMap() {
     <div class="scroll">
       <div class="topbar">
         <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
-        <div class="t"><h1>${cfg.title}</h1><p>${currentTheme().unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
+        <div class="t"><h1>${cfg.title}</h1><p>${theme.unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
         ${starPill()}
       </div>
 
       <div class="theme-tabs">
-        ${WORD_SETS.map((t) => `<button class="tt ${t.id === currentTheme().id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
+        ${WORD_SETS.map((t) => `<button class="tt ${t.id === theme.id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
           <b>${t.emoji}</b>${t.name}
         </button>`).join("")}
       </div>
@@ -3374,8 +3425,8 @@ function screenMap() {
       <section class="card next-card">
         <div class="uc-nl">
           <div class="uc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
-          <h3>${currentTheme().name}</h3>
-          <div class="uc-meta"><span>${themeWords().length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</span><span class="uc-st">${star(9)}${star(9)}${star(9)}</span></div>
+          <h3>${theme.name}</h3>
+          <div class="uc-meta"><span>${theme.words.length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</span><span class="uc-st">${star(9)}${star(9)}${star(9)}</span></div>
         </div>
         <button class="uc-btn" data-action="start-quiz">开始闯关</button>
       </section>
@@ -3415,14 +3466,21 @@ function levelPlan(level) {
   if (level === 9) return ["dialog", "match", "listen", "dialog", "repeat"];
   return ["dialog", "listen", "dialog", "match", "repeat"];
 }
+const UNKNOWN_ART = () => emojiArt("❓");
+let artMap = null;
+/* 当前主题的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
-  const w = themeWords().find((x) => x.word === word);
-  return w ? w.art : () => emojiArt("❓");
+  const theme = currentTheme();
+  if (!artMap || artMap.id !== theme.id) {
+    artMap = { id: theme.id, map: new Map(theme.words.map((w) => [w.word, w.art])) };
+  }
+  return artMap.map.get(word) || UNKNOWN_ART;
 }
 function buildTasks(level) {
-  const pool = themeWords();
+  const theme = currentTheme();
+  const pool = theme.words;
   const picks = shuffle(pool);
-  const dlg = currentTheme().dialog || { q: "What's this?", a: "It's a {word}." };
+  const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
   return levelPlan(level).map((type, i) => {
     const w = picks[i % picks.length];
     const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
@@ -3909,6 +3967,7 @@ function screenEvolution() {
 
 let dexFilter = "all";
 let wordsLetter = "all";
+let wordsAlphaCache = null;
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
@@ -3927,10 +3986,11 @@ function dexBody() {
     return d.key === dexFilter;
   });
   const reward = dexRewardInfo();
+  const pct = Math.round((state.dex.length / DEX.length) * 100);
   return `<div class="dex-sum card">
       <div class="ds-main">
-        <div class="ds-row"><b>图鉴收集度</b><span class="num">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-        <div class="bar"><i style="width:${Math.round((state.dex.length / DEX.length) * 100)}%"></i></div>
+        <div class="ds-row"><b>图鉴收集度</b><span class="num">${pct}%</span></div>
+        <div class="bar"><i style="width:${pct}%"></i></div>
         <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} / ${DEX.length} 种形态 · 继续成长解锁传说</div>
       </div>
       <div class="ds-badge">${I.book(26)}</div>
@@ -3965,8 +4025,9 @@ function dexBody() {
 }
 
 /* ------------------------------------------------ words */
-/* 所有主题词汇按首字母 A–Z 分组，共 40 个 */
+/* 所有主题词汇按首字母 A–Z 分组：词汇池在运行期不变，首次计算后缓存 */
 function allWordsAlpha() {
+  if (wordsAlphaCache) return wordsAlphaCache;
   const all = WORD_SETS.flatMap((set) =>
     set.words.map((w) => ({ ...w, themeId: set.id, themeName: set.name, themeEmoji: set.emoji || "🔤" })));
   all.sort((a, b) => a.word.localeCompare(b.word, "en"));
@@ -3977,13 +4038,14 @@ function allWordsAlpha() {
     if (!g) groups.push((g = { letter: L, words: [] }));
     g.words.push(w);
   });
-  return groups;
+  return (wordsAlphaCache = groups);
 }
+
+const THEME_SHORT = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
 
 function screenWords() {
   const groups = allWordsAlpha();
   const total = groups.reduce((n, g) => n + g.words.length, 0);
-  const themeShort = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
   const letters = groups.map((g) => g.letter);
   const shown = wordsLetter === "all" ? groups : groups.filter((g) => g.letter === wordsLetter);
   const index = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
@@ -4007,7 +4069,7 @@ function screenWords() {
             <span class="wr-pic">${w.art()}</span>
             <span class="wr-main">
               <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
-              <span class="wr-line sub"><em>${w.phon || ""}</em><span class="wr-tag t-${w.themeId}">${themeShort[w.themeId] || w.themeName}</span></span>
+              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}<span class="wr-tag t-${w.themeId}">${THEME_SHORT[w.themeId] || w.themeName}</span></span>
             </span>
           </button>`).join("")}
         </div>

@@ -82,7 +82,5 @@ window.DINO_WORD_SETS.push({
     { word: "worse",     zh: "更差的", phon: "/wɜːs/",        example: "This is worse.", attrs: ["comparative"] },
     { word: "faster",    zh: "更快的", phon: "/ˈfɑːstə(r)/",  example: "Cheetah is faster.", attrs: ["comparative"] },
     { word: "slower",    zh: "更慢的", phon: "/ˈsləʊə(r)/",   example: "Turtle is slower.", attrs: ["comparative"] },
-    { word: "bigger",    zh: "更大的", phon: "/ˈbɪɡə(r)/",    example: "This one is bigger.", attrs: ["comparative"] },
-    { word: "smaller",   zh: "更小的", phon: "/ˈsmɔːlə(r)/",  example: "This one is smaller.", attrs: ["comparative"] },
   ]
 });

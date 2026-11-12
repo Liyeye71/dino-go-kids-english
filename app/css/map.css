@@ -81,7 +81,6 @@
 .quiz-top .qcount{font-size:12px;font-weight:900;color:var(--green-d);white-space:nowrap}
 .quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:700}
 .hearts{display:flex;align-items:center;gap:3px;flex:none}
-.heart-pop{animation:heartOut .4s ease forwards}
 .quiz-body{flex:1;min-height:0;overflow:hidden;padding:8px 20px 2px;display:flex;flex-direction:column;scrollbar-width:none}
 .quiz-body::-webkit-scrollbar{display:none}
 .quiz-prompt{display:flex;flex-direction:column;gap:7px;margin-top:4px;flex:none}

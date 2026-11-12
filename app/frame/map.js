@@ -127,6 +127,7 @@ function screenMap() {
   const start = Math.max(1, level - 4);
   const levels = Array.from({ length: 6 }, (_, i) => start + i).filter((lvl) => lvl <= LEVELS_PER_THEME);
   const starTotal = themeStars(prog);
+  const theme = currentTheme();
   const cfg = mapTheme();
   /* 关卡少于 6 个时整体下移，宝箱始终落在最后一个点位上 */
   const shown = levels.length;
@@ -158,12 +159,12 @@ function screenMap() {
     <div class="scroll">
       <div class="topbar">
         <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
-        <div class="t"><h1>${cfg.title}</h1><p>${currentTheme().unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
+        <div class="t"><h1>${cfg.title}</h1><p>${theme.unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
         ${starPill()}
       </div>
 
       <div class="theme-tabs">
-        ${WORD_SETS.map((t) => `<button class="tt ${t.id === currentTheme().id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
+        ${WORD_SETS.map((t) => `<button class="tt ${t.id === theme.id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
           <b>${t.emoji}</b>${t.name}
         </button>`).join("")}
       </div>
@@ -180,8 +181,8 @@ function screenMap() {
       <section class="card next-card">
         <div class="uc-nl">
           <div class="uc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
-          <h3>${currentTheme().name}</h3>
-          <div class="uc-meta"><span>${themeWords().length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</span><span class="uc-st">${star(9)}${star(9)}${star(9)}</span></div>
+          <h3>${theme.name}</h3>
+          <div class="uc-meta"><span>${theme.words.length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</span><span class="uc-st">${star(9)}${star(9)}${star(9)}</span></div>
         </div>
         <button class="uc-btn" data-action="start-quiz">开始闯关</button>
       </section>
@@ -221,14 +222,21 @@ function levelPlan(level) {
   if (level === 9) return ["dialog", "match", "listen", "dialog", "repeat"];
   return ["dialog", "listen", "dialog", "match", "repeat"];
 }
+const UNKNOWN_ART = () => emojiArt("❓");
+let artMap = null;
+/* 当前主题的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
-  const w = themeWords().find((x) => x.word === word);
-  return w ? w.art : () => emojiArt("❓");
+  const theme = currentTheme();
+  if (!artMap || artMap.id !== theme.id) {
+    artMap = { id: theme.id, map: new Map(theme.words.map((w) => [w.word, w.art])) };
+  }
+  return artMap.map.get(word) || UNKNOWN_ART;
 }
 function buildTasks(level) {
-  const pool = themeWords();
+  const theme = currentTheme();
+  const pool = theme.words;
   const picks = shuffle(pool);
-  const dlg = currentTheme().dialog || { q: "What's this?", a: "It's a {word}." };
+  const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
   return levelPlan(level).map((type, i) => {
     const w = picks[i % picks.length];
     const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };

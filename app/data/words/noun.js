@@ -321,8 +321,6 @@ window.DINO_WORD_SETS.push({
     { word: "breakfast", zh: "早餐", phon: "/ˈbrekfəst/",     example: "I have breakfast at 7.",          emoji: "🥞", attrs: ["food"] },
     { word: "lunch",     zh: "中餐", phon: "/lʌntʃ/",          example: "Lunch is at school.",             emoji: "🍱", attrs: ["food"] },
     { word: "dinner",    zh: "晚餐", phon: "/ˈdɪnə(r)/",       example: "Dinner is at 6 pm.",              emoji: "🍲", attrs: ["food"] },
-    { word: "rice",      zh: "米饭", phon: "/raɪs/",           example: "We have rice for dinner.",        emoji: "🍚", attrs: ["food"] },
-    { word: "cake",      zh: "蛋糕", phon: "/keɪk/",           example: "We share a birthday cake.",       emoji: "🍰", attrs: ["food"] },
     { word: "jam",       zh: "果酱", phon: "/dʒæm/",           example: "Jam tastes sweet.",               emoji: "🍯", attrs: ["food"] },
     { word: "sausage",   zh: "香肠", phon: "/ˈsɒsɪdʒ/",        example: "I like sausages.",                emoji: "🌭", attrs: ["food"] },
     { word: "sandwich",  zh: "三明治", phon: "/ˈsænwɪtʃ/",     example: "Have a sandwich for lunch.",      emoji: "🥪", attrs: ["food"] },
@@ -333,7 +331,6 @@ window.DINO_WORD_SETS.push({
     { word: "mutton",    zh: "羊肉", phon: "/ˈmʌtn/",          example: "Mutton is hot pot.",              emoji: "🐑", attrs: ["food"] },
     { word: "beef",      zh: "牛肉", phon: "/biːf/",           example: "Beef is tasty.",                  emoji: "🥩", attrs: ["food"] },
     { word: "pork",      zh: "猪肉", phon: "/pɔːk/",           example: "Pork is common.",                 emoji: "🥓", attrs: ["food"] },
-    { word: "noodle",    zh: "面条", phon: "/ˈnuːdl/",         example: "A bowl of noodles.",              emoji: "🍜", attrs: ["food"] },
     { word: "soup",      zh: "汤",   phon: "/suːp/",           example: "The soup is hot.",                emoji: "🍲", attrs: ["food"] },
     { word: "salad",     zh: "沙拉", phon: "/ˈsæləd/",         example: "I like vegetable salad.",         emoji: "🥗", attrs: ["food"] },
     { word: "water",     zh: "水",   phon: "/ˈwɔːtə(r)/",      example: "Drink more water.",               emoji: "💧", attrs: ["food"] },
@@ -344,7 +341,6 @@ window.DINO_WORD_SETS.push({
     // ---- 水果 fruit（扩充）----
     { word: "mango",    zh: "芒果", phon: "/ˈmæŋɡəʊ/",        example: "A mango is sweet.",               emoji: "🥭", attrs: ["fruit"] },
     { word: "coconut",  zh: "椰子", phon: "/ˈkəʊkənʌt/",      example: "Coconut water is fresh.",         emoji: "🥥", attrs: ["fruit"] },
-    { word: "peach",    zh: "桃",   phon: "/piːtʃ/",          example: "Peaches are juicy.",              emoji: "🍑", attrs: ["fruit"] },
     // ---- 杂物 other ----
     { word: "window", zh: "窗户", phon: "/ˈwɪndəʊ/",         example: "Open the window.",                emoji: "🪟", attrs: ["other"] },
     { word: "desk",   zh: "书桌", phon: "/desk/",            example: "Put it on the desk.",             emoji: "🪑", attrs: ["other"] },
