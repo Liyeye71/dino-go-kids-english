@@ -1,0 +1,77 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — responsive：大屏（iPad）适配，最后加载以覆盖前面规则
+   ============================================================ */
+
+/* ------------------------------------------------ larger screens */
+@media (min-width:700px) and (min-height:600px){
+  .home-top{margin-bottom:18px}
+  .home-top .hi{font-size:20px}
+  .hero{height:410px}
+  .hero .dino-wrap{width:290px;height:290px}
+  .hero .bubble{width:142px;font-size:11.5px;top:158px;right:22px;padding:10px 12px}
+  .hero .bubble b{font-size:13px}
+  .hero .name b{font-size:34px}
+  .growth-panel{left:16px;right:16px;bottom:16px;min-height:100px;padding:14px 16px 14px 18px}
+  .growth-panel .val{font-size:18px}
+  .growth-panel .lb,.growth-panel .g-next{font-size:12px}
+  .go-btn{width:54px;height:54px;border-radius:18px}
+  .tasks{padding:16px 18px;gap:10px;margin-top:16px}
+  .tasks .head h3{font-size:17px}
+  .task{height:38px}
+  .task .t-title{font-size:14px}
+  .task .t-sub{font-size:10.5px}
+  .word-card{padding:16px 18px;min-height:122px;margin-top:16px}
+  .word-card .w-word{font-size:26px}
+  .word-card .w-kicker{font-size:10px}
+  .word-card .w-phon{font-size:12px}
+  .option{min-height:78px}
+  .option .word{font-size:18px}
+  .quiz-art{max-height:520px}
+  .quiz-art .blob{max-width:340px}
+  .chart .col .b{width:28px}
+  .result-scroll{padding-left:32px;padding-right:32px}
+  .result-foot{padding-left:32px;padding-right:32px}
+  .result-card{max-width:620px;margin-left:auto;margin-right:auto}
+  .evo-card{max-width:620px;margin-left:auto;margin-right:auto}
+  .result-head,.result-cheer{max-width:620px;margin-left:auto;margin-right:auto}
+  .result-cheer{margin-top:20px}
+  .shop-preview .arch{width:230px;height:180px;border-radius:115px 115px 24px 24px}
+  .shop-preview .podium{width:260px}
+  .shop-preview{height:290px}
+  .shop-preview > .dino{width:230px;height:230px;top:36px}
+  .shop-grid{grid-template-columns:repeat(2,1fr)}
+  .shop-item{padding:14px}
+  .shop-item .thumb{height:180px}
+  .shop-item .thumb svg{width:120px;height:120px}
+  .shop-item .name{font-size:15px}
+  .shop-item .sub{font-size:10.5px}
+  .shop-item .foot{margin-top:9px}
+  .dex-grid{grid-template-columns:repeat(2,1fr)}
+  .dex-card .pic{height:168px}
+  .dex-card .pic svg{width:168px;height:168px}
+  .dex-card .nm{font-size:13px}
+  .dex-card .stg{font-size:9.5px}
+}
+
+/* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
+@media (min-width:640px){
+  .options.pic-grid{grid-template-columns:repeat(4,1fr);grid-template-rows:minmax(0,1fr)}
+}
+
+/* ------------------------------------------------ 矮屏（横屏/小窗口）：压缩答题页留白，把空间让给图片 */
+@media (max-height:700px){
+  .quiz-prompt{gap:5px;margin-top:2px}
+  .quiz-prompt .chip{height:20px;font-size:9px}
+  .quiz-art{margin-top:9px}
+  .quiz-art.listen-art{height:clamp(112px,19vh,168px)}
+  .options{margin-top:10px}
+  .option{min-height:62px}
+  .match-grid{margin-top:10px}
+  .repeat-word b{font-size:24px}
+  .dialog-card{margin-top:10px;gap:7px}
+  .options.one-col{margin-top:8px}
+  .result-scroll{padding-top:calc(12px + var(--safe-top));padding-bottom:2px}
+  .result-stars{margin-top:5px}
+  .result-card{margin-top:11px}
+  .evo-card{margin-top:9px}
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#FBF3E3">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DinoGo">
+  <meta name="format-detection" content="telephone=no">
+  <title>DinoGo · 恐龙英语</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="images/icons/icon-192.png">
+  <!-- 样式按模块拆分，顺序与 build.mjs 的 CSS_FILES 保持一致 -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/dex.css">
+  <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/overlays.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <main class="view" id="view"></main>
+    <div id="overlay-root"></div>
+    <div class="toast-root" id="toast-root"></div>
+  </div>
+  <!-- 主题词汇：每个主题一个文件，新增主题在此登记（build.mjs 的 JS_FILES 也要同步） -->
+  <script src="words/fruits.js"></script>
+  <script src="words/cars.js"></script>
+  <script src="words/zoo.js"></script>
+  <script src="words/food.js"></script>
+  <!-- 声音：音效 / 语音 / 关卡提示音 + 主题背景音乐 -->
+  <script src="sounds/sfx.js"></script>
+  <script src="sounds/bgm.js"></script>
+  <!-- 公共：数据 / 图标 / 状态 / 路由 / 事件；四个 Tab 各自一个文件 -->
+  <script src="js/core.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/dex.js"></script>
+  <script src="js/shop.js"></script>
+  <script>boot();</script>
+</body>
+</html>

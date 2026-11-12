@@ -1,0 +1,155 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — interactive iOS / iPad app
+   ============================================================ */
+
+:root{
+  --ink:#1D3A2E;
+  --ink-2:#4F665A;
+  --muted:#87988D;
+  --cream:#FBF3E3;
+  --paper:#FFFFFF;
+  --line:#EDDFC7;
+  --green:#2E8B57;
+  --green-d:#1E6B47;
+  --green-dd:#17553A;
+  --green-l:#E9F7D9;
+  --lime:#B8E05A;
+  --yellow:#FFC94A;
+  --orange:#FF8A4C;
+  --coral:#FF6F61;
+  --sky:#9FDCF2;
+  --purple:#9D8CFF;
+  --shadow:0 10px 24px rgba(94,70,30,.08);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;padding:0;overscroll-behavior:none}
+body{
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif;
+  color:var(--ink);background:#EFE5D2;
+  -webkit-font-smoothing:antialiased;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
+input,textarea{font:inherit}
+svg{display:block}
+h1,h2,h3,h4,p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+
+/* ------------------------------------------------ app shell */
+.app{
+  position:relative;width:100%;max-width:820px;height:100vh;height:100dvh;
+  margin:0 auto;background:var(--cream);overflow:hidden;isolation:isolate;
+}
+.view{position:absolute;inset:0}
+.screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:var(--cream);overflow:hidden;
+  animation:screenIn .3s cubic-bezier(.22,.9,.3,1) both;
+}
+.scroll{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:calc(14px + var(--safe-top)) 20px calc(30px + var(--safe-bottom));
+}
+.scroll::-webkit-scrollbar{display:none}
+.has-tab .scroll{padding-bottom:calc(104px + var(--safe-bottom))}
+
+@media (min-width:700px) and (min-height:600px){
+  body{
+    background:
+      radial-gradient(1200px 800px at 10% -10%,#E4F1D2 0%,rgba(228,241,210,0) 60%),
+      radial-gradient(900px 700px at 110% 110%,#F8E3BE 0%,rgba(248,227,190,0) 60%),
+      #EFE5D2;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .app{
+    height:calc(100dvh - 48px);max-height:1120px;
+    border-radius:36px;border:1px solid rgba(255,255,255,.65);
+    box-shadow:0 40px 90px rgba(45,60,35,.22),0 2px 0 rgba(255,255,255,.8) inset;
+  }
+  .scroll{padding:calc(26px + var(--safe-top)) 32px calc(34px + var(--safe-bottom))}
+  .has-tab .scroll{padding-bottom:calc(112px + var(--safe-bottom))}
+}
+
+@media (min-width:1000px){
+  .app{max-width:880px}
+}
+
+/* ------------------------------------------------ status / tabbar */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:40;
+  height:calc(74px + var(--safe-bottom));
+  padding:8px 12px calc(8px + var(--safe-bottom));
+  display:flex;align-items:stretch;
+  background:rgba(255,251,243,.95);
+  border-top:1.5px solid #EFE2CB;
+  box-shadow:0 -10px 24px rgba(94,70,30,.05);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.tabbar .tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:11.5px;font-weight:700;color:#97A69B;letter-spacing:.3px;border-radius:14px;
+}
+.tabbar .tab .ic{width:40px;height:30px;border-radius:12px;display:grid;place-items:center;transition:background .18s ease}
+.tabbar .tab.on{color:var(--green-d)}
+.tabbar .tab.on .ic{background:#E4F6D5}
+.tabbar .tab:active .ic{transform:scale(.94)}
+
+/* ------------------------------------------------ shared atoms */
+.eyebrow{font-size:10.5px;font-weight:800;letter-spacing:1.7px;color:var(--muted);text-transform:uppercase}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:56px;
+  padding:0 18px;border-radius:18px;
+  background:linear-gradient(180deg,#3AA56B 0%,#28814F 100%);color:#fff;
+  font-size:17.5px;font-weight:800;letter-spacing:.4px;
+  box-shadow:0 5px 0 #1B6140,0 14px 24px rgba(32,110,70,.24);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1B6140,0 6px 14px rgba(32,110,70,.22)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn .hint{font-size:12px;font-weight:700;opacity:.85;background:rgba(255,255,255,.18);padding:3px 8px;border-radius:99px}
+.btn.yellow{background:linear-gradient(180deg,#FFD766,#F5B62F);color:#4C3306;box-shadow:0 5px 0 #D6971C,0 14px 24px rgba(214,151,28,.3)}
+.btn.ghost{background:#fff;color:var(--green-d);border:2px solid #DDEBD2;box-shadow:0 4px 0 #E3EDD6}
+.btn.small{min-height:44px;font-size:14px;border-radius:14px;box-shadow:0 4px 0 #1B6140}
+.btn.small:active{box-shadow:0 1px 0 #1B6140}
+
+.bar{height:12px;border-radius:99px;background:#EEE2CD;box-shadow:inset 0 2px 4px rgba(93,68,25,.08);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#A9D84B,#3AA56B);position:relative;transition:width .6s cubic-bezier(.22,.9,.3,1)}
+.bar>i::after{content:"";position:absolute;left:5px;right:7px;top:2px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
+.bar.gold>i{background:linear-gradient(90deg,#FFD86B,#FFB13D)}
+
+.star-pill{display:flex;align-items:center;gap:5px;height:34px;padding:0 11px 0 8px;border-radius:99px;
+  background:#fff;border:1.5px solid #EFE1C8;box-shadow:0 4px 10px rgba(94,70,30,.07);
+  font-size:14px;font-weight:900;letter-spacing:.2px;white-space:nowrap;flex:none}
+.circle-btn{width:38px;height:38px;border-radius:13px;background:#fff;border:1.5px solid var(--line);
+  display:grid;place-items:center;flex:none;box-shadow:0 4px 10px rgba(94,70,30,.06);color:var(--ink)}
+.circle-btn:active{transform:scale(.94)}
+
+.avatar{width:46px;height:46px;border-radius:16px;background:#FFF6E2;border:2px solid #fff;
+  box-shadow:0 5px 12px rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
+.avatar .crop{position:absolute;width:96px;height:96px;left:-39px;top:-7px}
+
+/* ------------------------------------------------ animations */
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
+@keyframes evoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes heartOut{0%{transform:scale(1)}40%{transform:scale(1.35);opacity:1}100%{transform:scale(.6);opacity:.25}}
+@keyframes confettiFall{0%{opacity:0;transform:translateY(-30px) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(160px) rotate(240deg)}}
+@keyframes glowPulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
