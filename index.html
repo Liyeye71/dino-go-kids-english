@@ -716,6 +716,50 @@ h1,h2,h3,h4,p{margin:0}
 .dex-reward .dr-note{font-size:9px;font-weight:600;color:#A19278;margin-top:4px}
 .dex-reward .dr-lock{width:30px;height:30px;border-radius:10px;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
 
+/* ------------------------------------------------ words */
+.words-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.words-head .t{flex:1;min-width:0}
+.words-head h1{font-size:clamp(24px,4vw,30px);font-weight:900;letter-spacing:-.6px;line-height:1.05}
+.words-head p{font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
+.words-count{flex:none;display:flex;align-items:baseline;gap:2px;padding:6px 10px;border-radius:12px;background:#E8F5D8;
+  font-size:15px;font-weight:900;color:var(--green-d)}
+.words-count span{font-size:10px;color:var(--muted);font-weight:800}
+.wl-bar{display:flex;flex-wrap:wrap;gap:4px;position:sticky;top:0;z-index:3;
+  padding:6px 0 9px;background:linear-gradient(180deg,var(--cream) 78%,rgba(251,243,227,0))}
+.wl{flex:none;width:25px;height:25px;border-radius:8px;display:grid;place-items:center;
+  background:#fff;border:1.5px solid #EEE2CD;font-size:10.5px;font-weight:900;color:#8B7B5C}
+.wl.all{width:auto;padding:0 10px}
+.wl.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 8px rgba(46,139,87,.22)}
+.wl.off{opacity:.3}
+.word-group{margin-top:13px}
+.wg-letter{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:900;color:var(--green-d);letter-spacing:.5px}
+.wg-letter::after{content:"";flex:1;height:1.5px;border-radius:2px;background:#EADFC9}
+.wg-letter span{font-size:9px;font-weight:900;color:#B3A184;background:#F4EFE3;border-radius:7px;padding:1px 6px;letter-spacing:0}
+.wg-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:7px}
+.word-row{position:relative;display:flex;align-items:center;gap:7px;padding:9px 8px;min-height:74px;text-align:left;
+  background:#fff;border:1.5px solid var(--line);border-radius:16px;box-shadow:0 4px 10px rgba(94,70,30,.04)}
+.word-row:active{transform:scale(.985);background:#FBFDF6}
+.wr-pic{width:40px;height:40px;border-radius:11px;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
+.wr-pic svg{width:100%;height:100%;display:block}
+.wr-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.wr-line{display:flex;align-items:baseline;justify-content:space-between;gap:6px;min-width:0}
+.wr-line b{font-size:20.5px;font-weight:900;letter-spacing:-.4px;line-height:1.12;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-line i{font-style:normal;font-size:12px;font-weight:800;color:var(--ink-2);white-space:nowrap;flex:none}
+.wr-line.sub{align-items:center}
+.wr-line.sub em{font-style:normal;font-size:10px;font-weight:700;color:#A19278;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wr-tag{flex:none;font-size:7.5px;font-weight:900;padding:2px 4px;border-radius:6px;letter-spacing:.2px}
+.wr-tag.t-fruit{background:#EAF7DA;color:#4C7A3A}
+.wr-tag.t-cars{background:#E3F1FB;color:#3D6C8C}
+.wr-tag.t-zoo{background:#FFF0DA;color:#9A6A24}
+.wr-tag.t-food{background:#F3ECFF;color:#6E5A9C}
+.words-foot{display:flex;align-items:center;gap:5px;justify-content:center;margin:16px 0 4px;
+  font-size:9.5px;font-weight:700;color:#B3A184}
+.shop-dex{margin-top:2px}
+.shop-dex .dex-sum{margin-top:0}
+
+
 /* ============================================================
    DinoGo · 恐龙英语 — shop：小铺（装扮 / 背景 / 图鉴）
    ============================================================ */
@@ -1805,7 +1849,7 @@ function back() {
 }
 
 /* ------------------------------------------------ common UI */
-const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["dex", "图鉴", I.book], ["shop", "小铺", I.bag]];
+const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["words", "词汇", I.book], ["shop", "小铺", I.bag]];
 function tabbar(active) {
   return `<nav class="tabbar">${TABS.map(([id, label, ic]) =>
     `<button class="tab ${active === id ? "on" : ""}" data-action="tab" data-screen="${id}" aria-label="${label}">
@@ -1978,6 +2022,7 @@ document.addEventListener("click", (e) => {
     shopTab = el.dataset.tab;
     sfx("tap");
     render();
+    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
   } else if (action === "buy-item") {
     openBuyItem(el.dataset.id);
   } else if (action === "equip-item") {
@@ -1997,6 +2042,11 @@ document.addEventListener("click", (e) => {
     dexFilter = el.dataset.filter;
     sfx("tap");
     render();
+  } else if (action === "filter-word") {
+    wordsLetter = el.dataset.letter;
+    sfx("tap");
+    render();
+    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
   } else if (action === "theme") {
     state.theme = el.dataset.theme;
     save();
@@ -2063,7 +2113,7 @@ function boot() {
     result: screenResult,
     evolution: screenEvolution,
     shop: screenShop,
-    dex: screenDex,
+    words: screenWords,
     profile: screenProfile,
   };
   try {
@@ -2075,6 +2125,8 @@ function boot() {
   if (current === "result" && !lastResult) current = "home";
   if (current === "evolution" && !evolutionInfo) current = "home";
   if (current === "quiz" && !quiz) current = "home";
+  /* 旧存档里的“图鉴”Tab 已并入小铺 → 图鉴 */
+  if (current === "dex") { current = "shop"; shopTab = "dex"; }
 
   render();
 
@@ -3023,11 +3075,13 @@ function screenEvolution() {
 </script>
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 图鉴（dex）
-   底部 Tab 3：恐龙图鉴 + 详情弹层
+   DinoGo · 恐龙英语 — 词汇（words）+ 恐龙图鉴（dex）
+   底部 Tab 3：词汇本（按 A–Z 分组）
+   恐龙图鉴并入「小铺 → 图鉴」，用 dexBody() 渲染
    ============================================================ */
 
 let dexFilter = "all";
+let wordsLetter = "all";
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
@@ -3036,7 +3090,8 @@ function dexRewardInfo() {
   return { title: "收集奖励 · 落日山谷", note: `再发现 ${4 - state.dex.length} 种形态，解锁「落日山谷」背景`, cur: state.dex.length, max: 4, reward: "落日山谷" };
 }
 
-function screenDex() {
+/* 图鉴正文：小铺 Tab 内嵌使用（不含 .scroll 与底部 Tab） */
+function dexBody() {
   const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["legend", "传说"]];
   const list = DEX.filter((d) => {
     if (dexFilter === "all") return true;
@@ -3045,72 +3100,96 @@ function screenDex() {
     return d.key === dexFilter;
   });
   const reward = dexRewardInfo();
-  return `<section class="screen has-tab" data-screen="dex">
-    <div class="scroll">
-      <div class="dex-head">
-        <div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div>
-        <div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>
+  return `<div class="dex-sum card">
+      <div class="ds-main">
+        <div class="ds-row"><b>图鉴收集度</b><span class="num">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
+        <div class="bar"><i style="width:${Math.round((state.dex.length / DEX.length) * 100)}%"></i></div>
+        <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} / ${DEX.length} 种形态 · 继续成长解锁传说</div>
       </div>
-
-      <div class="card dex-sum">
-        <div class="ds-main">
-          <div class="ds-row"><b>图鉴收集度</b><span class="num">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-          <div class="bar"><i style="width:${Math.round((state.dex.length / DEX.length) * 100)}%"></i></div>
-          <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} 种形态 · 继续成长解锁传说</div>
-        </div>
-        <div class="ds-badge">${I.book(26)}</div>
-      </div>
-
-      <div class="dex-filters">${filters.map(([id, label]) => `<button class="f ${dexFilter === id ? "on" : ""}" data-action="filter-dex" data-filter="${id}">${label}</button>`).join("")}</div>
-
-      <div class="dex-grid">
-        ${list.map((d) => {
-          const found = state.dex.includes(d.key);
-          const isNow = d.key === state.stage;
-          const bgT = (DEX.findIndex((x) => x.key === d.key) % 5) + 1;
-          return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
-            ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
-            ${isNow ? `<span class="now-tag">当前</span>` : ""}
-            <div class="pic t${bgT}">${dino(d.key)}</div>
-            <div class="nm">${found ? d.name : "未发现"}</div>
-            <div class="stg">${found ? d.phase : "???"}</div>
-          </button>`;
-        }).join("")}
-      </div>
-
-      <div class="dex-reward">
-        <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"><div class="s"></div><div class="h"></div></div></div>
-        <div class="dr-main">
-          <div class="dr-row"><b>${reward.title}</b><span>${reward.cur} / ${reward.max}</span></div>
-          <div class="bar"><i style="width:${Math.round((reward.cur / reward.max) * 100)}%"></i></div>
-          <div class="dr-note">${reward.note}</div>
-        </div>
-        <div class="dr-lock">${reward.cur >= reward.max ? I.check(14, "#B4811C") : I.lock(14, "#B4811C")}</div>
-      </div>
+      <div class="ds-badge">${I.book(26)}</div>
     </div>
-    ${tabbar("dex")}
-  </section>`;
+
+    <div class="dex-filters">${filters.map(([id, label]) => `<button class="f ${dexFilter === id ? "on" : ""}" data-action="filter-dex" data-filter="${id}">${label}</button>`).join("")}</div>
+
+    <div class="dex-grid">
+      ${list.map((d) => {
+        const found = state.dex.includes(d.key);
+        const isNow = d.key === state.stage;
+        const bgT = (DEX.findIndex((x) => x.key === d.key) % 5) + 1;
+        return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
+          ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+          ${isNow ? `<span class="now-tag">当前</span>` : ""}
+          <div class="pic t${bgT}">${dino(d.key)}</div>
+          <div class="nm">${found ? d.name : "未发现"}</div>
+          <div class="stg">${found ? d.phase : "???"}</div>
+        </button>`;
+      }).join("")}
+    </div>
+
+    <div class="dex-reward">
+      <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"><div class="s"></div><div class="h"></div></div></div>
+      <div class="dr-main">
+        <div class="dr-row"><b>${reward.title}</b><span>${reward.cur} / ${reward.max}</span></div>
+        <div class="bar"><i style="width:${Math.round((reward.cur / reward.max) * 100)}%"></i></div>
+        <div class="dr-note">${reward.note}</div>
+      </div>
+      <div class="dr-lock">${reward.cur >= reward.max ? I.check(14, "#B4811C") : I.lock(14, "#B4811C")}</div>
+    </div>`;
 }
 
+/* ------------------------------------------------ words */
+/* 所有主题词汇按首字母 A–Z 分组，共 40 个 */
+function allWordsAlpha() {
+  const all = WORD_SETS.flatMap((set) =>
+    set.words.map((w) => ({ ...w, themeId: set.id, themeName: set.name, themeEmoji: set.emoji || "🔤" })));
+  all.sort((a, b) => a.word.localeCompare(b.word, "en"));
+  const groups = [];
+  all.forEach((w) => {
+    const L = w.word[0].toUpperCase();
+    let g = groups.find((x) => x.letter === L);
+    if (!g) groups.push((g = { letter: L, words: [] }));
+    g.words.push(w);
+  });
+  return groups;
+}
 
-function openDexDetail(key) {
-  const d = DEX.find((x) => x.key === key);
-  if (!d) return;
-  if (!state.dex.includes(key)) { toast("这只恐龙还在沉睡，继续闯关吧"); return; }
-  openOverlay(`<div class="overlay">
-    <div class="sheet">
-      <div class="grab"></div>
-      <div class="detail-hero"><div class="dino" style="width:170px;height:170px">${dino(key)}</div></div>
-      <div class="detail-meta"><b>${d.name}</b><span class="ph">${d.phase} · ★${d.rarity}</span></div>
-      <div class="detail-desc">${d.desc}</div>
-      <div class="detail-stats">
-        <div class="ds"><b>${d.height}</b><span>身高</span></div>
-        <div class="ds"><b>${d.weight}</b><span>体重</span></div>
-        <div class="ds"><b style="font-size:11px">${d.skill}</b><span>专属能力</span></div>
+function screenWords() {
+  const groups = allWordsAlpha();
+  const total = groups.reduce((n, g) => n + g.words.length, 0);
+  const themeShort = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
+  const letters = groups.map((g) => g.letter);
+  const shown = wordsLetter === "all" ? groups : groups.filter((g) => g.letter === wordsLetter);
+  const index = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+    .map((L) => `<button class="wl ${wordsLetter === L ? "on" : ""} ${letters.includes(L) ? "" : "off"}" data-action="filter-word" data-letter="${L}">${L}</button>`).join("");
+  return `<section class="screen has-tab" data-screen="words">
+    <div class="scroll">
+      <div class="words-head">
+        <div class="t"><h1>单词本</h1><p>四个主题的单词，按 A–Z 排好队</p></div>
+        <div class="words-count"><b class="num">${total}</b><span>词</span></div>
       </div>
-      <div class="sheet-actions"><button class="btn" data-action="close-overlay">继续收集</button></div>
+
+      <div class="wl-bar">
+        <button class="wl all ${wordsLetter === "all" ? "on" : ""}" data-action="filter-word" data-letter="all">ALL</button>
+        ${index}
+      </div>
+
+      ${shown.map((g) => `<div class="word-group">
+        <div class="wg-letter">${g.letter}<span>${g.words.length}</span></div>
+        <div class="wg-list">
+          ${g.words.map((w) => `<button class="word-row" data-action="speak-word" data-word="${esc(w.word)}" aria-label="${w.word} ${w.zh}">
+            <span class="wr-pic">${w.art()}</span>
+            <span class="wr-main">
+              <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
+              <span class="wr-line sub"><em>${w.phon || ""}</em><span class="wr-tag t-${w.themeId}">${themeShort[w.themeId] || w.themeName}</span></span>
+            </span>
+          </button>`).join("")}
+        </div>
+      </div>`).join("")}
+
+      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，闯关后新词会自动出现在这里</div>
     </div>
-  </div>`);
+    ${tabbar("words")}
+  </section>`;
 }
 
 </script>
@@ -3168,27 +3247,24 @@ function screenShop() {
       </button>`;
     }).join("")}</div>`;
   } else {
-    const found = DEX.filter((d) => state.dex.includes(d.key)).slice(0, 3);
-    panel = `<div class="card dex-teaser">
-      <div class="dt-top"><div class="t"><b>恐龙图鉴</b><p>已收集 ${state.dex.length} / ${DEX.length} 种形态</p></div><span style="font-size:12px;font-weight:900;color:var(--green-d)">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-      <div class="dt-list">${(found.length ? found : DEX.slice(0, 3)).map((d) => `<div class="mini">${dino(d.key)}</div>`).join("")}</div>
-      <button class="btn ghost" data-action="tab" data-screen="dex">打开恐龙图鉴 ${I.arrow(14)}</button>
-    </div>`;
+    panel = `<div class="shop-dex">${dexBody()}</div>`;
   }
+  const head = shopTab === "dex"
+    ? `<div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div><div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>`
+    : `<div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>${starPill()}`;
   return `<section class="screen has-tab" data-screen="shop">
     <div class="scroll">
       <div class="shop-head">
-        <div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>
-        ${starPill()}
+        ${head}
       </div>
-      <div class="shop-preview ${bgClass(state.bg)}">
+      ${shopTab === "dex" ? "" : `<div class="shop-preview ${bgClass(state.bg)}">
         <div class="arch"></div><div class="podium"></div>
         <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
         <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
         <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
         <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
         <div class="pet">${I.crownMini(12, "#C98B25")} 小诺 · LV.${stageIndex(state.stage) + 1}</div>
-      </div>
+      </div>`}
       ${tabs}
       ${panel}
     </div>

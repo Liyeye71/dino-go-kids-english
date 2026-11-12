@@ -51,27 +51,24 @@ function screenShop() {
       </button>`;
     }).join("")}</div>`;
   } else {
-    const found = DEX.filter((d) => state.dex.includes(d.key)).slice(0, 3);
-    panel = `<div class="card dex-teaser">
-      <div class="dt-top"><div class="t"><b>恐龙图鉴</b><p>已收集 ${state.dex.length} / ${DEX.length} 种形态</p></div><span style="font-size:12px;font-weight:900;color:var(--green-d)">${Math.round((state.dex.length / DEX.length) * 100)}%</span></div>
-      <div class="dt-list">${(found.length ? found : DEX.slice(0, 3)).map((d) => `<div class="mini">${dino(d.key)}</div>`).join("")}</div>
-      <button class="btn ghost" data-action="tab" data-screen="dex">打开恐龙图鉴 ${I.arrow(14)}</button>
-    </div>`;
+    panel = `<div class="shop-dex">${dexBody()}</div>`;
   }
+  const head = shopTab === "dex"
+    ? `<div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div><div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>`
+    : `<div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>${starPill()}`;
   return `<section class="screen has-tab" data-screen="shop">
     <div class="scroll">
       <div class="shop-head">
-        <div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>
-        ${starPill()}
+        ${head}
       </div>
-      <div class="shop-preview ${bgClass(state.bg)}">
+      ${shopTab === "dex" ? "" : `<div class="shop-preview ${bgClass(state.bg)}">
         <div class="arch"></div><div class="podium"></div>
         <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
         <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
         <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
         <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
         <div class="pet">${I.crownMini(12, "#C98B25")} 小诺 · LV.${stageIndex(state.stage) + 1}</div>
-      </div>
+      </div>`}
       ${tabs}
       ${panel}
     </div>

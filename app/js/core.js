@@ -484,7 +484,7 @@ function back() {
 }
 
 /* ------------------------------------------------ common UI */
-const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["dex", "图鉴", I.book], ["shop", "小铺", I.bag]];
+const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["words", "词汇", I.book], ["shop", "小铺", I.bag]];
 function tabbar(active) {
   return `<nav class="tabbar">${TABS.map(([id, label, ic]) =>
     `<button class="tab ${active === id ? "on" : ""}" data-action="tab" data-screen="${id}" aria-label="${label}">
@@ -657,6 +657,7 @@ document.addEventListener("click", (e) => {
     shopTab = el.dataset.tab;
     sfx("tap");
     render();
+    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
   } else if (action === "buy-item") {
     openBuyItem(el.dataset.id);
   } else if (action === "equip-item") {
@@ -676,6 +677,11 @@ document.addEventListener("click", (e) => {
     dexFilter = el.dataset.filter;
     sfx("tap");
     render();
+  } else if (action === "filter-word") {
+    wordsLetter = el.dataset.letter;
+    sfx("tap");
+    render();
+    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
   } else if (action === "theme") {
     state.theme = el.dataset.theme;
     save();
@@ -742,7 +748,7 @@ function boot() {
     result: screenResult,
     evolution: screenEvolution,
     shop: screenShop,
-    dex: screenDex,
+    words: screenWords,
     profile: screenProfile,
   };
   try {
@@ -754,6 +760,8 @@ function boot() {
   if (current === "result" && !lastResult) current = "home";
   if (current === "evolution" && !evolutionInfo) current = "home";
   if (current === "quiz" && !quiz) current = "home";
+  /* 旧存档里的“图鉴”Tab 已并入小铺 → 图鉴 */
+  if (current === "dex") { current = "shop"; shopTab = "dex"; }
 
   render();
 

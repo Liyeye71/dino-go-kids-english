@@ -1,5 +1,6 @@
 node_modules/
 dist/
+preview/
 *.zip
 .trae/
 .trae-html-share-packages/

@@ -26,7 +26,7 @@ for (const file of JS_FILES) {
 
 // ---- PWA build (dist/ + 根目录，供 GitHub Pages branch root 使用) -------
 const KEEP_AT_ROOT = new Set([
-  ".git", ".github", "app", "dist", "node_modules",
+  ".git", ".github", "app", "dist", "node_modules", "preview",
   ".gitignore", "README.md", "build.mjs", "serve.mjs", "package.json",
 ]);
 for (const target of [distDir, root]) {
