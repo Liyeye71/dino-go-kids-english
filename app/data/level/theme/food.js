@@ -6,7 +6,7 @@ defineDinoTheme({
   id: "food",
   name: "美食节",
   chip: "食物单词",
-  unit: "Unit 4 · 美食节",
+  unit: "Unit 3 · 美食节",
   emoji: "🍽️",
   type: "food",
   dialog: { q: "What do you want?", a: "I want some {word}." },

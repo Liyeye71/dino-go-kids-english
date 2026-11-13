@@ -128,12 +128,12 @@ function screenQuiz() {
   let combo;
   if (revealed) {
     combo = quiz.choiceCorrect
-      ? `太棒了！连对 <b>${quiz.combo}</b> 题${quiz.combo >= 2 ? ` · 结算星星 <b>x${(1 + state.starBonus).toFixed(1)}</b>` : ""}`
+      ? `太棒了！连对 <b>${quiz.combo}</b> 题`
       : `答错啦，正确答案是 <b>${q.word}</b>`;
   } else if (quiz.combo >= 2) {
     combo = `连对 <b>${quiz.combo}</b> 题 · 保持节奏！`;
   } else {
-    combo = `连续答对 3 题，结算星星有加成`;
+    combo = `连续答对 3 题，可以拿到更多星星`;
   }
   const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null)) : "";
   return `<section class="screen quiz-page" data-screen="quiz">
@@ -163,12 +163,22 @@ function speakTask() {
   if (q && currentTheme().games[q.type].autoSpeak) setTimer(() => speak(q.word), 450);
 }
 function selectOption(word) {
-  if (!quiz) return;
-  speak(word);
-  if (quiz.revealed) return;
+  if (!quiz || quiz.revealed) return;
   quiz.selected = word;
   sfx("tap");
   render();
+}
+/* 听发音按钮：沿用原「答完听发音」的位置 */
+function listenPill() {
+  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(14)} 听发音</button>`;
+}
+/* 听发音：需先点击选项，答题后朗读正确答案 */
+function listenSelected() {
+  if (!quiz) return;
+  const q = quiz.order[quiz.index];
+  const word = quiz.revealed ? q.word : quiz.selected || quiz.pickWord;
+  if (!word) return;
+  speak(word);
 }
 function callGameAction(action, value) {
   const q = quiz && quiz.order[quiz.index];
@@ -229,7 +239,7 @@ function finishQuiz() {
   const prevBest = prog.stars[completedLevel] || 0;
   const best = Math.max(prevBest, stars);
   /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
-  const starGain = Math.round(Math.max(0, [0, 5, 10, 15][best] - [0, 5, 10, 15][prevBest]) * (1 + (state.starBonus || 0)));
+  const starGain = Math.max(0, best - prevBest);
   const isReplay = completedLevel < prog.level;
   const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
   state.growth += growthGain;
@@ -336,7 +346,7 @@ function screenResult() {
 
     <div class="result-foot">
       ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${r.passed ? Math.min(themeProgress().level, r.level + 1) : r.level}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
-      <button class="back" data-action="home">回到恐龙乐园</button>
+      <button class="back" data-action="close-quiz">返回闯关地图</button>
     </div>
   </section>`;
 }
@@ -359,7 +369,6 @@ function beginEvolution() {
     state.owned.push(item.id);
     if (!state.equipped[item.slot]) state.equipped[item.slot] = item.id;
   }
-  if (stageIndex(to.key) >= 3) state.starBonus = 0.1;
   let dexReward = null;
   if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
     state.bgOwned.push("sunset");

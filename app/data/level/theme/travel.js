@@ -6,7 +6,7 @@ defineDinoTheme({
   id: "travel",
   name: "环球旅行",
   chip: "旅行单词",
-  unit: "Unit 2 · 环球旅行",
+  unit: "Unit 1 · 环球旅行",
   emoji: "✈️",
   type: "vehicle",
   dialog: { q: "Where shall we go?", a: "Let's visit {word}." },

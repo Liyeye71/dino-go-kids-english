@@ -9,7 +9,7 @@ function render() {
   const fn = SCREEN_FN[current] || screenHome;
   $("#view").innerHTML = fn();
   if (current === "home") fitHomeWord();
-  syncMusic(current, state.theme);
+  syncAudio(current, state.theme);
 }
 
 /* ------------------------------------------------ boot */
@@ -37,7 +37,7 @@ function boot() {
   render();
 
   // Warm up the audio graph on the first touch (iOS requirement).
-  const wake = () => { ensureAudio(); syncMusic(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
+  const wake = () => { ensureAudio(); syncAudio(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
   document.addEventListener("touchstart", wake, { passive: true });
   document.addEventListener("click", wake);
 

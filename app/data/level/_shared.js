@@ -35,8 +35,7 @@
         build(task, pool) {
           buildOptions(task, pool, 4);
         },
-        render({ q, quiz, choiceButton, options }) {
-          const revealed = quiz.revealed;
+        render({ q, choiceButton, options }) {
           return {
             body: `<div class="quiz-art">
                 <div class="blob"></div>
@@ -45,7 +44,7 @@
                 <span class="art-spark s2">${spark(11, "#E8C377")}</span>
                 <span class="art-spark s3">${spark(8, "#E8C377")}</span>
                 ${q.art()}
-                ${revealed ? `<button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} ${q.word}</button>` : `<div class="listen" style="pointer-events:none">${I.speaker(14)} 答完听发音</div>`}
+                ${listenPill()}
               </div>
               <div class="options">${options(q.options)}</div>`,
             btn: choiceButton("选一个答案"),
@@ -67,6 +66,7 @@
                 <div class="art-tag">LISTEN &amp; CHOOSE</div>
                 <button class="big-speaker" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">${I.speaker(46)}</button>
                 <div class="listen-tip">听发音，选出对应的图片</div>
+                ${listenPill()}
               </div>
               <div class="options pic-grid">${q.options.map((opt, i) => {
                 const cls = optionClass(opt, "option pic");
@@ -95,13 +95,13 @@
           const artCol = q.arts.map((p) => `<button class="mcard art ${solved.includes(p.word) ? "ok" : ""}"
               data-action="match-art" data-word="${p.word}">${p.art()}</button>`).join("");
           return {
-            body: `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>`,
+            body: `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>
+              <div class="listen-row">${listenPill()}</div>`,
             btn: `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`,
           };
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
-          speak(word);
           quiz.pickWord = word;
           sfx("tap");
           render();
@@ -189,6 +189,7 @@
                 <div class="dlg"><span class="who">A</span><p>${q.dlgQ}</p><span class="dlg-pic">${q.art()}</span></div>
                 <div class="dlg me"><span class="who">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
               </div>
+              <div class="listen-row">${listenPill()}</div>
               <div class="options one-col">${options(q.options)}</div>`,
             btn: choiceButton("选一个单词"),
           };

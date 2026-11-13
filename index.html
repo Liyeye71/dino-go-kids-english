@@ -14,7 +14,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="images/icons/icon-192.png">
-  <!-- 样式按模块拆分，顺序与 build.mjs 的 CSS_FILES 保持一致 -->
+  <!-- 样式按模块拆分，顺序与 build.mjs 的 CSS_FILES 保持一致 -->
   <style>
 /* ============================================================
    DinoGo · 恐龙英语 — interactive iOS / iPad app
@@ -145,9 +145,9 @@ h1,h2,h3,h4,p{margin:0}
 .bar>i::after{content:"";position:absolute;left:5px;right:7px;top:2px;height:3px;border-radius:9px;background:rgba(255,255,255,.55)}
 .bar.gold>i{background:linear-gradient(90deg,#FFD86B,#FFB13D)}
 
-.star-pill{display:flex;align-items:center;gap:5px;height:34px;padding:0 11px 0 8px;border-radius:99px;
+.star-pill{display:flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 9px;border-radius:99px;
   background:#fff;border:1.5px solid #EFE1C8;box-shadow:0 4px 10px rgba(94,70,30,.07);
-  font-size:15px;font-weight:var(--w-black);letter-spacing:.3px;white-space:nowrap;flex:none}
+  font-size:16px;font-weight:var(--w-black);letter-spacing:.3px;white-space:nowrap;flex:none}
 .circle-btn{width:38px;height:38px;border-radius:13px;background:#fff;border:1.5px solid var(--line);
   display:grid;place-items:center;flex:none;box-shadow:0 4px 10px rgba(94,70,30,.06);color:var(--ink)}
 .circle-btn:active{transform:scale(.94)}
@@ -183,8 +183,8 @@ h1,h2,h3,h4,p{margin:0}
 .home-top .greet{flex:1;min-width:0}
 .home-top .hi{font-size:20px;font-weight:var(--w-black);letter-spacing:.2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-top .hi b{color:var(--green)}
-.home-top .meta{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:var(--w-read);color:var(--muted);margin-top:3px;letter-spacing:.2px;white-space:nowrap}
-.home-top .meta .flame{color:var(--orange)}
+.home-top .meta{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:var(--w-read);color:var(--muted);margin-top:3px;letter-spacing:.2px;white-space:nowrap;line-height:1;min-height:16px}
+.home-top .meta .flame{color:var(--orange);display:flex;align-items:center;justify-content:center;height:16px;flex:none}
 
 .hero{
   position:relative;height:clamp(332px,40vh,420px);border-radius:30px;overflow:hidden;
@@ -234,20 +234,20 @@ h1,h2,h3,h4,p{margin:0}
 .hero .bubble.max b{color:var(--orange)}
 
 .growth-panel{
-  position:absolute;left:12px;right:12px;bottom:12px;min-height:92px;border-radius:22px;
+  position:absolute;left:12px;right:12px;bottom:12px;min-height:46px;border-radius:18px;
   background:rgba(255,255,255,.94);border:1.5px solid rgba(255,255,255,.9);
   box-shadow:0 8px 18px rgba(74,97,50,.12);backdrop-filter:blur(6px);
-  display:flex;align-items:center;gap:12px;padding:12px 12px 12px 15px;
+  display:flex;align-items:center;gap:9px;padding:2px 10px 2px 12px;
 }
 .growth-panel .g-main{flex:1;min-width:0}
-.growth-panel .g-row{display:flex;align-items:baseline;gap:6px}
-.growth-panel .lb{font-size:12px;font-weight:var(--w-bold);color:var(--muted);letter-spacing:1px}
-.growth-panel .val{font-size:18px;font-weight:var(--w-black);color:var(--green-d);letter-spacing:.2px}
-.growth-panel .val em{font-style:normal;font-size:11.5px;color:var(--muted);font-weight:var(--w-mid)}
-.growth-panel .g-next{font-size:11.5px;font-weight:var(--w-read);color:#8A9B8D;margin-top:5px;letter-spacing:.2px;display:flex;justify-content:space-between}
+.growth-panel .g-row{display:flex;align-items:baseline;gap:6px;line-height:1.1}
+.growth-panel .lb{font-size:11.5px;font-weight:var(--w-bold);color:var(--muted);letter-spacing:1px}
+.growth-panel .val{font-size:17px;font-weight:var(--w-black);color:var(--green-d);letter-spacing:.2px}
+.growth-panel .val em{font-style:normal;font-size:11px;color:var(--muted);font-weight:var(--w-mid)}
+.growth-panel .g-next{font-size:11px;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:2px;letter-spacing:.2px;display:flex;justify-content:space-between}
 .growth-panel .g-next b{color:var(--orange);font-weight:var(--w-black)}
-.growth-panel .g-bar{height:9px;margin-top:5px}
-.go-btn{width:48px;height:48px;border-radius:16px;flex:none;display:grid;place-items:center;color:#fff;
+.growth-panel .g-bar{height:7px;margin-top:2px}
+.go-btn{width:40px;height:40px;border-radius:14px;flex:none;display:grid;place-items:center;color:#fff;
   background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 4px 0 #1A5E3D,0 8px 14px rgba(31,107,74,.28)}
 .go-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1A5E3D}
 .go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 4px 0 #C98A1C,0 8px 14px rgba(201,138,28,.3);color:#4A3206}
@@ -284,8 +284,6 @@ h1,h2,h3,h4,p{margin:0}
 .word-card .w-phon{font-size:12.5px;font-weight:var(--w-read);color:#A68A4E;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
 .word-card .w-example{font-size:12.5px;font-weight:var(--w-read);line-height:1.6;letter-spacing:.1px;color:#7A5A1A;white-space:nowrap}
 .word-card .w-example-zh{font-size:11.5px;font-weight:var(--w-read);line-height:1.6;color:#A68A4E;white-space:nowrap}
-.word-card .w-btn{position:relative;min-height:44px;padding:0 16px;border-radius:99px;background:#fff;color:#8A6415;
-  font-size:14.5px;font-weight:var(--w-bold);letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 8px rgba(180,129,28,.15);flex:none}
 @keyframes spk-shake{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(.94)}65%{transform:rotate(8deg) scale(.94)}}
 .word-card .spk:active{animation:spk-shake .24s ease}
 
@@ -369,27 +367,29 @@ h1,h2,h3,h4,p{margin:0}
 .quote-card .qi{width:32px;height:32px;border-radius:11px;background:#fff;display:grid;place-items:center;color:#E2A62E;flex:none}
 .profile-cta{margin-top:12px}
 .profile-scroll{display:flex;flex-direction:column}
+.profile-scroll > *{flex:none}
+/* 语录卡吸附底部时 auto 外边距会归零，用前一卡的下间距兜底保证最小间距 */
+.profile-scroll .ach-card{margin-bottom:12px}
 .profile-scroll .quote-card{margin-top:auto}
 
 /* ============================================================
    DinoGo · 恐龙英语 — map：旅程进度 / 主题地图 / 下一关
    ============================================================ */
 
-/* ------------------------------------------------ topbar */
-.topbar{display:flex;align-items:center;gap:10px;padding:2px 0 12px}
-.topbar .t{flex:1;min-width:0}
-.topbar h1{font-size:21px;font-weight:var(--w-black);letter-spacing:-.3px;line-height:1.15}
-.topbar p{font-size:11px;font-weight:var(--w-read);color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
 /* ------------------------------------------------ theme tabs */
-.theme-tabs{display:flex;gap:7px;margin:0 0 12px;overflow-x:auto;scrollbar-width:none}
+/* 顶部主题切换：居中的分段控件，整体放大 */
+.theme-tabs{display:flex;gap:5px;width:max-content;max-width:100%;margin:0 auto 18px;padding:5px;
+  border-radius:99px;background:#F3EADA;border:1.5px solid #E7DAC3;
+  box-shadow:inset 0 2px 5px rgba(120,90,40,.07);overflow-x:auto;scrollbar-width:none}
 .theme-tabs::-webkit-scrollbar{display:none}
-.theme-tabs .tt{flex:none;display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:99px;white-space:nowrap;
-  background:#FFFDF7;border:1.5px solid #EADFC9;font-size:12px;font-weight:var(--w-bold);color:#8B7B5C;
-  box-shadow:0 2px 0 #EDE0C9;transition:transform .12s ease}
-.theme-tabs .tt:active{transform:scale(.96)}
-.theme-tabs .tt b{font-size:14px;font-weight:400;line-height:1}
-.theme-tabs .tt.on{background:var(--green);border-color:var(--green-d);color:#fff;box-shadow:0 2px 0 var(--green-d)}
+.theme-tabs .tt{flex:none;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:13px 14px;border-radius:99px;white-space:nowrap;
+  background:transparent;border:0;box-shadow:none;font-size:15px;font-weight:var(--w-bold);color:#8B7B5C;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease}
+.theme-tabs .tt:active{transform:scale(.97)}
+.theme-tabs .tt b{font-size:19px;font-weight:400;line-height:1}
+.theme-tabs .tt.on{background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
+  box-shadow:0 2px 6px rgba(52,110,70,.28),inset 0 1px 0 rgba(255,255,255,.28)}
 
 /* ------------------------------------------------ hero */
 .map-hero{padding:2px 2px 12px}
@@ -518,9 +518,11 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-art .s1{left:34px;top:76px}
 .quiz-art .s2{right:38px;top:112px}
 .quiz-art .s3{left:52px;bottom:88px}
-.quiz-art .listen{position:absolute;right:14px;bottom:14px;height:34px;padding:0 12px;border-radius:99px;background:#fff;
-  display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:var(--w-bold);color:#9B7620;
+.listen{height:34px;padding:0 12px;border-radius:99px;background:#fff;
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:var(--w-bold);color:#9B7620;
   box-shadow:0 5px 12px rgba(155,118,32,.16)}
+.quiz-art .listen{position:absolute;right:14px;bottom:14px}
+.listen-row{display:flex;justify-content:flex-end;margin-top:8px;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none;margin-top:14px}
 .option{min-height:70px;border-radius:18px;background:#fff;border:2px solid #EFE2CB;display:flex;align-items:center;gap:9px;
   padding:0 12px;box-shadow:0 4px 10px rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}
@@ -1051,7 +1053,6 @@ h1,h2,h3,h4,p{margin:0}
   .word-card .w-phon{font-size:13px}
   .word-card .w-example{font-size:13px}
   .word-card .w-example-zh{font-size:12px}
-  .word-card .w-btn{min-height:48px;padding:0 18px;font-size:15px}
   .option{min-height:78px}
   .option .word{font-size:18px}
   .quiz-art{max-height:520px}
@@ -2689,8 +2690,7 @@ window.DINO_WORD_RULES.push({
         build(task, pool) {
           buildOptions(task, pool, 4);
         },
-        render({ q, quiz, choiceButton, options }) {
-          const revealed = quiz.revealed;
+        render({ q, choiceButton, options }) {
           return {
             body: `<div class="quiz-art">
                 <div class="blob"></div>
@@ -2699,7 +2699,7 @@ window.DINO_WORD_RULES.push({
                 <span class="art-spark s2">${spark(11, "#E8C377")}</span>
                 <span class="art-spark s3">${spark(8, "#E8C377")}</span>
                 ${q.art()}
-                ${revealed ? `<button class="listen" data-action="speak-word" data-word="${q.word}">${I.speaker(14)} ${q.word}</button>` : `<div class="listen" style="pointer-events:none">${I.speaker(14)} 答完听发音</div>`}
+                ${listenPill()}
               </div>
               <div class="options">${options(q.options)}</div>`,
             btn: choiceButton("选一个答案"),
@@ -2721,6 +2721,7 @@ window.DINO_WORD_RULES.push({
                 <div class="art-tag">LISTEN &amp; CHOOSE</div>
                 <button class="big-speaker" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">${I.speaker(46)}</button>
                 <div class="listen-tip">听发音，选出对应的图片</div>
+                ${listenPill()}
               </div>
               <div class="options pic-grid">${q.options.map((opt, i) => {
                 const cls = optionClass(opt, "option pic");
@@ -2749,13 +2750,13 @@ window.DINO_WORD_RULES.push({
           const artCol = q.arts.map((p) => `<button class="mcard art ${solved.includes(p.word) ? "ok" : ""}"
               data-action="match-art" data-word="${p.word}">${p.art()}</button>`).join("");
           return {
-            body: `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>`,
+            body: `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>
+              <div class="listen-row">${listenPill()}</div>`,
             btn: `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`,
           };
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
-          speak(word);
           quiz.pickWord = word;
           sfx("tap");
           render();
@@ -2843,6 +2844,7 @@ window.DINO_WORD_RULES.push({
                 <div class="dlg"><span class="who">A</span><p>${q.dlgQ}</p><span class="dlg-pic">${q.art()}</span></div>
                 <div class="dlg me"><span class="who">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
               </div>
+              <div class="listen-row">${listenPill()}</div>
               <div class="options one-col">${options(q.options)}</div>`,
             btn: choiceButton("选一个单词"),
           };
@@ -2887,7 +2889,7 @@ defineDinoTheme({
   id: "travel",
   name: "环球旅行",
   chip: "旅行单词",
-  unit: "Unit 2 · 环球旅行",
+  unit: "Unit 1 · 环球旅行",
   emoji: "✈️",
   type: "vehicle",
   dialog: { q: "Where shall we go?", a: "Let's visit {word}." },
@@ -3002,7 +3004,7 @@ defineDinoTheme({
   id: "animal",
   name: "动物乐园",
   chip: "动物单词",
-  unit: "Unit 3 · 动物乐园",
+  unit: "Unit 2 · 动物乐园",
   emoji: "🦁",
   type: "animal",
   dialog: { q: "What animal is this?", a: "It's a {word}." },
@@ -3098,7 +3100,7 @@ defineDinoTheme({
   id: "food",
   name: "美食节",
   chip: "食物单词",
-  unit: "Unit 4 · 美食节",
+  unit: "Unit 3 · 美食节",
   emoji: "🍽️",
   type: "food",
   dialog: { q: "What do you want?", a: "I want some {word}." },
@@ -3330,7 +3332,7 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词朗读 */
+/* 英文单词朗读：朗读期间暂停背景音乐，读完恢复 */
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -3338,11 +3340,21 @@ function speak(text) {
       return;
     }
     const synth = window.speechSynthesis;
+    const duck = typeof duckMusic === "function";
+    if (duck) duckMusic();
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      if (duck) unduckMusic();
+    };
     const say = () => {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US";
       u.rate = 0.82;
       u.pitch = 1.08;
+      u.onend = release;
+      u.onerror = release;
       synth.speak(u);
     };
     /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
@@ -3352,6 +3364,8 @@ function speak(text) {
     } else {
       say();
     }
+    /* 兜底：个别浏览器不触发 onend，避免背景音乐一直停着 */
+    setTimeout(release, Math.min(15000, 4000 + text.length * 300));
   } catch (e) { /* ignore */ }
 }
 
@@ -3385,53 +3399,89 @@ function levelCue(id) {
 
 </script>
   <script>
-/* DinoGo · 主题背景音乐（Web Audio 实时合成，8 小节循环） */
+/* DinoGo · 主题背景音乐（Web Audio 实时合成，4 小节循环）
+   风格参考舒缓的动画电影配乐：柔和的旋律、流动的琶音、缓慢的低音铺底 */
 
 let musicId = null;
 let musicTimer = null;
 let musicGain = null;
+let musicPaused = false;
+let duckCount = 0;
 
-/* 每个主题一首 BGM：速度、音色、旋律、低音与环境点缀 */
+/* 每个主题一首原创 BGM：速度、音色、旋律、低音与琶音层 */
 const THEME_MUSIC = {
-  /* 美食节：热闹市集，收银小铃 + 彩炮声 */
+  /* 美食节：温暖明亮，像午后厨房里的轻声哼唱 */
   food: {
-    bpm: 120, wave: "triangle", bassWave: "triangle", ambient: "bell",
+    bpm: 82, wave: "triangle", bassWave: "sine", ambient: "bell",
     melody: [
-      ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["A5", 1], ["G5", 1], ["E5", 2],
-      ["F5", 1], ["A5", 1], ["G5", 1], ["E5", 1], ["D5", 2], ["C5", 2],
+      ["E5", 1], ["G5", 0.5], ["A5", 0.5], ["G5", 1], ["E5", 1],
+      ["D5", 1], ["E5", 0.5], ["G5", 0.5], ["E5", 2],
+      ["C5", 0.5], ["D5", 0.5], ["E5", 1], ["G5", 1], ["A5", 1],
+      ["G5", 1.5], ["E5", 0.5], ["D5", 1], ["C5", 1],
     ],
-    bass: [["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2], ["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2]],
+    bass: [
+      ["C3", 2], ["G3", 2],
+      ["G3", 2], ["D4", 2],
+      ["A3", 2], ["E4", 2],
+      ["C3", 2], ["G3", 2],
+    ],
+    arp: [
+      [["C4", "E4", "G4", "E4"], 4],
+      [["G3", "B3", "D4", "B3"], 4],
+      [["A3", "C4", "E4", "C4"], 4],
+      [["C4", "E4", "G4", "E4"], 4],
+    ],
+    ambientAt: 8,
   },
-  /* 环球旅行：轻快客机巡航，带机舱广播感 */
+  /* 环球旅行：轻盈上行，像乘着风慢慢升起 */
   travel: {
-    bpm: 118, wave: "triangle", bassWave: "square", ambient: "horn",
+    bpm: 78, wave: "triangle", bassWave: "sine", ambient: "bird",
     melody: [
-      ["G4", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 1], ["G4", 2],
-      ["A4", 1], ["D5", 1], ["F5", 1], ["A5", 1], ["G5", 2], ["E5", 1], ["R", 1],
+      ["G4", 1], ["C5", 1], ["E5", 1], ["D5", 0.5], ["C5", 0.5],
+      ["D5", 1], ["E5", 1], ["G5", 2],
+      ["E5", 0.5], ["D5", 0.5], ["C5", 1], ["A4", 1], ["C5", 1],
+      ["D5", 1], ["E5", 1], ["C5", 2],
     ],
-    bass: [["C3", 2], ["G3", 2], ["C3", 2], ["F3", 2], ["G3", 2], ["C3", 2], ["F3", 2], ["G3", 2]],
+    bass: [
+      ["C3", 2], ["G3", 2],
+      ["E3", 2], ["B3", 2],
+      ["A3", 2], ["E4", 2],
+      ["C3", 2], ["G3", 2],
+    ],
+    arp: [
+      [["C4", "E4", "G4", "C5"], 4],
+      [["E3", "G3", "B3", "G3"], 4],
+      [["A3", "C4", "E4", "C4"], 4],
+      [["C4", "E4", "G4", "C5"], 4],
+    ],
+    ambientAt: 4,
   },
-  /* 动物乐园：探险感，加入动物呼唤 */
+  /* 动物乐园：略带怀旧的柔和小调，像傍晚草原上的风 */
   animal: {
-    bpm: 104, wave: "triangle", bassWave: "sine", ambient: "call",
+    bpm: 84, wave: "triangle", bassWave: "sine", ambient: "call",
     melody: [
-      ["D5", 1], ["F5", 1], ["A5", 1], ["F5", 1], ["D5", 2], ["C5", 2],
-      ["D5", 1], ["F5", 1], ["G5", 1], ["A5", 1], ["G5", 2], ["F5", 2],
+      ["A4", 1], ["C5", 1], ["E5", 1], ["D5", 0.5], ["C5", 0.5],
+      ["B4", 1], ["D5", 1], ["E5", 2],
+      ["E5", 0.5], ["G5", 0.5], ["E5", 1], ["D5", 1], ["C5", 1],
+      ["B4", 1], ["C5", 0.5], ["D5", 0.5], ["A4", 2],
     ],
-    bass: [["D3", 2], ["A3", 2], ["D3", 2], ["C3", 2], ["A3", 2], ["D3", 2], ["C3", 2], ["A3", 2]],
-  },
-  /* 美食街：热闹夜市，收银小铃点缀 */
-  food: {
-    bpm: 112, wave: "triangle", bassWave: "triangle", ambient: "bell",
-    melody: [
-      ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["A5", 1], ["G5", 1], ["E5", 2],
-      ["F5", 1], ["A5", 1], ["G5", 1], ["E5", 1], ["D5", 2], ["C5", 2],
+    bass: [
+      ["A3", 2], ["E4", 2],
+      ["E3", 2], ["B3", 2],
+      ["C3", 2], ["G3", 2],
+      ["A3", 2], ["E4", 2],
     ],
-    bass: [["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2], ["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2]],
+    arp: [
+      [["A3", "C4", "E4", "C4"], 4],
+      [["E3", "B3", "E4", "B3"], 4],
+      [["C4", "E4", "G4", "E4"], 4],
+      [["A3", "C4", "E4", "C4"], 4],
+    ],
+    ambientAt: 12,
   },
 };
 
-/* 环境点缀：鸟鸣 / 汽车喇叭 / 动物呼唤 / 店铺铃声 */
+/* 环境点缀：鸟鸣 / 动物呼唤 / 轻柔铃声 */
 function birdChirp(delay, dest) {
   if (!audioCtx) return;
   for (let i = 0; i < 2; i++) {
@@ -3442,30 +3492,28 @@ function birdChirp(delay, dest) {
     osc.frequency.setValueAtTime(1900, t);
     osc.frequency.exponentialRampToValueAtTime(2700, t + 0.07);
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.014, t + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.008, t + 0.015);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
     osc.connect(gain).connect(dest || audioCtx.destination);
     osc.start(t);
     osc.stop(t + 0.13);
   }
 }
-function carHorn(delay, dest) {
-  tone(392, 0.1, "square", 0.016, delay, dest);
-  tone(392, 0.1, "square", 0.016, delay + 0.16, dest);
-}
 function animalCall(delay, dest) {
-  tone(392, 0.18, "triangle", 0.018, delay, dest);
-  tone(523.25, 0.24, "triangle", 0.016, delay + 0.2, dest);
+  tone(392, 0.18, "triangle", 0.01, delay, dest);
+  tone(523.25, 0.24, "triangle", 0.009, delay + 0.2, dest);
 }
 function shopBell(delay, dest) {
-  tone(1568, 0.5, "sine", 0.018, delay, dest);
-  tone(2093, 0.4, "sine", 0.011, delay + 0.02, dest);
+  tone(1568, 0.4, "sine", 0.008, delay, dest);
+  tone(2093, 0.32, "sine", 0.005, delay + 0.02, dest);
 }
 
 function stopMusic() {
   if (musicTimer) clearTimeout(musicTimer);
   musicTimer = null;
   musicId = null;
+  musicPaused = false;
+  duckCount = 0;
   if (musicGain && audioCtx) {
     /* 短暂淡出后断开，已排入队列的音符随节点一起静音 */
     const old = musicGain;
@@ -3481,13 +3529,16 @@ function stopMusic() {
 function playMusic(id) {
   if (!state.sound) { stopMusic(); return; }
   if (musicId === id && musicTimer) return;
+  const ducked = duckCount > 0;
   stopMusic();
   ensureAudio();
   if (!audioCtx) return;
   const cfg = THEME_MUSIC[id] || THEME_MUSIC.food;
   musicId = id;
+  duckCount = ducked ? 1 : 0;
   musicGain = audioCtx.createGain();
-  musicGain.gain.value = 1;
+  musicGain.gain.value = ducked ? 0.0001 : 1;
+  musicPaused = ducked;
   musicGain.connect(audioCtx.destination);
   const dest = musicGain;
   const beat = 60 / cfg.bpm;
@@ -3495,27 +3546,80 @@ function playMusic(id) {
     if (musicId !== id || !audioCtx || !dest) return;
     let mel = 0;
     cfg.melody.forEach(([note, beats]) => {
-      if (note !== "R") tone(NOTE_FREQ[note], beat * beats * 0.9, cfg.wave, 0.02, mel, dest);
+      if (note !== "R") tone(NOTE_FREQ[note], beat * beats * 0.94, cfg.wave, 0.017, mel, dest);
       mel += beat * beats;
     });
     let bass = 0;
     cfg.bass.forEach(([note, beats]) => {
-      tone(NOTE_FREQ[note], beat * beats * 0.95, cfg.bassWave || "triangle", 0.015, bass, dest);
+      tone(NOTE_FREQ[note], beat * beats * 0.9, cfg.bassWave || "sine", 0.011, bass, dest);
       bass += beat * beats;
     });
-    if (cfg.ambient === "bird") birdChirp(beat * 6, dest);
-    else if (cfg.ambient === "horn") carHorn(beat * 8, dest);
-    else if (cfg.ambient === "call") animalCall(beat * 3, dest);
-    else if (cfg.ambient === "bell") shopBell(beat * 10, dest);
+    /* 流动琶音：每半拍一个音，音量交替，像钢琴轻轻铺底 */
+    let arpTime = 0;
+    cfg.arp.forEach(([notes, beats]) => {
+      const step = beat * 0.5;
+      const steps = Math.round((beats * beat) / step);
+      for (let i = 0; i < steps; i++) {
+        const note = notes[i % notes.length];
+        const vol = i % 4 === 0 ? 0.0065 : 0.0042;
+        tone(NOTE_FREQ[note], step * 0.92, "sine", vol, arpTime + i * step, dest);
+      }
+      arpTime += beats * beat;
+    });
+    if (cfg.ambient === "bird") birdChirp(beat * cfg.ambientAt, dest);
+    else if (cfg.ambient === "call") animalCall(beat * cfg.ambientAt, dest);
+    else shopBell(beat * cfg.ambientAt, dest);
     musicTimer = setTimeout(run, Math.max(mel, bass) * 1000);
   };
   run();
 }
 
-/* 页面与音乐同步：只在闯关地图里播放当前主题的 BGM */
+/* 背景音乐：只在乐园 / 词汇 / 小铺页面播放当前主题的 BGM */
+const BGM_SCREENS = ["home", "words", "shop"];
 function syncMusic(screen, themeId) {
-  if (screen === "map") playMusic(themeId);
+  if (BGM_SCREENS.includes(screen)) playMusic(themeId);
   else stopMusic();
+}
+
+/* 闯关相关页面：地图、答题、结算、进化全部保持静音 */
+const LEVEL_SCREENS = ["map", "quiz", "result", "evolution"];
+
+/* 按页面类型统一同步音乐：闯关流程不播放背景音乐，其它页面走背景音乐 */
+function syncAudio(screen, themeId) {
+  if (LEVEL_SCREENS.includes(screen)) stopMusic();
+  else syncMusic(screen, themeId);
+}
+
+/* 朗读 / 跟读时临时暂停背景音乐：只在乐园、词汇、小铺页面生效 */
+function pauseMusic() {
+  if (!musicGain || !audioCtx || musicPaused) return;
+  musicPaused = true;
+  try {
+    const t = audioCtx.currentTime;
+    musicGain.gain.cancelScheduledValues(t);
+    musicGain.gain.setValueAtTime(Math.max(0.0001, musicGain.gain.value), t);
+    musicGain.gain.linearRampToValueAtTime(0.0001, t + 0.15);
+  } catch (e) { /* ignore */ }
+}
+function resumeMusic() {
+  if (!musicGain || !audioCtx || !musicPaused) return;
+  musicPaused = false;
+  try {
+    const t = audioCtx.currentTime;
+    musicGain.gain.cancelScheduledValues(t);
+    musicGain.gain.setValueAtTime(Math.max(0.0001, musicGain.gain.value), t);
+    musicGain.gain.linearRampToValueAtTime(1, t + 0.25);
+  } catch (e) { /* ignore */ }
+}
+function duckMusic() {
+  if (!BGM_SCREENS.includes(current)) return;
+  duckCount++;
+  if (duckCount === 1) pauseMusic();
+}
+function unduckMusic() {
+  if (duckCount === 0) return;
+  duckCount--;
+  if (duckCount === 0) resumeMusic();
 }
 
 </script>
@@ -3791,28 +3895,28 @@ const STAGES = [
   { key: "egg",   name: "恐龙蛋",       phase: "孵化期", min: 0,    vocab: "basic",   rarity: 3, height: "18 cm", weight: "0.4 kg", skill: "等待破壳", desc: "一颗安静的恐龙蛋，表面有薄荷色斑点。每天认真学习，它就会听见你的声音。" },
   { key: "baby",  name: "幼龙",         phase: "幼年期", min: 240,  vocab: "basic",   rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
   { key: "teen",  name: "少年龙",       phase: "成长期", min: 900,  vocab: "basic",   rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "背上长出了第一排小刺，眼睛亮亮的。它已经能记住好多水果单词了。" },
-  { key: "adult", name: "成年龙",       phase: "成熟期", min: 2100, vocab: "advance", rarity: 4, height: "2.1 m", weight: "120 kg", skill: "星星加成 +10%", desc: "鼻尖长出了小角，步伐变得稳健。现在是森林里最可靠的伙伴。" },
+  { key: "adult", name: "成年龙",       phase: "成熟期", min: 2100, vocab: "advance", rarity: 4, height: "2.1 m", weight: "120 kg", skill: "元气满满", desc: "鼻尖长出了小角，步伐变得稳健。现在是森林里最可靠的伙伴。" },
   { key: "super", name: "霸王龙",       phase: "完全体", min: 4200, vocab: "advance", rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "金色的背刺在阳光下闪闪发亮。它记得你陪它走过的每一次闯关。" },
   { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "传说中的究极形态，身上环绕着星辉。只有最坚持的小探险家才能遇见它。" },
 ];
 
 const ITEMS = [
   { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
-  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 80,  thumb: "h2", art: itemGlasses },
-  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 150, thumb: "h3", badge: "NEW", art: itemWings },
-  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 200, thumb: "h4", art: itemCrown },
+  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 16,  thumb: "h2", art: itemGlasses },
+  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 30,  thumb: "h3", badge: "NEW", art: itemWings },
+  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 40,  thumb: "h4", art: itemCrown },
 ];
 
 const BACKGROUNDS = [
   { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 120, cls: "sunset" },
-  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 200, cls: "night" },
+  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
+  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 40,  cls: "night" },
 ];
 
 const DEX = STAGES.map((s) => ({ ...s }));
 
 const DEFAULT_STATE = {
-  v: 3,
+  v: 4,
   name: "毛肚",
   stars: 0,
   growth: 0,
@@ -3830,7 +3934,6 @@ const DEFAULT_STATE = {
   bgOwned: ["jungle"],
   dex: ["egg"],
   sound: true,
-  starBonus: 0,
 };
 
 </script>
@@ -3915,9 +4018,13 @@ function loadState() {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return initialState();
     const parsed = JSON.parse(raw);
+    /* v3 及以前每关发 5/10/15 星星，v4 起统一按关卡星级 1–3，旧余额同步除以 5 */
+    const legacy = (Number(parsed.v) || 0) < 4;
     return {
       ...initialState(),
       ...parsed,
+      v: DEFAULT_STATE.v,
+      stars: legacy ? Math.floor((Number(parsed.stars) || 0) / 5) : (Number(parsed.stars) || 0),
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
       equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
       progress: parsed.progress || {},
@@ -3939,6 +4046,18 @@ function resetState() {
   evolutionInfo = null;
   quiz = null;
   save();
+}
+
+/* ------------------------------------------------ stars */
+/* 已获得的星星 = 所有主题关卡历史最高星级之和（与地图统计一致） */
+function earnedStars() {
+  let total = 0;
+  WORD_SETS.forEach((t) => {
+    const p = state.progress[t.id];
+    if (!p || !p.stars) return;
+    Object.values(p.stars).forEach((n) => { total += Number(n) || 0; });
+  });
+  return total;
 }
 
 /* ------------------------------------------------ study log */
@@ -4010,7 +4129,7 @@ function tabbar(active) {
     </button>`).join("")}</nav>`;
 }
 function starPill() {
-  return `<div class="star-pill">${star(17)}<span class="num">${fmt(state.stars)}</span></div>`;
+  return `<div class="star-pill">${star(22)}<span class="num">${fmt(earnedStars())}</span></div>`;
 }
 function stageChip() {
   const st = stageMeta(state.stage);
@@ -4172,6 +4291,8 @@ document.addEventListener("click", (e) => {
     toast("先拿到两星通过前一关，才能解锁这一关");
   } else if (action === "select") {
     selectOption(el.dataset.word);
+  } else if (action === "listen-selected") {
+    listenSelected();
   } else if (action === "check") {
     checkAnswer();
   } else if (action === "match-word") {
@@ -4225,7 +4346,7 @@ document.addEventListener("click", (e) => {
     state.sound = !state.sound;
     save();
     if (state.sound) { ensureAudio(); sfx("tap"); }
-    syncMusic(current, state.theme);
+    syncAudio(current, state.theme);
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
   } else if (action === "install-guide") {
@@ -4276,7 +4397,7 @@ function render() {
   const fn = SCREEN_FN[current] || screenHome;
   $("#view").innerHTML = fn();
   if (current === "home") fitHomeWord();
-  syncMusic(current, state.theme);
+  syncAudio(current, state.theme);
 }
 
 /* ------------------------------------------------ boot */
@@ -4304,7 +4425,7 @@ function boot() {
   render();
 
   // Warm up the audio graph on the first touch (iOS requirement).
-  const wake = () => { ensureAudio(); syncMusic(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
+  const wake = () => { ensureAudio(); syncAudio(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
   document.addEventListener("touchstart", wake, { passive: true });
   document.addEventListener("click", wake);
 
@@ -4461,12 +4582,12 @@ function screenQuiz() {
   let combo;
   if (revealed) {
     combo = quiz.choiceCorrect
-      ? `太棒了！连对 <b>${quiz.combo}</b> 题${quiz.combo >= 2 ? ` · 结算星星 <b>x${(1 + state.starBonus).toFixed(1)}</b>` : ""}`
+      ? `太棒了！连对 <b>${quiz.combo}</b> 题`
       : `答错啦，正确答案是 <b>${q.word}</b>`;
   } else if (quiz.combo >= 2) {
     combo = `连对 <b>${quiz.combo}</b> 题 · 保持节奏！`;
   } else {
-    combo = `连续答对 3 题，结算星星有加成`;
+    combo = `连续答对 3 题，可以拿到更多星星`;
   }
   const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null)) : "";
   return `<section class="screen quiz-page" data-screen="quiz">
@@ -4496,12 +4617,22 @@ function speakTask() {
   if (q && currentTheme().games[q.type].autoSpeak) setTimer(() => speak(q.word), 450);
 }
 function selectOption(word) {
-  if (!quiz) return;
-  speak(word);
-  if (quiz.revealed) return;
+  if (!quiz || quiz.revealed) return;
   quiz.selected = word;
   sfx("tap");
   render();
+}
+/* 听发音按钮：沿用原「答完听发音」的位置 */
+function listenPill() {
+  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(14)} 听发音</button>`;
+}
+/* 听发音：需先点击选项，答题后朗读正确答案 */
+function listenSelected() {
+  if (!quiz) return;
+  const q = quiz.order[quiz.index];
+  const word = quiz.revealed ? q.word : quiz.selected || quiz.pickWord;
+  if (!word) return;
+  speak(word);
 }
 function callGameAction(action, value) {
   const q = quiz && quiz.order[quiz.index];
@@ -4562,7 +4693,7 @@ function finishQuiz() {
   const prevBest = prog.stars[completedLevel] || 0;
   const best = Math.max(prevBest, stars);
   /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
-  const starGain = Math.round(Math.max(0, [0, 5, 10, 15][best] - [0, 5, 10, 15][prevBest]) * (1 + (state.starBonus || 0)));
+  const starGain = Math.max(0, best - prevBest);
   const isReplay = completedLevel < prog.level;
   const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
   state.growth += growthGain;
@@ -4669,7 +4800,7 @@ function screenResult() {
 
     <div class="result-foot">
       ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${r.passed ? Math.min(themeProgress().level, r.level + 1) : r.level}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
-      <button class="back" data-action="home">回到恐龙乐园</button>
+      <button class="back" data-action="close-quiz">返回闯关地图</button>
     </div>
   </section>`;
 }
@@ -4692,7 +4823,6 @@ function beginEvolution() {
     state.owned.push(item.id);
     if (!state.equipped[item.slot]) state.equipped[item.slot] = item.id;
   }
-  if (stageIndex(to.key) >= 3) state.starBonus = 0.1;
   let dexReward = null;
   if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
     state.bgOwned.push("sunset");
@@ -4803,6 +4933,16 @@ async function recordSay() {
   }
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
   setRecBtn("准备录音…", true);
+  /* 跟读期间暂停背景音乐，录完恢复 */
+  const duck = typeof duckMusic === "function";
+  if (duck) duckMusic();
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    if (duck) unduckMusic();
+  };
+  setTimeout(release, 12000);
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     voiceChunks = [];
@@ -4816,6 +4956,7 @@ async function recordSay() {
       setRecBtn("重新跟读", false);
       if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
       toast("录好啦，点「回放声音」听一听");
+      release();
     };
     voiceRec.start();
     let left = 5;
@@ -4831,6 +4972,7 @@ async function recordSay() {
     }, 1000);
   } catch (e) {
     setRecBtn("跟着读", false);
+    release();
     toast("无法使用麦克风，请允许录音权限");
   }
 }
@@ -4838,7 +4980,19 @@ async function recordSay() {
 function playVoice() {
   if (!voiceUrl) { toast("还没有录音，先跟着读一次吧"); return; }
   const audio = new Audio(voiceUrl);
-  audio.play().catch(() => toast("播放失败，请再试一次"));
+  /* 回放录音期间暂停背景音乐，播完恢复 */
+  const duck = typeof duckMusic === "function";
+  if (duck) duckMusic();
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    if (duck) unduckMusic();
+  };
+  audio.addEventListener("ended", release, { once: true });
+  audio.addEventListener("error", release, { once: true });
+  setTimeout(release, 12000);
+  audio.play().catch(() => { release(); toast("播放失败，请再试一次"); });
 }
 
 /* 每日随机学单词按当前恐龙时期的词汇难度抽取：蛋/幼龙/少年龙 basic，成年龙/霸王龙 advance，超级霸王龙 pro */
@@ -4879,7 +5033,7 @@ function tasksData(lv, streak) {
   ];
 }
 
-/* 长单词自适应缩放，避免被右侧「去记单词」按钮裁切 */
+/* 长单词自适应缩放，避免文案溢出卡片 */
 function fitHomeWord() {
   const el = document.querySelector(".w-word");
   if (!el) return;
@@ -4946,7 +5100,6 @@ function screenHome() {
 
       <div class="word-card">
         <div class="ring"></div>
-        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
         <button class="w-main" data-action="open-review" aria-label="随机记单词 ${word.word}">
           <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
           <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
@@ -4954,7 +5107,7 @@ function screenHome() {
             <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
           </div>
         </button>
-        <button class="w-btn" data-action="open-review">去记单词 ${I.arrow(14)}</button>
+        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
       </div>
 
       <section class="card tasks">
@@ -5012,7 +5165,7 @@ function screenProfile() {
       </div>
 
       <div class="stat-row">
-        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(state.stars)}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
         <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>
@@ -5102,12 +5255,6 @@ function screenMap() {
 
   return `<section class="screen has-tab" data-screen="map">
     <div class="scroll">
-      <div class="topbar">
-        <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
-        <div class="t"><h1>${cfg.title}</h1><p>${theme.unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
-        ${starPill()}
-      </div>
-
       <div class="theme-tabs">
         ${WORD_SETS.map((t) => `<button class="tt ${t.id === theme.id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
           <b>${t.emoji}</b>${t.name}

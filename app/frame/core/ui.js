@@ -11,7 +11,7 @@ function tabbar(active) {
     </button>`).join("")}</nav>`;
 }
 function starPill() {
-  return `<div class="star-pill">${star(17)}<span class="num">${fmt(state.stars)}</span></div>`;
+  return `<div class="star-pill">${star(22)}<span class="num">${fmt(earnedStars())}</span></div>`;
 }
 function stageChip() {
   const st = stageMeta(state.stage);

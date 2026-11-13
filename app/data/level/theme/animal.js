@@ -6,7 +6,7 @@ defineDinoTheme({
   id: "animal",
   name: "动物乐园",
   chip: "动物单词",
-  unit: "Unit 3 · 动物乐园",
+  unit: "Unit 2 · 动物乐园",
   emoji: "🦁",
   type: "animal",
   dialog: { q: "What animal is this?", a: "It's a {word}." },

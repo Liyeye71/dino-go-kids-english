@@ -7,8 +7,8 @@
 .home-top .greet{flex:1;min-width:0}
 .home-top .hi{font-size:20px;font-weight:var(--w-black);letter-spacing:.2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-top .hi b{color:var(--green)}
-.home-top .meta{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:var(--w-read);color:var(--muted);margin-top:3px;letter-spacing:.2px;white-space:nowrap}
-.home-top .meta .flame{color:var(--orange)}
+.home-top .meta{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:var(--w-read);color:var(--muted);margin-top:3px;letter-spacing:.2px;white-space:nowrap;line-height:1;min-height:16px}
+.home-top .meta .flame{color:var(--orange);display:flex;align-items:center;justify-content:center;height:16px;flex:none}
 
 .hero{
   position:relative;height:clamp(332px,40vh,420px);border-radius:30px;overflow:hidden;
@@ -58,20 +58,20 @@
 .hero .bubble.max b{color:var(--orange)}
 
 .growth-panel{
-  position:absolute;left:12px;right:12px;bottom:12px;min-height:92px;border-radius:22px;
+  position:absolute;left:12px;right:12px;bottom:12px;min-height:46px;border-radius:18px;
   background:rgba(255,255,255,.94);border:1.5px solid rgba(255,255,255,.9);
   box-shadow:0 8px 18px rgba(74,97,50,.12);backdrop-filter:blur(6px);
-  display:flex;align-items:center;gap:12px;padding:12px 12px 12px 15px;
+  display:flex;align-items:center;gap:9px;padding:2px 10px 2px 12px;
 }
 .growth-panel .g-main{flex:1;min-width:0}
-.growth-panel .g-row{display:flex;align-items:baseline;gap:6px}
-.growth-panel .lb{font-size:12px;font-weight:var(--w-bold);color:var(--muted);letter-spacing:1px}
-.growth-panel .val{font-size:18px;font-weight:var(--w-black);color:var(--green-d);letter-spacing:.2px}
-.growth-panel .val em{font-style:normal;font-size:11.5px;color:var(--muted);font-weight:var(--w-mid)}
-.growth-panel .g-next{font-size:11.5px;font-weight:var(--w-read);color:#8A9B8D;margin-top:5px;letter-spacing:.2px;display:flex;justify-content:space-between}
+.growth-panel .g-row{display:flex;align-items:baseline;gap:6px;line-height:1.1}
+.growth-panel .lb{font-size:11.5px;font-weight:var(--w-bold);color:var(--muted);letter-spacing:1px}
+.growth-panel .val{font-size:17px;font-weight:var(--w-black);color:var(--green-d);letter-spacing:.2px}
+.growth-panel .val em{font-style:normal;font-size:11px;color:var(--muted);font-weight:var(--w-mid)}
+.growth-panel .g-next{font-size:11px;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:2px;letter-spacing:.2px;display:flex;justify-content:space-between}
 .growth-panel .g-next b{color:var(--orange);font-weight:var(--w-black)}
-.growth-panel .g-bar{height:9px;margin-top:5px}
-.go-btn{width:48px;height:48px;border-radius:16px;flex:none;display:grid;place-items:center;color:#fff;
+.growth-panel .g-bar{height:7px;margin-top:2px}
+.go-btn{width:40px;height:40px;border-radius:14px;flex:none;display:grid;place-items:center;color:#fff;
   background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 4px 0 #1A5E3D,0 8px 14px rgba(31,107,74,.28)}
 .go-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1A5E3D}
 .go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 4px 0 #C98A1C,0 8px 14px rgba(201,138,28,.3);color:#4A3206}
@@ -108,8 +108,6 @@
 .word-card .w-phon{font-size:12.5px;font-weight:var(--w-read);color:#A68A4E;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
 .word-card .w-example{font-size:12.5px;font-weight:var(--w-read);line-height:1.6;letter-spacing:.1px;color:#7A5A1A;white-space:nowrap}
 .word-card .w-example-zh{font-size:11.5px;font-weight:var(--w-read);line-height:1.6;color:#A68A4E;white-space:nowrap}
-.word-card .w-btn{position:relative;min-height:44px;padding:0 16px;border-radius:99px;background:#fff;color:#8A6415;
-  font-size:14.5px;font-weight:var(--w-bold);letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 8px rgba(180,129,28,.15);flex:none}
 @keyframes spk-shake{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(.94)}65%{transform:rotate(8deg) scale(.94)}}
 .word-card .spk:active{animation:spk-shake .24s ease}
 
@@ -193,4 +191,7 @@
 .quote-card .qi{width:32px;height:32px;border-radius:11px;background:#fff;display:grid;place-items:center;color:#E2A62E;flex:none}
 .profile-cta{margin-top:12px}
 .profile-scroll{display:flex;flex-direction:column}
+.profile-scroll > *{flex:none}
+/* 语录卡吸附底部时 auto 外边距会归零，用前一卡的下间距兜底保证最小间距 */
+.profile-scroll .ach-card{margin-bottom:12px}
 .profile-scroll .quote-card{margin-top:auto}

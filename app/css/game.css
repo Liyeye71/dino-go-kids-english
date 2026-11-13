@@ -31,9 +31,11 @@
 .quiz-art .s1{left:34px;top:76px}
 .quiz-art .s2{right:38px;top:112px}
 .quiz-art .s3{left:52px;bottom:88px}
-.quiz-art .listen{position:absolute;right:14px;bottom:14px;height:34px;padding:0 12px;border-radius:99px;background:#fff;
-  display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:var(--w-bold);color:#9B7620;
+.listen{height:34px;padding:0 12px;border-radius:99px;background:#fff;
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:var(--w-bold);color:#9B7620;
   box-shadow:0 5px 12px rgba(155,118,32,.16)}
+.quiz-art .listen{position:absolute;right:14px;bottom:14px}
+.listen-row{display:flex;justify-content:flex-end;margin-top:8px;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none;margin-top:14px}
 .option{min-height:70px;border-radius:18px;background:#fff;border:2px solid #EFE2CB;display:flex;align-items:center;gap:9px;
   padding:0 12px;box-shadow:0 4px 10px rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}

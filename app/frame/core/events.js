@@ -34,6 +34,8 @@ document.addEventListener("click", (e) => {
     toast("先拿到两星通过前一关，才能解锁这一关");
   } else if (action === "select") {
     selectOption(el.dataset.word);
+  } else if (action === "listen-selected") {
+    listenSelected();
   } else if (action === "check") {
     checkAnswer();
   } else if (action === "match-word") {
@@ -87,7 +89,7 @@ document.addEventListener("click", (e) => {
     state.sound = !state.sound;
     save();
     if (state.sound) { ensureAudio(); sfx("tap"); }
-    syncMusic(current, state.theme);
+    syncAudio(current, state.theme);
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
   } else if (action === "install-guide") {

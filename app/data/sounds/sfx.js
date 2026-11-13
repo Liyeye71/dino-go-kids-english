@@ -50,7 +50,7 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词朗读 */
+/* 英文单词朗读：朗读期间暂停背景音乐，读完恢复 */
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -58,11 +58,21 @@ function speak(text) {
       return;
     }
     const synth = window.speechSynthesis;
+    const duck = typeof duckMusic === "function";
+    if (duck) duckMusic();
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      if (duck) unduckMusic();
+    };
     const say = () => {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US";
       u.rate = 0.82;
       u.pitch = 1.08;
+      u.onend = release;
+      u.onerror = release;
       synth.speak(u);
     };
     /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
@@ -72,6 +82,8 @@ function speak(text) {
     } else {
       say();
     }
+    /* 兜底：个别浏览器不触发 onend，避免背景音乐一直停着 */
+    setTimeout(release, Math.min(15000, 4000 + text.length * 300));
   } catch (e) { /* ignore */ }
 }
 

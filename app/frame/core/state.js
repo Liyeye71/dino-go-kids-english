@@ -20,9 +20,13 @@ function loadState() {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return initialState();
     const parsed = JSON.parse(raw);
+    /* v3 及以前每关发 5/10/15 星星，v4 起统一按关卡星级 1–3，旧余额同步除以 5 */
+    const legacy = (Number(parsed.v) || 0) < 4;
     return {
       ...initialState(),
       ...parsed,
+      v: DEFAULT_STATE.v,
+      stars: legacy ? Math.floor((Number(parsed.stars) || 0) / 5) : (Number(parsed.stars) || 0),
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
       equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
       progress: parsed.progress || {},
@@ -44,6 +48,18 @@ function resetState() {
   evolutionInfo = null;
   quiz = null;
   save();
+}
+
+/* ------------------------------------------------ stars */
+/* 已获得的星星 = 所有主题关卡历史最高星级之和（与地图统计一致） */
+function earnedStars() {
+  let total = 0;
+  WORD_SETS.forEach((t) => {
+    const p = state.progress[t.id];
+    if (!p || !p.stars) return;
+    Object.values(p.stars).forEach((n) => { total += Number(n) || 0; });
+  });
+  return total;
 }
 
 /* ------------------------------------------------ study log */

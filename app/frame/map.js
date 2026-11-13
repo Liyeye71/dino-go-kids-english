@@ -27,12 +27,6 @@ function screenMap() {
 
   return `<section class="screen has-tab" data-screen="map">
     <div class="scroll">
-      <div class="topbar">
-        <button class="circle-btn" data-action="tab" data-screen="home" aria-label="返回乐园">${I.back(18)}</button>
-        <div class="t"><h1>${cfg.title}</h1><p>${theme.unit} · 第 ${level} / ${LEVELS_PER_THEME} 关</p></div>
-        ${starPill()}
-      </div>
-
       <div class="theme-tabs">
         ${WORD_SETS.map((t) => `<button class="tt ${t.id === theme.id ? "on" : ""}" data-action="theme" data-theme="${t.id}">
           <b>${t.emoji}</b>${t.name}

@@ -35,6 +35,16 @@ async function recordSay() {
   }
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
   setRecBtn("准备录音…", true);
+  /* 跟读期间暂停背景音乐，录完恢复 */
+  const duck = typeof duckMusic === "function";
+  if (duck) duckMusic();
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    if (duck) unduckMusic();
+  };
+  setTimeout(release, 12000);
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     voiceChunks = [];
@@ -48,6 +58,7 @@ async function recordSay() {
       setRecBtn("重新跟读", false);
       if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
       toast("录好啦，点「回放声音」听一听");
+      release();
     };
     voiceRec.start();
     let left = 5;
@@ -63,6 +74,7 @@ async function recordSay() {
     }, 1000);
   } catch (e) {
     setRecBtn("跟着读", false);
+    release();
     toast("无法使用麦克风，请允许录音权限");
   }
 }
@@ -70,7 +82,19 @@ async function recordSay() {
 function playVoice() {
   if (!voiceUrl) { toast("还没有录音，先跟着读一次吧"); return; }
   const audio = new Audio(voiceUrl);
-  audio.play().catch(() => toast("播放失败，请再试一次"));
+  /* 回放录音期间暂停背景音乐，播完恢复 */
+  const duck = typeof duckMusic === "function";
+  if (duck) duckMusic();
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    if (duck) unduckMusic();
+  };
+  audio.addEventListener("ended", release, { once: true });
+  audio.addEventListener("error", release, { once: true });
+  setTimeout(release, 12000);
+  audio.play().catch(() => { release(); toast("播放失败，请再试一次"); });
 }
 
 /* 每日随机学单词按当前恐龙时期的词汇难度抽取：蛋/幼龙/少年龙 basic，成年龙/霸王龙 advance，超级霸王龙 pro */
@@ -111,7 +135,7 @@ function tasksData(lv, streak) {
   ];
 }
 
-/* 长单词自适应缩放，避免被右侧「去记单词」按钮裁切 */
+/* 长单词自适应缩放，避免文案溢出卡片 */
 function fitHomeWord() {
   const el = document.querySelector(".w-word");
   if (!el) return;
@@ -178,7 +202,6 @@ function screenHome() {
 
       <div class="word-card">
         <div class="ring"></div>
-        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
         <button class="w-main" data-action="open-review" aria-label="随机记单词 ${word.word}">
           <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
           <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
@@ -186,7 +209,7 @@ function screenHome() {
             <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
           </div>
         </button>
-        <button class="w-btn" data-action="open-review">去记单词 ${I.arrow(14)}</button>
+        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
       </div>
 
       <section class="card tasks">
@@ -244,7 +267,7 @@ function screenProfile() {
       </div>
 
       <div class="stat-row">
-        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(state.stars)}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
         <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>
