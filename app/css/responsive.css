@@ -7,14 +7,11 @@
   .home-top{margin-bottom:18px}
   .home-top .hi{font-size:20px}
   .hero{height:410px}
-  .hero .dino-wrap{width:290px;height:290px}
-  .hero .bubble{width:142px;font-size:11.5px;top:158px;right:22px;padding:10px 12px}
+  .hero .bubble{font-size:11.5px;padding:10px 12px}
   .hero .bubble b{font-size:13px}
   .hero .name b{font-size:34px}
-  .growth-panel{left:16px;right:16px;bottom:16px;min-height:100px;padding:14px 16px 14px 18px}
   .growth-panel .val{font-size:18px}
   .growth-panel .lb,.growth-panel .g-next{font-size:12px}
-  .go-btn{width:54px;height:54px;border-radius:18px}
   .tasks{padding:16px 18px;gap:10px;margin-top:16px}
   .tasks .head h3{font-size:17px}
   .task{height:38px}

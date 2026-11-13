@@ -191,50 +191,51 @@ h1,h2,h3,h4,p{margin:0}
   border:1.5px solid #D9E8C2;
   background:linear-gradient(168deg,#DDF2CE 0%,#EFF8D6 48%,#FDF2D9 100%);
   transition:background .6s ease,border-color .6s ease;
+  container-type:size;
 }
 .hero .scene{position:absolute;inset:0;transition:opacity .4s ease}
-.hero .sun{position:absolute;right:30px;top:20px;width:76px;height:76px;border-radius:50%;
+.hero .sun{position:absolute;right:9cqh;top:6cqh;width:23cqh;height:23cqh;border-radius:50%;
   background:radial-gradient(circle at 38% 34%,#FFF3B8,#FFD25E);
-  box-shadow:0 0 0 14px rgba(255,218,112,.16);transition:all .5s ease}
-.hero .moon{position:absolute;right:34px;top:22px;width:68px;height:68px;border-radius:50%;
-  background:radial-gradient(circle at 38% 34%,#FFFCE8,#FFE9A8);box-shadow:0 0 30px rgba(255,236,170,.5)}
-.hero .moon::after{content:"";position:absolute;left:-14px;top:5px;width:54px;height:54px;border-radius:50%;
+  box-shadow:0 0 0 4cqh rgba(255,218,112,.16);transition:all .5s ease}
+.hero .moon{position:absolute;right:10cqh;top:6.5cqh;width:20.5cqh;height:20.5cqh;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFFCE8,#FFE9A8);box-shadow:0 0 9cqh rgba(255,236,170,.5)}
+.hero .moon::after{content:"";position:absolute;left:-4.2cqh;top:1.5cqh;width:16.3cqh;height:16.3cqh;border-radius:50%;
   background:#1C4638;box-shadow:0 0 0 1px rgba(255,255,255,.02)}
 .hero .stars i{position:absolute;background:#FFF6D8;border-radius:50%}
 .hero .cloud{position:absolute;background:#fff;border-radius:99px;opacity:.62}
-.hero .cloud.a{width:66px;height:24px;right:100px;top:30px}
-.hero .cloud.b{width:48px;height:18px;right:128px;top:42px}
+.hero .cloud.a{width:19.9cqh;height:7.2cqh;right:30cqh;top:9cqh}
+.hero .cloud.b{width:14.5cqh;height:5.4cqh;right:38.6cqh;top:12.7cqh}
 .hero .hill{position:absolute;left:-10%;right:-10%;border-radius:50% 50% 0 0;transition:background .6s ease}
-.hero .hill.a{height:104px;bottom:-42px;background:#CDE9AC}
-.hero .hill.b{height:82px;bottom:-38px;background:#B9DF92;left:34%;right:-24%}
+.hero .hill.a{height:31.3cqh;bottom:-12.7cqh;background:#CDE9AC}
+.hero .hill.b{height:24.7cqh;bottom:-11.4cqh;background:#B9DF92;left:34%;right:-24%}
 .hero .leaves{position:absolute;pointer-events:none;opacity:.9}
-.hero .leaves.l{left:-6px;bottom:62px;width:84px}
-.hero .leaves.r{right:-10px;top:92px;width:76px;opacity:.75;transform:rotate(18deg)}
+.hero .leaves.l{left:-1.8cqh;bottom:18.7cqh;width:25.3cqh}
+.hero .leaves.r{right:-3cqh;top:27.7cqh;width:22.9cqh;opacity:.75;transform:rotate(18deg)}
 .hero .dino-wrap{
-  position:absolute;left:calc(50% - 40px);bottom:82px;
-  width:clamp(218px,28vh,300px);height:clamp(218px,28vh,300px);
+  position:absolute;left:calc(50% - 12cqh);bottom:24.7cqh;
+  width:65.7cqh;height:65.7cqh;
   transform:translateX(-50%);
-  filter:drop-shadow(0 14px 18px rgba(48,104,64,.18));
+  filter:drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.18));
   animation:bob 4.2s ease-in-out infinite;
 }
-.hero .dino-wrap.ultra{filter:drop-shadow(0 0 26px rgba(255,210,90,.55)) drop-shadow(0 14px 18px rgba(48,104,64,.2))}
-.hero .dino-wrap.with-hat{bottom:66px}
-.hero .hero-id{position:absolute;left:14px;top:14px;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
-.hero .stage-tag{position:static;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;
+.hero .dino-wrap.ultra{filter:drop-shadow(0 0 7.8cqh rgba(255,210,90,.55)) drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.2))}
+.hero .dino-wrap.with-hat{bottom:19.9cqh}
+.hero .hero-id{position:absolute;left:4.2cqh;top:4.2cqh;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:1.5cqh}
+.hero .stage-tag{position:static;display:inline-flex;align-items:center;gap:6px;height:7.8cqh;padding:0 10px;
   border-radius:99px;background:rgba(255,255,255,.86);border:1.5px solid rgba(255,255,255,.92);
   font-size:12px;font-weight:var(--w-bold);color:var(--green-d);letter-spacing:.8px;backdrop-filter:blur(4px);
   box-shadow:0 3px 8px rgba(80,60,20,.08)}
 .hero .name{position:static;display:flex;align-items:center;gap:6px}
 .hero .name b{display:block;font-size:33px;font-weight:var(--w-black);letter-spacing:.2px;line-height:1.15;
   text-shadow:0 1px 0 rgba(255,255,255,.45)}
-.hero .bubble{position:absolute;right:12px;top:138px;width:126px;padding:8px 10px;
+.hero .bubble{position:absolute;right:3.6cqh;top:41.6cqh;width:38cqh;padding:8px 10px;
   border-radius:12px 12px 12px 3px;background:#fff;font-size:11.5px;line-height:1.75;letter-spacing:.2px;
   font-weight:var(--w-read);color:#57705B;box-shadow:0 5px 12px rgba(70,50,20,.1)}
 .hero .bubble b{color:var(--green);font-size:13px;font-weight:var(--w-black)}
 .hero .bubble.max b{color:var(--orange)}
 
 .growth-panel{
-  position:absolute;left:12px;right:12px;bottom:12px;min-height:54px;border-radius:18px;
+  position:absolute;left:3.6cqh;right:3.6cqh;bottom:3.6cqh;min-height:16.3cqh;border-radius:18px;
   background:rgba(255,255,255,.94);border:1.5px solid rgba(255,255,255,.9);
   box-shadow:0 8px 18px rgba(74,97,50,.12);backdrop-filter:blur(6px);
   display:flex;align-items:center;gap:9px;padding:6px 10px 6px 12px;
@@ -247,7 +248,7 @@ h1,h2,h3,h4,p{margin:0}
 .growth-panel .g-next{font-size:11px;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:2px;letter-spacing:.2px;display:flex;justify-content:space-between}
 .growth-panel .g-next b{color:var(--orange);font-weight:var(--w-black)}
 .growth-panel .g-bar{height:7px;margin-top:2px}
-.go-btn{width:40px;height:40px;border-radius:14px;flex:none;display:grid;place-items:center;color:#fff;
+.go-btn{width:12cqh;height:12cqh;border-radius:14px;flex:none;display:grid;place-items:center;color:#fff;
   background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 4px 0 #1A5E3D,0 8px 14px rgba(31,107,74,.28)}
 .go-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #1A5E3D}
 .go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 4px 0 #C98A1C,0 8px 14px rgba(201,138,28,.3);color:#4A3206}
@@ -291,8 +292,8 @@ h1,h2,h3,h4,p{margin:0}
 
 /* hero background themes · 白天沿用已购背景，夜晚统一夜空 */
 .hero.sky-day.bg-sunset{background:linear-gradient(170deg,#FFD9A8 0%,#FFC7A0 44%,#FFE4C0 100%);border-color:#F1CBA4}
-.hero.sky-day.bg-sunset .sun{right:44px;top:64px;background:radial-gradient(circle at 38% 34%,#FFF3C4,#FF9E5C);
-  box-shadow:0 0 0 16px rgba(255,158,92,.16),0 0 60px rgba(255,158,92,.4)}
+.hero.sky-day.bg-sunset .sun{right:13.3cqh;top:19.3cqh;background:radial-gradient(circle at 38% 34%,#FFF3C4,#FF9E5C);
+  box-shadow:0 0 0 4.8cqh rgba(255,158,92,.16),0 0 18cqh rgba(255,158,92,.4)}
 .hero.sky-day.bg-sunset .hill.a{background:#E7B68C}
 .hero.sky-day.bg-sunset .hill.b{background:#D49A76}
 .hero.sky-night{background:linear-gradient(170deg,#183F38 0%,#1E4E40 45%,#2A5A46 100%);border-color:#2D5C4A}
@@ -1032,14 +1033,11 @@ h1,h2,h3,h4,p{margin:0}
   .home-top{margin-bottom:18px}
   .home-top .hi{font-size:20px}
   .hero{height:410px}
-  .hero .dino-wrap{width:290px;height:290px}
-  .hero .bubble{width:142px;font-size:11.5px;top:158px;right:22px;padding:10px 12px}
+  .hero .bubble{font-size:11.5px;padding:10px 12px}
   .hero .bubble b{font-size:13px}
   .hero .name b{font-size:34px}
-  .growth-panel{left:16px;right:16px;bottom:16px;min-height:100px;padding:14px 16px 14px 18px}
   .growth-panel .val{font-size:18px}
   .growth-panel .lb,.growth-panel .g-next{font-size:12px}
-  .go-btn{width:54px;height:54px;border-radius:18px}
   .tasks{padding:16px 18px;gap:10px;margin-top:16px}
   .tasks .head h3{font-size:17px}
   .task{height:38px}
