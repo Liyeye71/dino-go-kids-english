@@ -18,9 +18,10 @@ function screenShop() {
   const eq = state.equipped;
   const wearing = ITEMS.filter((it) => eq[it.slot] === it.id).map((it) => it.name);
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  const purchasableBgCount = BACKGROUNDS.filter((bg) => bg.price > 0 && state.stars >= bg.price && !state.bgOwned.includes(bg.id) && state.bg !== bg.id).length;
   const tabs = `<div class="shop-tabs">
     <button class="tab ${shopTab === "decor" ? "on" : ""}" data-action="shop-tab" data-tab="decor">装扮</button>
-    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景<span class="tb">${BACKGROUNDS.length - 1}</span></button>
+    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景${purchasableBgCount ? `<span class="tb">${purchasableBgCount}</span>` : ""}</button>
     <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
     <span class="all">全部 ${I.chevron(9)}</span>
   </div>`;
@@ -80,8 +81,9 @@ function screenShop() {
 function openBuyItem(id) {
   const item = ITEMS.find((i) => i.id === id);
   if (!item) return;
-  if (item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage)) return toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
-  if (state.owned.includes(id)) return;
+  const { locked, owned } = itemState(item);
+  if (locked) return toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
+  if (owned) return;
   if (state.stars < item.price) { toast("星星不够啦，再去闯一关吧"); return; }
   pendingBuy = { type: "item", id };
   openOverlay(`<div class="overlay dialog-wrap">

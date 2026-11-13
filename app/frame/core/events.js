@@ -3,6 +3,12 @@
    ============================================================ */
 
 /* ------------------------------------------------ events */
+function renderAndResetScroll() {
+  render();
+  const sc = $(".scroll");
+  if (sc) sc.scrollTop = 0;
+}
+
 document.addEventListener("click", (e) => {
   if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
   const el = e.target.closest("[data-action]");
@@ -46,8 +52,7 @@ document.addEventListener("click", (e) => {
   } else if (action === "shop-tab") {
     shopTab = el.dataset.tab;
     sfx("tap");
-    render();
-    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
+    renderAndResetScroll();
   } else if (action === "buy-item") {
     openBuyItem(el.dataset.id);
   } else if (action === "equip-item") {
@@ -70,8 +75,7 @@ document.addEventListener("click", (e) => {
   } else if (action === "filter-word") {
     wordsLetter = el.dataset.letter;
     sfx("tap");
-    render();
-    const sc = $(".scroll"); if (sc) sc.scrollTop = 0;
+    renderAndResetScroll();
   } else if (action === "theme") {
     state.theme = el.dataset.theme;
     save();
@@ -113,9 +117,7 @@ document.addEventListener("click", (e) => {
 
 window.addEventListener("popstate", (e) => {
   const s = (e.state && e.state.screen) || "home";
-  if (s === "result" && !lastResult) { current = "home"; render(); return; }
-  if (s === "evolution" && !evolutionInfo) { current = "home"; render(); return; }
-  if (s === "quiz" && !quiz) { current = "map"; render(); return; }
+  if (!screenContextValid(s)) { current = s === "quiz" ? "map" : "home"; render(); return; }
   clearTimers();
   current = s;
   render();

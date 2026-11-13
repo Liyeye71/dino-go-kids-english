@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/game.css">
   <link rel="stylesheet" href="css/dex.css">
   <link rel="stylesheet" href="css/shop.css">
   <link rel="stylesheet" href="css/overlays.css">
@@ -29,7 +30,7 @@
     <div id="overlay-root"></div>
     <div class="toast-root" id="toast-root"></div>
   </div>
-  <!-- 主题词汇：每个主题一个文件，新增主题在此登记（build.mjs 的 JS_FILES 也要同步） -->
+  <!-- 主题词汇、地图与玩法由 build.mjs 自动汇总加载 -->
   <!-- 词性词汇池（原子词，带 attrs 分类标签） -->
   <script src="data/words/noun.js"></script>
   <script src="data/words/verb.js"></script>
@@ -40,11 +41,16 @@
   <script src="data/words/conj.js"></script>
   <script src="data/words/interj.js"></script>
   <script src="data/words/num.js"></script>
-  <!-- 主题关卡筛选器（按 attrs 从词汇池匹配单词，保留关卡进度身份） -->
-  <script src="data/level/beginner/fruits.js"></script>
-  <script src="data/level/beginner/cars.js"></script>
-  <script src="data/level/beginner/zoo.js"></script>
-  <script src="data/level/beginner/food.js"></script>
+  <!-- 分级词性组合规则（pattern 槽位从 POS_POOL 取词） -->
+  <script src="data/words/rule/basic.js"></script>
+  <script src="data/words/rule/advance.js"></script>
+  <script src="data/words/rule/pro.js"></script>
+  <!-- 主题注册器（defineDinoTheme），需在各主题文件之前加载 -->
+  <script src="data/level/_shared.js"></script>
+  <!-- 主题词库、地图与玩法；新增主题放入 theme 目录后，在此追加一行 script 即可 -->
+  <script src="data/level/theme/travel.js"></script>
+  <script src="data/level/theme/animal.js"></script>
+  <script src="data/level/theme/food.js"></script>
   <!-- 声音：音效 / 语音 / 关卡提示音 + 主题背景音乐 -->
   <script src="data/sounds/sfx.js"></script>
   <script src="data/sounds/bgm.js"></script>
@@ -57,6 +63,7 @@
   <script src="frame/core/ui.js"></script>
   <script src="frame/core/events.js"></script>
   <script src="frame/core/boot.js"></script>
+  <script src="data/level/game.js"></script>
   <script src="frame/home.js"></script>
   <script src="frame/map.js"></script>
   <script src="frame/dex.js"></script>

@@ -28,7 +28,11 @@ function setRecBtn(label, recording) {
 }
 
 async function recordSay() {
-  if (voiceRec && voiceRec.state === "recording") return;
+  if (voiceRec && voiceRec.state === "recording") {
+    if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+    voiceRec.stop();
+    return;
+  }
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
   setRecBtn("准备录音…", true);
   try {
@@ -41,13 +45,13 @@ async function recordSay() {
       if (voiceUrl) URL.revokeObjectURL(voiceUrl);
       const blob = new Blob(voiceChunks, voiceRec.mimeType ? { type: voiceRec.mimeType } : {});
       voiceUrl = URL.createObjectURL(blob);
-      setRecBtn("重录 · 5 秒", false);
+      setRecBtn("重新跟读", false);
       if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
       toast("录好啦，点「回放声音」听一听");
     };
     voiceRec.start();
     let left = 5;
-    setRecBtn(`录音中 ${left}s`, true);
+    setRecBtn(`录音中 ${left}s · 点击结束`, true);
     voiceTimer = setInterval(() => {
       left -= 1;
       if (left <= 0) {
@@ -55,7 +59,7 @@ async function recordSay() {
         if (voiceRec && voiceRec.state === "recording") voiceRec.stop();
         return;
       }
-      setRecBtn(`录音中 ${left}s`, true);
+      setRecBtn(`录音中 ${left}s · 点击结束`, true);
     }, 1000);
   } catch (e) {
     setRecBtn("跟着读", false);
@@ -69,8 +73,22 @@ function playVoice() {
   audio.play().catch(() => toast("播放失败，请再试一次"));
 }
 
-function randomWord() { return REVIEW_WORDS[Math.floor(Math.random() * REVIEW_WORDS.length)]; }
+/* 每日随机学单词按当前恐龙时期的词汇难度抽取：蛋/幼龙/少年龙 basic，成年龙/霸王龙 advance，超级霸王龙 pro */
+function randomWord() {
+  const level = stageMeta(state.stage).vocab || "basic";
+  const pool = REVIEW_WORDS.filter((w) => (w.attrs || []).includes(level));
+  const list = pool.length ? pool : REVIEW_WORDS;
+  return list[Math.floor(Math.random() * list.length)];
+}
 function wordPosLabel(w) { return w.pos === "verb" ? "phr." : "n."; }
+
+/* -------- 例句直接从单词自带的 example 字段取 --------
+   REVIEW_WORDS 里的单词全部有人工 example（noun.js / verb.js） */
+function generateExample(word) {
+  const en = (word.example || "").replace(/\{word\}/gi, word.word);
+  return { en, zh: "" };
+}
+
 
 function todayLevels() {
   return (state.log[dateKey()] || {}).levels || 0;
@@ -93,6 +111,20 @@ function tasksData(lv, streak) {
   ];
 }
 
+/* 长单词自适应缩放，避免被右侧「去记单词」按钮裁切 */
+function fitHomeWord() {
+  const el = document.querySelector(".w-word");
+  if (!el) return;
+  const box = el.closest(".w-main");
+  el.style.fontSize = "";
+  const base = parseFloat(getComputedStyle(el).fontSize) || 36;
+  const avail = box.clientWidth;
+  const need = el.scrollWidth;
+  if (avail > 0 && need > avail) {
+    el.style.fontSize = `${Math.max(18, Math.floor((base * avail) / need) - 1)}px`;
+  }
+}
+
 function screenHome() {
   const st = stageMeta(state.stage);
   const next = nextStage(st.key);
@@ -103,6 +135,7 @@ function screenHome() {
   const tasks = tasksData(lv, streak);
   const doneCount = tasks.filter((t) => t.done).length;
   const word = reviewWord = randomWord();
+  const example = generateExample(word);
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
   let bubble;
   if (!next) bubble = `已经成长为<br><b>超级霸王龙</b>！<br>继续收集星星吧`;
@@ -143,16 +176,18 @@ function screenHome() {
         </div>
       </section>
 
-      <button class="word-card" data-action="open-review" aria-label="随机记单词 ${word.word}">
+      <div class="word-card">
         <div class="ring"></div>
-        <div class="spk">${I.speaker(21, "#B4811C")}</div>
-        <div class="w-main">
+        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
+        <button class="w-main" data-action="open-review" aria-label="随机记单词 ${word.word}">
           <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
           <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
-          <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
-        </div>
-        <div class="w-btn">去记单词 ${I.arrow(11)}</div>
-      </button>
+          <div class="w-pron-row">
+            <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
+          </div>
+        </button>
+        <button class="w-btn" data-action="open-review">去记单词 ${I.arrow(14)}</button>
+      </div>
 
       <section class="card tasks">
         <div class="head">

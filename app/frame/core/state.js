@@ -14,7 +14,6 @@ let quiz = null;
 let lastResult = null;
 let evolutionInfo = null;
 let timers = [];
-let installDismissed = false;
 
 function loadState() {
   try {
@@ -80,6 +79,12 @@ function initialState() {
 }
 
 /* ------------------------------------------------ router */
+function screenContextValid(name) {
+  if (name === "quiz") return !!quiz;
+  if (name === "result") return !!lastResult;
+  if (name === "evolution") return !!evolutionInfo;
+  return true;
+}
 function go(name, opts = {}) {
   if (name === current && !opts.replace && !opts.force) { render(); return; }
   clearTimers();
@@ -93,10 +98,4 @@ function go(name, opts = {}) {
     const sc = $(".scroll");
     if (sc) sc.scrollTop = 0;
   });
-}
-function back() {
-  clearTimers();
-  if (quiz && current === "quiz") { quiz = null; go("map", { replace: true }); return; }
-  if (history.length > 1) history.back();
-  else go("home", { replace: true });
 }

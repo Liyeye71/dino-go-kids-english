@@ -2,30 +2,30 @@
    词汇池与关卡规则：词性池、随机复习词、主题筛选与进度计算
    ============================================================ */
 
-/* 单词池：所有 isPool:true 的词性文件里的原子词（带 attrs 标注），合并去重 */
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 type 标注），合并去重 */
 const POS_POOL = (window.DINO_WORD_SETS || [])
   .filter((s) => s.isPool)
   .flatMap((s) => (s.words || []).map((w) => ({ ...w, pos: s.id })))
   .map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
 /* 随机记单词只取名词与动词短语 */
 const REVIEW_WORDS = POS_POOL.filter(
-  (w) => w.pos === "noun" || (w.pos === "verb" && (w.attrs || []).includes("phrase"))
+  (w) => w.pos === "noun" || (w.pos === "verb" && w.type === "phrase")
 );
 /* 词性中文名（单词本页签展示用） */
 const POS_ZH = { noun: "名词", verb: "动词", adj: "形容词", adv: "副词", pron: "代词", prep: "介词", conj: "连词", interj: "感叹词", num: "数词" };
 function posZh(w) {
   if (!w || !w.pos) return "";
-  if (w.pos === "verb" && (w.attrs || []).includes("phrase")) return "动词短语";
+  if (w.pos === "verb" && w.type === "phrase") return "动词短语";
   return POS_ZH[w.pos] || "";
 }
-/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 attrs 从 POS_POOL 匹配 */
+/* 关卡主题：所有 isTheme:true 的主题筛选器，words 为空则按 type 从 POS_POOL 匹配 */
 const WORD_SETS = (window.DINO_WORD_SETS || [])
   .filter((s) => s.isTheme)
   .map((set) => {
     const own = (set.words || []).map((w) => ({ ...w, art: w.art || (() => emojiArt(w.emoji || "❓")) }));
     let words = own;
-    if (words.length === 0 && Array.isArray(set.attrs) && set.attrs.length) {
-      words = POS_POOL.filter((w) => set.attrs.some((a) => w.attrs && w.attrs.includes(a)));
+    if (words.length === 0 && typeof set.type === "string") {
+      words = POS_POOL.filter((w) => w.type === set.type);
     }
     return { ...set, words };
   });

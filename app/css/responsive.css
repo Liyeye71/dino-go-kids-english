@@ -19,11 +19,16 @@
   .tasks .head h3{font-size:17px}
   .task{height:38px}
   .task .t-title{font-size:14px}
-  .task .t-sub{font-size:10.5px}
-  .word-card{padding:16px 18px;min-height:122px;margin-top:16px}
-  .word-card .w-word{font-size:26px}
-  .word-card .w-kicker{font-size:10px}
-  .word-card .w-phon{font-size:12px}
+  .task .t-sub{font-size:11.5px}
+  .word-card{padding:13px 20px;min-height:146px;margin-top:16px}
+  .word-card .spk{width:64px;height:64px;border-radius:19px}
+  .word-card .w-word{font-size:36px}
+  .word-card .w-emoji{font-size:44px}
+  .word-card .w-kicker{font-size:11px}
+  .word-card .w-phon{font-size:13px}
+  .word-card .w-example{font-size:13px}
+  .word-card .w-example-zh{font-size:12px}
+  .word-card .w-btn{min-height:48px;padding:0 18px;font-size:15px}
   .option{min-height:78px}
   .option .word{font-size:18px}
   .quiz-art{max-height:520px}
@@ -32,9 +37,8 @@
   .result-scroll{padding-left:32px;padding-right:32px}
   .result-foot{padding-left:32px;padding-right:32px}
   .result-card{max-width:620px;margin-left:auto;margin-right:auto}
-  .evo-card{max-width:620px;margin-left:auto;margin-right:auto}
-  .result-head,.result-cheer{max-width:620px;margin-left:auto;margin-right:auto}
-  .result-cheer{margin-top:20px}
+  .grow-card{max-width:620px;margin-left:auto;margin-right:auto}
+  .result-head{max-width:620px;margin-left:auto;margin-right:auto}
   .shop-preview .arch{width:230px;height:180px;border-radius:115px 115px 24px 24px}
   .shop-preview .podium{width:260px}
   .shop-preview{height:290px}
@@ -44,13 +48,13 @@
   .shop-item .thumb{height:180px}
   .shop-item .thumb svg{width:120px;height:120px}
   .shop-item .name{font-size:15px}
-  .shop-item .sub{font-size:10.5px}
+  .shop-item .sub{font-size:11.5px}
   .shop-item .foot{margin-top:9px}
   .dex-grid{grid-template-columns:repeat(2,1fr)}
   .dex-card .pic{height:168px}
   .dex-card .pic svg{width:168px;height:168px}
   .dex-card .nm{font-size:13px}
-  .dex-card .stg{font-size:9.5px}
+  .dex-card .stg{font-size:10.5px}
 }
 
 /* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
@@ -61,7 +65,7 @@
 /* ------------------------------------------------ 矮屏（横屏/小窗口）：压缩答题页留白，把空间让给图片 */
 @media (max-height:700px){
   .quiz-prompt{gap:5px;margin-top:2px}
-  .quiz-prompt .chip{height:20px;font-size:9px}
+  .quiz-prompt .chip{height:20px;font-size:10px}
   .quiz-art{margin-top:9px}
   .quiz-art.listen-art{height:clamp(112px,19vh,168px)}
   .options{margin-top:10px}
@@ -70,8 +74,6 @@
   .repeat-word b{font-size:24px}
   .dialog-card{margin-top:10px;gap:7px}
   .options.one-col{margin-top:8px}
-  .result-scroll{padding-top:calc(12px + var(--safe-top));padding-bottom:2px}
+  .result-scroll{padding-top:calc(12px + var(--safe-top));padding-bottom:2px;gap:12px}
   .result-stars{margin-top:5px}
-  .result-card{margin-top:11px}
-  .evo-card{margin-top:9px}
 }

@@ -6,17 +6,17 @@ let musicGain = null;
 
 /* 每个主题一首 BGM：速度、音色、旋律、低音与环境点缀 */
 const THEME_MUSIC = {
-  /* 水果大冒险：清新田园，像在林间散步 */
-  fruit: {
-    bpm: 96, wave: "sine", bassWave: "triangle", ambient: "bird",
+  /* 美食节：热闹市集，收银小铃 + 彩炮声 */
+  food: {
+    bpm: 120, wave: "triangle", bassWave: "triangle", ambient: "bell",
     melody: [
-      ["E5", 1], ["G5", 1], ["A5", 1], ["G5", 1], ["E5", 1], ["D5", 1], ["C5", 2],
-      ["D5", 1], ["E5", 1], ["G5", 1], ["A5", 1], ["G5", 2], ["E5", 1], ["D5", 1],
+      ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["A5", 1], ["G5", 1], ["E5", 2],
+      ["F5", 1], ["A5", 1], ["G5", 1], ["E5", 1], ["D5", 2], ["C5", 2],
     ],
-    bass: [["C3", 2], ["G3", 2], ["A3", 2], ["F3", 2], ["C3", 2], ["G3", 2], ["F3", 2], ["G3", 2]],
+    bass: [["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2], ["C3", 2], ["A3", 2], ["F3", 2], ["G3", 2]],
   },
-  /* 汽车派对：轻快公路感，带一点喇叭节奏 */
-  cars: {
+  /* 环球旅行：轻快客机巡航，带机舱广播感 */
+  travel: {
     bpm: 118, wave: "triangle", bassWave: "square", ambient: "horn",
     melody: [
       ["G4", 1], ["C5", 1], ["E5", 1], ["G5", 1], ["E5", 1], ["C5", 1], ["G4", 2],
@@ -24,8 +24,8 @@ const THEME_MUSIC = {
     ],
     bass: [["C3", 2], ["G3", 2], ["C3", 2], ["F3", 2], ["G3", 2], ["C3", 2], ["F3", 2], ["G3", 2]],
   },
-  /* 动物园奇遇：探险感，加入动物呼唤 */
-  zoo: {
+  /* 动物乐园：探险感，加入动物呼唤 */
+  animal: {
     bpm: 104, wave: "triangle", bassWave: "sine", ambient: "call",
     melody: [
       ["D5", 1], ["F5", 1], ["A5", 1], ["F5", 1], ["D5", 2], ["C5", 2],
@@ -97,7 +97,7 @@ function playMusic(id) {
   stopMusic();
   ensureAudio();
   if (!audioCtx) return;
-  const cfg = THEME_MUSIC[id] || THEME_MUSIC.fruit;
+  const cfg = THEME_MUSIC[id] || THEME_MUSIC.food;
   musicId = id;
   musicGain = audioCtx.createGain();
   musicGain.gain.value = 1;

@@ -57,7 +57,7 @@ function openOverlay(html) { $("#overlay-root").innerHTML = html; }
 function closeOverlay() { $("#overlay-root").innerHTML = ""; }
 
 function openSettings() {
-  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  const standalone = isStandaloneMode();
   openOverlay(`<div class="overlay">
     <div class="sheet">
       <div class="grab"></div>
@@ -89,7 +89,7 @@ function openSettings() {
   </div>`);
 }
 function openInstallGuide() {
-  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const ios = isIOSDevice();
   openOverlay(`<div class="overlay">
     <div class="sheet">
       <div class="grab"></div>

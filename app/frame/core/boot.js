@@ -8,6 +8,7 @@ let SCREEN_FN = {};
 function render() {
   const fn = SCREEN_FN[current] || screenHome;
   $("#view").innerHTML = fn();
+  if (current === "home") fitHomeWord();
   syncMusic(current, state.theme);
 }
 
@@ -28,10 +29,8 @@ function boot() {
     else current = history.state.screen;
   } catch (e) { current = "home"; }
 
-  // A result/evolution screen cannot be restored without runtime context.
-  if (current === "result" && !lastResult) current = "home";
-  if (current === "evolution" && !evolutionInfo) current = "home";
-  if (current === "quiz" && !quiz) current = "home";
+  // Quiz, result and evolution screens require runtime context.
+  if (!screenContextValid(current)) current = "home";
   /* 旧存档里的“图鉴”Tab 已并入小铺 → 图鉴 */
   if (current === "dex") { current = "shop"; shopTab = "dex"; }
 
@@ -43,11 +42,11 @@ function boot() {
   document.addEventListener("click", wake);
 
   // iOS install hint — only once, and only in Safari (not standalone).
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  const ios = isIOSDevice();
+  const standalone = isStandaloneMode();
   let seen = false;
   try { seen = localStorage.getItem("dinogo.installHint") === "1"; } catch (e) {}
-  if (isIOS && !standalone && !seen) {
+  if (ios && !standalone && !seen) {
     setTimeout(() => {
       if (current !== "home") return;
       try { localStorage.setItem("dinogo.installHint", "1"); } catch (e) {}

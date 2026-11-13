@@ -80,7 +80,7 @@ function allWordsAlpha() {
   return (wordsAlphaCache = groups);
 }
 
-const THEME_SHORT = { fruit: "水果", cars: "汽车", zoo: "动物", food: "美食" };
+const THEME_SHORT = { travel: "旅行", animal: "动物", food: "美食" };
 
 function screenWords() {
   const groups = allWordsAlpha();

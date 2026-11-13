@@ -6,6 +6,14 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+function isIOSDevice() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+function isStandaloneMode() {
+  return window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+}
+
 function stageIndex(key) { return Math.max(0, STAGES.findIndex((s) => s.key === key)); }
 function stageMeta(key) { return STAGES[stageIndex(key)] || STAGES[0]; }
 function nextStage(key) { return STAGES[stageIndex(key) + 1] || null; }

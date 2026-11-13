@@ -77,24 +77,20 @@ function speak(text) {
 
 /* 关卡提示音：进入某主题关卡时播放的短旋律 */
 const LEVEL_CUES = {
-  fruit: [
-    [NOTE_FREQ.E5, 0.16, "sine", 0.05, 0], [NOTE_FREQ.G5, 0.16, "sine", 0.05, 0.1],
-    [NOTE_FREQ.A5, 0.2, "sine", 0.05, 0.2], [NOTE_FREQ.C6, 0.34, "triangle", 0.045, 0.31],
-  ],
-  cars: [
-    [392, 0.12, "square", 0.028, 0], [392, 0.12, "square", 0.028, 0.2],
-    [NOTE_FREQ.C5, 0.14, "triangle", 0.05, 0.4], [NOTE_FREQ.E5, 0.14, "triangle", 0.05, 0.52],
-    [NOTE_FREQ.G5, 0.3, "triangle", 0.05, 0.64],
-  ],
-  zoo: [
-    [110, 0.2, "triangle", 0.05, 0], [NOTE_FREQ.D5, 0.16, "triangle", 0.045, 0.18],
-    [NOTE_FREQ.F5, 0.16, "triangle", 0.045, 0.3], [NOTE_FREQ.A5, 0.16, "triangle", 0.045, 0.42],
-    [NOTE_FREQ.D6, 0.34, "triangle", 0.04, 0.54],
-  ],
   food: [
     [NOTE_FREQ.E6, 0.1, "sine", 0.045, 0], [NOTE_FREQ.G5, 0.16, "sine", 0.04, 0.08],
     [NOTE_FREQ.C5, 0.14, "triangle", 0.045, 0.3], [NOTE_FREQ.E5, 0.14, "triangle", 0.045, 0.42],
     [NOTE_FREQ.G5, 0.14, "triangle", 0.045, 0.54], [NOTE_FREQ.C6, 0.32, "triangle", 0.045, 0.66],
+  ],
+  travel: [
+    [392, 0.12, "square", 0.028, 0], [392, 0.12, "square", 0.028, 0.2],
+    [NOTE_FREQ.C5, 0.14, "triangle", 0.05, 0.4], [NOTE_FREQ.E5, 0.14, "triangle", 0.05, 0.52],
+    [NOTE_FREQ.G5, 0.3, "triangle", 0.05, 0.64],
+  ],
+  animal: [
+    [110, 0.2, "triangle", 0.05, 0], [NOTE_FREQ.D5, 0.16, "triangle", 0.045, 0.18],
+    [NOTE_FREQ.F5, 0.16, "triangle", 0.045, 0.3], [NOTE_FREQ.A5, 0.16, "triangle", 0.045, 0.42],
+    [NOTE_FREQ.D6, 0.34, "triangle", 0.04, 0.54],
   ],
 };
 
