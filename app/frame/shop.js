@@ -48,7 +48,7 @@ function screenShop() {
       return `<button class="bg-item ${using ? "using" : ""}" data-action="${owned ? "equip-bg" : "buy-bg"}" data-id="${bg.id}">
         <div class="bg-thumb ${bg.cls}"><div class="s"></div><div class="h"></div><div class="d">${dino(state.stage, { equipped: state.equipped })}</div></div>
         <div class="bg-info"><b>${bg.name}</b><span>${bg.sub}</span>${price}</div>
-        ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:26px;height:26px;border-radius:9px;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
+        ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
       </button>`;
     }).join("")}</div>`;
   } else {
@@ -105,7 +105,7 @@ function openBuyBg(id) {
   pendingBuy = { type: "bg", id };
   openOverlay(`<div class="overlay dialog-wrap">
     <div class="dialog">
-      <div class="bg-thumb ${bg.cls}" style="width:100%;height:96px;border-radius:16px"><div class="s"></div><div class="h"></div></div>
+      <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"><div class="s"></div><div class="h"></div></div>
       <h3>解锁「${bg.name}」？</h3>
       <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和装饰小铺。</p>
       <div class="d-actions">

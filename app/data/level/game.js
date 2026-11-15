@@ -65,8 +65,8 @@ function correctFx(combo) {
     const delay = (Math.random() * 0.45).toFixed(2);
     const dur = (1.05 + Math.random() * 0.6).toFixed(2);
     const size = 6 + Math.round(Math.random() * 6);
-    const round = i % 3 === 0 ? "50%" : "2px";
-    return `<i style="left:${left}%;width:${size}px;height:${size}px;background:${FX_COLORS[i % FX_COLORS.length]};border-radius:${round};animation-delay:${delay}s;animation-duration:${dur}s"></i>`;
+    const round = i % 3 === 0 ? "50%" : "0.125rem";
+    return `<i style="left:${left}%;width:${sz(size)};height:${sz(size)};background:${FX_COLORS[i % FX_COLORS.length]};border-radius:${round};animation-delay:${delay}s;animation-duration:${dur}s"></i>`;
   }).join("");
   return `<div class="qfx ok-fx" aria-hidden="true">
     <div class="fx-confetti">${confetti}</div>
@@ -295,7 +295,7 @@ function screenResult() {
   const confettiPieces = Array.from({ length: 26 }, (_, i) => {
     const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
     const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
-    return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${w}px;height:${h}px;background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "2px"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
+    return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
   }).join("");
   return `<section class="screen result-page" data-screen="result">
     <div class="confetti">${confettiPieces}</div>
@@ -432,7 +432,7 @@ function screenEvolution() {
             <div style="color:#FFD25A">${I.chevron(12)}</div>
           </div>
           <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
-          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:2px">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
+          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
           <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
         </div>
       </div>

@@ -45,7 +45,7 @@ function screenMap() {
         <span class="track"><i style="width:${Math.round((starTotal / starMax) * 100)}%"></i></span>
       </div>
 
-      <section class="map-card" style="background:${cfg.bg};border-color:${cfg.border};box-shadow:0 6px 0 ${cfg.border}48">
+      <section class="map-card" style="background:${cfg.bg};border-color:${cfg.border};box-shadow:0 0.375rem 0 ${cfg.border}48">
         ${mapHtml}
         <span class="map-tag">${theme.emoji} ${theme.name}</span>
         <div class="caption">

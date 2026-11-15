@@ -30,7 +30,7 @@ function sceneHTML() {
     if (SCENE_HTML.night) return SCENE_HTML.night;
     const dots = Array.from({ length: 18 }, (_, i) => {
       const x = (i * 37 + 11) % 100, y = (i * 23 + 7) % 70, s = (i % 3) + 1.2;
-      return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.3 + (i % 4) * 0.16}"></i>`;
+      return `<i style="left:${x}%;top:${y}%;width:${sz(s)};height:${sz(s)};opacity:${0.3 + (i % 4) * 0.16}"></i>`;
     }).join("");
     return (SCENE_HTML.night = `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
       <div class="hill a"></div><div class="hill b"></div>
@@ -63,7 +63,7 @@ function openSettings() {
       <div class="grab"></div>
       <h2>设置</h2>
       <div class="sheet-sub">${standalone ? "当前已从主屏幕运行，体验和 App 一样。" : "调整声音、安装到主屏幕，或重置演示进度。"}</div>
-      <div style="margin-top:10px">
+      <div style="margin-top:0.625rem">
         <div class="setting-row">
           <div class="s-ic">${I.volume(18)}</div>
           <div class="s-txt"><b>音效与发音</b><span>答对 / 答错 / 翻页的提示音</span></div>
@@ -118,7 +118,7 @@ function openResetConfirm() {
       <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">取消</button>
-        <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 5px 0 #B84435">确认重置</button>
+        <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 0.3125rem 0 #B84435">确认重置</button>
       </div>
     </div>
   </div>`);
