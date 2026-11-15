@@ -36,8 +36,8 @@
 .hero .leaves.l{left:-1.8cqh;bottom:18.7cqh;width:25.3cqh}
 .hero .leaves.r{right:-3cqh;top:27.7cqh;width:22.9cqh;opacity:.75;transform:rotate(18deg)}
 .hero .dino-wrap{
-  position:absolute;left:calc(50% - 12cqh);bottom:24.7cqh;
-  width:65.7cqh;height:65.7cqh;
+  position:absolute;left:calc(50% + 1cqh);bottom:22.5cqh;
+  width:60cqh;height:60cqh;
   transform:translateX(-50%);
   filter:drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.18));
   animation:bob 4.2s ease-in-out infinite;
@@ -57,6 +57,9 @@
   font-weight:var(--w-read);color:#57705B;box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.1)}
 .hero .bubble b{color:var(--green);font-size:0.8125rem;font-weight:var(--w-black)}
 .hero .bubble.max b{color:var(--orange)}
+/* 蜡笔恐龙形象更大，气泡要压在恐龙之上才读得清 */
+.hero .dino-wrap{z-index:2}
+.hero .bubble{z-index:3}
 
 .growth-panel{
   position:absolute;left:3.6cqh;right:3.6cqh;bottom:3.6cqh;min-height:16.3cqh;border-radius:1.125rem;
@@ -138,6 +141,11 @@
 .profile-card .pc-ava{width:3.875rem;height:3.875rem;border-radius:1.25rem;background:#E6F5D3;border:0.15625rem solid #fff;overflow:hidden;
   position:relative;flex:none;box-shadow:0 0.375rem 0.875rem rgba(70,50,20,.12);z-index:1}
 .profile-card .pc-ava .crop{position:absolute;width:6.875rem;height:6.875rem;left:-2.8125rem;top:-0.25rem}
+.profile-card .pc-ava .crop>.dino{transform-origin:50% 49.5%;transform:translate(1.313rem,-0.98rem) scale(0.72)}
+.profile-card .pc-ava .crop>.dino[data-stage=baby]{transform-origin:27.6% 24.2%;transform:translate(2.852rem,0.77rem) scale(1.02)}
+.profile-card .pc-ava .crop>.dino[data-stage=teen]{transform-origin:26.4% 16.7%;transform:translate(2.933rem,1.29rem) scale(1.16)}
+.profile-card .pc-ava .crop>.dino[data-stage=adult]{transform-origin:26.3% 15.4%;transform:translate(2.942rem,1.38rem) scale(1.17)}
+.profile-card .pc-ava .crop>.dino[data-stage=super]{transform-origin:27.1% 22.4%;transform:translate(2.888rem,0.9rem) scale(1.13)}
 .profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
 .profile-card .pc-main b{font-size:1.1875rem;font-weight:var(--w-black);letter-spacing:-0.0125rem}
 .profile-card .pc-main .lv{font-size:0.625rem;font-weight:var(--w-black);color:#fff;background:var(--green);padding:0.125rem 0.375rem;border-radius:0.3125rem;margin-left:0.3125rem;vertical-align:0.125rem}

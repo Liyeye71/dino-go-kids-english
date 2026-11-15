@@ -139,6 +139,12 @@ h1,h2,h3,h4,p{margin:0}
 .avatar{width:2.875rem;height:2.875rem;border-radius:1rem;background:#FFF6E2;border:0.125rem solid #fff;
   box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
 .avatar .crop{position:absolute;width:6rem;height:6rem;left:-2.4375rem;top:-0.4375rem}
+/* 蜡笔恐龙位图按阶段重新取景：让头部落在头像圆圈中央 */
+.avatar .crop>.dino{transform-origin:50% 49.5%;transform:translate(0.875rem,-1.094rem) scale(0.708)}
+.avatar .crop>.dino[data-stage=baby]{transform-origin:27.6% 24.2%;transform:translate(2.219rem,0.422rem) scale(1.008)}
+.avatar .crop>.dino[data-stage=teen]{transform-origin:26.4% 16.7%;transform:translate(2.289rem,0.875rem) scale(1.156)}
+.avatar .crop>.dino[data-stage=adult]{transform-origin:26.3% 15.4%;transform:translate(2.297rem,0.953rem) scale(1.163)}
+.avatar .crop>.dino[data-stage=super]{transform-origin:27.1% 22.4%;transform:translate(2.25rem,0.531rem) scale(1.124)}
 
 /* ------------------------------------------------ animations */
 @keyframes screenIn{from{opacity:0;transform:translateY(0.5rem)}to{opacity:1;transform:none}}

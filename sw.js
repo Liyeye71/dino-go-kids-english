@@ -1,12 +1,17 @@
 /* DinoGo · offline cache */
-const VERSION = "0.55";
+const VERSION = "0.56";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./images/icons/icon-192.png",
   "./images/icons/icon-512.png",
-  "./images/icons/apple-touch-icon.png"
+  "./images/icons/apple-touch-icon.png",
+  "./images/dino/egg.webp",
+  "./images/dino/baby.webp",
+  "./images/dino/teen.webp",
+  "./images/dino/adult.webp",
+  "./images/dino/super.webp"
 ];
 
 self.addEventListener("install", (event) => {
