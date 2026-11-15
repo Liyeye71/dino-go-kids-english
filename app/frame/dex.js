@@ -17,13 +17,9 @@ function dexRewardInfo() {
 
 /* 图鉴正文：小铺 Tab 内嵌使用（不含 .scroll 与底部 Tab） */
 function dexBody() {
-  const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["legend", "传说"]];
-  const list = DEX.filter((d) => {
-    if (dexFilter === "all") return true;
-    if (dexFilter === "legend") return d.rarity >= 5;
-    if (dexFilter === "baby") return d.key === "egg" || d.key === "baby";
-    return d.key === dexFilter;
-  });
+  const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["super", "完全体"], ["ultra", "究极体"]];
+  const filterPhases = { baby: "幼年期", teen: "成长期", adult: "成熟期", super: "完全体", ultra: "究极体" };
+  const list = DEX.filter((d) => dexFilter === "all" || d.phase === filterPhases[dexFilter]);
   const reward = dexRewardInfo();
   const pct = Math.round((state.dex.length / DEX.length) * 100);
   return `<div class="dex-sum card">
@@ -52,7 +48,7 @@ function dexBody() {
       }).join("")}
     </div>
 
-    ${ultraSkinSection()}
+    ${dexFilter === "ultra" ? ultraSkinSection() : ""}
 
     <div class="dex-reward">
       <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"></div></div>

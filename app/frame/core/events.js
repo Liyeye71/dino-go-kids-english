@@ -84,6 +84,9 @@ document.addEventListener("click", (e) => {
     save();
     sfx("tap");
     render();
+  } else if (action === "open-animal-scene") {
+    sfx("tap");
+    openAnimalScene(el.dataset.scene);
   } else if (action === "settings") {
     openSettings();
   } else if (action === "toggle-sound") {

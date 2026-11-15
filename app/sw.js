@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "0.56";
+const VERSION = "0.59";
 const ASSETS = [
   "./",
   "./index.html",
@@ -19,6 +19,8 @@ const ASSETS = [
   "./images/background/jungle.webp",
   "./images/background/sunset.webp",
   "./images/background/night.webp",
+  "./images/background/animal-zoo.webp",
+  "./images/background/animal-ocean.webp",
   "./images/icons/avatar-egg.webp",
   "./images/icons/avatar-baby.webp",
   "./images/icons/avatar-teen.webp",
