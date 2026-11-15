@@ -55,13 +55,6 @@ document.addEventListener("click", (e) => {
     shopTab = el.dataset.tab;
     sfx("tap");
     renderAndResetScroll();
-  } else if (action === "buy-item") {
-    openBuyItem(el.dataset.id);
-  } else if (action === "equip-item") {
-    toggleItem(el.dataset.id);
-  } else if (action === "locked-item") {
-    const item = ITEMS.find((i) => i.id === el.dataset.id);
-    if (item && item.unlockStage) toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
   } else if (action === "buy-bg") {
     openBuyBg(el.dataset.id);
   } else if (action === "equip-bg") {
@@ -70,6 +63,14 @@ document.addEventListener("click", (e) => {
     confirmBuy();
   } else if (action === "dex-detail") {
     openDexDetail(el.dataset.key);
+  } else if (action === "pick-ultra") {
+    state.ultraSkin = Math.min(4, Math.max(1, Number(el.dataset.skin) || 1));
+    setUltraSkin(state.ultraSkin);
+    save();
+    sfx("tap");
+    render();
+  } else if (action === "locked-ultra") {
+    toast("进化成超级霸王龙后，就能切换这几种机甲形态");
   } else if (action === "filter-dex") {
     dexFilter = el.dataset.filter;
     sfx("tap");

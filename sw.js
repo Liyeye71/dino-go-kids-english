@@ -11,7 +11,23 @@ const ASSETS = [
   "./images/dino/baby.webp",
   "./images/dino/teen.webp",
   "./images/dino/adult.webp",
-  "./images/dino/super.webp"
+  "./images/dino/super.webp",
+  "./images/dino/ultra-1.webp",
+  "./images/dino/ultra-2.webp",
+  "./images/dino/ultra-3.webp",
+  "./images/dino/ultra-4.webp",
+  "./images/background/jungle.webp",
+  "./images/background/sunset.webp",
+  "./images/background/night.webp",
+  "./images/icons/avatar-egg.webp",
+  "./images/icons/avatar-baby.webp",
+  "./images/icons/avatar-teen.webp",
+  "./images/icons/avatar-adult.webp",
+  "./images/icons/avatar-super.webp",
+  "./images/icons/avatar-ultra-1.webp",
+  "./images/icons/avatar-ultra-2.webp",
+  "./images/icons/avatar-ultra-3.webp",
+  "./images/icons/avatar-ultra-4.webp"
 ];
 
 self.addEventListener("install", (event) => {

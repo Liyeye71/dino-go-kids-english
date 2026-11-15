@@ -10,6 +10,11 @@ let voiceChunks = [];
 let voiceUrl = "";
 let voiceTimer = null;
 
+/* 头像图标名：究极体按当前机甲形态取图标 */
+function avatarKey() {
+  return state.stage === "ultra" ? `ultra-${state.ultraSkin}` : state.stage;
+}
+
 function resetVoice() {
   if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
   if (voiceRec && voiceRec.state !== "inactive") {
@@ -161,15 +166,11 @@ function screenHome() {
   const word = reviewWord = randomWord();
   const example = generateExample(word);
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
-  let bubble;
-  if (!next) bubble = `已经成长为<br><b>超级霸王龙</b>！<br>继续收集星星吧`;
-  else if (pending) bubble = `成长值已满<br>快去<b>进化</b>吧！`;
-  else bubble = `再获得 <b>${remain}</b> 成长值<br>就能进化成<br><b>${next.name}</b>！`;
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
-        <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
+        <button class="avatar" data-action="profile" aria-label="成长档案"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
           <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
@@ -178,27 +179,27 @@ function screenHome() {
       </div>
 
       <section class="hero ${heroSkyClass()}">
-        ${sceneHTML()}
+        ${skyFx()}
         <div class="hero-id">
           <div class="stage-tag">${stageChip()}</div>
           <div class="name"><b>小诺</b></div>
         </div>
-        <div class="bubble ${pending ? "max" : ""}">${bubble}</div>
-        <div class="dino-wrap ${dinoCls} ${state.equipped.head ? "with-hat" : ""}">${dino(state.stage, { equipped: state.equipped })}</div>
-        <div class="growth-panel">
-          <div class="g-main">
-            <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
-            <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
-            <div class="g-next">
-              <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
-              <span>${Math.round(pct * 100)}%</span>
-            </div>
-          </div>
-          <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
-            ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
-          </button>
-        </div>
+        <div class="dino-wrap ${dinoCls}">${dino(state.stage)}</div>
       </section>
+
+      <div class="growth-panel">
+        <div class="g-main">
+          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
+          <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
+          <div class="g-next">
+            <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
+            <span>${Math.round(pct * 100)}%</span>
+          </div>
+        </div>
+        <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
+          ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
+        </button>
+      </div>
 
       <div class="word-card">
         <div class="ring"></div>
@@ -245,12 +246,12 @@ function screenProfile() {
   const weekMin = days.reduce((n, d) => n + d[1], 0);
   const streak = streakDays();
   const ach = [
-    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
-    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", sub: `${state.words} / 100 词` },
-    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", sub: `${state.threeStars} 次` },
-    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", sub: "???" },
+    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", done: streak >= 7, sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
+    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", done: state.words >= 100, sub: `${state.words} / 100 词` },
+    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", done: state.threeStars >= 1, sub: `${state.threeStars} 次` },
+    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", done: false, sub: "???" },
   ];
-  const decorCount = state.owned.length;
+  const wordsCount = state.words;
   return `<section class="screen" data-screen="profile">
     <div class="scroll profile-scroll">
       <div class="profile-head">
@@ -261,14 +262,14 @@ function screenProfile() {
 
       <div class="profile-card">
         <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
-        <div class="pc-ava"><div class="crop">${dino(state.stage)}</div></div>
+        <div class="pc-ava"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></div>
         <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 1 天 · 累计闯关 ${totalLevelsDone()} 次</p></div>
         <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
       </div>
 
       <div class="stat-row">
         <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
-        <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
+        <div class="stat-card"><div class="v num">${wordsCount}</div><div class="k">已学单词</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>
 
@@ -287,16 +288,16 @@ function screenProfile() {
       </div>
 
       <div class="card ach-card">
-        <div class="ach-head"><b>成就徽章</b><span>3 / 12 已点亮</span></div>
+        <div class="ach-head"><b>成就徽章</b><span>${ach.filter((a) => a.done).length} / 12 已点亮</span></div>
         <div class="ach-list">${ach.map((a) => `<div class="ach">
-          <div class="medal ${a.cls}">${a.icon}${a.cls !== "lock" ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
+          <div class="medal ${a.cls}">${a.icon}${a.done ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
           <b>${a.name}</b><span>${a.sub}</span>
         </div>`).join("")}</div>
       </div>
 
       <div class="quote-card">
         <div class="qi">${I.flame(18, "#E2A62E")}</div>
-        <div class="q">小诺说：「今天也一起学 10 分钟吧，<br>我离超级霸王龙又近了一步！」</div>
+        <div class="q">小诺说：「今天也一起学 10 分钟吧，我离超级霸王龙又近了一步！」</div>
       </div>
 
       <div class="profile-cta"><button class="btn" data-action="start-quiz">去闯关，帮小诺进化 <span class="hint">+120 EXP</span></button></div>

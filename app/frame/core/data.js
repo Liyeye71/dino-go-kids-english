@@ -11,20 +11,21 @@ const STAGES = [
   { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
 ];
 
-const ITEMS = [
-  { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
-  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 16,  thumb: "h2", art: itemGlasses },
-  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 30,  thumb: "h3", badge: "NEW", art: itemWings },
-  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 40,  thumb: "h4", art: itemCrown },
-];
-
 const BACKGROUNDS = [
-  { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
-  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 40,  cls: "night" },
+  { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
+  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
+  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 40,  cls: "night" },
 ];
 
 const DEX = STAGES.map((s) => ({ ...s }));
+
+/* 超级霸王龙（究极体）的四种机甲形态：解锁 ultra 后可在图鉴里自由切换 */
+const ULTRA_SKINS = [
+  { id: 1, name: "彩虹能量", sub: "尾巴彩虹能量环" },
+  { id: 2, name: "护目炮塔", sub: "护目镜 + 背部炮塔" },
+  { id: 3, name: "霓虹疾行", sub: "霓虹电路 + 喷射推进" },
+  { id: 4, name: "红眼重装", sub: "重装机械臂甲" },
+];
 
 const DEFAULT_STATE = {
   v: 4,
@@ -39,10 +40,9 @@ const DEFAULT_STATE = {
   minutes: 0,
   threeStars: 0,
   tasks: { level: false },
-  owned: [],
-  equipped: { head: null, face: null, back: null },
   bg: "jungle",
   bgOwned: ["jungle"],
+  ultraSkin: 1,
   dex: ["egg"],
   sound: true,
 };

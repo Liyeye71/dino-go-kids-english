@@ -156,13 +156,8 @@ h1,h2,h3,h4,p{margin:0}
 
 .avatar{width:2.875rem;height:2.875rem;border-radius:1rem;background:#FFF6E2;border:0.125rem solid #fff;
   box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
-.avatar .crop{position:absolute;width:6rem;height:6rem;left:-2.4375rem;top:-0.4375rem}
-/* 蜡笔恐龙位图按阶段重新取景：让头部落在头像圆圈中央 */
-.avatar .crop>.dino{transform-origin:50% 49.5%;transform:translate(0.875rem,-1.094rem) scale(0.708)}
-.avatar .crop>.dino[data-stage=baby]{transform-origin:27.6% 24.2%;transform:translate(2.219rem,0.422rem) scale(1.008)}
-.avatar .crop>.dino[data-stage=teen]{transform-origin:26.4% 16.7%;transform:translate(2.289rem,0.875rem) scale(1.156)}
-.avatar .crop>.dino[data-stage=adult]{transform-origin:26.3% 15.4%;transform:translate(2.297rem,0.953rem) scale(1.163)}
-.avatar .crop>.dino[data-stage=super]{transform-origin:27.1% 22.4%;transform:translate(2.25rem,0.531rem) scale(1.124)}
+/* 头像使用按框尺寸预裁切的小图标，避免整幅恐龙图缩放取景导致比例失真 */
+.avatar .ava-icon{width:100%;height:100%;display:block;object-fit:cover}
 
 /* ------------------------------------------------ animations */
 @keyframes screenIn{from{opacity:0;transform:translateY(0.5rem)}to{opacity:1;transform:none}}
@@ -195,39 +190,24 @@ h1,h2,h3,h4,p{margin:0}
 .home-top .meta .flame{color:var(--orange);display:flex;align-items:center;justify-content:center;height:1rem;flex:none}
 
 .hero{
-  position:relative;height:clamp(20.75rem,40vh,26.25rem);border-radius:1.875rem;overflow:hidden;
+  position:relative;height:clamp(18.75rem,36vh,24rem);border-radius:1.875rem;overflow:hidden;
   border:0.09375rem solid #D9E8C2;
-  background:linear-gradient(168deg,#DDF2CE 0%,#EFF8D6 48%,#FDF2D9 100%);
-  transition:background .6s ease,border-color .6s ease;
+  background-color:#DDF2CE;
+  /* 场景位图：中部留空给恐龙，前景草地承接恐龙站位 */
+  background-image:url("images/background/jungle.webp");
+  background-size:cover;background-position:center 82%;background-repeat:no-repeat;
+  transition:border-color .6s ease;
   container-type:size;
 }
-.hero .scene{position:absolute;inset:0;transition:opacity .4s ease}
-.hero .sun{position:absolute;right:9cqh;top:6cqh;width:23cqh;height:23cqh;border-radius:50%;
-  background:radial-gradient(circle at 38% 34%,#FFF3B8,#FFD25E);
-  box-shadow:0 0 0 4cqh rgba(255,218,112,.16);transition:all .5s ease}
-.hero .moon{position:absolute;right:10cqh;top:6.5cqh;width:20.5cqh;height:20.5cqh;border-radius:50%;
-  background:radial-gradient(circle at 38% 34%,#FFFCE8,#FFE9A8);box-shadow:0 0 9cqh rgba(255,236,170,.5)}
-.hero .moon::after{content:"";position:absolute;left:-4.2cqh;top:1.5cqh;width:16.3cqh;height:16.3cqh;border-radius:50%;
-  background:#1C4638;box-shadow:0 0 0 0.0625rem rgba(255,255,255,.02)}
-.hero .stars i{position:absolute;background:#FFF6D8;border-radius:50%}
-.hero .cloud{position:absolute;background:#fff;border-radius:6.1875rem;opacity:.62}
-.hero .cloud.a{width:19.9cqh;height:7.2cqh;right:30cqh;top:9cqh}
-.hero .cloud.b{width:14.5cqh;height:5.4cqh;right:38.6cqh;top:12.7cqh}
-.hero .hill{position:absolute;left:-10%;right:-10%;border-radius:50% 50% 0 0;transition:background .6s ease}
-.hero .hill.a{height:31.3cqh;bottom:-12.7cqh;background:#CDE9AC}
-.hero .hill.b{height:24.7cqh;bottom:-11.4cqh;background:#B9DF92;left:34%;right:-24%}
-.hero .leaves{position:absolute;pointer-events:none;opacity:.9}
-.hero .leaves.l{left:-1.8cqh;bottom:18.7cqh;width:25.3cqh}
-.hero .leaves.r{right:-3cqh;top:27.7cqh;width:22.9cqh;opacity:.75;transform:rotate(18deg)}
 .hero .dino-wrap{
-  position:absolute;left:calc(50% + 1cqh);bottom:22.5cqh;
-  width:60cqh;height:60cqh;
+  position:absolute;left:50%;bottom:8cqh;
+  width:64cqh;height:64cqh;
   transform:translateX(-50%);
-  filter:drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.18));
+  filter:drop-shadow(0 3.6cqh 4.6cqh rgba(48,104,64,.16));
   animation:bob 4.2s ease-in-out infinite;
+  z-index:2;
 }
 .hero .dino-wrap.ultra{filter:drop-shadow(0 0 7.8cqh rgba(255,210,90,.55)) drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.2))}
-.hero .dino-wrap.with-hat{bottom:19.9cqh}
 .hero .hero-id{position:absolute;left:4.2cqh;top:4.2cqh;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:1.5cqh}
 .hero .stage-tag{position:static;display:inline-flex;align-items:center;gap:0.375rem;height:7.8cqh;padding:0 0.625rem;
   border-radius:6.1875rem;background:rgba(255,255,255,.86);border:0.09375rem solid rgba(255,255,255,.92);
@@ -235,31 +215,25 @@ h1,h2,h3,h4,p{margin:0}
   box-shadow:0 0.1875rem 0.5rem rgba(80,60,20,.08)}
 .hero .name{position:static;display:flex;align-items:center;gap:0.375rem}
 .hero .name b{display:block;font-size:2.0625rem;font-weight:var(--w-black);letter-spacing:0.0125rem;line-height:1.15;
-  text-shadow:0 0.0625rem 0 rgba(255,255,255,.45)}
-.hero .bubble{position:absolute;right:3.6cqh;top:41.6cqh;width:38cqh;padding:0.5rem 0.625rem;
-  border-radius:0.75rem 0.75rem 0.75rem 0.1875rem;background:#fff;font-size:0.71875rem;line-height:1.75;letter-spacing:0.0125rem;
-  font-weight:var(--w-read);color:#57705B;box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.1)}
-.hero .bubble b{color:var(--green);font-size:0.8125rem;font-weight:var(--w-black)}
-.hero .bubble.max b{color:var(--orange)}
-/* 蜡笔恐龙形象更大，气泡要压在恐龙之上才读得清 */
-.hero .dino-wrap{z-index:2}
-.hero .bubble{z-index:3}
+  text-shadow:0 0.0625rem 0 rgba(255,255,255,.45),0 0 0.625rem rgba(255,247,224,.85),0 0 1.375rem rgba(255,247,224,.5)}
 
 .growth-panel{
-  position:absolute;left:3.6cqh;right:3.6cqh;bottom:3.6cqh;min-height:16.3cqh;border-radius:1.125rem;
-  background:rgba(255,255,255,.94);border:0.09375rem solid rgba(255,255,255,.9);
-  box-shadow:0 0.5rem 1.125rem rgba(74,97,50,.12);backdrop-filter:blur(0.375rem);
-  display:flex;align-items:center;gap:0.5625rem;padding:0.375rem 0.625rem 0.375rem 0.75rem;
+  margin-top:0.75rem;border-radius:1.25rem;background:#fff;
+  border:0.09375rem solid #EDF2E3;box-shadow:0 0.375rem 1rem rgba(74,97,50,.08);
+  display:flex;align-items:center;gap:0.625rem;padding:0.625rem 0.625rem 0.5625rem 0.875rem;
 }
 .growth-panel .g-main{flex:1;min-width:0}
 .growth-panel .g-row{display:flex;align-items:baseline;gap:0.375rem;line-height:1.1}
 .growth-panel .lb{font-size:0.71875rem;font-weight:var(--w-bold);color:var(--muted);letter-spacing:0.0625rem}
-.growth-panel .val{font-size:1.0625rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.0125rem}
+.growth-panel .val{font-size:1.125rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.0125rem}
 .growth-panel .val em{font-style:normal;font-size:0.6875rem;color:var(--muted);font-weight:var(--w-mid)}
-.growth-panel .g-next{font-size:0.6875rem;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:0.125rem;letter-spacing:0.0125rem;display:flex;justify-content:space-between}
+.growth-panel .g-next{font-size:0.6875rem;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:0.25rem;letter-spacing:0.0125rem;display:flex;justify-content:space-between}
 .growth-panel .g-next b{color:var(--orange);font-weight:var(--w-black)}
-.growth-panel .g-bar{height:0.4375rem;margin-top:0.125rem}
-.go-btn{width:12cqh;height:12cqh;border-radius:0.875rem;flex:none;display:grid;place-items:center;color:#fff;
+.growth-panel .g-bar{height:0.5rem;margin-top:0.375rem;background:#F2EEE3;box-shadow:inset 0 0.0625rem 0.1875rem rgba(93,68,25,.1)}
+.growth-panel .g-bar>i{background:linear-gradient(90deg,#9FDD4F,#3AA56B 65%,#2E8B57)}
+.growth-panel .g-bar>i::before{content:"";position:absolute;right:0.1875rem;top:0.0625rem;width:0.375rem;height:0.375rem;border-radius:50%;
+  background:#fff;box-shadow:0 0 0 0.125rem rgba(255,255,255,.45)}
+.go-btn{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;display:grid;place-items:center;color:#fff;
   background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 0.25rem 0 #1A5E3D,0 0.5rem 0.875rem rgba(31,107,74,.28)}
 .go-btn:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #1A5E3D}
 .go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 0.25rem 0 #C98A1C,0 0.5rem 0.875rem rgba(201,138,28,.3);color:#4A3206}
@@ -302,18 +276,52 @@ h1,h2,h3,h4,p{margin:0}
 .home-note{margin:0.75rem 0.25rem 0;font-size:0.6875rem;font-weight:var(--w-read);color:#AC9C80;text-align:center;line-height:1.7;letter-spacing:0.0125rem}
 
 /* hero background themes · 白天沿用已购背景，夜晚统一夜空 */
-.hero.sky-day.bg-sunset{background:linear-gradient(170deg,#FFD9A8 0%,#FFC7A0 44%,#FFE4C0 100%);border-color:#F1CBA4}
-.hero.sky-day.bg-sunset .sun{right:13.3cqh;top:19.3cqh;background:radial-gradient(circle at 38% 34%,#FFF3C4,#FF9E5C);
-  box-shadow:0 0 0 4.8cqh rgba(255,158,92,.16),0 0 18cqh rgba(255,158,92,.4)}
-.hero.sky-day.bg-sunset .hill.a{background:#E7B68C}
-.hero.sky-day.bg-sunset .hill.b{background:#D49A76}
-.hero.sky-night{background:linear-gradient(170deg,#183F38 0%,#1E4E40 45%,#2A5A46 100%);border-color:#2D5C4A}
-.hero.sky-night .hill.a{background:#245845}
-.hero.sky-night .hill.b{background:#1C4938}
-.hero.sky-night .name b{color:#FFF6DE}
-.hero.sky-night .bubble{background:rgba(255,255,255,.94);color:#57705B}
-.hero.sky-night .stage-tag{background:rgba(255,255,255,.9)}
-.hero.sky-night .leaves{opacity:.42;filter:brightness(.75)}
+.hero.bg-jungle{background-image:url("images/background/jungle.webp")}
+.hero.bg-sunset{background-image:url("images/background/sunset.webp");background-position:center 78%;border-color:#CFE2DE}
+.hero.bg-night{background-image:url("images/background/night.webp");background-position:center 76%;border-color:#E6D8C0}
+.hero.sky-night .name b{color:#FFF6DE;text-shadow:0 0.125rem 0.625rem rgba(14,28,56,.55)}
+
+/* ------------------------------------------------ sky fx：太阳 / 月亮 / 星星 / 云随真实时间切换 */
+.sky-fx{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:background .8s ease}
+.sky-fx.dawn{background:linear-gradient(180deg,rgba(255,212,158,.3),rgba(255,236,206,.06) 55%,transparent)}
+.sky-fx.day{background:linear-gradient(180deg,rgba(255,255,255,.1),transparent 46%)}
+.sky-fx.dusk{background:linear-gradient(180deg,rgba(255,166,108,.34),rgba(255,197,150,.1) 52%,transparent)}
+.sky-fx.night{background:linear-gradient(180deg,rgba(18,32,66,.62),rgba(22,38,74,.34) 48%,rgba(24,40,74,.18))}
+.sf-sun{position:absolute;width:3.25rem;height:3.25rem;border-radius:50%;
+  background:radial-gradient(circle at 42% 38%,#FFF5C8,#FFD25E 62%,#F5AE28);
+  box-shadow:0 0 0.875rem rgba(255,208,96,.6),0 0 2.5rem rgba(255,204,88,.42)}
+.sf-sun::after{content:"";position:absolute;inset:-40%;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,203,84,.62) 0deg 5deg,transparent 5deg 24deg);
+  -webkit-mask:radial-gradient(circle,transparent 55%,#000 56% 74%,transparent 75%);
+  mask:radial-gradient(circle,transparent 55%,#000 56% 74%,transparent 75%);
+  animation:skySpin 70s linear infinite}
+.sky-fx.dawn .sf-sun{left:10%;top:32%;width:2.75rem;height:2.75rem;opacity:.92}
+.sky-fx.day .sf-sun{right:12%;top:10%}
+.sky-fx.dusk .sf-sun{right:15%;top:19%;background:radial-gradient(circle at 42% 38%,#FFE3B4,#FFA85E 62%,#EE7A3C);
+  box-shadow:0 0 0.875rem rgba(255,166,94,.6),0 0 2.5rem rgba(255,150,80,.4)}
+.sf-moon{position:absolute;right:14%;top:10%;width:2.75rem;height:2.75rem;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#FFFBDF,#FFEEB0 70%,#F7DE8E);
+  box-shadow:0 0 1.5rem rgba(255,238,176,.5),0 0 0.5rem rgba(255,240,186,.4)}
+.sf-moon::before{content:"";position:absolute;left:26%;top:45%;width:22%;height:22%;border-radius:50%;background:rgba(226,200,126,.45)}
+.sf-moon::after{content:"";position:absolute;left:57%;top:22%;width:16%;height:16%;border-radius:50%;background:rgba(226,200,126,.4)}
+.sf-star{position:absolute;width:0.3125rem;height:0.3125rem;border-radius:50%;background:#FFF7D2;
+  box-shadow:0 0 0.5rem rgba(255,244,190,.9);animation:twinkle 3.2s ease-in-out infinite}
+.sf-star.s1{left:8%;top:16%}.sf-star.s2{left:22%;top:36%;width:0.25rem;height:0.25rem;animation-delay:.6s}
+.sf-star.s3{left:36%;top:11%;animation-delay:1.2s}.sf-star.s4{left:52%;top:26%;width:0.25rem;height:0.25rem;animation-delay:.3s}
+.sf-star.s5{left:68%;top:14%;animation-delay:1.8s}.sf-star.s6{left:83%;top:34%;width:0.25rem;height:0.25rem;animation-delay:.9s}
+.sf-star.s7{left:44%;top:44%;width:0.21875rem;height:0.21875rem;animation-delay:2.1s}.sf-star.s8{left:92%;top:8%;width:0.25rem;height:0.25rem;animation-delay:1.5s}
+.sf-cloud{position:absolute;height:1.25rem;width:3.25rem;border-radius:6.25rem;background:rgba(255,255,255,.85);
+  box-shadow:1rem 0.25rem 0 -0.1rem rgba(255,255,255,.8),-1rem 0.3rem 0 -0.15rem rgba(255,255,255,.72);
+  animation:skyDrift 32s ease-in-out infinite alternate}
+.sf-cloud.c1{left:37%;top:7%;transform:scale(.78);animation-duration:38s}
+.sf-cloud.c2{right:5%;top:34%;transform:scale(.92);opacity:.82;animation-duration:28s}
+.sf-cloud.c3{left:4%;top:52%;transform:scale(.55);opacity:.62;animation-duration:44s}
+.sky-fx.night .sf-cloud{background:rgba(206,222,246,.3);box-shadow:1rem 0.25rem 0 -0.1rem rgba(206,222,246,.26),-1rem 0.3rem 0 -0.15rem rgba(206,222,246,.22);
+  top:24%;left:30%;transform:scale(.85);opacity:.7}
+.sky-fx.dusk .sf-cloud{background:rgba(255,236,224,.82);box-shadow:1rem 0.25rem 0 -0.1rem rgba(255,236,224,.72),-1rem 0.3rem 0 -0.15rem rgba(255,236,224,.66)}
+@keyframes skySpin{to{transform:rotate(360deg)}}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes skyDrift{from{translate:-0.5rem 0}to{translate:0.75rem 0.25rem}}
 
 /* ------------------------------------------------ profile */
 .profile-head{display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem}
@@ -324,12 +332,7 @@ h1,h2,h3,h4,p{margin:0}
   background:linear-gradient(125deg,#FFF7E4,#F7EEDB);border:0.09375rem solid #EBDCC0}
 .profile-card .pc-ava{width:3.875rem;height:3.875rem;border-radius:1.25rem;background:#E6F5D3;border:0.15625rem solid #fff;overflow:hidden;
   position:relative;flex:none;box-shadow:0 0.375rem 0.875rem rgba(70,50,20,.12);z-index:1}
-.profile-card .pc-ava .crop{position:absolute;width:6.875rem;height:6.875rem;left:-2.8125rem;top:-0.25rem}
-.profile-card .pc-ava .crop>.dino{transform-origin:50% 49.5%;transform:translate(1.313rem,-0.98rem) scale(0.72)}
-.profile-card .pc-ava .crop>.dino[data-stage=baby]{transform-origin:27.6% 24.2%;transform:translate(2.852rem,0.77rem) scale(1.02)}
-.profile-card .pc-ava .crop>.dino[data-stage=teen]{transform-origin:26.4% 16.7%;transform:translate(2.933rem,1.29rem) scale(1.16)}
-.profile-card .pc-ava .crop>.dino[data-stage=adult]{transform-origin:26.3% 15.4%;transform:translate(2.942rem,1.38rem) scale(1.17)}
-.profile-card .pc-ava .crop>.dino[data-stage=super]{transform-origin:27.1% 22.4%;transform:translate(2.888rem,0.9rem) scale(1.13)}
+.profile-card .pc-ava .ava-icon{width:100%;height:100%;display:block;object-fit:cover}
 .profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
 .profile-card .pc-main b{font-size:1.1875rem;font-weight:var(--w-black);letter-spacing:-0.0125rem}
 .profile-card .pc-main .lv{font-size:0.625rem;font-weight:var(--w-black);color:#fff;background:var(--green);padding:0.125rem 0.375rem;border-radius:0.3125rem;margin-left:0.3125rem;vertical-align:0.125rem}
@@ -741,60 +744,74 @@ h1,h2,h3,h4,p{margin:0}
 .result-foot .back{height:1.75rem;font-size:0.8125rem;font-weight:var(--w-mid);color:#96876A;display:flex;align-items:center;justify-content:center;gap:0.25rem}
 
 .evo-page{position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;
-  background:#0F2E24;color:#FFF7E4;padding:calc(0.625rem + var(--safe-top)) 1.25rem calc(1.25rem + var(--safe-bottom))}
+  background:#BDEBFF;color:#5D4774;padding:calc(0.625rem + var(--safe-top)) 1.25rem calc(1.25rem + var(--safe-bottom))}
 .evo-page::-webkit-scrollbar{display:none}
-.evo-page .bg{position:absolute;inset:0;
+.evo-page .bg{position:absolute;inset:0;overflow:hidden;
   background:
-    radial-gradient(58% 42% at 50% 42%,rgba(255,206,92,.24) 0%,rgba(255,206,92,.06) 46%,rgba(15,46,36,0) 70%),
-    radial-gradient(120% 80% at 50% 116%,#1E5B41 0%,#143A2C 52%,#0C241C 100%)}
+    radial-gradient(circle at 84% 14%,#FFF9BC 0 3.125rem,rgba(255,241,150,.55) 3.1875rem 4.5rem,rgba(255,241,150,0) 4.5625rem),
+    linear-gradient(180deg,#9EDFFF 0%,#CDEFFF 48%,#FFF0C6 100%)}
+.evo-page .bg::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 4.5rem 2rem at 8% 19%,rgba(255,255,255,.96) 0 98%,transparent 100%),
+    radial-gradient(ellipse 4.25rem 2.75rem at 14% 17%,rgba(255,255,255,.96) 0 98%,transparent 100%),
+    radial-gradient(ellipse 5rem 2rem at 20% 19%,rgba(255,255,255,.96) 0 98%,transparent 100%),
+    radial-gradient(ellipse 3.75rem 1.625rem at 77% 29%,rgba(255,255,255,.82) 0 98%,transparent 100%),
+    radial-gradient(ellipse 3.5rem 2.25rem at 83% 27%,rgba(255,255,255,.82) 0 98%,transparent 100%),
+    radial-gradient(ellipse 4rem 1.625rem at 89% 29%,rgba(255,255,255,.82) 0 98%,transparent 100%),
+    radial-gradient(ellipse 80% 26% at 8% 108%,#A8DE91 0 98%,transparent 100%),
+    radial-gradient(ellipse 86% 32% at 92% 112%,#80CD8A 0 98%,transparent 100%),
+    linear-gradient(180deg,transparent 82%,#B8E79C 82%)}
 .evo-page .stars{position:absolute;inset:0;pointer-events:none}
-.evo-page .stars i{position:absolute;background:#FFF4CF;border-radius:50%}
+.evo-page .stars i{position:absolute;background:#FFF;border-radius:50%;box-shadow:0 0 0 0.125rem rgba(255,255,255,.18)}
+.evo-page .stars i:nth-child(3n){background:#FFD475}
+.evo-page .stars i:nth-child(4n){background:#F5A8C2}
 .evo-page .ring{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);border-radius:50%;
-  border:0.09375rem solid rgba(255,224,142,.26);pointer-events:none}
+  border:0.09375rem solid rgba(255,255,255,.7);pointer-events:none}
 .evo-page .ring.r1{width:min(86vw,20.625rem);height:min(86vw,20.625rem)}
-.evo-page .ring.r2{width:min(102vw,25rem);height:min(102vw,25rem);border-style:dashed;border-color:rgba(255,224,142,.16);animation:spin 60s linear infinite}
-.evo-page .ring.r3{width:min(120vw,29.375rem);height:min(120vw,29.375rem);border-color:rgba(255,224,142,.07)}
+.evo-page .ring.r2{width:min(102vw,25rem);height:min(102vw,25rem);border-style:dashed;border-color:rgba(116,91,151,.2);animation:spin 60s linear infinite}
+.evo-page .ring.r3{width:min(120vw,29.375rem);height:min(120vw,29.375rem);border-color:rgba(238,142,177,.2)}
 .evo-inner{position:relative;z-index:3;display:flex;flex-direction:column;min-height:100%}
 .evo-top{display:flex;align-items:center;justify-content:space-between;flex:none}
-.evo-top .tag{height:1.75rem;padding:0 0.6875rem;border-radius:6.1875rem;background:rgba(255,255,255,.1);
-  border:0.0625rem solid rgba(255,255,255,.14);display:flex;align-items:center;gap:0.375rem;
-  font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.1rem;color:#E7DDBF}
-.evo-top .close{width:2.125rem;height:2.125rem;border-radius:0.75rem;background:rgba(255,255,255,.1);color:#F2E9D2;display:grid;place-items:center}
+.evo-top .tag{height:1.75rem;padding:0 0.6875rem;border-radius:6.1875rem;background:rgba(255,255,255,.78);
+  border:0.0625rem solid rgba(255,255,255,.95);box-shadow:0 0.1875rem 0 rgba(104,77,143,.1);display:flex;align-items:center;gap:0.375rem;
+  font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.1rem;color:#75658F}
+.evo-top .close{width:2.125rem;height:2.125rem;border-radius:0.75rem;background:rgba(255,255,255,.82);border:0.0625rem solid #FFF;color:#75658F;display:grid;place-items:center;box-shadow:0 0.1875rem 0 rgba(104,77,143,.1)}
 .evo-title{text-align:center;margin-top:clamp(0.625rem,3vh,1.625rem);flex:none}
-.evo-title .en{font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.28125rem;color:#F2C860}
-.evo-title h1{font-size:clamp(2rem,6vw,2.625rem);font-weight:var(--w-black);color:#FFF8E6;letter-spacing:-0.03125rem;margin-top:0.5rem;
-  text-shadow:0 0.25rem 1.875rem rgba(255,198,71,.35)}
-.evo-title h1 em{font-style:normal;color:#FFD25A}
+.evo-title .en{font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.28125rem;color:#8A6DB0;text-shadow:0 0.0625rem 0 #FFF}
+.evo-title h1{font-size:clamp(2rem,6vw,2.625rem);font-weight:var(--w-black);color:#FFF;letter-spacing:-0.03125rem;margin-top:0.5rem;
+  -webkit-text-stroke:0.0625rem #6D4C86;paint-order:stroke fill;text-shadow:0 0.25rem 0 #A487C5,0 0.5rem 1rem rgba(93,71,116,.16)}
+.evo-title h1 em{font-style:normal;color:#FFD65A}
 .evo-stage{display:flex;align-items:center;justify-content:center;gap:0.625rem;margin-top:0.625rem;flex-wrap:wrap}
 .evo-stage .st{height:1.875rem;padding:0 0.75rem;border-radius:6.1875rem;display:flex;align-items:center;gap:0.3125rem;
-  font-size:0.6875rem;font-weight:var(--w-bold);color:#CFE9CB;background:rgba(255,255,255,.08);border:0.0625rem solid rgba(255,255,255,.12)}
-.evo-stage .st.new{background:rgba(255,210,90,.16);border-color:rgba(255,210,90,.4);color:#FFD868}
-.evo-stage .arr{color:#F2C860;opacity:.8}
+  font-size:0.6875rem;font-weight:var(--w-bold);color:#6F668A;background:rgba(255,255,255,.82);border:0.0625rem solid #FFF;box-shadow:0 0.125rem 0 rgba(104,77,143,.08)}
+.evo-stage .st.new{background:#FFF0A8;border-color:#FFC75F;color:#A65B32}
+.evo-stage .arr{color:#D58645;opacity:1}
 .evo-dino{position:relative;height:clamp(13.75rem,32vh,20rem);margin-top:0.125rem;display:grid;place-items:center;flex:none}
-.evo-dino .glow{position:absolute;width:min(74vw,18.125rem);height:min(74vw,18.125rem);border-radius:50%;
-  background:radial-gradient(circle,rgba(255,216,104,.34) 0%,rgba(255,216,104,.1) 45%,rgba(255,216,104,0) 70%)}
-.evo-dino .halo{position:absolute;width:min(64vw,15.375rem);height:min(64vw,15.375rem);border-radius:50%;border:0.0625rem solid rgba(255,226,150,.35)}
+.evo-dino .glow{position:absolute;width:min(88vw,22rem);height:min(88vw,22rem);border-radius:50%;opacity:.5;
+  background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.85) 0deg 7deg,rgba(255,255,255,0) 7deg 19deg);
+  -webkit-mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.8) 32%,transparent 70%);mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.8) 32%,transparent 70%);animation:spin 36s linear infinite}
+.evo-dino .halo{position:absolute;width:min(64vw,15.375rem);height:min(64vw,15.375rem);border-radius:50%;border:0.125rem solid rgba(255,255,255,.78);background:rgba(255,255,255,.2);box-shadow:0 0 0 0.375rem rgba(255,217,105,.16)}
 .evo-dino .dino{position:relative;width:min(66vw,17.375rem);height:min(66vw,17.375rem);
-  filter:drop-shadow(0 1rem 1.875rem rgba(0,0,0,.32)) drop-shadow(0 0 1.625rem rgba(255,210,90,.2));
+  filter:drop-shadow(0 0.75rem 0 rgba(102,75,123,.12)) drop-shadow(0 1rem 1.5rem rgba(79,107,130,.2));
   animation:evoFloat 4s ease-in-out infinite}
-.evo-dino .spark{position:absolute;color:#FFE08A}
+.evo-dino .spark{position:absolute;color:#FFBE4F;filter:drop-shadow(0 0.0625rem 0 #FFF)}
 .evo-unlock{margin-top:auto;border-radius:1.625rem;padding:1rem;flex:none;
-  background:rgba(255,255,255,.075);border:0.0625rem solid rgba(255,255,255,.16);
-  box-shadow:0 1.25rem 2.5rem rgba(0,0,0,.24);backdrop-filter:blur(0.625rem);-webkit-backdrop-filter:blur(0.625rem)}
+  background:rgba(255,253,245,.92);border:0.125rem solid rgba(255,255,255,.95);
+  box-shadow:0 0.375rem 0 rgba(112,86,141,.1),0 1rem 2rem rgba(81,91,125,.14);backdrop-filter:blur(0.625rem);-webkit-backdrop-filter:blur(0.625rem)}
 .evo-unlock .u-head{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
-.evo-unlock .u-head .lb{font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.1125rem;color:#D9CB9E}
-.evo-unlock .u-head .nv{font-size:0.65625rem;font-weight:var(--w-bold);color:#9FE3B7;background:rgba(93,208,139,.12);padding:0.1875rem 0.4375rem;border-radius:6.1875rem;white-space:nowrap}
+.evo-unlock .u-head .lb{font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.1125rem;color:#9B83AA}
+.evo-unlock .u-head .nv{font-size:0.65625rem;font-weight:var(--w-bold);color:#4F9E72;background:#DDF4D9;padding:0.1875rem 0.4375rem;border-radius:6.1875rem;white-space:nowrap}
 .evo-unlock .u-main{display:flex;align-items:center;gap:0.75rem;margin-top:0.625rem}
-.evo-unlock .u-ico{width:3.375rem;height:3.375rem;border-radius:1.0625rem;background:linear-gradient(160deg,#FFE6A9,#FFC65C);
-  display:grid;place-items:center;flex:none;box-shadow:0 0.5rem 1.125rem rgba(255,181,61,.25)}
+.evo-unlock .u-ico{width:3.375rem;height:3.375rem;border-radius:1.0625rem;background:linear-gradient(160deg,#FFF0A8,#FFC65C);border:0.125rem solid #FFF;
+  display:grid;place-items:center;flex:none;box-shadow:0 0.25rem 0 rgba(213,143,54,.16)}
 .evo-unlock .u-ico svg{width:2.75rem;height:2.75rem}
 .evo-unlock .u-txt{flex:1;min-width:0}
-.evo-unlock .u-txt b{display:block;font-size:1rem;font-weight:var(--w-black);color:#FFF7E4}
-.evo-unlock .u-txt span{display:block;font-size:0.71875rem;font-weight:var(--w-read);color:#B9C9B6;margin-top:0.1875rem;line-height:1.45}
+.evo-unlock .u-txt b{display:block;font-size:1rem;font-weight:var(--w-black);color:#5D4774}
+.evo-unlock .u-txt span{display:block;font-size:0.71875rem;font-weight:var(--w-read);color:#81768D;margin-top:0.1875rem;line-height:1.45}
 .evo-unlock .u-skill{display:flex;align-items:center;gap:0.375rem;margin-top:0.625rem;padding-top:0.625rem;
-  border-top:0.0625rem dashed rgba(255,255,255,.14);font-size:0.6875rem;font-weight:var(--w-mid);color:#EADDB9}
-.evo-unlock .u-skill b{color:#FFD25A}
-.evo-unlock .btn{margin-top:0.8125rem;min-height:3.125rem;font-size:1rem;color:#4C3306}
+  border-top:0.0625rem dashed #E7D7C5;font-size:0.6875rem;font-weight:var(--w-mid);color:#77677F}
+.evo-unlock .u-skill b{color:#E58B32}
+.evo-unlock .btn{margin-top:0.8125rem;min-height:3.125rem;font-size:1rem;color:#704314;background:linear-gradient(180deg,#FFE477,#FFC84D);border:0.09375rem solid rgba(255,255,255,.75);box-shadow:0 0.25rem 0 #D89732}
 
 /* ============================================================
    DinoGo · 恐龙英语 — dex：恐龙图鉴
@@ -855,6 +872,25 @@ h1,h2,h3,h4,p{margin:0}
 .dex-reward .dr-note{font-size:0.625rem;font-weight:var(--w-read);color:#A19278;margin-top:0.25rem}
 .dex-reward .dr-lock{width:1.875rem;height:1.875rem;border-radius:0.625rem;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
 
+/* 究极体机甲形态切换 */
+.skin-head{display:flex;align-items:baseline;justify-content:space-between;gap:0.5rem;margin-top:1rem;padding:0 0.125rem}
+.skin-head b{font-size:0.8125rem;font-weight:var(--w-black)}
+.skin-head span{font-size:0.625rem;font-weight:var(--w-read);color:#A19278;white-space:nowrap}
+.skin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5625rem;margin-top:0.5rem}
+.skin-card{position:relative;border-radius:1.125rem;background:#fff;border:0.09375rem solid var(--line);padding:0.4375rem;text-align:center}
+.skin-card:active{transform:scale(.97)}
+.skin-card .pic{height:5.75rem;border-radius:0.75rem;background:#E8EEF9;overflow:hidden;display:grid;place-items:center}
+.skin-card .pic svg{width:100%;height:100%;transform:scale(1.18) translateY(-3%)}
+.skin-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
+.skin-card .sub{font-size:0.59375rem;font-weight:var(--w-read);color:#A0AE9F;margin-top:0.0625rem}
+.skin-card.on{border-color:rgba(46,139,87,.5);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.13)}
+.skin-card .cur{position:absolute;left:0.5rem;top:0.5rem;font-size:0.59375rem;font-weight:var(--w-black);color:#fff;
+  background:var(--green);padding:0.125rem 0.3125rem;border-radius:0.3125rem;z-index:4}
+.skin-card.locked .pic{background:#F4EFE3}
+.skin-card.locked .pic svg{opacity:.22;filter:grayscale(1)}
+.skin-card.locked .nm,.skin-card.locked .sub{color:#B3AC9B}
+.skin-card .lock-ic{position:absolute;right:0.5625rem;top:0.5625rem;color:#C6BDAA;z-index:4}
+
 /* ------------------------------------------------ words */
 .words-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.625rem}
 .words-head .t{flex:1;min-width:0}
@@ -900,7 +936,7 @@ h1,h2,h3,h4,p{margin:0}
 
 
 /* ============================================================
-   DinoGo · 恐龙英语 — shop：小铺（装扮 / 背景 / 图鉴）
+   DinoGo · 恐龙英语 — shop：小铺（背景 / 图鉴）
    ============================================================ */
 
 /* ------------------------------------------------ shop */
@@ -909,26 +945,19 @@ h1,h2,h3,h4,p{margin:0}
 .shop-head h1{font-size:clamp(1.5rem,4vw,1.875rem);font-weight:var(--w-black);letter-spacing:-0.0375rem;line-height:1.1}
 .shop-head p{font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.25rem}
 .shop-preview{height:clamp(11.875rem,26vh,15.625rem);border-radius:1.75rem;position:relative;overflow:hidden;
-  background:linear-gradient(160deg,#DDF0CB 0%,#F6F8DA 62%,#FFF1D2 100%);border:0.09375rem solid #D9E7C1;
-  transition:background .5s ease}
-.shop-preview .arch{position:absolute;left:50%;top:1.375rem;transform:translateX(-50%);width:11.75rem;height:9.375rem;
-  border-radius:5.875rem 5.875rem 1.375rem 1.375rem;background:linear-gradient(180deg,#CBE8B0,#EAF6D0);border:0.125rem solid rgba(255,255,255,.7)}
-.shop-preview .arch::after{content:"";position:absolute;inset:0.5625rem;border-radius:5.3125rem 5.3125rem 1rem 1rem;border:0.09375rem dashed rgba(80,130,80,.28)}
+  background-color:#DDF0CB;
+  background-image:url("images/background/jungle.webp");background-size:cover;background-position:center 78%;background-repeat:no-repeat;
+  border:0.09375rem solid #D9E7C1;transition:border-color .5s ease}
 .shop-preview > .dino{position:absolute;left:50%;top:1.875rem;width:clamp(10rem,22vh,13.125rem);height:clamp(10rem,22vh,13.125rem);transform:translateX(-50%);
   filter:drop-shadow(0 0.75rem 0.875rem rgba(48,104,64,.18));animation:bob 4.6s ease-in-out infinite}
-.shop-preview .podium{position:absolute;left:50%;bottom:1rem;transform:translateX(-50%);width:13.125rem;height:2.125rem;
-  border-radius:50%;background:radial-gradient(ellipse at 50% 30%,#FFF6DC,#EAD9B4);box-shadow:0 0.5rem 1.125rem rgba(120,96,50,.18)}
 .shop-preview .wearing{position:absolute;left:0.875rem;top:0.875rem;min-height:1.75rem;padding:0 0.625rem;border-radius:6.1875rem;background:#fff;
   display:flex;align-items:center;gap:0.3125rem;font-size:0.6875rem;font-weight:var(--w-bold);color:var(--green-d);
   box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.1);z-index:2}
 .shop-preview .pet{position:absolute;right:0.875rem;bottom:0.875rem;display:flex;align-items:center;gap:0.3125rem;
   font-size:0.6875rem;font-weight:var(--w-bold);color:#7B8E77;background:rgba(255,255,255,.82);padding:0.3125rem 0.5625rem;border-radius:6.1875rem;z-index:2}
-.shop-preview .spark{position:absolute;color:#F0B53B;opacity:.7}
-.shop-preview.bg-sunset{background:linear-gradient(160deg,#FFD9A8,#FFE9C6 60%,#FFF1D2)}
-.shop-preview.bg-sunset .arch{background:linear-gradient(180deg,#F4B98B,#FFDFB8)}
-.shop-preview.bg-night{background:linear-gradient(160deg,#1C453A,#2A5C48 60%,#1A4034)}
-.shop-preview.bg-night .arch{background:linear-gradient(180deg,#2E6A50,#1F4E3B);border-color:rgba(255,255,255,.18)}
-.shop-preview.bg-night .wearing{background:rgba(255,255,255,.9)}
+.shop-preview.bg-jungle{background-image:url("images/background/jungle.webp")}
+.shop-preview.bg-sunset{background-image:url("images/background/sunset.webp");background-position:center 74%;border-color:#CFE2DE}
+.shop-preview.bg-night{background-image:url("images/background/night.webp");background-position:center 74%;border-color:#E6D8C0}
 
 .shop-tabs{display:flex;align-items:center;gap:1.125rem;padding:0 0.125rem;height:2.75rem;margin-top:0.25rem}
 .shop-tabs .tab{font-size:0.875rem;font-weight:var(--w-bold);color:#A3AF9F;position:relative;height:2.75rem;display:flex;align-items:center}
@@ -938,49 +967,22 @@ h1,h2,h3,h4,p{margin:0}
   border-radius:0.3125rem;background:var(--coral);color:#fff;font-size:0.59375rem;font-weight:var(--w-black);margin-left:0.25rem;vertical-align:0.1875rem}
 .shop-tabs .all{margin-left:auto;font-size:0.71875rem;font-weight:var(--w-mid);color:var(--muted);display:flex;align-items:center;gap:0.1875rem}
 
-.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6875rem;margin-top:0.375rem}
-@media (min-width:620px){.shop-grid{grid-template-columns:repeat(4,1fr)}}
-.shop-item{border-radius:1.375rem;background:#fff;border:0.09375rem solid var(--line);padding:0.625rem;position:relative;
-  box-shadow:0 0.375rem 0.875rem rgba(94,70,30,.06);text-align:left;transition:transform .15s ease}
-.shop-item:active{transform:scale(.98)}
-.shop-item .thumb{height:5.375rem;border-radius:1rem;display:grid;place-items:center;position:relative;overflow:hidden}
-.shop-item .thumb.h1{background:#FFF1D4}
-.shop-item .thumb.h2{background:#E7F4FF}
-.shop-item .thumb.h3{background:#F1EBFF}
-.shop-item .thumb.h4{background:#FFF0E4}
-.shop-item .thumb svg{width:4.5rem;height:4.5rem}
-.shop-item .badge{position:absolute;left:1rem;top:1rem;height:1.1875rem;padding:0 0.375rem;border-radius:0.375rem;background:var(--coral);
-  color:#fff;font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.0375rem;display:flex;align-items:center;box-shadow:0 0.1875rem 0.375rem rgba(227,86,68,.3)}
-.shop-item .name{font-size:0.8125rem;font-weight:var(--w-bold);margin-top:0.5rem;display:flex;align-items:center;gap:0.25rem;flex-wrap:wrap}
-.shop-item .name .tag{font-size:0.59375rem;color:#fff;background:#2E8B57;padding:0.125rem 0.3125rem;border-radius:0.3125rem}
-.shop-item .sub{font-size:0.65625rem;font-weight:var(--w-read);color:#9AA89B;margin-top:0.125rem;min-height:0.75rem}
-.shop-item .foot{display:flex;align-items:center;justify-content:space-between;margin-top:0.4375rem}
-.price{display:flex;align-items:center;gap:0.1875rem;font-size:0.78125rem;font-weight:var(--w-black);color:#8A6415}
-.price.owned{color:var(--green-d);font-size:0.6875rem;background:#E9F7D9;padding:0.1875rem 0.4375rem;border-radius:0.4375rem}
-.price.locked{color:#A79C83;font-size:0.65625rem;background:#F4EFE3;padding:0.1875rem 0.375rem;border-radius:0.4375rem}
-.shop-item .action{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
-.shop-item.owned{border-color:#CFE6BA}
-.shop-item.using{outline:0.125rem solid rgba(46,139,87,.35);outline-offset:-0.125rem}
-.shop-item.locked .thumb svg{opacity:.55;filter:grayscale(.4)}
 .bg-grid{display:grid;grid-template-columns:1fr;gap:0.6875rem;margin-top:0.375rem}
 @media (min-width:560px){.bg-grid{grid-template-columns:1fr 1fr}}
 .bg-item{display:flex;align-items:center;gap:0.6875rem;border-radius:1.25rem;background:#fff;border:0.09375rem solid var(--line);
   padding:0.5625rem;text-align:left;box-shadow:0 0.375rem 0.875rem rgba(94,70,30,.05);transition:transform .15s ease}
 .bg-item:active{transform:scale(.98)}
 .bg-item .bg-thumb{width:5.5rem;height:3.875rem;border-radius:0.875rem;flex:none;overflow:hidden;position:relative;border:0.0625rem solid rgba(0,0,0,.05)}
-.bg-thumb.jungle{background:linear-gradient(180deg,#DDF2CE,#FDF2D9)}
-.bg-thumb.sunset{background:linear-gradient(180deg,#FFD39C,#FFE7C4)}
-.bg-thumb.night{background:linear-gradient(180deg,#173F36,#2A5A46)}
-.bg-thumb .h{position:absolute;left:-10%;right:-10%;bottom:-1.125rem;height:2.75rem;border-radius:50% 50% 0 0;background:#B9DF92}
-.bg-thumb.sunset .h{background:#D49A76}
-.bg-thumb.night .h{background:#1C4938}
-.bg-thumb .s{position:absolute;right:0.75rem;top:0.625rem;width:1.25rem;height:1.25rem;border-radius:50%;background:#FFD25E}
-.bg-thumb.night .s{background:#FFEFC0;box-shadow:0 0 0.625rem rgba(255,239,192,.6)}
-.bg-thumb .d{position:absolute;left:50%;bottom:0.3125rem;transform:translateX(-50%);width:2.625rem;height:2.625rem}
+.bg-thumb.jungle{background-image:url("images/background/jungle.webp")}
+.bg-thumb.sunset{background-image:url("images/background/sunset.webp")}
+.bg-thumb.night{background-image:url("images/background/night.webp")}
+.bg-thumb.jungle,.bg-thumb.sunset,.bg-thumb.night{background-size:cover;background-position:center 80%;background-repeat:no-repeat}
 .bg-item .bg-info{flex:1;min-width:0}
 .bg-item .bg-info b{font-size:0.8125rem;font-weight:var(--w-bold);display:block}
 .bg-item .bg-info span{font-size:0.65625rem;color:#9AA89B;display:block;margin-top:0.125rem}
 .bg-item .bg-info .price{margin-top:0.3125rem;display:inline-flex;width:fit-content}
+.price{display:flex;align-items:center;gap:0.1875rem;font-size:0.78125rem;font-weight:var(--w-black);color:#8A6415}
+.price.owned{color:var(--green-d);font-size:0.6875rem;background:#E9F7D9;padding:0.1875rem 0.4375rem;border-radius:0.4375rem}
 .bg-item.using{outline:0.125rem solid rgba(46,139,87,.35);outline-offset:-0.125rem}
 .bg-item .check-ico{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
 
@@ -1055,8 +1057,6 @@ h1,h2,h3,h4,p{margin:0}
   .home-top{margin-bottom:1.125rem}
   .home-top .hi{font-size:1.25rem}
   .hero{height:25.625rem}
-  .hero .bubble{font-size:0.71875rem;padding:0.625rem 0.75rem}
-  .hero .bubble b{font-size:0.8125rem}
   .hero .name b{font-size:2.125rem}
   .growth-panel .val{font-size:1.125rem}
   .growth-panel .lb,.growth-panel .g-next{font-size:0.75rem}
@@ -1082,17 +1082,8 @@ h1,h2,h3,h4,p{margin:0}
   .result-foot{padding-left:2rem;padding-right:2rem}
   .result-card,.grow-card,.result-head{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
   .result-foot .btn,.result-foot .back{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
-  .shop-preview .arch{width:14.375rem;height:11.25rem;border-radius:7.1875rem 7.1875rem 1.5rem 1.5rem}
-  .shop-preview .podium{width:16.25rem}
   .shop-preview{height:18.125rem}
   .shop-preview > .dino{width:14.375rem;height:14.375rem;top:2.25rem}
-  .shop-grid{grid-template-columns:repeat(2,1fr)}
-  .shop-item{padding:0.875rem}
-  .shop-item .thumb{height:11.25rem}
-  .shop-item .thumb svg{width:7.5rem;height:7.5rem}
-  .shop-item .name{font-size:0.9375rem}
-  .shop-item .sub{font-size:0.71875rem}
-  .shop-item .foot{margin-top:0.5625rem}
   .dex-grid{grid-template-columns:repeat(2,1fr)}
   .dex-card .pic{height:10.5rem}
   .dex-card .pic svg{width:10.5rem;height:10.5rem}
@@ -3726,18 +3717,29 @@ const I = {
 };
 
 /* ------------------------------------------------ dino art */
-/* 蜡笔手绘霸王龙：一张位图对应一个成长阶段，ultra 复用 super。
-   head / face / back 是装饰锚点：[中心 x, 基准 y, 目标宽度]，坐标系 0 0 768 768。
-   head 的 y 是帽檐落点（头顶），face 的 y 是眼镜中心，back 的 y 是翅膀中心。 */
+/* 蜡笔手绘霸王龙：一张位图对应一个成长阶段，坐标系 0 0 768 768，脚底在 y=730 */
 const DINO_ART = {
-  egg:   { src: "images/dino/egg.webp",   k: 0.92, head: [384, 108, 430], face: [384, 380, 470], back: [384, 430, 540] },
-  baby:  { src: "images/dino/baby.webp",  k: 0.88, head: [250, 80, 300],  face: [212, 186, 330], back: [466, 332, 310] },
-  teen:  { src: "images/dino/teen.webp",  k: 0.97, head: [246, 84, 268],  face: [203, 128, 288], back: [520, 332, 330] },
-  adult: { src: "images/dino/adult.webp", k: 1,    head: [232, 66, 262],  face: [202, 118, 286], back: [536, 338, 330] },
-  super: { src: "images/dino/super.webp", k: 1,    head: [222, 98, 272],  face: [208, 172, 296], back: [516, 354, 330] },
+  egg:   { src: "images/dino/egg.webp",   k: 0.92 },
+  baby:  { src: "images/dino/baby.webp",  k: 0.88 },
+  teen:  { src: "images/dino/teen.webp",  k: 0.97 },
+  adult: { src: "images/dino/adult.webp", k: 1 },
+  super: { src: "images/dino/super.webp", k: 1 },
 };
-const INK = "#3B2A1F";
 
+/* 究极体的四种机甲形态，索引 = ultraSkin - 1 */
+const ULTRA_ART = [
+  { src: "images/dino/ultra-1.webp", k: 1 },
+  { src: "images/dino/ultra-2.webp", k: 1 },
+  { src: "images/dino/ultra-3.webp", k: 1 },
+  { src: "images/dino/ultra-4.webp", k: 1 },
+];
+let ultraSkin = 1;
+function setUltraSkin(n) {
+  ultraSkin = Math.min(ULTRA_ART.length, Math.max(1, Number(n) || 1));
+}
+function ultraArt(skin) {
+  return ULTRA_ART[Math.min(ULTRA_ART.length, Math.max(1, Number(skin) || ultraSkin)) - 1];
+}
 function eggSVG() {
   const art = DINO_ART.egg;
   return `<svg class="dino" data-stage="egg" viewBox="0 0 768 768" width="100%" height="100%" aria-label="恐龙蛋">
@@ -3746,107 +3748,15 @@ function eggSVG() {
   </svg>`;
 }
 
-function dinoHat() {
-  return `<g stroke="${INK}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M112 47c0-24 15-37 36-37s36 13 36 37z" fill="#F3CE93"/>
-    <path d="M112 41c22 7 50 7 72 0v8c-22 7-50 7-72 0z" fill="#C98744"/>
-    <ellipse cx="148" cy="49" rx="59" ry="7.5" fill="#E8B877"/>
-    <path d="M148 16v26" stroke="#B97636" stroke-width="2.2" opacity=".75"/>
-    <circle cx="148" cy="31" r="5" fill="#E75A4B" stroke-width="2"/>
-  </g>`;
-}
-function dinoGlasses() {
-  return `<g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
-    <rect x="144" y="50" width="29" height="22" rx="8" fill="#2B3A33"/>
-    <rect x="178" y="54" width="22" height="19" rx="7" fill="#2B3A33"/>
-    <path d="M173 57h5" fill="none"/>
-    <path d="M150 55l7-2.5" stroke="#BFE9F8" stroke-width="2.2"/>
-    <path d="M183 59l5-2" stroke="#BFE9F8" stroke-width="2"/>
-  </g>`;
-}
-function dinoCrown() {
-  return `<g stroke="${INK}" stroke-width="2.8" stroke-linejoin="round">
-    <path d="M116 42l6-30 15 17 11-23 12 23 15-17 6 30z" fill="#FFD25A"/>
-    <rect x="114" y="37" width="68" height="10" rx="3" fill="#F2B23E"/>
-    <circle cx="148" cy="28" r="5" fill="#E75A4B" stroke-width="1.8"/>
-    <circle cx="128" cy="32" r="3.4" fill="#7FD1F0" stroke-width="1.6"/>
-    <circle cx="168" cy="32" r="3.4" fill="#7FD1F0" stroke-width="1.6"/>
-  </g>`;
-}
-function dinoWings() {
-  return `<g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round" opacity=".97">
-    <path d="M92 132C70 112 42 88 18 78c-4 26 16 52 46 66-12-4-24-12-32-22 10 24 30 36 62 36z" fill="#C3B4FF"/>
-    <path d="M148 132c22-20 50-44 74-54 4 26-16 52-46 66 12-4 24-12 32-22-10 24-30 36-62 36z" fill="#C3B4FF"/>
-    <path d="M30 92c14 8 32 22 50 38M210 92c-14 8-32 22-50 38" fill="none" stroke="#8E76F0" stroke-width="2.8" opacity=".75"/>
-  </g>`;
-}
-
-/* 装饰件原本按 240 画布绘制，这里按锚点缩放到 768 画布 */
-function deco(art, slot, inner, baseW, ax, ay) {
-  const [x, y, w] = art[slot];
-  const k = w / baseW;
-  return `<g transform="translate(${x} ${y}) scale(${k}) translate(${-ax} ${-ay})">${inner}</g>`;
-}
-
 function dino(stage = "teen", opts = {}) {
   if (stage === "egg") return eggSVG();
-  const key = stage === "ultra" ? "super" : stage;
-  const art = DINO_ART[key] || DINO_ART.teen;
-  const eq = opts.equipped || {};
-  const wings = eq.back === "wings" ? deco(art, "back", dinoWings(), 204, 120, 123) : "";
-  const head = eq.head === "hat" ? deco(art, "head", dinoHat(), 120, 148, 49)
-    : eq.head === "crown" ? deco(art, "head", dinoCrown(), 68, 148, 44) : "";
-  const face = eq.face === "glasses" ? deco(art, "face", dinoGlasses(), 58, 173, 60) : "";
-  const k = art.k;
+  const key = stage === "ultra" ? "ultra" : stage;
+  const art = stage === "ultra" ? ultraArt(opts.skin) : (DINO_ART[key] || DINO_ART.teen);
   return `<svg class="dino" data-stage="${key}" viewBox="0 0 768 768" width="100%" height="100%" aria-label="恐龙">
-    <g transform="translate(384 730) scale(${k}) translate(-384 -730)">
+    <g transform="translate(384 730) scale(${art.k}) translate(-384 -730)">
       <ellipse cx="384" cy="742" rx="212" ry="16" fill="#1F6B4A" opacity=".13"/>
-      ${wings}
       <image href="${art.src}" x="0" y="0" width="768" height="768"/>
-      ${head}${face}
     </g>
-  </svg>`;
-}
-
-/* ------------------------------------------------ shop art */
-function itemHat() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M18 52c0-21 10-33 22-33s22 12 22 33z" fill="#F2CB8D"/>
-    <path d="M18 44c13 6 31 6 44 0l1 8c-13 6-33 6-46 0z" fill="#C98744"/>
-    <ellipse cx="40" cy="56" rx="31" ry="7" fill="#E0AC6A"/>
-    <ellipse cx="40" cy="56" rx="31" ry="7" fill="none" stroke="#B97636" stroke-width="2" opacity=".7"/>
-    <path d="M40 19v26" stroke="#E3B678" stroke-width="2.4" opacity=".55"/>
-    <circle cx="40" cy="38" r="5" fill="#2E8B57"/>
-    <path d="M26 27c4-6 9-9 15-10" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
-  </svg>`;
-}
-function itemGlasses() {
-  return `<svg viewBox="0 0 80 80">
-    <rect x="9" y="28" width="27" height="22" rx="10" fill="#20322B"/>
-    <rect x="43" y="30" width="27" height="21" rx="10" fill="#20322B"/>
-    <path d="M36 35h7" stroke="#20322B" stroke-width="4"/>
-    <path d="M14 33l8-3" stroke="#9FDCF2" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M48 35l7-2.5" stroke="#9FDCF2" stroke-width="2.4" stroke-linecap="round"/>
-    <path d="M13 50c2 6 7 9 12 8" fill="none" stroke="#3E5A4E" stroke-width="2.4" stroke-linecap="round"/>
-  </svg>`;
-}
-function itemWings() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M39 54C31 36 20 22 8 16c-3 13 5 27 18 35-6-1-11-4-15-8 5 10 14 16 28 18z" fill="#B8A7FF"/>
-    <path d="M41 54c8-18 19-32 31-38 3 13-5 27-18 35 6-1 11-4 15-8-5 10-14 16-28 18z" fill="#B8A7FF"/>
-    <path d="M11 20c8 2 17 10 25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
-    <path d="M69 20c-8 2-17 10-25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
-    <path d="M33 54c2 6 5 10 7 14 2-4 5-8 7-14z" fill="#8E76F0"/>
-    <circle cx="22" cy="38" r="2.6" fill="#fff" opacity=".8"/><circle cx="58" cy="38" r="2.6" fill="#fff" opacity=".8"/>
-  </svg>`;
-}
-function itemCrown() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M12 58l3-32 15 15L40 14l10 27 15-15 3 32z" fill="#FFD25A" stroke="#E3A332" stroke-width="2.5" stroke-linejoin="round"/>
-    <rect x="12" y="55" width="56" height="10" rx="5" fill="#F2B23E"/>
-    <circle cx="40" cy="42" r="5" fill="#FF6F61"/>
-    <circle cx="23" cy="50" r="3.6" fill="#7FD1F0"/><circle cx="57" cy="50" r="3.6" fill="#7FD1F0"/>
-    <path d="M26 22l4 10" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
   </svg>`;
 }
 
@@ -3873,20 +3783,21 @@ const STAGES = [
   { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
 ];
 
-const ITEMS = [
-  { id: "hat",     slot: "head", name: "探险帽",     sub: "进化奖励 · 稀有", price: 0,   unlockStage: "adult", thumb: "h1", art: itemHat },
-  { id: "glasses", slot: "face", name: "酷酷墨镜",   sub: "配饰 · 稀有",     price: 16,  thumb: "h2", art: itemGlasses },
-  { id: "wings",   slot: "back", name: "蝴蝶翅膀",   sub: "翅膀 · 史诗",     price: 30,  thumb: "h3", badge: "NEW", art: itemWings },
-  { id: "crown",   slot: "head", name: "黄金小皇冠", sub: "头饰 · 传说",     price: 40,  thumb: "h4", art: itemCrown },
-];
-
 const BACKGROUNDS = [
-  { id: "jungle", name: "晨雾森林", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "落日山谷", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
-  { id: "night",  name: "星空营地", sub: "背景 · 史诗",   price: 40,  cls: "night" },
+  { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
+  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
+  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 40,  cls: "night" },
 ];
 
 const DEX = STAGES.map((s) => ({ ...s }));
+
+/* 超级霸王龙（究极体）的四种机甲形态：解锁 ultra 后可在图鉴里自由切换 */
+const ULTRA_SKINS = [
+  { id: 1, name: "彩虹能量", sub: "尾巴彩虹能量环" },
+  { id: 2, name: "护目炮塔", sub: "护目镜 + 背部炮塔" },
+  { id: 3, name: "霓虹疾行", sub: "霓虹电路 + 喷射推进" },
+  { id: 4, name: "红眼重装", sub: "重装机械臂甲" },
+];
 
 const DEFAULT_STATE = {
   v: 4,
@@ -3901,10 +3812,9 @@ const DEFAULT_STATE = {
   minutes: 0,
   threeStars: 0,
   tasks: { level: false },
-  owned: [],
-  equipped: { head: null, face: null, back: null },
   bg: "jungle",
   bgOwned: ["jungle"],
+  ultraSkin: 1,
   dex: ["egg"],
   sound: true,
 };
@@ -3980,6 +3890,7 @@ try {
 } catch (e) { /* private mode */ }
 
 let state = loadState();
+setUltraSkin(state.ultraSkin);
 let current = "home";
 let quiz = null;
 let lastResult = null;
@@ -3991,6 +3902,9 @@ function loadState() {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return initialState();
     const parsed = JSON.parse(raw);
+    /* 装扮系统已移除，旧存档里的道具与穿戴字段一并丢弃 */
+    delete parsed.owned;
+    delete parsed.equipped;
     /* v3 及以前每关发 5/10/15 星星，v4 起统一按关卡星级 1–3，旧余额同步除以 5 */
     const legacy = (Number(parsed.v) || 0) < 4;
     return {
@@ -3999,12 +3913,11 @@ function loadState() {
       v: DEFAULT_STATE.v,
       stars: legacy ? Math.floor((Number(parsed.stars) || 0) / 5) : (Number(parsed.stars) || 0),
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
-      equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
       progress: parsed.progress || {},
       log: parsed.log || {},
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
+      ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
-      owned: Array.isArray(parsed.owned) ? parsed.owned : [],
     };
   } catch (e) {
     return initialState();
@@ -4056,12 +3969,10 @@ function initialState() {
   return {
     ...DEFAULT_STATE,
     tasks: { ...DEFAULT_STATE.tasks },
-    equipped: { ...DEFAULT_STATE.equipped },
     progress: {},
     log: {},
     bgOwned: [...DEFAULT_STATE.bgOwned],
     dex: [...DEFAULT_STATE.dex],
-    owned: [],
   };
 }
 
@@ -4109,38 +4020,28 @@ function stageChip() {
   return `${I.leaf(11)} ${st.phase} · ${st.name}`;
 }
 
-/* 按真实时间切换天空：19:00–05:59 为夜晚，其余为白天 */
-function isNightNow() {
+/* 天空元素（太阳 / 月亮 / 星星 / 云）按真实时间自动切换，背景位图本身不含这些元素 */
+function skyPhase() {
   const h = new Date().getHours();
-  return h >= 19 || h < 6;
+  if (h >= 19 || h < 6) return "night";
+  if (h < 9) return "dawn";
+  if (h < 16) return "day";
+  return "dusk";
 }
-/* 天空场景只随昼夜变化，首次渲染后缓存，避免重复拼接星星与叶片 SVG */
-const SCENE_HTML = { day: "", night: "" };
-function sceneHTML() {
-  if (isNightNow()) {
-    if (SCENE_HTML.night) return SCENE_HTML.night;
-    const dots = Array.from({ length: 18 }, (_, i) => {
-      const x = (i * 37 + 11) % 100, y = (i * 23 + 7) % 70, s = (i % 3) + 1.2;
-      return `<i style="left:${x}%;top:${y}%;width:${sz(s)};height:${sz(s)};opacity:${0.3 + (i % 4) * 0.16}"></i>`;
-    }).join("");
-    return (SCENE_HTML.night = `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
-      <div class="hill a"></div><div class="hill b"></div>
-      <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#2E6B4E"/></svg>
-      <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#347454"/></svg>
-    </div>`);
+function skyFx() {
+  const phase = skyPhase();
+  if (phase === "night") {
+    const stars = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => `<i class="sf-star s${i}"></i>`).join("");
+    return `<div class="sky-fx night" aria-hidden="true"><span class="sf-moon"></span>${stars}<span class="sf-cloud c2"></span></div>`;
   }
-  if (SCENE_HTML.day) return SCENE_HTML.day;
-  return (SCENE_HTML.day = `<div class="scene">
-    <div class="sun"></div><div class="cloud a"></div><div class="cloud b"></div>
-    <div class="hill a"></div><div class="hill b"></div>
-    <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#62A968"/><path d="M0 120C18 92 44 70 80 56 60 82 34 104 0 120z" fill="#4E9459"/></svg>
-    <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#6DB270"/></svg>
-  </div>`);
+  return `<div class="sky-fx ${phase}" aria-hidden="true">
+    <span class="sf-sun"></span>
+    <span class="sf-cloud c1"></span><span class="sf-cloud c2"></span><span class="sf-cloud c3"></span>
+  </div>`;
 }
-/* 天空外观由真实时间决定：夜晚统一夜空，白天沿用已购买的背景色调 */
+/* 场景背景由已购买的背景决定，光线氛围交给 skyFx() */
 function heroSkyClass() {
-  if (isNightNow()) return "sky-night";
-  return `sky-day bg-${state.bg === "night" ? "jungle" : state.bg}`;
+  return `${bgClass(state.bg)} sky-${skyPhase()}`;
 }
 
 
@@ -4206,7 +4107,7 @@ function openResetConfirm() {
     <div class="dialog">
       <div class="d-ico">${I.refresh(24, "#B4811C")}</div>
       <h3>重置演示进度？</h3>
-      <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
+      <p>成长值、星星、背景和图鉴都会回到初始状态。此操作无法撤销。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">取消</button>
         <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 0.3125rem 0 #B84435">确认重置</button>
@@ -4285,13 +4186,6 @@ document.addEventListener("click", (e) => {
     shopTab = el.dataset.tab;
     sfx("tap");
     renderAndResetScroll();
-  } else if (action === "buy-item") {
-    openBuyItem(el.dataset.id);
-  } else if (action === "equip-item") {
-    toggleItem(el.dataset.id);
-  } else if (action === "locked-item") {
-    const item = ITEMS.find((i) => i.id === el.dataset.id);
-    if (item && item.unlockStage) toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
   } else if (action === "buy-bg") {
     openBuyBg(el.dataset.id);
   } else if (action === "equip-bg") {
@@ -4300,6 +4194,14 @@ document.addEventListener("click", (e) => {
     confirmBuy();
   } else if (action === "dex-detail") {
     openDexDetail(el.dataset.key);
+  } else if (action === "pick-ultra") {
+    state.ultraSkin = Math.min(4, Math.max(1, Number(el.dataset.skin) || 1));
+    setUltraSkin(state.ultraSkin);
+    save();
+    sfx("tap");
+    render();
+  } else if (action === "locked-ultra") {
+    toast("进化成超级霸王龙后，就能切换这几种机甲形态");
   } else if (action === "filter-dex") {
     dexFilter = el.dataset.filter;
     sfx("tap");
@@ -4396,6 +4298,15 @@ function boot() {
   if (current === "dex") { current = "shop"; shopTab = "dex"; }
 
   render();
+
+  /* 太阳 / 月亮 / 星星 / 云随真实时间切换：跨过时段边界时刷新首页与小铺 */
+  let skyAt = skyPhase();
+  setInterval(() => {
+    const now = skyPhase();
+    if (now === skyAt) return;
+    skyAt = now;
+    if (current === "home" || current === "shop") render();
+  }, 60000);
 
   // Warm up the audio graph on the first touch (iOS requirement).
   const wake = () => { ensureAudio(); syncAudio(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
@@ -4786,16 +4697,10 @@ function beginEvolution() {
     go("home", { replace: true });
     return;
   }
+  const wasInDex = state.dex.includes(to.key);
   const newDex = [...new Set([...state.dex, to.key])];
-  const unlockItem = to.key === "adult" ? "hat" : to.key === "super" ? "crown" : to.key === "ultra" ? "wings" : null;
-  const item = unlockItem ? ITEMS.find((it) => it.id === unlockItem) : null;
-  const wasOwned = item ? state.owned.includes(item.id) : false;
   state.stage = to.key;
   state.dex = newDex;
-  if (item && !wasOwned) {
-    state.owned.push(item.id);
-    if (!state.equipped[item.slot]) state.equipped[item.slot] = item.id;
-  }
   let dexReward = null;
   if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
     state.bgOwned.push("sunset");
@@ -4806,7 +4711,7 @@ function beginEvolution() {
     dexReward = "星空营地";
   }
   save();
-  evolutionInfo = { from, to, item, wasOwned, dexReward };
+  evolutionInfo = { from, to, isNew: !wasInDex, dexReward };
   sfx("evolve");
   go("evolution");
 }
@@ -4821,7 +4726,6 @@ function screenEvolution() {
     const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
     return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
   }).join("");
-  const item = info.item;
   return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
     <div class="evo-page">
       <div class="bg"></div><div class="stars">${dots}</div>
@@ -4846,15 +4750,15 @@ function screenEvolution() {
           <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
           <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
           <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
-          ${dino(info.to.key, { equipped: state.equipped })}
+          ${dino(info.to.key)}
         </div>
         <div class="evo-unlock">
-          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">+1 图鉴收录</span></div>
+          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span></div>
           <div class="u-main">
-            <div class="u-ico">${item ? item.art() : I.crownMini(30, "#8A5B15")}</div>
+            <div class="u-ico">${I.crownMini(30, "#8A5B15")}</div>
             <div class="u-txt">
-              <b>${item ? (info.wasOwned ? item.name + "（已拥有）" : item.name) : "成长礼包"}</b>
-              <span>${item ? (info.wasOwned ? "这次进化没有新的装扮，但能力又变强了" : "已自动换上，也可以去小铺更换") : "解锁了新的成长阶段"}</span>
+              <b>${info.to.name}</b>
+              <span>${info.to.key === "ultra" ? "已收录进图鉴，4 种机甲形态可以在图鉴里自由切换" : "已收录进图鉴，外形和能力都更强了"}</span>
             </div>
             <div style="color:#FFD25A">${I.chevron(12)}</div>
           </div>
@@ -4880,6 +4784,11 @@ let voiceRec = null;
 let voiceChunks = [];
 let voiceUrl = "";
 let voiceTimer = null;
+
+/* 头像图标名：究极体按当前机甲形态取图标 */
+function avatarKey() {
+  return state.stage === "ultra" ? `ultra-${state.ultraSkin}` : state.stage;
+}
 
 function resetVoice() {
   if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
@@ -5032,15 +4941,11 @@ function screenHome() {
   const word = reviewWord = randomWord();
   const example = generateExample(word);
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
-  let bubble;
-  if (!next) bubble = `已经成长为<br><b>超级霸王龙</b>！<br>继续收集星星吧`;
-  else if (pending) bubble = `成长值已满<br>快去<b>进化</b>吧！`;
-  else bubble = `再获得 <b>${remain}</b> 成长值<br>就能进化成<br><b>${next.name}</b>！`;
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
-        <button class="avatar" data-action="profile" aria-label="成长档案"><span class="crop">${dino(state.stage)}</span></button>
+        <button class="avatar" data-action="profile" aria-label="成长档案"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
           <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
@@ -5049,27 +4954,27 @@ function screenHome() {
       </div>
 
       <section class="hero ${heroSkyClass()}">
-        ${sceneHTML()}
+        ${skyFx()}
         <div class="hero-id">
           <div class="stage-tag">${stageChip()}</div>
           <div class="name"><b>小诺</b></div>
         </div>
-        <div class="bubble ${pending ? "max" : ""}">${bubble}</div>
-        <div class="dino-wrap ${dinoCls} ${state.equipped.head ? "with-hat" : ""}">${dino(state.stage, { equipped: state.equipped })}</div>
-        <div class="growth-panel">
-          <div class="g-main">
-            <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
-            <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
-            <div class="g-next">
-              <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
-              <span>${Math.round(pct * 100)}%</span>
-            </div>
-          </div>
-          <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
-            ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
-          </button>
-        </div>
+        <div class="dino-wrap ${dinoCls}">${dino(state.stage)}</div>
       </section>
+
+      <div class="growth-panel">
+        <div class="g-main">
+          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
+          <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
+          <div class="g-next">
+            <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
+            <span>${Math.round(pct * 100)}%</span>
+          </div>
+        </div>
+        <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
+          ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
+        </button>
+      </div>
 
       <div class="word-card">
         <div class="ring"></div>
@@ -5116,12 +5021,12 @@ function screenProfile() {
   const weekMin = days.reduce((n, d) => n + d[1], 0);
   const streak = streakDays();
   const ach = [
-    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
-    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", sub: `${state.words} / 100 词` },
-    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", sub: `${state.threeStars} 次` },
-    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", sub: "???" },
+    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", done: streak >= 7, sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
+    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", done: state.words >= 100, sub: `${state.words} / 100 词` },
+    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", done: state.threeStars >= 1, sub: `${state.threeStars} 次` },
+    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", done: false, sub: "???" },
   ];
-  const decorCount = state.owned.length;
+  const wordsCount = state.words;
   return `<section class="screen" data-screen="profile">
     <div class="scroll profile-scroll">
       <div class="profile-head">
@@ -5132,14 +5037,14 @@ function screenProfile() {
 
       <div class="profile-card">
         <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
-        <div class="pc-ava"><div class="crop">${dino(state.stage)}</div></div>
+        <div class="pc-ava"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></div>
         <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 1 天 · 累计闯关 ${totalLevelsDone()} 次</p></div>
         <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
       </div>
 
       <div class="stat-row">
         <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
-        <div class="stat-card"><div class="v num">${decorCount}</div><div class="k">已解锁装饰</div></div>
+        <div class="stat-card"><div class="v num">${wordsCount}</div><div class="k">已学单词</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>
 
@@ -5158,16 +5063,16 @@ function screenProfile() {
       </div>
 
       <div class="card ach-card">
-        <div class="ach-head"><b>成就徽章</b><span>3 / 12 已点亮</span></div>
+        <div class="ach-head"><b>成就徽章</b><span>${ach.filter((a) => a.done).length} / 12 已点亮</span></div>
         <div class="ach-list">${ach.map((a) => `<div class="ach">
-          <div class="medal ${a.cls}">${a.icon}${a.cls !== "lock" ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
+          <div class="medal ${a.cls}">${a.icon}${a.done ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
           <b>${a.name}</b><span>${a.sub}</span>
         </div>`).join("")}</div>
       </div>
 
       <div class="quote-card">
         <div class="qi">${I.flame(18, "#E2A62E")}</div>
-        <div class="q">小诺说：「今天也一起学 10 分钟吧，<br>我离超级霸王龙又近了一步！」</div>
+        <div class="q">小诺说：「今天也一起学 10 分钟吧，我离超级霸王龙又近了一步！」</div>
       </div>
 
       <div class="profile-cta"><button class="btn" data-action="start-quiz">去闯关，帮小诺进化 <span class="hint">+120 EXP</span></button></div>
@@ -5324,14 +5229,36 @@ function dexBody() {
       }).join("")}
     </div>
 
+    ${ultraSkinSection()}
+
     <div class="dex-reward">
-      <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"><div class="s"></div><div class="h"></div></div></div>
+      <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"></div></div>
       <div class="dr-main">
         <div class="dr-row"><b>${reward.title}</b><span>${reward.cur} / ${reward.max}</span></div>
         <div class="bar"><i style="width:${Math.round((reward.cur / reward.max) * 100)}%"></i></div>
         <div class="dr-note">${reward.note}</div>
       </div>
       <div class="dr-lock">${reward.cur >= reward.max ? I.check(14, "#B4811C") : I.lock(14, "#B4811C")}</div>
+    </div>`;
+}
+
+/* 超级霸王龙的机甲形态：进化到究极体后可自由切换形象 */
+function ultraSkinSection() {
+  const unlocked = state.dex.includes("ultra");
+  return `<div class="skin-head">
+      <b>超级霸王龙形态</b><span>${unlocked ? "已解锁 · 点击切换" : "进化到究极体后解锁"}</span>
+    </div>
+    <div class="skin-grid">
+      ${ULTRA_SKINS.map((s) => {
+        const on = state.ultraSkin === s.id;
+        return `<button class="skin-card ${unlocked ? "" : "locked"} ${on && unlocked ? "on" : ""}" data-action="${unlocked ? "pick-ultra" : "locked-ultra"}" data-skin="${s.id}">
+          <div class="pic">${dino("ultra", { skin: s.id })}</div>
+          <div class="nm">${unlocked ? s.name : "???"}</div>
+          <div class="sub">${unlocked ? s.sub : "未解锁"}</div>
+          ${unlocked && on ? `<span class="cur">使用中</span>` : ""}
+          ${unlocked ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+        </button>`;
+      }).join("")}
     </div>`;
 }
 
@@ -5396,53 +5323,29 @@ function screenWords() {
   <script>
 /* ============================================================
    DinoGo · 恐龙英语 — 小铺（shop）
-   底部 Tab 4：装扮 / 背景 / 图鉴，含购买与装备
+   底部 Tab 4：背景 / 图鉴，含背景购买与切换
    ============================================================ */
 
-let shopTab = "decor";
+let shopTab = "bg";
 let pendingBuy = null;
 
 /* ------------------------------------------------ shop */
-function itemState(item) {
-  const locked = item.unlockStage && stageIndex(state.stage) < stageIndex(item.unlockStage);
-  const owned = state.owned.includes(item.id);
-  const using = state.equipped[item.slot] === item.id;
-  return { locked, owned, using };
-}
-
 function screenShop() {
-  const eq = state.equipped;
-  const wearing = ITEMS.filter((it) => eq[it.slot] === it.id).map((it) => it.name);
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
   const purchasableBgCount = BACKGROUNDS.filter((bg) => bg.price > 0 && state.stars >= bg.price && !state.bgOwned.includes(bg.id) && state.bg !== bg.id).length;
   const tabs = `<div class="shop-tabs">
-    <button class="tab ${shopTab === "decor" ? "on" : ""}" data-action="shop-tab" data-tab="decor">装扮</button>
     <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景${purchasableBgCount ? `<span class="tb">${purchasableBgCount}</span>` : ""}</button>
     <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
     <span class="all">全部 ${I.chevron(9)}</span>
   </div>`;
   let panel = "";
-  if (shopTab === "decor") {
-    panel = `<div class="shop-grid">${ITEMS.map((it) => {
-      const s = itemState(it);
-      const cls = `shop-item ${s.owned ? "owned" : ""} ${s.using ? "using" : ""} ${s.locked ? "locked" : ""}`;
-      const price = s.locked ? `<span class="price locked">${I.lock(9)} 进化解锁</span>`
-        : s.owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${it.price}</span>`;
-      const action = s.locked ? "locked-item" : s.owned ? "equip-item" : "buy-item";
-      return `<button class="${cls}" data-action="${action}" data-id="${it.id}">
-        <div class="thumb ${it.thumb}">${it.badge ? `<span class="badge">${it.badge}</span>` : ""}${it.art()}</div>
-        <div class="name">${it.name}${s.using ? `<span class="tag">穿着中</span>` : ""}</div>
-        <div class="sub">${it.sub}</div>
-        <div class="foot">${price}<span class="action">${s.using ? I.check(12) : s.owned ? I.arrow(12) : s.locked ? I.lock(12) : I.arrow(12)}</span></div>
-      </button>`;
-    }).join("")}</div>`;
-  } else if (shopTab === "bg") {
+  if (shopTab === "bg") {
     panel = `<div class="bg-grid">${BACKGROUNDS.map((bg) => {
       const owned = state.bgOwned.includes(bg.id) || state.bg === bg.id;
       const using = state.bg === bg.id;
       const price = using ? `<span class="price owned">使用中</span>` : owned ? `<span class="price owned">已拥有</span>` : `<span class="price">${star(13)}${bg.price}</span>`;
       return `<button class="bg-item ${using ? "using" : ""}" data-action="${owned ? "equip-bg" : "buy-bg"}" data-id="${bg.id}">
-        <div class="bg-thumb ${bg.cls}"><div class="s"></div><div class="h"></div><div class="d">${dino(state.stage, { equipped: state.equipped })}</div></div>
+        <div class="bg-thumb ${bg.cls}"></div>
         <div class="bg-info"><b>${bg.name}</b><span>${bg.sub}</span>${price}</div>
         ${using ? `<span class="check-ico">${I.check(12)}</span>` : `<span class="action" style="width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:${owned ? "#2E8B57" : "#F4EFE3"};color:${owned ? "#fff" : "#B4811C"};display:grid;place-items:center">${owned ? I.arrow(12) : I.lock(12)}</span>`}
       </button>`;
@@ -5452,18 +5355,16 @@ function screenShop() {
   }
   const head = shopTab === "dex"
     ? `<div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div><div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>`
-    : `<div class="t"><h1>装饰小铺</h1><p>用星星把小诺打扮得更酷一点</p></div>${starPill()}`;
+    : `<div class="t"><h1>场景小铺</h1><p>用星星给恐龙乐园换个背景</p></div>${starPill()}`;
   return `<section class="screen has-tab" data-screen="shop">
     <div class="scroll">
       <div class="shop-head">
         ${head}
       </div>
       ${shopTab === "dex" ? "" : `<div class="shop-preview ${bgClass(state.bg)}">
-        <div class="arch"></div><div class="podium"></div>
-        <span class="spark" style="left:6%;top:20%">${spark(16, "#F0B53B")}</span>
-        <span class="spark" style="right:8%;top:30%">${spark(10, "#F0B53B")}</span>
-        <div class="wearing">${I.check(9, "#2E8B57")} ${wearing.length ? `试穿中 · ${wearing.length} 件装扮` : "今日造型"}</div>
-        <div class="dino ${dinoCls}">${dino(state.stage, { equipped: state.equipped })}</div>
+        ${skyFx()}
+        <div class="wearing">${I.check(9, "#2E8B57")} 今日造型</div>
+        <div class="dino ${dinoCls}">${dino(state.stage)}</div>
         <div class="pet">${I.crownMini(12, "#C98B25")} 小诺 · LV.${stageIndex(state.stage) + 1}</div>
       </div>`}
       ${tabs}
@@ -5474,26 +5375,6 @@ function screenShop() {
 }
 
 
-function openBuyItem(id) {
-  const item = ITEMS.find((i) => i.id === id);
-  if (!item) return;
-  const { locked, owned } = itemState(item);
-  if (locked) return toast(`进化到${stageMeta(item.unlockStage).name}即可解锁`);
-  if (owned) return;
-  if (state.stars < item.price) { toast("星星不够啦，再去闯一关吧"); return; }
-  pendingBuy = { type: "item", id };
-  openOverlay(`<div class="overlay dialog-wrap">
-    <div class="dialog">
-      <div class="d-ico">${item.art()}</div>
-      <h3>解锁「${item.name}」？</h3>
-      <p>将花费 ${item.price} 星星，解锁后可随时给小诺换上或取下。</p>
-      <div class="d-actions">
-        <button class="btn ghost" data-action="close-overlay">再想想</button>
-        <button class="btn" data-action="confirm-buy">花 ${item.price} 星星解锁</button>
-      </div>
-    </div>
-  </div>`);
-}
 function openBuyBg(id) {
   const bg = bgMeta(id);
   if (!bg || bg.price === 0) return;
@@ -5501,9 +5382,9 @@ function openBuyBg(id) {
   pendingBuy = { type: "bg", id };
   openOverlay(`<div class="overlay dialog-wrap">
     <div class="dialog">
-      <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"><div class="s"></div><div class="h"></div></div>
+      <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"></div>
       <h3>解锁「${bg.name}」？</h3>
-      <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和装饰小铺。</p>
+      <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和场景小铺。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">再想想</button>
         <button class="btn" data-action="confirm-buy">花 ${bg.price} 星星解锁</button>
@@ -5513,41 +5394,16 @@ function openBuyBg(id) {
 }
 function confirmBuy() {
   if (!pendingBuy) return;
-  if (pendingBuy.type === "item") {
-    const item = ITEMS.find((i) => i.id === pendingBuy.id);
-    if (!item || state.owned.includes(item.id)) { pendingBuy = null; closeOverlay(); return; }
-    if (state.stars < item.price) { toast("星星不够啦"); return; }
-    state.stars -= item.price;
-    state.owned.push(item.id);
-    state.equipped[item.slot] = item.id;
-    sfx("coin");
-    toast(`已解锁「${item.name}」并换上`);
-  } else {
-    const bg = bgMeta(pendingBuy.id);
-    if (state.bgOwned.includes(bg.id)) { state.bg = bg.id; pendingBuy = null; closeOverlay(); render(); return; }
-    if (state.stars < bg.price) { toast("星星不够啦"); return; }
-    state.stars -= bg.price;
-    state.bgOwned.push(bg.id);
-    state.bg = bg.id;
-    sfx("coin");
-    toast(`已解锁「${bg.name}」背景`);
-  }
+  const bg = bgMeta(pendingBuy.id);
+  if (state.bgOwned.includes(bg.id)) { state.bg = bg.id; pendingBuy = null; closeOverlay(); render(); return; }
+  if (state.stars < bg.price) { toast("星星不够啦"); return; }
+  state.stars -= bg.price;
+  state.bgOwned.push(bg.id);
+  state.bg = bg.id;
+  sfx("coin");
+  toast(`已解锁「${bg.name}」背景`);
   pendingBuy = null;
   closeOverlay();
-  save();
-  render();
-}
-function toggleItem(id) {
-  const item = ITEMS.find((i) => i.id === id);
-  if (!item || !state.owned.includes(id)) return;
-  if (state.equipped[item.slot] === id) {
-    state.equipped[item.slot] = null;
-    toast(`已取下「${item.name}」`);
-  } else {
-    state.equipped[item.slot] = id;
-    toast(`已换上「${item.name}」`);
-  }
-  sfx("tap");
   save();
   render();
 }

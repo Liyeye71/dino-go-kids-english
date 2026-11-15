@@ -52,14 +52,36 @@ function dexBody() {
       }).join("")}
     </div>
 
+    ${ultraSkinSection()}
+
     <div class="dex-reward">
-      <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"><div class="s"></div><div class="h"></div></div></div>
+      <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"></div></div>
       <div class="dr-main">
         <div class="dr-row"><b>${reward.title}</b><span>${reward.cur} / ${reward.max}</span></div>
         <div class="bar"><i style="width:${Math.round((reward.cur / reward.max) * 100)}%"></i></div>
         <div class="dr-note">${reward.note}</div>
       </div>
       <div class="dr-lock">${reward.cur >= reward.max ? I.check(14, "#B4811C") : I.lock(14, "#B4811C")}</div>
+    </div>`;
+}
+
+/* 超级霸王龙的机甲形态：进化到究极体后可自由切换形象 */
+function ultraSkinSection() {
+  const unlocked = state.dex.includes("ultra");
+  return `<div class="skin-head">
+      <b>超级霸王龙形态</b><span>${unlocked ? "已解锁 · 点击切换" : "进化到究极体后解锁"}</span>
+    </div>
+    <div class="skin-grid">
+      ${ULTRA_SKINS.map((s) => {
+        const on = state.ultraSkin === s.id;
+        return `<button class="skin-card ${unlocked ? "" : "locked"} ${on && unlocked ? "on" : ""}" data-action="${unlocked ? "pick-ultra" : "locked-ultra"}" data-skin="${s.id}">
+          <div class="pic">${dino("ultra", { skin: s.id })}</div>
+          <div class="nm">${unlocked ? s.name : "???"}</div>
+          <div class="sub">${unlocked ? s.sub : "未解锁"}</div>
+          ${unlocked && on ? `<span class="cur">使用中</span>` : ""}
+          ${unlocked ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+        </button>`;
+      }).join("")}
     </div>`;
 }
 

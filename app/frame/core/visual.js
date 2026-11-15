@@ -35,18 +35,29 @@ const I = {
 };
 
 /* ------------------------------------------------ dino art */
-/* 蜡笔手绘霸王龙：一张位图对应一个成长阶段，ultra 复用 super。
-   head / face / back 是装饰锚点：[中心 x, 基准 y, 目标宽度]，坐标系 0 0 768 768。
-   head 的 y 是帽檐落点（头顶），face 的 y 是眼镜中心，back 的 y 是翅膀中心。 */
+/* 蜡笔手绘霸王龙：一张位图对应一个成长阶段，坐标系 0 0 768 768，脚底在 y=730 */
 const DINO_ART = {
-  egg:   { src: "images/dino/egg.webp",   k: 0.92, head: [384, 108, 430], face: [384, 380, 470], back: [384, 430, 540] },
-  baby:  { src: "images/dino/baby.webp",  k: 0.88, head: [250, 80, 300],  face: [212, 186, 330], back: [466, 332, 310] },
-  teen:  { src: "images/dino/teen.webp",  k: 0.97, head: [246, 84, 268],  face: [203, 128, 288], back: [520, 332, 330] },
-  adult: { src: "images/dino/adult.webp", k: 1,    head: [232, 66, 262],  face: [202, 118, 286], back: [536, 338, 330] },
-  super: { src: "images/dino/super.webp", k: 1,    head: [222, 98, 272],  face: [208, 172, 296], back: [516, 354, 330] },
+  egg:   { src: "images/dino/egg.webp",   k: 0.92 },
+  baby:  { src: "images/dino/baby.webp",  k: 0.88 },
+  teen:  { src: "images/dino/teen.webp",  k: 0.97 },
+  adult: { src: "images/dino/adult.webp", k: 1 },
+  super: { src: "images/dino/super.webp", k: 1 },
 };
-const INK = "#3B2A1F";
 
+/* 究极体的四种机甲形态，索引 = ultraSkin - 1 */
+const ULTRA_ART = [
+  { src: "images/dino/ultra-1.webp", k: 1 },
+  { src: "images/dino/ultra-2.webp", k: 1 },
+  { src: "images/dino/ultra-3.webp", k: 1 },
+  { src: "images/dino/ultra-4.webp", k: 1 },
+];
+let ultraSkin = 1;
+function setUltraSkin(n) {
+  ultraSkin = Math.min(ULTRA_ART.length, Math.max(1, Number(n) || 1));
+}
+function ultraArt(skin) {
+  return ULTRA_ART[Math.min(ULTRA_ART.length, Math.max(1, Number(skin) || ultraSkin)) - 1];
+}
 function eggSVG() {
   const art = DINO_ART.egg;
   return `<svg class="dino" data-stage="egg" viewBox="0 0 768 768" width="100%" height="100%" aria-label="恐龙蛋">
@@ -55,107 +66,15 @@ function eggSVG() {
   </svg>`;
 }
 
-function dinoHat() {
-  return `<g stroke="${INK}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M112 47c0-24 15-37 36-37s36 13 36 37z" fill="#F3CE93"/>
-    <path d="M112 41c22 7 50 7 72 0v8c-22 7-50 7-72 0z" fill="#C98744"/>
-    <ellipse cx="148" cy="49" rx="59" ry="7.5" fill="#E8B877"/>
-    <path d="M148 16v26" stroke="#B97636" stroke-width="2.2" opacity=".75"/>
-    <circle cx="148" cy="31" r="5" fill="#E75A4B" stroke-width="2"/>
-  </g>`;
-}
-function dinoGlasses() {
-  return `<g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
-    <rect x="144" y="50" width="29" height="22" rx="8" fill="#2B3A33"/>
-    <rect x="178" y="54" width="22" height="19" rx="7" fill="#2B3A33"/>
-    <path d="M173 57h5" fill="none"/>
-    <path d="M150 55l7-2.5" stroke="#BFE9F8" stroke-width="2.2"/>
-    <path d="M183 59l5-2" stroke="#BFE9F8" stroke-width="2"/>
-  </g>`;
-}
-function dinoCrown() {
-  return `<g stroke="${INK}" stroke-width="2.8" stroke-linejoin="round">
-    <path d="M116 42l6-30 15 17 11-23 12 23 15-17 6 30z" fill="#FFD25A"/>
-    <rect x="114" y="37" width="68" height="10" rx="3" fill="#F2B23E"/>
-    <circle cx="148" cy="28" r="5" fill="#E75A4B" stroke-width="1.8"/>
-    <circle cx="128" cy="32" r="3.4" fill="#7FD1F0" stroke-width="1.6"/>
-    <circle cx="168" cy="32" r="3.4" fill="#7FD1F0" stroke-width="1.6"/>
-  </g>`;
-}
-function dinoWings() {
-  return `<g stroke="${INK}" stroke-width="2.6" stroke-linejoin="round" opacity=".97">
-    <path d="M92 132C70 112 42 88 18 78c-4 26 16 52 46 66-12-4-24-12-32-22 10 24 30 36 62 36z" fill="#C3B4FF"/>
-    <path d="M148 132c22-20 50-44 74-54 4 26-16 52-46 66 12-4 24-12 32-22-10 24-30 36-62 36z" fill="#C3B4FF"/>
-    <path d="M30 92c14 8 32 22 50 38M210 92c-14 8-32 22-50 38" fill="none" stroke="#8E76F0" stroke-width="2.8" opacity=".75"/>
-  </g>`;
-}
-
-/* 装饰件原本按 240 画布绘制，这里按锚点缩放到 768 画布 */
-function deco(art, slot, inner, baseW, ax, ay) {
-  const [x, y, w] = art[slot];
-  const k = w / baseW;
-  return `<g transform="translate(${x} ${y}) scale(${k}) translate(${-ax} ${-ay})">${inner}</g>`;
-}
-
 function dino(stage = "teen", opts = {}) {
   if (stage === "egg") return eggSVG();
-  const key = stage === "ultra" ? "super" : stage;
-  const art = DINO_ART[key] || DINO_ART.teen;
-  const eq = opts.equipped || {};
-  const wings = eq.back === "wings" ? deco(art, "back", dinoWings(), 204, 120, 123) : "";
-  const head = eq.head === "hat" ? deco(art, "head", dinoHat(), 120, 148, 49)
-    : eq.head === "crown" ? deco(art, "head", dinoCrown(), 68, 148, 44) : "";
-  const face = eq.face === "glasses" ? deco(art, "face", dinoGlasses(), 58, 173, 60) : "";
-  const k = art.k;
+  const key = stage === "ultra" ? "ultra" : stage;
+  const art = stage === "ultra" ? ultraArt(opts.skin) : (DINO_ART[key] || DINO_ART.teen);
   return `<svg class="dino" data-stage="${key}" viewBox="0 0 768 768" width="100%" height="100%" aria-label="恐龙">
-    <g transform="translate(384 730) scale(${k}) translate(-384 -730)">
+    <g transform="translate(384 730) scale(${art.k}) translate(-384 -730)">
       <ellipse cx="384" cy="742" rx="212" ry="16" fill="#1F6B4A" opacity=".13"/>
-      ${wings}
       <image href="${art.src}" x="0" y="0" width="768" height="768"/>
-      ${head}${face}
     </g>
-  </svg>`;
-}
-
-/* ------------------------------------------------ shop art */
-function itemHat() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M18 52c0-21 10-33 22-33s22 12 22 33z" fill="#F2CB8D"/>
-    <path d="M18 44c13 6 31 6 44 0l1 8c-13 6-33 6-46 0z" fill="#C98744"/>
-    <ellipse cx="40" cy="56" rx="31" ry="7" fill="#E0AC6A"/>
-    <ellipse cx="40" cy="56" rx="31" ry="7" fill="none" stroke="#B97636" stroke-width="2" opacity=".7"/>
-    <path d="M40 19v26" stroke="#E3B678" stroke-width="2.4" opacity=".55"/>
-    <circle cx="40" cy="38" r="5" fill="#2E8B57"/>
-    <path d="M26 27c4-6 9-9 15-10" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round"/>
-  </svg>`;
-}
-function itemGlasses() {
-  return `<svg viewBox="0 0 80 80">
-    <rect x="9" y="28" width="27" height="22" rx="10" fill="#20322B"/>
-    <rect x="43" y="30" width="27" height="21" rx="10" fill="#20322B"/>
-    <path d="M36 35h7" stroke="#20322B" stroke-width="4"/>
-    <path d="M14 33l8-3" stroke="#9FDCF2" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="M48 35l7-2.5" stroke="#9FDCF2" stroke-width="2.4" stroke-linecap="round"/>
-    <path d="M13 50c2 6 7 9 12 8" fill="none" stroke="#3E5A4E" stroke-width="2.4" stroke-linecap="round"/>
-  </svg>`;
-}
-function itemWings() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M39 54C31 36 20 22 8 16c-3 13 5 27 18 35-6-1-11-4-15-8 5 10 14 16 28 18z" fill="#B8A7FF"/>
-    <path d="M41 54c8-18 19-32 31-38 3 13-5 27-18 35 6-1 11-4 15-8-5 10-14 16-28 18z" fill="#B8A7FF"/>
-    <path d="M11 20c8 2 17 10 25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
-    <path d="M69 20c-8 2-17 10-25 24" fill="none" stroke="#8E76F0" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
-    <path d="M33 54c2 6 5 10 7 14 2-4 5-8 7-14z" fill="#8E76F0"/>
-    <circle cx="22" cy="38" r="2.6" fill="#fff" opacity=".8"/><circle cx="58" cy="38" r="2.6" fill="#fff" opacity=".8"/>
-  </svg>`;
-}
-function itemCrown() {
-  return `<svg viewBox="0 0 80 80">
-    <path d="M12 58l3-32 15 15L40 14l10 27 15-15 3 32z" fill="#FFD25A" stroke="#E3A332" stroke-width="2.5" stroke-linejoin="round"/>
-    <rect x="12" y="55" width="56" height="10" rx="5" fill="#F2B23E"/>
-    <circle cx="40" cy="42" r="5" fill="#FF6F61"/>
-    <circle cx="23" cy="50" r="3.6" fill="#7FD1F0"/><circle cx="57" cy="50" r="3.6" fill="#7FD1F0"/>
-    <path d="M26 22l4 10" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
   </svg>`;
 }
 

@@ -9,6 +9,7 @@ try {
 } catch (e) { /* private mode */ }
 
 let state = loadState();
+setUltraSkin(state.ultraSkin);
 let current = "home";
 let quiz = null;
 let lastResult = null;
@@ -20,6 +21,9 @@ function loadState() {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return initialState();
     const parsed = JSON.parse(raw);
+    /* 装扮系统已移除，旧存档里的道具与穿戴字段一并丢弃 */
+    delete parsed.owned;
+    delete parsed.equipped;
     /* v3 及以前每关发 5/10/15 星星，v4 起统一按关卡星级 1–3，旧余额同步除以 5 */
     const legacy = (Number(parsed.v) || 0) < 4;
     return {
@@ -28,12 +32,11 @@ function loadState() {
       v: DEFAULT_STATE.v,
       stars: legacy ? Math.floor((Number(parsed.stars) || 0) / 5) : (Number(parsed.stars) || 0),
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
-      equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
       progress: parsed.progress || {},
       log: parsed.log || {},
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
+      ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
-      owned: Array.isArray(parsed.owned) ? parsed.owned : [],
     };
   } catch (e) {
     return initialState();
@@ -85,12 +88,10 @@ function initialState() {
   return {
     ...DEFAULT_STATE,
     tasks: { ...DEFAULT_STATE.tasks },
-    equipped: { ...DEFAULT_STATE.equipped },
     progress: {},
     log: {},
     bgOwned: [...DEFAULT_STATE.bgOwned],
     dex: [...DEFAULT_STATE.dex],
-    owned: [],
   };
 }
 

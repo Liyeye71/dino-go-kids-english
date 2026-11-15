@@ -44,7 +44,7 @@ for (const file of JS_FILES) {
 
 // ---- PWA build (dist/ + 根目录，供 GitHub Pages branch root 使用) -------
 const KEEP_AT_ROOT = new Set([
-  ".git", ".github", ".screenshots", ".trae-html-share-packages", "app", "dist", "material", "node_modules", "preview", "picture", "temp",
+  ".git", ".github", ".screenshots", ".trae-html-share-packages", "app", "dist", "node_modules", "preview", "picture", "temp",
   ".gitignore", "README.md", "build.mjs", "serve.mjs", "package.json",
 ]);
 for (const target of [distDir, root]) {
@@ -62,12 +62,28 @@ for (const target of [distDir, root]) {
   for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
     fs.copyFileSync(path.join(iconsDir, file), path.join(target, "images", "icons", file));
   }
-  /* 恐龙素材：源文件放在根目录 material/dino/（.webp 供页面使用） */
-  const dinoDir = path.join(root, "material", "dino");
+  /* 恐龙素材：源文件放在 app/data/images/material/dino/（.webp 供页面使用） */
+  const dinoDir = path.join(appDir, "data", "images", "material", "dino");
   if (fs.existsSync(dinoDir)) {
     fs.mkdirSync(path.join(target, "images", "dino"), { recursive: true });
     for (const file of fs.readdirSync(dinoDir).filter((f) => f.endsWith(".webp"))) {
       fs.copyFileSync(path.join(dinoDir, file), path.join(target, "images", "dino", file));
+    }
+  }
+  /* 场景背景：源文件放在 app/data/images/material/background/ */
+  const bgDir = path.join(appDir, "data", "images", "material", "background");
+  if (fs.existsSync(bgDir)) {
+    fs.mkdirSync(path.join(target, "images", "background"), { recursive: true });
+    for (const file of fs.readdirSync(bgDir).filter((f) => f.endsWith(".webp"))) {
+      fs.copyFileSync(path.join(bgDir, file), path.join(target, "images", "background", file));
+    }
+  }
+  /* 头像图标：源文件放在 app/data/icons/ */
+  const avatarIconDir = path.join(appDir, "data", "icons");
+  if (fs.existsSync(avatarIconDir)) {
+    fs.mkdirSync(path.join(target, "images", "icons"), { recursive: true });
+    for (const file of fs.readdirSync(avatarIconDir).filter((f) => f.endsWith(".webp"))) {
+      fs.copyFileSync(path.join(avatarIconDir, file), path.join(target, "images", "icons", file));
     }
   }
   const pictureDir = path.join(root, "picture");

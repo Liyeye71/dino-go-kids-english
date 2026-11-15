@@ -36,6 +36,15 @@ function boot() {
 
   render();
 
+  /* 太阳 / 月亮 / 星星 / 云随真实时间切换：跨过时段边界时刷新首页与小铺 */
+  let skyAt = skyPhase();
+  setInterval(() => {
+    const now = skyPhase();
+    if (now === skyAt) return;
+    skyAt = now;
+    if (current === "home" || current === "shop") render();
+  }, 60000);
+
   // Warm up the audio graph on the first touch (iOS requirement).
   const wake = () => { ensureAudio(); syncAudio(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
   document.addEventListener("touchstart", wake, { passive: true });

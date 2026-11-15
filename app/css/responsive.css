@@ -7,8 +7,6 @@
   .home-top{margin-bottom:1.125rem}
   .home-top .hi{font-size:1.25rem}
   .hero{height:25.625rem}
-  .hero .bubble{font-size:0.71875rem;padding:0.625rem 0.75rem}
-  .hero .bubble b{font-size:0.8125rem}
   .hero .name b{font-size:2.125rem}
   .growth-panel .val{font-size:1.125rem}
   .growth-panel .lb,.growth-panel .g-next{font-size:0.75rem}
@@ -34,17 +32,8 @@
   .result-foot{padding-left:2rem;padding-right:2rem}
   .result-card,.grow-card,.result-head{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
   .result-foot .btn,.result-foot .back{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
-  .shop-preview .arch{width:14.375rem;height:11.25rem;border-radius:7.1875rem 7.1875rem 1.5rem 1.5rem}
-  .shop-preview .podium{width:16.25rem}
   .shop-preview{height:18.125rem}
   .shop-preview > .dino{width:14.375rem;height:14.375rem;top:2.25rem}
-  .shop-grid{grid-template-columns:repeat(2,1fr)}
-  .shop-item{padding:0.875rem}
-  .shop-item .thumb{height:11.25rem}
-  .shop-item .thumb svg{width:7.5rem;height:7.5rem}
-  .shop-item .name{font-size:0.9375rem}
-  .shop-item .sub{font-size:0.71875rem}
-  .shop-item .foot{margin-top:0.5625rem}
   .dex-grid{grid-template-columns:repeat(2,1fr)}
   .dex-card .pic{height:10.5rem}
   .dex-card .pic svg{width:10.5rem;height:10.5rem}

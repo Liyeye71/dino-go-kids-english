@@ -18,38 +18,28 @@ function stageChip() {
   return `${I.leaf(11)} ${st.phase} · ${st.name}`;
 }
 
-/* 按真实时间切换天空：19:00–05:59 为夜晚，其余为白天 */
-function isNightNow() {
+/* 天空元素（太阳 / 月亮 / 星星 / 云）按真实时间自动切换，背景位图本身不含这些元素 */
+function skyPhase() {
   const h = new Date().getHours();
-  return h >= 19 || h < 6;
+  if (h >= 19 || h < 6) return "night";
+  if (h < 9) return "dawn";
+  if (h < 16) return "day";
+  return "dusk";
 }
-/* 天空场景只随昼夜变化，首次渲染后缓存，避免重复拼接星星与叶片 SVG */
-const SCENE_HTML = { day: "", night: "" };
-function sceneHTML() {
-  if (isNightNow()) {
-    if (SCENE_HTML.night) return SCENE_HTML.night;
-    const dots = Array.from({ length: 18 }, (_, i) => {
-      const x = (i * 37 + 11) % 100, y = (i * 23 + 7) % 70, s = (i % 3) + 1.2;
-      return `<i style="left:${x}%;top:${y}%;width:${sz(s)};height:${sz(s)};opacity:${0.3 + (i % 4) * 0.16}"></i>`;
-    }).join("");
-    return (SCENE_HTML.night = `<div class="scene"><div class="moon"></div><div class="stars">${dots}</div>
-      <div class="hill a"></div><div class="hill b"></div>
-      <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#2E6B4E"/></svg>
-      <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#347454"/></svg>
-    </div>`);
+function skyFx() {
+  const phase = skyPhase();
+  if (phase === "night") {
+    const stars = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => `<i class="sf-star s${i}"></i>`).join("");
+    return `<div class="sky-fx night" aria-hidden="true"><span class="sf-moon"></span>${stars}<span class="sf-cloud c2"></span></div>`;
   }
-  if (SCENE_HTML.day) return SCENE_HTML.day;
-  return (SCENE_HTML.day = `<div class="scene">
-    <div class="sun"></div><div class="cloud a"></div><div class="cloud b"></div>
-    <div class="hill a"></div><div class="hill b"></div>
-    <svg class="leaves l" viewBox="0 0 100 120"><path d="M4 118C8 78 30 42 74 22 64 58 48 84 26 102 46 86 62 70 72 50 44 70 24 94 4 118z" fill="#62A968"/><path d="M0 120C18 92 44 70 80 56 60 82 34 104 0 120z" fill="#4E9459"/></svg>
-    <svg class="leaves r" viewBox="0 0 100 120"><path d="M96 118C92 78 70 42 26 22c10 36 26 62 48 80-20-16-36-32-46-52 28 20 48 44 68 68z" fill="#6DB270"/></svg>
-  </div>`);
+  return `<div class="sky-fx ${phase}" aria-hidden="true">
+    <span class="sf-sun"></span>
+    <span class="sf-cloud c1"></span><span class="sf-cloud c2"></span><span class="sf-cloud c3"></span>
+  </div>`;
 }
-/* 天空外观由真实时间决定：夜晚统一夜空，白天沿用已购买的背景色调 */
+/* 场景背景由已购买的背景决定，光线氛围交给 skyFx() */
 function heroSkyClass() {
-  if (isNightNow()) return "sky-night";
-  return `sky-day bg-${state.bg === "night" ? "jungle" : state.bg}`;
+  return `${bgClass(state.bg)} sky-${skyPhase()}`;
 }
 
 
@@ -115,7 +105,7 @@ function openResetConfirm() {
     <div class="dialog">
       <div class="d-ico">${I.refresh(24, "#B4811C")}</div>
       <h3>重置演示进度？</h3>
-      <p>成长值、星星、装扮和图鉴都会回到初始状态。此操作无法撤销。</p>
+      <p>成长值、星星、背景和图鉴都会回到初始状态。此操作无法撤销。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">取消</button>
         <button class="btn" data-action="confirm-reset" style="background:linear-gradient(180deg,#F0796A,#D95848);box-shadow:0 0.3125rem 0 #B84435">确认重置</button>

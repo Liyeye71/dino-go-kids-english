@@ -359,16 +359,10 @@ function beginEvolution() {
     go("home", { replace: true });
     return;
   }
+  const wasInDex = state.dex.includes(to.key);
   const newDex = [...new Set([...state.dex, to.key])];
-  const unlockItem = to.key === "adult" ? "hat" : to.key === "super" ? "crown" : to.key === "ultra" ? "wings" : null;
-  const item = unlockItem ? ITEMS.find((it) => it.id === unlockItem) : null;
-  const wasOwned = item ? state.owned.includes(item.id) : false;
   state.stage = to.key;
   state.dex = newDex;
-  if (item && !wasOwned) {
-    state.owned.push(item.id);
-    if (!state.equipped[item.slot]) state.equipped[item.slot] = item.id;
-  }
   let dexReward = null;
   if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
     state.bgOwned.push("sunset");
@@ -379,7 +373,7 @@ function beginEvolution() {
     dexReward = "星空营地";
   }
   save();
-  evolutionInfo = { from, to, item, wasOwned, dexReward };
+  evolutionInfo = { from, to, isNew: !wasInDex, dexReward };
   sfx("evolve");
   go("evolution");
 }
@@ -394,7 +388,6 @@ function screenEvolution() {
     const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
     return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
   }).join("");
-  const item = info.item;
   return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
     <div class="evo-page">
       <div class="bg"></div><div class="stars">${dots}</div>
@@ -419,15 +412,15 @@ function screenEvolution() {
           <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
           <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
           <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
-          ${dino(info.to.key, { equipped: state.equipped })}
+          ${dino(info.to.key)}
         </div>
         <div class="evo-unlock">
-          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">+1 图鉴收录</span></div>
+          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span></div>
           <div class="u-main">
-            <div class="u-ico">${item ? item.art() : I.crownMini(30, "#8A5B15")}</div>
+            <div class="u-ico">${I.crownMini(30, "#8A5B15")}</div>
             <div class="u-txt">
-              <b>${item ? (info.wasOwned ? item.name + "（已拥有）" : item.name) : "成长礼包"}</b>
-              <span>${item ? (info.wasOwned ? "这次进化没有新的装扮，但能力又变强了" : "已自动换上，也可以去小铺更换") : "解锁了新的成长阶段"}</span>
+              <b>${info.to.name}</b>
+              <span>${info.to.key === "ultra" ? "已收录进图鉴，4 种机甲形态可以在图鉴里自由切换" : "已收录进图鉴，外形和能力都更强了"}</span>
             </div>
             <div style="color:#FFD25A">${I.chevron(12)}</div>
           </div>

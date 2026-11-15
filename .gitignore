@@ -7,4 +7,4 @@ preview/
 .trae-html-share-packages/
 *.log
 # 恐龙素材只入库压缩后的 webp，透明底 png 原图留本地
-material/dino/*.png
+app/data/images/material/dino/*.png
