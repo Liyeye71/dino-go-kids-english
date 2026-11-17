@@ -9,7 +9,6 @@ function render() {
   const fn = SCREEN_FN[current] || screenHome;
   $("#view").innerHTML = fn();
   if (current === "home") fitHomeWord();
-  syncAudio(current, state.theme);
 }
 
 /* ------------------------------------------------ boot */
@@ -20,7 +19,7 @@ function boot() {
     quiz: screenQuiz,
     result: screenResult,
     evolution: screenEvolution,
-    shop: screenShop,
+    collect: screenCollect,
     words: screenWords,
     profile: screenProfile,
   };
@@ -31,22 +30,22 @@ function boot() {
 
   // Quiz, result and evolution screens require runtime context.
   if (!screenContextValid(current)) current = "home";
-  /* 旧存档里的“图鉴”Tab 已并入小铺 → 图鉴 */
-  if (current === "dex") { current = "shop"; shopTab = "dex"; }
+  /* 旧存档里的“图鉴”Tab 已并入收藏 → 图鉴 */
+  if (current === "dex") { current = "collect"; collectTab = "dex"; }
 
   render();
 
-  /* 太阳 / 月亮 / 星星 / 云随真实时间切换：跨过时段边界时刷新首页与小铺 */
+  /* 太阳 / 月亮 / 星星 / 云随真实时间切换：跨过时段边界时刷新首页与收藏 */
   let skyAt = skyPhase();
   setInterval(() => {
     const now = skyPhase();
     if (now === skyAt) return;
     skyAt = now;
-    if (current === "home" || current === "shop") render();
+    if (current === "home" || current === "collect") render();
   }, 60000);
 
   // Warm up the audio graph on the first touch (iOS requirement).
-  const wake = () => { ensureAudio(); syncAudio(current, state.theme); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
+  const wake = () => { ensureAudio(); document.removeEventListener("touchstart", wake); document.removeEventListener("click", wake); };
   document.addEventListener("touchstart", wake, { passive: true });
   document.addEventListener("click", wake);
 

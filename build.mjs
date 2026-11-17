@@ -9,7 +9,7 @@ const iconsDir = path.join(appDir, "data", "images", "icons");
 const themeDir = path.join(appDir, "data", "level", "theme");
 
 // 主题加载顺序：新增主题放入该目录后重新构建即可自动加入。
-const themeOrder = ["travel.js", "animal.js", "food.js"];
+const themeOrder = ["go.js", "animal.js", "school.js"];
 const themeFiles = fs.readdirSync(themeDir)
   .filter((file) => file.endsWith(".js") && file !== "index.js")
   .sort((a, b) => {
@@ -18,7 +18,7 @@ const themeFiles = fs.readdirSync(themeDir)
   });
 
 // 依次内联拆分后的样式，顺序必须与 index.html 一致（responsive 放最后）
-const CSS_FILES = ["base", "home", "map", "game", "dex", "shop", "overlays", "responsive"];
+const CSS_FILES = ["base", "home", "map", "game", "dex", "collect", "overlays", "responsive"];
 const css = CSS_FILES.map((name) => fs.readFileSync(path.join(appDir, "css", `${name}.css`), "utf8")).join("\n");
 const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
 
@@ -29,11 +29,12 @@ const JS_FILES = [
   "data/words/rule/basic.js", "data/words/rule/advance.js", "data/words/rule/pro.js",
   "data/level/_shared.js",
   ...themeFiles.map((f) => `data/level/theme/${f}`),
-  "data/sounds/sfx.js", "data/sounds/bgm.js",
+  "data/sounds/sfx.js",
   "frame/core/utils.js", "frame/core/visual.js", "frame/core/data.js", "frame/core/words.js",
   "frame/core/state.js", "frame/core/ui.js", "frame/core/events.js", "frame/core/boot.js",
-  "data/level/game.js",
-  "frame/home.js", "frame/map.js", "frame/dex.js", "frame/shop.js",
+  "data/game/wrongbank.js", "data/game/dynamic-engine.js", "data/game/chest.js",
+  "data/game/game.js",
+  "frame/home.js", "frame/map.js", "frame/dex.js", "frame/collect.js",
 ];
 let inlined = html.replace(/\n\s*<link rel="stylesheet" href="css\/[\w.-]+\.css">/g, "");
 inlined = inlined.replace("</head>", () => `  <style>\n${css}\n  </style>\n</head>`);
@@ -42,53 +43,43 @@ for (const file of JS_FILES) {
   inlined = inlined.replace(`<script src="${file}"></script>`, () => `<script>\n${src}\n</script>`);
 }
 
-// ---- PWA build (dist/ + 根目录，供 GitHub Pages branch root 使用) -------
-const KEEP_AT_ROOT = new Set([
-  ".git", ".github", ".screenshots", ".trae-html-share-packages", "app", "dist", "node_modules", "preview", "picture", "temp",
-  ".gitignore", "README.md", "build.mjs", "serve.mjs", "package.json",
-]);
-for (const target of [distDir, root]) {
-  if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
-  const keep = target === distDir ? [".git"] : [...KEEP_AT_ROOT];
-  for (const e of fs.readdirSync(target)) {
-    if (keep.includes(e)) continue;
-    fs.rmSync(path.join(target, e), { recursive: true, force: true });
+// ---- PWA build (dist/ only, GitHub Actions 自动部署到 Pages) -------
+if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
+// 清理 dist 旧产物（保留 .git）
+for (const e of fs.readdirSync(distDir)) {
+  if (e === ".git") continue;
+  fs.rmSync(path.join(distDir, e), { recursive: true, force: true });
+}
+fs.mkdirSync(path.join(distDir, "data", "icons"), { recursive: true });
+fs.writeFileSync(path.join(distDir, "index.html"), inlined);
+for (const file of ["manifest.webmanifest", "sw.js"]) {
+  fs.copyFileSync(path.join(appDir, file), path.join(distDir, file));
+}
+for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
+  fs.copyFileSync(path.join(iconsDir, file), path.join(distDir, "data", "icons", file));
+}
+/* 恐龙素材：源文件放在 app/data/images/material/dino/（.webp 供页面使用） */
+const dinoDir = path.join(appDir, "data", "images", "material", "dino");
+if (fs.existsSync(dinoDir)) {
+  fs.mkdirSync(path.join(distDir, "images", "dino"), { recursive: true });
+  for (const file of fs.readdirSync(dinoDir).filter((f) => f.endsWith(".webp"))) {
+    fs.copyFileSync(path.join(dinoDir, file), path.join(distDir, "images", "dino", file));
   }
-  fs.mkdirSync(path.join(target, "images", "icons"), { recursive: true });
-  fs.writeFileSync(path.join(target, "index.html"), inlined);
-  for (const file of ["manifest.webmanifest", "sw.js"]) {
-    fs.copyFileSync(path.join(appDir, file), path.join(target, file));
+}
+/* 场景背景：源文件放在 app/data/images/material/background/ */
+const bgDir = path.join(appDir, "data", "images", "material", "background");
+if (fs.existsSync(bgDir)) {
+  fs.mkdirSync(path.join(distDir, "images", "background"), { recursive: true });
+  for (const file of fs.readdirSync(bgDir).filter((f) => f.endsWith(".webp"))) {
+    fs.copyFileSync(path.join(bgDir, file), path.join(distDir, "images", "background", file));
   }
-  for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
-    fs.copyFileSync(path.join(iconsDir, file), path.join(target, "images", "icons", file));
-  }
-  /* 恐龙素材：源文件放在 app/data/images/material/dino/（.webp 供页面使用） */
-  const dinoDir = path.join(appDir, "data", "images", "material", "dino");
-  if (fs.existsSync(dinoDir)) {
-    fs.mkdirSync(path.join(target, "images", "dino"), { recursive: true });
-    for (const file of fs.readdirSync(dinoDir).filter((f) => f.endsWith(".webp"))) {
-      fs.copyFileSync(path.join(dinoDir, file), path.join(target, "images", "dino", file));
-    }
-  }
-  /* 场景背景：源文件放在 app/data/images/material/background/ */
-  const bgDir = path.join(appDir, "data", "images", "material", "background");
-  if (fs.existsSync(bgDir)) {
-    fs.mkdirSync(path.join(target, "images", "background"), { recursive: true });
-    for (const file of fs.readdirSync(bgDir).filter((f) => f.endsWith(".webp"))) {
-      fs.copyFileSync(path.join(bgDir, file), path.join(target, "images", "background", file));
-    }
-  }
-  /* 头像图标：源文件放在 app/data/icons/ */
-  const avatarIconDir = path.join(appDir, "data", "icons");
-  if (fs.existsSync(avatarIconDir)) {
-    fs.mkdirSync(path.join(target, "images", "icons"), { recursive: true });
-    for (const file of fs.readdirSync(avatarIconDir).filter((f) => f.endsWith(".webp"))) {
-      fs.copyFileSync(path.join(avatarIconDir, file), path.join(target, "images", "icons", file));
-    }
-  }
-  const pictureDir = path.join(root, "picture");
-  if (target !== root && fs.existsSync(pictureDir)) {
-    fs.cpSync(pictureDir, path.join(target, "picture"), { recursive: true });
+}
+/* 单词插画：源文件放在 app/data/images/material/words/，缺图的单词回退 emoji */
+const wordImgDir = path.join(appDir, "data", "images", "material", "words");
+if (fs.existsSync(wordImgDir)) {
+  fs.mkdirSync(path.join(distDir, "images", "words"), { recursive: true });
+  for (const file of fs.readdirSync(wordImgDir).filter((f) => f.endsWith(".png"))) {
+    fs.copyFileSync(path.join(wordImgDir, file), path.join(distDir, "images", "words", file));
   }
 }
 

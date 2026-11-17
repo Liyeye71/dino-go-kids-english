@@ -32,8 +32,8 @@
   .result-foot{padding-left:2rem;padding-right:2rem}
   .result-card,.grow-card,.result-head{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
   .result-foot .btn,.result-foot .back{width:100%;max-width:38.75rem;margin-left:auto;margin-right:auto}
-  .shop-preview{height:18.125rem}
-  .shop-preview > .dino{width:14.375rem;height:14.375rem;top:2.25rem}
+  .collect-preview{height:18.125rem}
+  .collect-preview > .dino{width:14.375rem;height:14.375rem;top:2.25rem}
   .dex-grid{grid-template-columns:repeat(2,1fr)}
   .dex-card .pic{height:10.5rem}
   .dex-card .pic svg{width:10.5rem;height:10.5rem}

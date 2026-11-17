@@ -1,22 +1,22 @@
 /* ============================================================
-   DinoGo · 恐龙英语 — 小铺（shop）
+   DinoGo · 恐龙英语 — 收藏（collect）
    底部 Tab 4：背景 / 图鉴，含背景购买与切换
    ============================================================ */
 
-let shopTab = "bg";
+let collectTab = "bg";
 let pendingBuy = null;
 
-/* ------------------------------------------------ shop */
-function screenShop() {
+/* ------------------------------------------------ collect */
+function screenCollect() {
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
   const purchasableBgCount = BACKGROUNDS.filter((bg) => bg.price > 0 && state.stars >= bg.price && !state.bgOwned.includes(bg.id) && state.bg !== bg.id).length;
-  const tabs = `<div class="shop-tabs">
-    <button class="tab ${shopTab === "bg" ? "on" : ""}" data-action="shop-tab" data-tab="bg">背景${purchasableBgCount ? `<span class="tb">${purchasableBgCount}</span>` : ""}</button>
-    <button class="tab ${shopTab === "dex" ? "on" : ""}" data-action="shop-tab" data-tab="dex">图鉴</button>
+  const tabs = `<div class="collect-tabs">
+    <button class="tab ${collectTab === "bg" ? "on" : ""}" data-action="collect-tab" data-tab="bg">背景${purchasableBgCount ? `<span class="tb">${purchasableBgCount}</span>` : ""}</button>
+    <button class="tab ${collectTab === "dex" ? "on" : ""}" data-action="collect-tab" data-tab="dex">图鉴</button>
     <span class="all">全部 ${I.chevron(9)}</span>
   </div>`;
   let panel = "";
-  if (shopTab === "bg") {
+  if (collectTab === "bg") {
     panel = `<div class="bg-grid">${BACKGROUNDS.map((bg) => {
       const owned = state.bgOwned.includes(bg.id) || state.bg === bg.id;
       const using = state.bg === bg.id;
@@ -28,17 +28,17 @@ function screenShop() {
       </button>`;
     }).join("")}</div>`;
   } else {
-    panel = `<div class="shop-dex">${dexBody()}</div>`;
+    panel = `<div class="collect-dex">${dexBody()}</div>`;
   }
-  const head = shopTab === "dex"
-    ? `<div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div><div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${DEX.length}</span></div>`
-    : `<div class="t"><h1>场景小铺</h1><p>用星星给恐龙乐园换个背景</p></div>${starPill()}`;
-  return `<section class="screen has-tab" data-screen="shop">
+  const head = collectTab === "dex"
+    ? `<div class="t"><h1>恐龙图鉴</h1><p>每一次进化，都会被记录在这里</p></div><div class="dex-count"><b class="num">${state.dex.length}</b><span>/ ${STAGES.length}</span></div>`
+    : `<div class="t"><h1>我的收藏</h1><p>用星星给恐龙乐园换个背景</p></div>${starPill()}`;
+  return `<section class="screen has-tab" data-screen="collect">
     <div class="scroll">
-      <div class="shop-head">
+      <div class="collect-head">
         ${head}
       </div>
-      ${shopTab === "dex" ? "" : `<div class="shop-preview ${bgClass(state.bg)}">
+      ${collectTab === "dex" ? "" : `<div class="collect-preview ${bgClass(state.bg)}">
         ${skyFx()}
         <div class="wearing">${I.check(9, "#2E8B57")} 今日造型</div>
         <div class="dino ${dinoCls}">${dino(state.stage)}</div>
@@ -47,7 +47,7 @@ function screenShop() {
       ${tabs}
       ${panel}
     </div>
-    ${tabbar("shop")}
+    ${tabbar("collect")}
   </section>`;
 }
 
@@ -61,7 +61,7 @@ function openBuyBg(id) {
     <div class="dialog">
       <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"></div>
       <h3>解锁「${bg.name}」？</h3>
-      <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和场景小铺。</p>
+      <p>将花费 ${bg.price} 星星，解锁后会立即应用到恐龙乐园和收藏页。</p>
       <div class="d-actions">
         <button class="btn ghost" data-action="close-overlay">再想想</button>
         <button class="btn" data-action="confirm-buy">花 ${bg.price} 星星解锁</button>

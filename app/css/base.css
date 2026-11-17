@@ -138,8 +138,8 @@ h1,h2,h3,h4,p{margin:0}
 
 .avatar{width:2.875rem;height:2.875rem;border-radius:1rem;background:#FFF6E2;border:0.125rem solid #fff;
   box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
-/* 头像使用按框尺寸预裁切的小图标，避免整幅恐龙图缩放取景导致比例失真 */
-.avatar .ava-icon{width:100%;height:100%;display:block;object-fit:cover}
+/* 头像从恐龙大图裁切头部区域，与 hero 视觉完全一致 */
+.avatar .ava-icon{width:100%;height:100%;display:block;object-fit:cover;object-position:center 28%}
 
 /* ------------------------------------------------ animations */
 @keyframes screenIn{from{opacity:0;transform:translateY(0.5rem)}to{opacity:1;transform:none}}

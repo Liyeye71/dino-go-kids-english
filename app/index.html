@@ -12,15 +12,15 @@
   <meta name="format-detection" content="telephone=no">
   <title>DinoGo · 恐龙英语</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="images/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="data/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="data/icons/icon-192.png">
   <!-- 样式按模块拆分，顺序与 build.mjs 的 CSS_FILES 保持一致 -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/game.css">
   <link rel="stylesheet" href="css/dex.css">
-  <link rel="stylesheet" href="css/shop.css">
+  <link rel="stylesheet" href="css/collect.css">
   <link rel="stylesheet" href="css/overlays.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -48,12 +48,11 @@
   <!-- 主题注册器（defineDinoTheme），需在各主题文件之前加载 -->
   <script src="data/level/_shared.js"></script>
   <!-- 主题词库、地图与玩法；新增主题放入 theme 目录后，在此追加一行 script 即可 -->
-  <script src="data/level/theme/travel.js"></script>
+  <script src="data/level/theme/go.js"></script>
   <script src="data/level/theme/animal.js"></script>
-  <script src="data/level/theme/food.js"></script>
-  <!-- 声音：音效 / 语音 / 关卡提示音 + 主题背景音乐 -->
+  <script src="data/level/theme/school.js"></script>
+  <!-- 声音：交互音效 / 单词朗读 / 关卡提示音 -->
   <script src="data/sounds/sfx.js"></script>
-  <script src="data/sounds/bgm.js"></script>
   <!-- 公共：工具 / 视觉 / 配置 / 词汇 / 状态 / 界面 / 事件 / 启动；四个 Tab 各自一个文件 -->
   <script src="frame/core/utils.js"></script>
   <script src="frame/core/visual.js"></script>
@@ -63,11 +62,14 @@
   <script src="frame/core/ui.js"></script>
   <script src="frame/core/events.js"></script>
   <script src="frame/core/boot.js"></script>
-  <script src="data/level/game.js"></script>
+  <script src="data/game/wrongbank.js"></script>
+  <script src="data/game/dynamic-engine.js"></script>
+  <script src="data/game/chest.js"></script>
+  <script src="data/game/game.js"></script>
   <script src="frame/home.js"></script>
   <script src="frame/map.js"></script>
   <script src="frame/dex.js"></script>
-  <script src="frame/shop.js"></script>
+  <script src="frame/collect.js"></script>
   <script>boot();</script>
 </body>
 </html>

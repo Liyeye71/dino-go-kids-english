@@ -16,13 +16,13 @@ function screenMap() {
   const cfg = mapTheme();
   const level = prog.level;
   const starTotal = themeStars(prog);
-  const starMax = LEVELS_PER_THEME * 3;
+  const starMax = levelsPerTheme() * 3;
   const head = cfg.title.slice(0, -2);
   const tail = cfg.title.slice(-2);
 
   /* 主题地图渲染，返回场景、路线 SVG、节点与宝箱的完整 HTML */
   const mapHtml = cfg.render
-    ? cfg.render({ prog, theme, cfg, level, LEVELS_PER_THEME, starTotal })
+    ? cfg.render({ prog, theme, cfg, level, LEVELS_PER_THEME, levels: levelsPerTheme(), starTotal })
     : "";
   const mapSection = cfg.sceneSelector ? mapHtml : `<section class="map-card" style="background:${cfg.bg};border-color:${cfg.border};box-shadow:0 0.375rem 0 ${cfg.border}48">
     ${mapHtml}
@@ -32,11 +32,13 @@ function screenMap() {
       <span>5 道题 · ★×${PASS_STARS} 解锁下一关</span>
     </div>
   </section>`;
-  const nextSection = cfg.sceneSelector ? "" : `<section class="next-card">
+  /* 占位主题（playable: false + 空词表）不显示"开始闯关"按钮 */
+  const hasPlayableContent = themeWords().length > 0;
+  const nextSection = cfg.sceneSelector || !hasPlayableContent ? "" : `<section class="next-card">
     <div class="nc-l">
       <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
       <h3>${theme.name}</h3>
-      <div class="nc-meta">${theme.words.length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</div>
+      <div class="nc-meta">${themeWords().length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</div>
     </div>
     <button class="nc-btn" data-action="start-quiz">开始闯关${I.arrow(14)}</button>
   </section>`;
@@ -58,7 +60,13 @@ function screenMap() {
       <div class="journey">
         <span class="j-lb">我们的旅程</span>
         <span class="j-val num">${starTotal}<em>/ ${starMax} 颗星</em></span>
-        <span class="track"><i style="width:${Math.round((starTotal / starMax) * 100)}%"></i></span>
+        <span class="j-track">
+          <span class="track"><i style="width:${Math.round((starTotal / starMax) * 100)}%"></i></span>
+          ${window.ChestManager ? ChestManager.renderJourneyChests(activeProgressKey(), starTotal, starMax) : ""}
+        </span>
+        ${window.ChestManager && ChestManager.available() > 0
+          ? `<button type="button" class="j-chest bonus" data-action="chest-open" aria-label="开启额外宝箱，剩 ${ChestManager.available()} 个">🎁<b>${ChestManager.available()}</b></button>`
+          : ""}
       </div>
 
       ${mapSection}
@@ -68,13 +76,23 @@ function screenMap() {
   </section>`;
 }
 
-/* 动物乐园双场景目前只展示静态路线，不接入独立答题与进度。 */
-function openAnimalScene(scene) {
-  const scenes = {
-    zoo: { title: "陆地动物园 · 关卡路线", label: "草原探索路线" },
-    ocean: { title: "海洋公园 · 关卡路线", label: "海洋探索路线" },
-  };
-  const cfg = scenes[scene] || scenes.zoo;
+/* 动物乐园：点场景入口 → 记录场景后弹出路线抽屉 */
+function openAnimalScene(sceneId) {
+  const theme = currentTheme();
+  const scenes = theme.scenes || [];
+  if (!scenes.length) return;
+  const scene = scenes.find((s) => s.id === sceneId) || scenes[0];
+  if (!scene.playable) { openAnimalPreview(scene); return; }
+
+  state.scene = scene.id;
+  save();
+  openOverlay(renderZooRouteSheet(scene, sceneProgress("animal", scene.id)));
+  /* 抽屉插入 DOM 后把当前关滚到视口中央 */
+  if (window.ZooRouteView) setTimeout(() => ZooRouteView.focusCurrent(), 60);
+}
+
+/* 未接入关卡逻辑的场景：保留静态路线预览 */
+function openAnimalPreview(scene) {
   const points = [[48, 249], [144, 231], [115, 180], [218, 159], [262, 102], [198, 48]];
   const nodes = points.map(([x, y], index) => {
     const number = index + 1;
@@ -83,19 +101,14 @@ function openAnimalScene(scene) {
   }).join("");
 
   openOverlay(`<div class="overlay">
-    <section class="sheet animal-route-sheet" role="dialog" aria-modal="true" aria-label="${cfg.title}">
+    <section class="sheet animal-route-sheet" role="dialog" aria-modal="true" aria-label="${scene.name}关卡路线">
       <div class="grab"></div>
-      <button type="button" class="animal-route-close" data-action="close-overlay" aria-label="关闭路线预览">×</button>
-      <div class="animal-route-head">
-        <h2>${cfg.title}</h2>
-        <div class="sheet-sub">静态路线预览，暂未接入答题与解锁逻辑</div>
-      </div>
-      <div class="animal-route-map ${scene}" aria-hidden="true">
-        <span class="animal-route-label">${cfg.label}</span>
+      <div class="animal-route-map ${scene.id}" aria-hidden="true">
         <svg class="animal-route-path" viewBox="0 0 320 300" preserveAspectRatio="none">
           <path d="M48 249 L144 231 L115 180 L218 159 L262 102 L198 48" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 13"/>
         </svg>
         ${nodes}
+        <button type="button" class="arm-close" data-action="close-overlay" aria-label="关闭路线预览">×</button>
       </div>
       <button type="button" class="btn animal-route-start" disabled aria-disabled="true">开始闯关</button>
     </section>

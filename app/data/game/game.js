@@ -8,22 +8,112 @@ function levelPlan(level) {
   return plans[level] || plans[10];
 }
 
-const UNKNOWN_ART = () => emojiArt("❓");
+const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
-/* 当前主题的「单词 → 插图」索引，避免每个选项都线性查找 */
+/* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
   const theme = currentTheme();
-  if (!artMap || artMap.id !== theme.id) {
-    artMap = { id: theme.id, map: new Map(theme.words.map((w) => [w.word, w.art])) };
+  const key = `${theme.id}:${state.scene || ""}`;
+  if (!artMap || artMap.key !== key) {
+    artMap = { key, map: new Map(themeWords().map((w) => [w.word, w.art])) };
   }
-  return artMap.map.get(word) || UNKNOWN_ART;
+  return artMap.map.get(word) || (() => UNKNOWN_ART(word));
+}
+
+/* 判断当前是否为动物园场景（启用动态出题引擎） */
+function isZooScene() {
+  return state.theme === "animal" && state.scene === "zoo";
+}
+
+/* 当前动物园场景对象 */
+function zooScene() {
+  return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
+}
+
+/* 关卡对应的主题馆信息：{ level, venue, step, x, y } */
+function zooLevelInfo(level) {
+  const scene = zooScene();
+  return scene && scene.levels ? scene.levels[level - 1] || null : null;
+}
+
+/* 每馆第 5 关为馆内 BOSS，最后一关为总 BOSS */
+function isAnimalBossLevel(level) {
+  return isZooScene() && Number(level) % LEVELS_PER_VENUE === 0;
+}
+function isAnimalFinalBoss(level) {
+  const scene = zooScene();
+  return isZooScene() && !!scene && Number(level) === scene.levelCount;
 }
 
 function buildTasks(level) {
   const theme = currentTheme();
-  const pool = theme.words;
-  const picks = shuffle(pool);
+  const pool = themeWords();
   const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
+
+  /* 🦁 动物园场景：双层动态出题引擎（错题库加权 + 10抽5题型） */
+  if (isZooScene() && window.DynamicEngine) {
+    const sceneId = state.scene || "zoo";
+    const scene = zooScene();
+    /* 当前关卡所属主题馆：1~5 关 → 第 1 馆，6~10 关 → 第 2 馆…… */
+    const info = zooLevelInfo(level);
+    const venueWords = info ? info.venue.words : pool;
+    /* 整个场景的全量词池（用于生成干扰项 + 降级兜底） */
+    const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
+    let questions = DynamicEngine.generateSession(
+      allSceneWords, venueWords, sceneId, level,
+      info ? info.step : level, isAnimalFinalBoss(level)
+    );
+    /* 安全兜底：只保留 defaultGames 里已有 render 的题型（新题型 Week 2+ 才逐个上线） */
+    questions = questions.filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render);
+    /* 不够 5 道就降级：循环用已实现的题型补足 */
+    const implementedTypes = Object.keys(theme.games).filter((k) => theme.games[k].render);
+    while (questions.length < 5 && implementedTypes.length > 0) {
+      const fbType = implementedTypes[Math.floor(Math.random() * implementedTypes.length)];
+      const fbGame = theme.games[fbType];
+      let fbCandidates = venueWords.filter((w) => {
+        const wid = WrongBank.makeId(sceneId, w.word);
+        return !questions.some((q) => WrongBank.makeId(sceneId, q.targetWord.word) === wid);
+      });
+      if (fbCandidates.length === 0) {
+        fbCandidates = allSceneWords.filter((w) => {
+          const wid = WrongBank.makeId(sceneId, w.word);
+          return !questions.some((q) => WrongBank.makeId(sceneId, q.targetWord.word) === wid);
+        });
+      }
+      if (fbCandidates.length === 0) break;
+      const fbTarget = WrongBank.pickWithBias(fbCandidates, (w) => WrongBank.makeId(sceneId, w.word));
+      questions.push({ gameType: fbType, recordWrong: true, targetWord: fbTarget, distractors: [] });
+    }
+    /* 把 DynamicEngine 输出转为现有 quiz.order 兼容的 task 对象 */
+    return questions.slice(0, 5).map((q) => {
+      /* 从全量词池找完整的词对象 */
+      const w = allSceneWords.find((x) => x.word === q.targetWord.word)
+             || pool.find((x) => x.word === q.targetWord.word)
+             || q.targetWord;
+      const task = {
+        type: q.gameType,
+        word: w.word,
+        zh: w.zh || "",
+        emoji: w.emoji || "",
+        art: w.art || (() => UNKNOWN_ART(w.word)),
+        phon: w.phon || "",
+        category: w.category || "",
+        animal: !!w.animal,
+        eats: w.eats || "",
+        dlgQ: dlg.q,
+        dlgA: dlg.a,
+        recordWrong: q.recordWrong,
+        wrongWordId: WrongBank.makeId(sceneId, w.word),
+      };
+      /* 让现有题型的 build 自动填充 options / pairs 等字段（选项只取本馆词） */
+      const game = theme.games[q.gameType];
+      if (game && game.build) game.build(task, venueWords);
+      return task;
+    });
+  }
+
+  /* ✈️🍽️ 旅行 / 美食 / 海洋：原有固定题型顺序逻辑 */
+  const picks = shuffle(pool);
   return levelPlan(level).map((type, i) => {
     const w = picks[i % picks.length];
     const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
@@ -34,7 +124,7 @@ function buildTasks(level) {
 }
 
 function startQuiz(level) {
-  const lvl = Math.min(LEVELS_PER_THEME, Math.max(1, Number(level) || themeProgress().level));
+  const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
   quiz = {
     level: lvl,
     index: 0,
@@ -77,17 +167,24 @@ function correctFx(combo) {
     </div>
   </div>`;
 }
-/* 答错：醒目的正确答案提示 */
-function wrongFx(word) {
+/* 答错：醒目的正确答案提示（英文 + 中文） */
+function wrongFx(word, zh) {
   return `<div class="qfx bad-fx" aria-hidden="true">
     <div class="fx-wrong">
       <span class="fx-wrong-ic">✕</span>
       <div class="fx-wrong-txt">
         <b>${word ? "正确答案是" : "别灰心"}</b>
-        <span>${word || "下一题继续加油"}</span>
+        <span>${word || "下一题继续加油"}${word && zh ? `<i class="fx-zh">${zh}</i>` : ""}</span>
       </div>
     </div>
   </div>`;
+}
+
+/* 答完题后统一的手动“下一题”按钮 */
+function quizNextButton() {
+  if (!quiz) return "";
+  const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "查看成绩" : "Next · 下一题";
+  return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
 
 function screenQuiz() {
@@ -110,12 +207,7 @@ function screenQuiz() {
     }
     return opt === selected ? `${base} sel` : base;
   };
-  const choiceButton = (emptyLabel) => {
-    const nextLabel = quiz.index >= total - 1 || quiz.hearts <= 0 ? "查看成绩" : "下一题";
-    if (!selected) return `<button class="btn" disabled>${emptyLabel} ${I.arrow(18)}</button>`;
-    if (!revealed) return `<button class="btn" data-action="check">检查答案 ${I.arrow(18)}</button>`;
-    return `<button class="btn" data-action="next">${nextLabel} ${I.arrow(18)}</button>`;
-  };
+  const choiceButton = () => (revealed ? quizNextButton() : "");
   const options = (list) => list.map((opt, i) => {
     const cls = optionClass(opt);
     const mark = revealed && opt === q.word ? `<span class="mark">${I.check(11)}</span>`
@@ -129,14 +221,14 @@ function screenQuiz() {
   if (revealed) {
     combo = quiz.choiceCorrect
       ? `太棒了！连对 <b>${quiz.combo}</b> 题`
-      : `答错啦，正确答案是 <b>${q.word}</b>`;
+      : `答错啦，正确答案是 <b>${q.word}</b>${q.zh ? `<i class="ans-zh">${q.zh}</i>` : ""}`;
   } else if (quiz.combo >= 2) {
     combo = `连对 <b>${quiz.combo}</b> 题 · 保持节奏！`;
   } else {
     combo = `连续答对 3 题，可以拿到更多星星`;
   }
-  const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null)) : "";
-  return `<section class="screen quiz-page" data-screen="quiz">
+  const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null, q.zh)) : "";
+  return `<section class="screen quiz-page ${game.pageClass || ""}" data-screen="quiz">
     ${fx}
     <div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
@@ -146,7 +238,7 @@ function screenQuiz() {
     </div>
     <div class="quiz-body">
       <div class="quiz-prompt">
-        <div class="chip">LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
+        <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
         <h2>${game.title}</h2>
       </div>
       ${view.body}
@@ -166,7 +258,7 @@ function selectOption(word) {
   if (!quiz || quiz.revealed) return;
   quiz.selected = word;
   sfx("tap");
-  render();
+  checkAnswer();
 }
 /* 听发音按钮：沿用原「答完听发音」的位置 */
 function listenPill() {
@@ -199,17 +291,16 @@ function checkAnswer() {
     quiz.combo++;
     quiz.words.push(q.word);
     sfx("correct");
+    /* 🦁 动物园场景：答对 → 尝试清除错题库 */
+    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1);
     quiz.combo = 0;
     sfx("wrong");
+    /* 🦁 动物园场景：答错 → 自动收录错题库 */
+    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
   }
   render();
-  if (quiz && (quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0)) {
-    setTimer(() => nextQuestion(), 1800);
-  } else {
-    setTimer(() => nextQuestion(), 2200);
-  }
 }
 function nextQuestion() {
   if (!quiz) return;
@@ -246,7 +337,7 @@ function finishQuiz() {
   state.stars += starGain;
   prog.stars[completedLevel] = best;
   /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
-  if (passed && !isReplay) prog.level = Math.min(LEVELS_PER_THEME, completedLevel + 1);
+  if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
   state.words += quiz.correct;
   state.minutes += Math.max(1, Math.round(elapsed / 60));
   state.threeStars += stars === 3 ? 1 : 0;
@@ -275,6 +366,15 @@ function finishQuiz() {
   quiz = null;
   save();
   sfx(stars === 3 ? "win" : "coin");
+
+  /* 🔥 总 BOSS 关（第 50 关 动物欢乐马戏团）通关额外奖励 */
+  if (isAnimalFinalBoss(completedLevel) && passed && window.ChestManager) {
+    const bossChests = ChestManager.rewardBossClear();
+    lastResult.bossClear = true;
+    lastResult.bossChests = bossChests;
+    lastResult.allCleared = ChestManager.isAllCleared();
+  }
+
   go("result", { replace: true });
 }
 
@@ -301,10 +401,12 @@ function screenResult() {
     <div class="confetti">${confettiPieces}</div>
     <div class="result-scroll">
       <div class="result-head">
-        <div class="eyebrow">LEVEL ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
-        <h1>${r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
+        ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
+        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
+        <h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
+        ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
         <div class="result-stars">${starRow}</div>
-        <div class="result-sub">${r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 下一关已解锁" : r.best === 1 ? "一星通关 · 拿到两星才能解锁下一关" : "还差一点点，重新挑战这一关吧"}</div>
+        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 下一关已解锁" : r.best === 1 ? "一星通关 · 拿到两星才能解锁下一关" : "还差一点点，重新挑战这一关吧"}</div>
       </div>
 
       <div class="result-card">

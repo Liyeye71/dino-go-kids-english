@@ -59,3 +59,36 @@
 .toast{background:rgba(25,46,36,.94);color:#FFF6E2;font-size:0.75rem;font-weight:var(--w-mid);padding:0.625rem 0.875rem;border-radius:0.75rem;
   box-shadow:0 0.625rem 1.5rem rgba(20,40,30,.25);animation:toastIn .25s ease both;max-width:100%;text-align:center}
 .toast.out{animation:toastOut .25s ease both}
+
+/* ============================================================
+   🎁 神秘宝箱开箱（Week 4）
+   ============================================================ */
+.chest-sheet{display:flex;flex-direction:column;align-items:center;padding:1.25rem 1rem 1.5rem;background:linear-gradient(180deg,#FFF9EC 0%,#FFEED5 100%)}
+.chest-reveal{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:0.5rem 0;width:100%}
+.chest-sparkle{font-size:1.125rem;letter-spacing:0.3125rem;color:#FFB64D;animation:chest-sparkle 1.2s ease-in-out infinite}
+@keyframes chest-sparkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.25)}}
+.chest-found{width:100%;max-width:16rem;height:10rem;display:grid;place-items:center;border-radius:1rem;background:#FFFFFF;
+  box-shadow:inset 0 0 0 0.125rem rgba(255,182,77,.25),0 0.25rem 0.625rem rgba(255,152,0,.15);
+  animation:chest-pop .55s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes chest-pop{0%{opacity:0;transform:scale(.4) rotate(-8deg)}60%{opacity:1;transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
+.cf-stage{transform-origin:center}
+.chest-meta{text-align:center}
+.chest-rarity{font-size:0.9375rem;letter-spacing:0.125rem;line-height:1}
+.chest-rarity.rarity-3{color:#B0B0B0}
+.chest-rarity.rarity-4{color:#6BB6FF}
+.chest-rarity.rarity-5{color:#FFB64D}
+.chest-meta h2{font-size:1.25rem;font-weight:var(--w-black);color:#3D5A3D;margin:0.25rem 0}
+.chest-meta h2 b{color:#FF8C3D}
+.chest-phase{font-size:0.6875rem;color:#8C6B3D;font-weight:var(--w-bold);margin:0}
+.chest-desc{font-size:0.75rem;color:#70624D;line-height:1.6;margin:0.25rem 0.5rem}
+.chest-progress{width:100%;max-width:20rem;display:flex;flex-direction:column;gap:0.25rem;margin-top:0.5rem;padding:0.5rem 0.75rem;
+  border-radius:0.75rem;background:rgba(255,255,255,.7);font-size:0.6875rem;color:#8C6B3D}
+.chest-progress span{font-weight:var(--w-bold)}
+.chest-progress b{float:right;font-weight:var(--w-black);color:#3D5A3D}
+.chest-progress .bar{height:0.25rem;border-radius:0.125rem;background:rgba(92,65,29,.15);overflow:hidden}
+.chest-progress .bar i{display:block;height:100%;background:#FFB64D;border-radius:0.125rem;transition:width .5s}
+.chest-actions{display:flex;flex-direction:column;gap:0.375rem;width:100%;max-width:20rem;margin-top:0.75rem}
+.chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
+.chest-actions .btn.ghost{background:#FFFFFF;color:#70624D;box-shadow:none;border-color:#E7DAC3}
+.chest-open{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:2rem 1rem;text-align:center}
+.chest-emoji{font-size:3.75rem;animation:chest-pop .55s cubic-bezier(.2,1.2,.4,1) both}

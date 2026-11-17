@@ -1,7 +1,7 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 词汇（words）+ 恐龙图鉴（dex）
    底部 Tab 3：词汇本（按 A–Z 分组）
-   恐龙图鉴并入「小铺 → 图鉴」，用 dexBody() 渲染
+   恐龙图鉴并入「收藏 → 图鉴」，用 dexBody() 渲染
    ============================================================ */
 
 let dexFilter = "all";
@@ -15,18 +15,18 @@ function dexRewardInfo() {
   return { title: "收集奖励 · 落日山谷", note: `再发现 ${4 - state.dex.length} 种形态，解锁「落日山谷」背景`, cur: state.dex.length, max: 4, reward: "落日山谷" };
 }
 
-/* 图鉴正文：小铺 Tab 内嵌使用（不含 .scroll 与底部 Tab） */
+/* 图鉴正文：收藏 Tab 内嵌使用（不含 .scroll 与底部 Tab） */
 function dexBody() {
   const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["super", "完全体"], ["ultra", "究极体"]];
   const filterPhases = { baby: "幼年期", teen: "成长期", adult: "成熟期", super: "完全体", ultra: "究极体" };
-  const list = DEX.filter((d) => dexFilter === "all" || d.phase === filterPhases[dexFilter]);
+  const list = STAGES.filter((d) => dexFilter === "all" || d.phase === filterPhases[dexFilter]);
   const reward = dexRewardInfo();
-  const pct = Math.round((state.dex.length / DEX.length) * 100);
+  const pct = Math.round((state.dex.length / STAGES.length) * 100);
   return `<div class="dex-sum card">
       <div class="ds-main">
         <div class="ds-row"><b>图鉴收集度</b><span class="num">${pct}%</span></div>
         <div class="bar"><i style="width:${pct}%"></i></div>
-        <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} / ${DEX.length} 种形态 · 继续成长解锁传说</div>
+        <div class="ds-foot">${spark(10, "#F0B53B")} 已收录 ${state.dex.length} / ${STAGES.length} 种形态 · 继续成长解锁传说</div>
       </div>
       <div class="ds-badge">${I.book(26)}</div>
     </div>
@@ -37,7 +37,7 @@ function dexBody() {
       ${list.map((d) => {
         const found = state.dex.includes(d.key);
         const isNow = d.key === state.stage;
-        const bgT = (DEX.findIndex((x) => x.key === d.key) % 5) + 1;
+        const bgT = (STAGES.findIndex((x) => x.key === d.key) % 5) + 1;
         return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
           ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
           ${isNow ? `<span class="now-tag">当前</span>` : ""}
@@ -82,11 +82,15 @@ function ultraSkinSection() {
 }
 
 /* ------------------------------------------------ words */
-/* 所有主题词汇按首字母 A–Z 分组：词汇池在运行期不变，首次计算后缓存 */
+/* 词库单词按首字母 A–Z 分组：单词本只展示词库，不掺入各主题馆的闯关词 */
 function allWordsAlpha() {
   if (wordsAlphaCache) return wordsAlphaCache;
-  const all = WORD_SETS.flatMap((set) =>
-    set.words.map((w) => ({ ...w, themeId: set.id, themeName: set.name, themeEmoji: set.emoji || "🔤" })));
+  const seen = new Set();
+  const all = POS_POOL.filter((w) => {
+    if (seen.has(w.word)) return false;
+    seen.add(w.word);
+    return true;
+  });
   all.sort((a, b) => a.word.localeCompare(b.word, "en"));
   const groups = [];
   all.forEach((w) => {
@@ -98,8 +102,6 @@ function allWordsAlpha() {
   return (wordsAlphaCache = groups);
 }
 
-const THEME_SHORT = { travel: "旅行", animal: "动物", food: "美食" };
-
 function screenWords() {
   const groups = allWordsAlpha();
   const total = groups.reduce((n, g) => n + g.words.length, 0);
@@ -110,7 +112,7 @@ function screenWords() {
   return `<section class="screen has-tab" data-screen="words">
     <div class="scroll">
       <div class="words-head">
-        <div class="t"><h1>单词本</h1><p>四个主题的单词，按 A–Z 排好队</p></div>
+        <div class="t"><h1>单词本</h1><p>词库里的单词，按 A–Z 排好队</p></div>
         <div class="words-count"><b class="num">${total}</b><span>词</span></div>
       </div>
 
@@ -126,13 +128,13 @@ function screenWords() {
             <span class="wr-pic">${w.art()}</span>
             <span class="wr-main">
               <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
-              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}<span class="wr-tag t-${w.themeId}">${THEME_SHORT[w.themeId] || w.themeName}</span></span>
+              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}</span>
             </span>
           </button>`).join("")}
         </div>
       </div>`).join("")}
 
-      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，闯关后新词会自动出现在这里</div>
+      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，词库会持续补充新词</div>
     </div>
     ${tabbar("words")}
   </section>`;

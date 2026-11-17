@@ -139,10 +139,9 @@
 .animal-scene-go b{font-size:1rem;line-height:1}
 
 /* ------------------------------------------------ animal static route sheet */
-.animal-route-sheet{position:relative}
-.animal-route-head{padding-right:2rem}
-.animal-route-close{position:absolute;right:1.25rem;top:2.75rem;width:2.125rem;height:2.125rem;display:grid;place-items:center;
-  border:0;border-radius:50%;background:#F1E8D8;color:#776B58;font-size:1.375rem;line-height:1;cursor:pointer}
+/* 弹层只保留地图与开始按钮：地图宽度与按钮一致，高度按视口为按钮留出空间 */
+.animal-route-sheet{max-width:min(35rem,calc(88vh - 11rem));padding-top:0.5rem}
+.animal-route-sheet .grab{margin-bottom:0.5rem}
 .animal-route-map{position:relative;height:clamp(18rem,43vh,23rem);margin-top:1rem;overflow:hidden;border-radius:1.5rem;
   border:0.09375rem solid #A9D8E0;background:
     radial-gradient(circle at 88% 25%,transparent 0 0.4375rem,rgba(255,255,255,.38) 0.5rem 0.5625rem,transparent 0.625rem),
@@ -151,16 +150,31 @@
 .animal-route-map.zoo{border-color:#D9D6A5;background:
   radial-gradient(circle at 88% 25%,rgba(255,255,255,.5) 0 0.375rem,transparent 0.4375rem),
   linear-gradient(180deg,#F2F4D8,#E5EDCB)}
-.animal-route-label{position:absolute;z-index:2;left:1rem;top:0.875rem;padding:0.375rem 0.75rem;border-radius:6.1875rem;
-  background:rgba(255,255,255,.82);color:#2A6C7E;font-size:0.65625rem;font-weight:var(--w-black)}
-.animal-route-map.zoo .animal-route-label{color:#6E7138}
+/* 真实路线图：画布比例与图片一致，保证百分比节点坐标严格对齐 */
+.animal-route-map.has-map{width:100%;max-width:none;height:auto;aspect-ratio:var(--arm-ratio,1/1);margin:0;
+  background:#F7ECD6;border-color:#E0CFAE;container-type:inline-size}
+.arm-bg{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+/* 关闭按钮贴在地图右上角 */
+.arm-close{position:absolute;z-index:4;right:0.5rem;top:0.5rem;width:2rem;height:2rem;padding:0;display:grid;place-items:center;
+  border:0;border-radius:50%;background:rgba(255,251,243,.94);color:#6B5B45;font-size:1.25rem;line-height:1;cursor:pointer;
+  box-shadow:0 0.125rem 0.375rem rgba(80,60,25,.2);transition:transform .15s ease}
+.arm-close:active{transform:scale(.94)}
 .animal-route-path{position:absolute;inset:0;width:100%;height:100%}
-.animal-route-node{position:absolute;z-index:2;display:grid;place-items:center;width:2.875rem;height:2.875rem;
+.animal-route-node{position:absolute;z-index:2;display:grid;place-items:center;width:2.875rem;height:2.875rem;padding:0;
   transform:translate(-50%,-50%);border-radius:50%;background:#FFFDF7;border:0.1875rem solid #fff;
-  color:#6F8B91;font-size:0.875rem;font-weight:var(--w-black);box-shadow:0 0.25rem 0.625rem rgba(70,100,90,.14)}
+  color:#6F8B91;font-size:0.875rem;font-weight:var(--w-black);box-shadow:0 0.25rem 0.625rem rgba(70,100,90,.14);
+  cursor:pointer;transition:transform .15s ease}
+.animal-route-node:active{transform:translate(-50%,-50%) scale(.94)}
 .animal-route-node.done{background:var(--green);color:#fff}
 .animal-route-node.current{background:#FFB64D;color:#fff;box-shadow:0 0 0 0.5rem rgba(255,214,143,.55),0 0.25rem 0.625rem rgba(130,90,30,.18)}
-.animal-route-start{width:100%;min-height:3.25rem;margin-top:1rem;background:var(--green);color:#fff}
+/* 节点尺寸跟随地图容器宽度，右缘刚好盖住原编号并停在地名牌起点之前 */
+.animal-route-map.has-map .animal-route-node{width:5cqw;height:5cqw;font-size:max(0.5rem,2cqw);
+  border-width:0.2cqw;border-color:#FFFDF7;box-shadow:0 0.3cqw 0.9cqw rgba(60,45,20,.18)}
+/* 保持 44px 级别的可点击热区，视觉节点可以更小 */
+.animal-route-map.has-map .animal-route-node::after{content:"";position:absolute;inset:-0.85rem;border-radius:50%}
+.animal-route-map.has-map .animal-route-node.locked{background:rgba(245,237,222,.94);color:#A8997D}
+.animal-route-map.has-map .animal-route-node.current{box-shadow:0 0 0 0.7cqw rgba(255,214,143,.55),0 0.3cqw 0.9cqw rgba(130,90,30,.18)}
+.animal-route-start{width:100%;min-height:3.25rem;margin-top:0.875rem;background:var(--green);color:#fff}
 .animal-route-start:disabled{opacity:1;pointer-events:none}
 
 @media (max-width:360px){
@@ -175,3 +189,116 @@
   .animal-scene-info strong{font-size:1.25rem}
   .animal-scene-info small{font-size:0.78125rem}
 }
+
+/* ============================================================
+   🦁 Zoo 入口图层（整张地图）
+   - 图上「开始闯关」为热区
+   - 点击后进入下方 zoo 内嵌路线图
+   ============================================================ */
+.zoo-cover-layer{position:relative;width:100%;aspect-ratio:1024/683;overflow:hidden;
+  border-radius:1.25rem;background:#FBF3E3;border:0.09375rem solid var(--line);
+  box-shadow:0 0.25rem 0 #EADAC0}
+.zoo-cover-img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* 「开始闯关」热区：完全透明地覆盖图上木牌标题，仅保留点击与按压反馈 */
+.zoo-cover-start{position:absolute;z-index:2;right:3%;top:1%;width:24%;height:max(2.75rem,8.4%);
+  padding:0;border:0;border-radius:6.1875rem;background:transparent;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:transform .12s ease}
+.zoo-cover-start:active{transform:scale(.96)}
+.zoo-cover-start:focus-visible{outline:0.1875rem solid rgba(46,139,87,.45);outline-offset:0.1875rem}
+
+@media (max-width:480px){
+  .zoo-cover-layer{border-radius:1rem}
+}
+
+/* ============================================================
+   🦁 Zoo 路线弹框（底部抽屉）
+   - 棋盘地图按 1505/1045 铺满，50 个节点落在图上 1~50 号圆点
+   - 支持 100%~250% 缩放，当前关自动滚入视口中央
+   ============================================================ */
+.sheet.zoo-route-sheet{max-width:min(36.5rem,calc(96vw - 1rem))}
+.zoo-route-head{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0 0.25rem 0.5rem}
+/* 主副标题同一行、底部对齐；窄屏时自动换行 */
+.zoo-route-title{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0.125rem 0.5rem;min-width:0}
+.zoo-route-title strong{font-size:1rem;line-height:1.2;font-weight:var(--w-black);color:#3D5A3D}
+.zoo-route-title small{font-size:0.6875rem;line-height:1.25;color:var(--muted)}
+.zoo-route-close{flex:none;display:grid;place-items:center;width:2rem;height:2rem;padding:0;border:0;border-radius:50%;
+  background:#FFF8E7;color:#6B5B45;font-size:1.25rem;line-height:1;cursor:pointer;
+  box-shadow:0 0.125rem 0.375rem rgba(80,60,25,.12);transition:transform .12s ease}
+.zoo-route-close:active{transform:scale(.94)}
+/* 10 个主题馆进度：已通过绿、当前馆金色、后续灰化 */
+.zoo-venue-strip{display:flex;align-items:center;justify-content:space-between;gap:0.2rem;padding:0 0.15rem 0.55rem}
+.zoo-venue-dot{flex:1 1 0;display:grid;place-items:center;max-width:2rem;aspect-ratio:1;border-radius:50%;
+  font-size:0.85rem;line-height:1;background:#F4EBD9;border:0.09rem solid #E3D4B8;
+  opacity:.5;filter:grayscale(.65);transition:transform .15s ease,opacity .15s ease}
+.zoo-venue-dot.done{opacity:.9;filter:none;background:#E6F2E4;border-color:#9DC5A2}
+.zoo-venue-dot.current{opacity:1;filter:none;background:#FFF1C9;border-color:#E2A83C;
+  box-shadow:0 0 0 0.18rem rgba(255,201,77,.28);transform:scale(1.12)}
+.zoo-venue-dot.locked{opacity:.38}
+/* 地图视口：小图完整显示，放大后在抽屉内部滚动 */
+.zoo-board-frame{position:relative}
+.zoo-board-viewport{max-height:min(58vh,32rem);overflow:auto;border-radius:1rem;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:#F7EEDC}
+.zoo-board-viewport::-webkit-scrollbar{width:0.5rem;height:0.5rem}
+.zoo-board-viewport::-webkit-scrollbar-thumb{background:rgba(150,120,70,.35);border-radius:999rem}
+.zoo-board-inner{width:100%}
+.zoo-route-sheet .animal-route-map.has-map{margin:0 auto;border-color:#D9C79A;border-radius:0.9rem}
+/* 缩放控制：固定在视口右上角（避开右下角终点区域） */
+.zoo-zoom-bar{position:absolute;right:0.55rem;top:0.55rem;z-index:5;display:flex;align-items:center;gap:0.12rem;
+  padding:0.16rem;border-radius:999rem;background:rgba(255,253,247,.94);
+  box-shadow:0 0.2rem 0.6rem rgba(90,70,30,.22)}
+.zoo-zoom-bar button{display:grid;place-items:center;width:1.85rem;height:1.85rem;padding:0;border:0;border-radius:50%;
+  background:#F7EEDC;color:#6D5636;font-family:inherit;font-size:1rem;font-weight:var(--w-black);line-height:1;cursor:pointer;
+  transition:transform .12s ease,background .12s ease}
+.zoo-zoom-bar button:active{transform:scale(.92)}
+.zoo-zoom-bar .zoo-zoom-val{width:3rem;border-radius:999rem;background:transparent;font-size:0.7rem;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em}
+/* 50 格棋盘节点：自己绘制数字与底色，未到达关卡整体置灰 */
+.animal-route-map.has-map.zoo .zoo-step{width:5.8cqw;height:5.8cqw;padding:0;display:grid;place-items:center;
+  background:#FFFDF7;border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
+  font-weight:var(--w-black);font-variant-numeric:tabular-nums;
+  box-shadow:0 0.16cqw 0.4cqw rgba(90,70,30,.14);transition:transform .12s ease}
+.zoo-step-num{position:relative;z-index:1;display:block;pointer-events:none}
+.animal-route-map.has-map.zoo .zoo-step::after{inset:-0.35cqw}
+.animal-route-map.has-map.zoo .zoo-step.done{background:#F2F8EE;border-color:#4E9459;color:#3F7A48}
+.animal-route-map.has-map.zoo .zoo-step.current{background:linear-gradient(180deg,#FFE082,#FFC24D);
+  border-color:#E2A83C;color:#6B4A12;
+  box-shadow:0 0.16cqw 0.4cqw rgba(120,80,20,.2),0 0 0 0.55cqw rgba(255,201,77,.3);
+  animation:zoo-step-bob 1.5s ease-in-out infinite}
+.animal-route-map.has-map.zoo .zoo-step.locked{background:#E7E3DA;border-color:#D0CABE;color:#9C968A;
+  box-shadow:none;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step.venue-boss{border-style:dashed;border-color:#D96B4C;color:#B4553A}
+.animal-route-map.has-map.zoo .zoo-step.venue-boss.done{border-color:#3F7A48;color:#3F7A48}
+.animal-route-map.has-map.zoo .zoo-step.venue-boss.locked{border-color:#C5BFB2;color:#9C968A}
+.animal-route-map.has-map.zoo .zoo-step:not(.locked):active{transform:translate(-50%,-50%) scale(.9)}
+@keyframes zoo-step-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+
+/* ============================================================
+   🎁 旅程进度条上的宝箱节点（每 10 星一个）
+   ============================================================ */
+.journey .j-track{position:relative;flex:1;display:flex;align-items:center;min-width:0}
+.j-chest{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:1.625rem;height:1.625rem;padding:0;
+  transform:translate(-50%,-50%);border:0.125rem solid #FFFDF7;border-radius:50%;
+  background:#F1E6D0;color:#9A8763;font-size:0.8125rem;line-height:1;cursor:pointer;font-family:inherit;
+  box-shadow:0 0.125rem 0.3125rem rgba(90,70,30,.2);transition:transform .12s ease}
+.j-chest:active{transform:translate(-50%,-50%) scale(.92)}
+.j-chest:disabled{cursor:default}
+.j-chest.locked{opacity:.55;background:#F3EADA;color:#B3A489;border-color:#F7F0E2;box-shadow:none}
+.j-chest.done{background:#E4EFD6;color:#4E7A45;font-weight:var(--w-black)}
+.j-chest.ready{background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;
+  box-shadow:0 0.125rem 0 #D89732,0 0 0 0.25rem rgba(255,200,77,.26);animation:j-chest-bob 1.6s ease-in-out infinite}
+@keyframes j-chest-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+/* BOSS 额外奖励宝箱：作为独立按钮跟在进度条右侧 */
+.j-chest.bonus{position:relative;left:auto;top:auto;transform:none;flex:none;width:1.75rem;height:1.75rem;animation:none;
+  background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;font-size:0.75rem}
+.j-chest.bonus:active{transform:scale(.92)}
+.j-chest.bonus b{position:absolute;right:-0.375rem;top:-0.375rem;min-width:0.875rem;height:0.875rem;padding:0 0.125rem;
+  border-radius:6.1875rem;background:#E2622F;color:#fff;font-size:0.5625rem;line-height:1;display:grid;place-items:center}
+
+/* 全通关横幅 */
+.zoo-all-clear{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:0.625rem;padding:0.625rem 1rem;border-radius:0.75rem;
+  background:linear-gradient(135deg,#FFE477,#FFB64D);box-shadow:0 0.25rem 0.625rem rgba(255,152,0,.3);
+  font-weight:var(--w-black);color:#5C411D;font-size:0.8125rem;
+  animation:clear-glow 2.4s ease-in-out infinite}
+.zoo-all-clear span{font-size:1.25rem}
+@keyframes clear-glow{0%,100%{box-shadow:0 0.25rem 0.625rem rgba(255,152,0,.3)}50%{box-shadow:0 0.375rem 1rem rgba(255,107,53,.55)}}

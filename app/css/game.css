@@ -98,6 +98,7 @@
   background:linear-gradient(90deg,#FFF0C9,#FFE4A6);border:0.09375rem solid #F5D48B;
   font-size:0.8125rem;font-weight:var(--w-bold);color:#95691A;padding:0.4375rem 0.75rem;text-align:center;transition:background .2s ease}
 .combo b{color:#7C5209}
+.combo .ans-zh{font-style:normal;font-weight:var(--w-bold);font-size:0.875rem;color:inherit;opacity:.8;margin-left:0.1875rem}
 .combo.good{background:linear-gradient(90deg,#EAF9D8,#D6F1BF);border-color:#B9DDA1;color:#2E7A4C}
 .combo.good b{color:#1E6B47}
 .combo.bad{background:#FFF1ED;border-color:#F5BCAF;color:#B0553F}
@@ -129,6 +130,7 @@
 .fx-wrong-txt b{display:block;font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.075rem;color:#B0654F}
 .fx-wrong-txt span{display:block;font-size:1.5625rem;font-weight:var(--w-black);color:#C04532;line-height:1.15;
   letter-spacing:-0.01875rem;margin-top:0.0625rem;max-width:min(58vw,20rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fx-wrong-txt .fx-zh{font-style:normal;font-size:0.5625em;font-weight:900;color:#B0654F;margin-left:0.375rem}
 
 @keyframes fxPop{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
@@ -299,3 +301,188 @@
   border-top:0.0625rem dashed #E7D7C5;font-size:0.6875rem;font-weight:var(--w-mid);color:#77677F}
 .evo-unlock .u-skill b{color:#E58B32}
 .evo-unlock .btn{margin-top:0.8125rem;min-height:3.125rem;font-size:1rem;color:#704314;background:linear-gradient(180deg,#FFE477,#FFC84D);border:0.09375rem solid rgba(255,255,255,.75);box-shadow:0 0.25rem 0 #D89732}
+
+/* ============================================================
+   🎨 颜色涂鸦板 color_paint（Week 3）
+   ============================================================ */
+.cp-wrap{display:flex;flex-direction:column;gap:0.625rem;align-items:center}
+.cp-instruction{text-align:center}
+.cp-word{display:inline-block;padding:0.25rem 0.625rem;border-radius:0.375rem;background:#F0F4E8;color:#3D5A3D;font-weight:var(--w-black);font-size:1.0625rem;margin-bottom:0.375rem}
+.cp-instruction small{display:block;color:var(--muted);font-size:0.75rem}
+.cp-canvas{width:100%;max-width:30rem;height:auto;aspect-ratio:3/2;border-radius:0.75rem;background:#fff;box-shadow:inset 0 0 0 0.125rem #E7DAC3,0 0.1875rem 0.5rem rgba(0,0,0,.08);touch-action:none;cursor:crosshair}
+.cp-palette{display:flex;flex-wrap:wrap;gap:0.375rem;justify-content:center;margin-top:0.25rem}
+.cp-swatch{width:1.75rem;height:1.75rem;border-radius:50%;border:0.1875rem solid #fff;box-shadow:0 0.125rem 0.25rem rgba(0,0,0,.18);cursor:pointer;transition:transform .12s}
+.cp-swatch:active{transform:scale(.88)}
+.cp-actions{display:flex;gap:0.5rem;margin-top:0.25rem}
+.cp-clear,.cp-size{padding:0.375rem 0.625rem;border:0;border-radius:0.5rem;background:#F4E5C6;color:#5C411D;font-size:0.75rem;font-weight:var(--w-bold);cursor:pointer}
+.cp-clear:active,.cp-size:active{transform:translateY(0.0625rem)}
+.cp-done{margin-top:0.75rem;width:100%;min-height:3rem;background:var(--green);color:#fff;border:0;border-radius:0.75rem;font-size:0.9375rem;font-weight:var(--w-black);box-shadow:0 0.1875rem 0 #2E6239;cursor:pointer;transition:transform .12s}
+.cp-done:active{transform:translateY(0.1875rem);box-shadow:0 0 0 #2E6239}
+.cp-done-hint{text-align:center;color:#3D5A3D;font-size:0.9375rem;font-weight:var(--w-bold);padding:0.5rem}
+
+/* ============================================================
+   🧩 词汇拼图 Word Puzzle（Week 5）
+   ============================================================ */
+.pz-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
+.pz-art{font-size:2.5rem;line-height:1}
+.pz-slots{display:flex;gap:0.25rem;margin:0.25rem 0}
+.pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:#5C411D;transition:background .15s}
+.pz-slot.filled{background:#FFE477;border-style:solid}
+.pz-letters{display:flex;flex-wrap:wrap;gap:0.25rem;justify-content:center;margin-top:0.5rem}
+.pz-letter{width:2rem;height:2.25rem;border:0;border-radius:0.375rem;background:#3D5A3D;color:#fff;font-size:1rem;font-weight:var(--w-black);cursor:pointer;transition:transform .12s}
+.pz-letter:active{transform:scale(.9)}
+.pz-letter.used{opacity:.3;pointer-events:none}
+.pz-check{margin-top:0.75rem;width:100%;min-height:2.75rem}
+.pz-check:disabled{opacity:.5;cursor:not-allowed}
+.pz-answer{margin-top:0.5rem;text-align:center;color:#3D5A3D;font-size:0.875rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🍎 动物喂食 Feed Animal（Week 5）
+   ============================================================ */
+.fd-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.fd-animal{display:flex;flex-direction:column;align-items:center;gap:0.125rem}
+.fd-art{font-size:3.125rem;line-height:1}
+.fd-name{font-size:1.25rem;font-weight:var(--w-black);color:#3D5A3D}
+.fd-foods{display:flex;gap:0.5rem;margin-top:0.5rem}
+.fd-food{width:3.5rem;height:3.5rem;border:0.1875rem solid #E7DAC3;border-radius:50%;background:#FFF8E7;font-size:1.75rem;cursor:pointer;transition:transform .12s,box-shadow .15s}
+.fd-food:active{transform:scale(.92)}
+.fd-food.selected{border-color:#FFB64D;box-shadow:0 0 0 0.1875rem rgba(255,182,77,.35),0 0.1875rem 0.5rem rgba(255,152,0,.2)}
+.fd-food.correct{border-color:#43A047;background:#E8F5E9}
+.fd-answer{margin-top:0.5rem;text-align:center;color:#E53935;font-size:0.875rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🌑 影子猜猜乐 Shadow Match（Week 5）
+   ============================================================ */
+.sh-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
+.sh-title{text-align:center;font-size:0.8125rem;color:#5C411D;margin:0}
+.sh-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-top:0.25rem;width:100%;max-width:20rem}
+.sh-card{display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.75rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
+.sh-card:active{transform:scale(.96)}
+.sh-art{font-size:2.5rem;line-height:1}
+.sh-card.picked{border-color:#FFB64D;background:#FFEFCC}
+.sh-card.correct{border-color:#43A047;background:#E8F5E9}
+.sh-card.wrong{border-color:#E53935;background:#FFEBEE}
+.sh-card span{font-size:0.75rem;color:#5C411D;font-weight:var(--w-bold)}
+.sh-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🏃 动作模仿秀 Action Time（Week 5）
+   ============================================================ */
+.at-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
+.at-title{text-align:center;font-size:0.8125rem;color:#5C411D;margin:0;line-height:1.6}
+.at-title b{font-size:1.125rem;color:#3D5A3D}
+.at-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;width:100%;max-width:22rem}
+.at-card{display:flex;flex-direction:column;align-items:center;gap:0.125rem;padding:0.625rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
+.at-card:active{transform:scale(.96)}
+.at-art{font-size:2rem;line-height:1}
+.at-card.picked{border-color:#FFB64D;background:#FFEFCC}
+.at-card.correct{border-color:#43A047;background:#E8F5E9}
+.at-card.wrong{border-color:#E53935;background:#FFEBEE}
+.at-card span{font-size:0.8125rem;color:#5C411D;font-weight:var(--w-black)}
+.at-card small{font-size:0.625rem;color:#8C6B3D}
+.at-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🔥 BOSS 关专属样式（Week 6）
+   ============================================================ */
+.chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff;
+  box-shadow:0 0.25rem 0.625rem rgba(255,61,0,.35);animation:boss-chip-pulse 1.4s ease-in-out infinite}
+@keyframes boss-chip-pulse{0%,100%{box-shadow:0 0.25rem 0.625rem rgba(255,61,0,.35)}50%{box-shadow:0 0.375rem 1rem rgba(255,61,0,.55)}}
+
+.result-head .boss-banner{display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;padding:0.375rem 0.875rem;
+  border-radius:6.1875rem;background:linear-gradient(135deg,#FF6B35,#FFB64D);color:#fff;font-size:0.8125rem;font-weight:var(--w-black);
+  letter-spacing:0.0375rem;box-shadow:0 0.25rem 0.75rem rgba(255,107,53,.4);
+  animation:boss-banner-pop .6s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes boss-banner-pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.result-head .boss-chest-reward{display:flex;align-items:center;justify-content:center;gap:0.375rem;margin-top:0.5rem;padding:0.375rem 0.75rem;
+  border-radius:0.625rem;background:linear-gradient(135deg,#FFE477,#FFC84D);color:#5C411D;font-size:0.75rem;font-weight:var(--w-bold);
+  box-shadow:0 0.125rem 0.375rem rgba(255,152,0,.25);
+  animation:chest-reward-pop .8s cubic-bezier(.2,1.5,.4,1) .3s both}
+.result-head .boss-chest-reward b{font-size:1rem;color:#8A3D00}
+@keyframes chest-reward-pop{0%{transform:translateY(-0.5rem);opacity:0}100%{transform:translateY(0);opacity:1}}
+
+/* ============================================================
+   🖼 看图识词 · 平面插画风（原型）
+   参考动物园地图概念稿：暖黄底 + 白色粗描边 + 贴纸卡片
+   ============================================================ */
+.quiz-page.pic-page{background:linear-gradient(180deg,#FCE8B0 0%,#F8DA8C 62%,#F4CF77 100%)}
+.quiz-page.pic-page::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(155,105,20,.16) 0.0625rem,transparent 0.0625rem);background-size:1.5rem 1.5rem}
+.pic-page .quiz-top{position:relative;z-index:2}
+.pic-page .qbar{background:rgba(255,255,255,.62);box-shadow:inset 0 0.125rem 0.25rem rgba(140,95,25,.12)}
+.pic-page .circle-btn{background:#fff;border-color:#fff;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
+.pic-page .quiz-body{position:relative;z-index:2;padding-top:0.25rem}
+.pic-page .quiz-prompt{align-items:center;text-align:center;gap:0.3125rem}
+.pic-page .quiz-prompt .chip{align-self:center;background:#fff;border:0.125rem solid #fff;color:#8A6415;
+  box-shadow:0 0.1875rem 0 rgba(140,95,25,.18);letter-spacing:0.05rem}
+.pic-page .quiz-prompt .chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff}
+.pic-page .quiz-prompt h2{font-size:clamp(1.125rem,3vw,1.375rem);color:#2C4A32}
+
+/* 插画舞台 */
+.pic-art{position:relative;flex:1;min-height:8rem;margin-top:0.5rem;border-radius:1.75rem;overflow:hidden;
+  border:0.25rem solid #fff;
+  background:linear-gradient(180deg,#CDEFF7 0%,#E6F7EE 56%,#FFF6D9 100%);
+  box-shadow:0 0.5rem 0 rgba(150,100,20,.18),0 1rem 1.75rem rgba(120,80,20,.18)}
+.pic-scene{position:absolute;left:0;right:0;bottom:0;width:100%;height:42%;display:block}
+.pic-sun{position:absolute;right:1.375rem;top:1rem;width:2.75rem;height:2.75rem;border-radius:50%;
+  background:#FFD25A;box-shadow:0 0 0 0.5rem rgba(255,210,90,.22)}
+.pic-sun::before{content:"";position:absolute;inset:-0.8125rem;border-radius:50%;
+  border:0.3125rem dotted rgba(255,200,70,.5)}
+.pic-cloud{position:absolute;background:#fff;border-radius:6.1875rem;
+  filter:drop-shadow(0 0.125rem 0 rgba(120,170,190,.16))}
+.pic-cloud::before,.pic-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.pc1{left:27%;top:11%;width:4.5rem;height:1.375rem}
+.pc1::before{width:1.875rem;height:1.875rem;left:0.5rem;top:-0.8125rem}
+.pc1::after{width:1.375rem;height:1.375rem;right:0.625rem;top:-0.5625rem}
+.pc2{right:17%;top:38%;width:3.25rem;height:1rem;opacity:.75}
+.pc2::before{width:1.375rem;height:1.375rem;left:0.375rem;top:-0.5625rem}
+.pic-hero{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
+  width:clamp(7.5rem,34vh,15rem);height:clamp(7.5rem,34vh,15rem);display:grid;place-items:center;
+  filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.12));
+  animation:picHeroIn .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes picHeroIn{
+  from{opacity:0;transform:translate(-50%,-50%) scale(.88)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+.pic-hero::before{content:none}
+.pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;
+  border:0.25rem solid #fff;background:#FFF9E9;
+  box-shadow:0 0.5rem 0 rgba(70,60,25,.16),0 0.75rem 1.125rem rgba(70,60,25,.18)}
+.pic-emoji{font-size:clamp(3.25rem,16vh,7rem);line-height:1;
+  filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.16))}
+.pic-bubble{position:absolute;left:0.75rem;top:0.75rem;z-index:2;padding:0.375rem 0.75rem;border-radius:0.9375rem;
+  background:#fff;color:#3D7330;font-size:0.75rem;font-weight:900;letter-spacing:0.03125rem;
+  box-shadow:0 0.1875rem 0 rgba(140,95,25,.18);transform:rotate(-2deg)}
+.pic-bubble::after{content:"";position:absolute;left:1rem;bottom:-0.375rem;width:0.75rem;height:0.75rem;
+  background:#fff;border-radius:0 0.1875rem 0.1875rem 0;transform:rotate(45deg)}
+.pic-page .listen{position:absolute;right:0.875rem;bottom:0.875rem;background:#fff;color:#8A6415;
+  border:0.09375rem solid #fff;font-weight:900;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
+
+/* 选项：贴纸卡片 */
+.pic-page .options.pic-options{grid-template-columns:1fr 1fr;gap:0.625rem;margin-top:0.75rem}
+.pic-page .option{min-height:3.75rem;border-radius:1.125rem;background:#fff;border:0.1875rem solid #fff;
+  padding:0 0.625rem;gap:0.5rem;box-shadow:0 0.3125rem 0 rgba(150,100,20,.22),0 0.5rem 0.875rem rgba(120,80,20,.14);
+  transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
+.pic-page .option:active{transform:translateY(0.125rem);box-shadow:0 0.1875rem 0 rgba(150,100,20,.22)}
+.pic-page .option .key{width:1.75rem;height:1.75rem;border-radius:50%;background:#FBE7A6;color:#8A6415;font-size:0.75rem}
+.pic-page .option .word{font-size:1.1875rem;font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem}
+.pic-page .option .mark{width:1.5rem;height:1.5rem;background:#4FA55E}
+.pic-page .option .mark.radio{border-color:#4FA55E}
+.pic-page .option .mark.radio i{background:#4FA55E}
+.pic-page .option.sel{border-color:#4FA55E;background:#F4FBEA;
+  box-shadow:0 0.3125rem 0 #BFE3AE,0 0.5rem 0.875rem rgba(79,165,94,.18)}
+.pic-page .option.sel .key{background:#4FA55E;color:#fff}
+.pic-page .option.correct{border-color:#4FA55E;background:#EAF9DD;box-shadow:0 0.3125rem 0 #BFE3AE}
+.pic-page .option.correct .key{background:#4FA55E;color:#fff}
+.pic-page .option.wrong{border-color:#F07A6A;background:#FFF2EE;box-shadow:0 0.3125rem 0 #F5C4B7;animation:shake .4s ease}
+.pic-page .option.wrong .key{background:#F07A6A;color:#fff}
+.pic-page .option.dim{opacity:.5}
+
+/* 底部 */
+.pic-page .quiz-foot{position:relative;z-index:2;background:transparent}
+.pic-page .combo{background:rgba(255,255,255,.82);border:0.125rem solid #fff;color:#8A6415;
+  box-shadow:0 0.1875rem 0 rgba(150,100,20,.16)}
+.pic-page .combo.good{background:#EAF9DD;border-color:#fff;color:#2E7A4C}
+.pic-page .combo.bad{background:#FFF2EE;border-color:#fff;color:#B0553F}

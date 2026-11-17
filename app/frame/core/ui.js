@@ -3,7 +3,7 @@
    ============================================================ */
 
 /* ------------------------------------------------ common UI */
-const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["words", "词汇", I.book], ["shop", "小铺", I.bag]];
+const TABS = [["home", "乐园", I.home], ["map", "闯关", I.flag], ["words", "词汇", I.book], ["collect", "收藏", I.bag]];
 function tabbar(active) {
   return `<nav class="tabbar">${TABS.map(([id, label, ic]) =>
     `<button class="tab ${active === id ? "on" : ""}" data-action="tab" data-screen="${id}" aria-label="${label}">

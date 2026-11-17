@@ -111,11 +111,8 @@
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
 .wr-tag{flex:none;font-size:0.625rem;font-weight:var(--w-black);padding:0.1875rem 0.375rem;border-radius:0.375rem;letter-spacing:0.0125rem}
 .wr-tag.pos{background:#F2EEE4;color:#8A7B62}
-.wr-tag.t-travel{background:#E3F1FB;color:#3D6C8C}
-.wr-tag.t-animal{background:#FFF0DA;color:#9A6A24}
-.wr-tag.t-food{background:#F3ECFF;color:#6E5A9C}
 .words-foot{display:flex;align-items:center;gap:0.3125rem;justify-content:center;margin:1rem 0 0.25rem;
   font-size:0.65625rem;font-weight:var(--w-mid);color:#B3A184}
-.shop-dex{margin-top:0.125rem}
-.shop-dex .dex-sum{margin-top:0}
+.collect-dex{margin-top:0.125rem}
+.collect-dex .dex-sum{margin-top:0}
 

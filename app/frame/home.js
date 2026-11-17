@@ -10,9 +10,13 @@ let voiceChunks = [];
 let voiceUrl = "";
 let voiceTimer = null;
 
-/* 头像图标名：究极体按当前机甲形态取图标 */
-function avatarKey() {
-  return state.stage === "ultra" ? `ultra-${state.ultraSkin}` : state.stage;
+/* 头像图标：直接用恐龙大图 + CSS 裁切头部，与 hero 完全一致 */
+function avatarArtSrc() {
+  if (state.stage === "ultra") {
+    const skin = Math.min(4, Math.max(1, Number(state.ultraSkin) || 1));
+    return `images/dino/ultra-${skin}.webp`;
+  }
+  return `images/dino/${state.stage}.webp`;
 }
 
 function resetVoice() {
@@ -40,14 +44,10 @@ async function recordSay() {
   }
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("当前浏览器不支持录音"); return; }
   setRecBtn("准备录音…", true);
-  /* 跟读期间暂停背景音乐，录完恢复 */
-  const duck = typeof duckMusic === "function";
-  if (duck) duckMusic();
   let released = false;
   const release = () => {
     if (released) return;
     released = true;
-    if (duck) unduckMusic();
   };
   setTimeout(release, 12000);
   try {
@@ -87,14 +87,10 @@ async function recordSay() {
 function playVoice() {
   if (!voiceUrl) { toast("还没有录音，先跟着读一次吧"); return; }
   const audio = new Audio(voiceUrl);
-  /* 回放录音期间暂停背景音乐，播完恢复 */
-  const duck = typeof duckMusic === "function";
-  if (duck) duckMusic();
   let released = false;
   const release = () => {
     if (released) return;
     released = true;
-    if (duck) unduckMusic();
   };
   audio.addEventListener("ended", release, { once: true });
   audio.addEventListener("error", release, { once: true });
@@ -170,7 +166,7 @@ function screenHome() {
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
-        <button class="avatar" data-action="profile" aria-label="成长档案"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></button>
+        <button class="avatar" data-action="profile" aria-label="成长档案"><img class="ava-icon" src="${avatarArtSrc()}" alt=""></button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
           <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
@@ -262,7 +258,7 @@ function screenProfile() {
 
       <div class="profile-card">
         <svg class="leaf" viewBox="0 0 100 100"><path d="M96 96C92 52 68 20 24 6c8 34 24 58 48 70-18-12-32-26-40-44 24 20 44 42 64 64z" fill="#8FC47A"/></svg>
-        <div class="pc-ava"><img class="ava-icon" src="images/icons/avatar-${avatarKey()}.webp" alt=""></div>
+        <div class="pc-ava"><img class="ava-icon" src="${avatarArtSrc()}" alt=""></div>
         <div class="pc-main"><b>${state.name}</b><span class="lv">LV.${stageIndex(state.stage) + 1}</span><p>加入 1 天 · 累计闯关 ${totalLevelsDone()} 次</p></div>
         <div class="pc-stage"><span class="chip">${I.leaf(11)} ${st.name}</span><p>图鉴 No.${String(stageIndex(state.stage) + 1).padStart(3, "0")}</p></div>
       </div>

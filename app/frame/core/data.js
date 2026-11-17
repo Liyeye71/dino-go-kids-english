@@ -1,5 +1,5 @@
 /* ============================================================
-   静态配置：进化阶段、商店道具、背景、图鉴与默认存档
+   静态配置：进化阶段、收藏道具、背景、图鉴与默认存档
    ============================================================ */
 
 const STAGES = [
@@ -17,8 +17,6 @@ const BACKGROUNDS = [
   { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 40,  cls: "night" },
 ];
 
-const DEX = STAGES.map((s) => ({ ...s }));
-
 /* 超级霸王龙（究极体）的四种机甲形态：解锁 ultra 后可在图鉴里自由切换 */
 const ULTRA_SKINS = [
   { id: 1, name: "彩虹能量", sub: "尾巴彩虹能量环" },
@@ -28,12 +26,14 @@ const ULTRA_SKINS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 4,
+  v: 5,
   name: "毛肚",
   stars: 0,
   growth: 0,
   stage: "egg",
-  theme: "food",
+  theme: "animal",
+  /* 多场景主题的当前场景（动物乐园：zoo / ocean），各场景进度独立 */
+  scene: "zoo",
   progress: {},
   log: {},
   words: 0,

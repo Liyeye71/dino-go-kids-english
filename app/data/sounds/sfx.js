@@ -1,8 +1,8 @@
-/* DinoGo · 音效、语音与关卡提示音（Web Audio 实时合成，无需音频素材） */
+/* DinoGo · 交互音效、单词朗读与关卡提示音（Web Audio 实时合成，无需音频素材） */
 
 let audioCtx = null;
 
-/* 音高表：音效、关卡提示音与背景音乐共用 */
+/* 音高表：音效与关卡提示音共用 */
 const NOTE_FREQ = {
   C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.0, A3: 220.0, B3: 246.94,
   C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.0, A4: 440.0, B4: 493.88,
@@ -50,7 +50,7 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词朗读：朗读期间暂停背景音乐，读完恢复 */
+/* 英文单词朗读 */
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -58,21 +58,11 @@ function speak(text) {
       return;
     }
     const synth = window.speechSynthesis;
-    const duck = typeof duckMusic === "function";
-    if (duck) duckMusic();
-    let released = false;
-    const release = () => {
-      if (released) return;
-      released = true;
-      if (duck) unduckMusic();
-    };
     const say = () => {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-US";
       u.rate = 0.82;
       u.pitch = 1.08;
-      u.onend = release;
-      u.onerror = release;
       synth.speak(u);
     };
     /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
@@ -82,23 +72,11 @@ function speak(text) {
     } else {
       say();
     }
-    /* 兜底：个别浏览器不触发 onend，避免背景音乐一直停着 */
-    setTimeout(release, Math.min(15000, 4000 + text.length * 300));
   } catch (e) { /* ignore */ }
 }
 
 /* 关卡提示音：进入某主题关卡时播放的短旋律 */
 const LEVEL_CUES = {
-  food: [
-    [NOTE_FREQ.E6, 0.1, "sine", 0.045, 0], [NOTE_FREQ.G5, 0.16, "sine", 0.04, 0.08],
-    [NOTE_FREQ.C5, 0.14, "triangle", 0.045, 0.3], [NOTE_FREQ.E5, 0.14, "triangle", 0.045, 0.42],
-    [NOTE_FREQ.G5, 0.14, "triangle", 0.045, 0.54], [NOTE_FREQ.C6, 0.32, "triangle", 0.045, 0.66],
-  ],
-  travel: [
-    [392, 0.12, "square", 0.028, 0], [392, 0.12, "square", 0.028, 0.2],
-    [NOTE_FREQ.C5, 0.14, "triangle", 0.05, 0.4], [NOTE_FREQ.E5, 0.14, "triangle", 0.05, 0.52],
-    [NOTE_FREQ.G5, 0.3, "triangle", 0.05, 0.64],
-  ],
   animal: [
     [110, 0.2, "triangle", 0.05, 0], [NOTE_FREQ.D5, 0.16, "triangle", 0.045, 0.18],
     [NOTE_FREQ.F5, 0.16, "triangle", 0.045, 0.3], [NOTE_FREQ.A5, 0.16, "triangle", 0.045, 0.42],
@@ -111,6 +89,7 @@ function levelCue(id) {
   try {
     ensureAudio();
     if (!audioCtx) return;
-    (LEVEL_CUES[id] || LEVEL_CUES.fruit).forEach(([f, d, type, vol, delay]) => tone(f, d, type, vol, delay));
+    const pattern = LEVEL_CUES[id] || LEVEL_CUES.animal;
+    pattern.forEach(([f, d, type, vol, delay]) => tone(f, d, type, vol, delay));
   } catch (e) { /* no audio */ }
 }

@@ -1,12 +1,12 @@
 /* DinoGo · offline cache */
-const VERSION = "0.59";
+const VERSION = "0.63";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./images/icons/icon-192.png",
-  "./images/icons/icon-512.png",
-  "./images/icons/apple-touch-icon.png",
+  "./data/icons/icon-192.png",
+  "./data/icons/icon-512.png",
+  "./data/icons/apple-touch-icon.png",
   "./images/dino/egg.webp",
   "./images/dino/baby.webp",
   "./images/dino/teen.webp",
@@ -20,16 +20,9 @@ const ASSETS = [
   "./images/background/sunset.webp",
   "./images/background/night.webp",
   "./images/background/animal-zoo.webp",
-  "./images/background/animal-ocean.webp",
-  "./images/icons/avatar-egg.webp",
-  "./images/icons/avatar-baby.webp",
-  "./images/icons/avatar-teen.webp",
-  "./images/icons/avatar-adult.webp",
-  "./images/icons/avatar-super.webp",
-  "./images/icons/avatar-ultra-1.webp",
-  "./images/icons/avatar-ultra-2.webp",
-  "./images/icons/avatar-ultra-3.webp",
-  "./images/icons/avatar-ultra-4.webp"
+  "./images/background/animal-zoo-cover.webp",
+  "./images/background/animal-zoo-map.webp",
+  "./images/background/animal-ocean.webp"
 ];
 
 self.addEventListener("install", (event) => {

@@ -153,7 +153,7 @@
   background:linear-gradient(125deg,#FFF7E4,#F7EEDB);border:0.09375rem solid #EBDCC0}
 .profile-card .pc-ava{width:3.875rem;height:3.875rem;border-radius:1.25rem;background:#E6F5D3;border:0.15625rem solid #fff;overflow:hidden;
   position:relative;flex:none;box-shadow:0 0.375rem 0.875rem rgba(70,50,20,.12);z-index:1}
-.profile-card .pc-ava .ava-icon{width:100%;height:100%;display:block;object-fit:cover}
+.profile-card .pc-ava .ava-icon{width:100%;height:100%;display:block;object-fit:cover;object-position:center 28%}
 .profile-card .pc-main{flex:1;min-width:0;position:relative;z-index:1}
 .profile-card .pc-main b{font-size:1.1875rem;font-weight:var(--w-black);letter-spacing:-0.0125rem}
 .profile-card .pc-main .lv{font-size:0.625rem;font-weight:var(--w-black);color:#fff;background:var(--green);padding:0.125rem 0.375rem;border-radius:0.3125rem;margin-left:0.3125rem;vertical-align:0.125rem}
