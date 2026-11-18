@@ -4,7 +4,6 @@
 
 /* ------------------------------------------------ home */
 .home-top{display:flex;align-items:center;gap:0.6875rem;margin-top:0.125rem;margin-bottom:0.875rem}
-.home-top .greet{flex:1;min-width:0}
 .home-top .hi{font-size:1.25rem;font-weight:var(--w-black);letter-spacing:0.0125rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-top .hi b{color:var(--green)}
 .home-top .meta{display:flex;align-items:center;gap:0.25rem;font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem;letter-spacing:0.0125rem;white-space:nowrap;line-height:1;min-height:1rem}
@@ -43,7 +42,6 @@
   border:0.09375rem solid #EDF2E3;box-shadow:0 0.375rem 1rem rgba(74,97,50,.08);
   display:flex;align-items:center;gap:0.625rem;padding:0.625rem 0.625rem 0.5625rem 0.875rem;
 }
-.growth-panel .g-main{flex:1;min-width:0}
 .growth-panel .g-row{display:flex;align-items:baseline;gap:0.375rem;line-height:1.1}
 .growth-panel .lb{font-size:0.71875rem;font-weight:var(--w-bold);color:var(--muted);letter-spacing:0.0625rem}
 .growth-panel .val{font-size:1.125rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.0125rem}
@@ -69,7 +67,6 @@
 .task .ico.orange{background:#FFF0D2;color:#E69523}
 .task .ico.blue{background:#E6F4FF;color:#3D8FC4}
 .task .ico.coral{background:#FFE7DE;color:#E96A4B}
-.task .t-body{flex:1;min-width:0}
 .task .t-title{font-size:0.84375rem;font-weight:var(--w-mid);line-height:1.35}
 .task .t-sub{font-size:0.6875rem;font-weight:var(--w-read);color:#A0AFA3;margin-top:0.125rem;line-height:1.4}
 .task .reward{font-size:0.65625rem;font-weight:var(--w-black);color:#A98425;background:#FFF4CE;border-radius:6.1875rem;padding:0.1875rem 0.4375rem;letter-spacing:0.0125rem;white-space:nowrap}
@@ -146,7 +143,6 @@
 
 /* ------------------------------------------------ profile */
 .profile-head{display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem}
-.profile-head .t{flex:1;min-width:0}
 .profile-head h1{font-size:clamp(1.375rem,3.6vw,1.75rem);font-weight:var(--w-black);letter-spacing:-0.03125rem}
 .profile-head p{font-size:0.71875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.125rem}
 .profile-card{border-radius:1.625rem;padding:0.9375rem;display:flex;align-items:center;gap:0.75rem;position:relative;overflow:hidden;

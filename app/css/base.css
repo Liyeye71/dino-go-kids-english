@@ -27,6 +27,11 @@
   --w-mid:700;
   --w-bold:800;
   --w-black:900;
+  /* 动物园贴纸体系：从 game/map/overlays 中提取的高频色 */
+  --sticker-ink:#5C411D;
+  --sticker-paper:#FFFDF7;
+  --sticker-line:#E4CFA9;
+  --sticker-shade:#D9C39B;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -63,7 +68,6 @@ h1,h2,h3,h4,p{margin:0}
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
   padding:calc(0.875rem + var(--safe-top)) 1.25rem calc(1.875rem + var(--safe-bottom));
 }
-.scroll::-webkit-scrollbar{display:none}
 .has-tab .scroll{padding-bottom:calc(6.5rem + var(--safe-bottom))}
 
 @media (min-width:700px) and (min-height:600px){
@@ -108,6 +112,11 @@ h1,h2,h3,h4,p{margin:0}
 .tabbar .tab:active .ic{transform:scale(.94)}
 
 /* ------------------------------------------------ shared atoms */
+/* 跨文件复用的原子规则：flex 子项省略布局 / 插画铺满 / 隐藏滚动条 */
+.collect-head .t,.bg-item .bg-info,.dex-sum .ds-main,.dex-reward .dr-main,.words-head .t,.gc-main,.evo-unlock .u-txt,.home-top .greet,.growth-panel .g-main,.task .t-body,.profile-head .t,.nc-l{flex:1;min-width:0}
+.wr-pic svg,.option.pic .pic svg,.mcard.art svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
+.scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar,.theme-tabs::-webkit-scrollbar{display:none}
+
 .eyebrow{font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.1125rem;color:var(--muted);text-transform:uppercase}
 .card{background:var(--paper);border:0.09375rem solid var(--line);border-radius:1.5rem;box-shadow:var(--shadow)}
 .btn{

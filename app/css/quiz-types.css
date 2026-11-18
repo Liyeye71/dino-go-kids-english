@@ -1,0 +1,242 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — 扩展题型（涂鸦板 / 词汇拼图 / 动物喂食 / 影子 / 动作）与 BOSS 关
+   ============================================================ */
+/* ============================================================
+   🎨 颜色涂鸦板 color_paint（Week 3）
+   ============================================================ */
+.cp-wrap{display:flex;flex-direction:column;gap:0.625rem;align-items:center}
+.cp-instruction{text-align:center}
+.cp-word{display:inline-block;padding:0.25rem 0.625rem;border-radius:0.375rem;background:#F0F4E8;color:#3D5A3D;font-weight:var(--w-black);font-size:1.0625rem;margin-bottom:0.375rem}
+.cp-instruction small{display:block;color:var(--muted);font-size:0.75rem}
+.cp-canvas{width:100%;max-width:30rem;height:auto;aspect-ratio:3/2;border-radius:0.75rem;background:#fff;box-shadow:inset 0 0 0 0.125rem #E7DAC3,0 0.1875rem 0.5rem rgba(0,0,0,.08);touch-action:none;cursor:crosshair}
+.cp-palette{display:flex;flex-wrap:wrap;gap:0.375rem;justify-content:center;margin-top:0.25rem}
+.cp-swatch{width:1.75rem;height:1.75rem;border-radius:50%;border:0.1875rem solid #fff;box-shadow:0 0.125rem 0.25rem rgba(0,0,0,.18);cursor:pointer;transition:transform .12s}
+.cp-swatch:active{transform:scale(.88)}
+.cp-actions{display:flex;gap:0.5rem;margin-top:0.25rem}
+.cp-clear,.cp-size{padding:0.375rem 0.625rem;border:0;border-radius:0.5rem;background:#F4E5C6;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-bold);cursor:pointer}
+.cp-clear:active,.cp-size:active{transform:translateY(0.0625rem)}
+.cp-done{margin-top:0.75rem;width:100%;min-height:3rem;background:var(--green);color:#fff;border:0;border-radius:0.75rem;font-size:0.9375rem;font-weight:var(--w-black);box-shadow:0 0.1875rem 0 #2E6239;cursor:pointer;transition:transform .12s}
+.cp-done:active{transform:translateY(0.1875rem);box-shadow:0 0 0 #2E6239}
+.cp-done-hint{text-align:center;color:#3D5A3D;font-size:0.9375rem;font-weight:var(--w-bold);padding:0.5rem}
+
+/* ============================================================
+   🧩 词汇拼图 Word Puzzle（Week 5）
+   ============================================================ */
+.pz-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
+.pz-art{font-size:2.5rem;line-height:1}
+.pz-slots{display:flex;gap:0.25rem;margin:0.25rem 0}
+.pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:var(--sticker-ink);transition:background .15s}
+.pz-slot.filled{background:#FFE477;border-style:solid}
+.pz-letters{display:flex;flex-wrap:wrap;gap:0.25rem;justify-content:center;margin-top:0.5rem}
+.pz-letter{width:2rem;height:2.25rem;border:0;border-radius:0.375rem;background:#3D5A3D;color:#fff;font-size:1rem;font-weight:var(--w-black);cursor:pointer;transition:transform .12s}
+.pz-letter:active{transform:scale(.9)}
+.pz-letter.used{opacity:.3;pointer-events:none}
+.pz-check{margin-top:0.75rem;width:100%;min-height:2.75rem}
+.pz-check:disabled{opacity:.5;cursor:not-allowed}
+.pz-answer{margin-top:0.5rem;text-align:center;color:#3D5A3D;font-size:0.875rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🍎 动物喂食 Feed Animal（Week 5）
+   ============================================================ */
+.fd-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
+.fd-animal{display:flex;flex-direction:column;align-items:center;gap:0.125rem}
+.fd-art{font-size:3.125rem;line-height:1}
+.fd-name{font-size:1.25rem;font-weight:var(--w-black);color:#3D5A3D}
+.fd-foods{display:flex;gap:0.5rem;margin-top:0.5rem}
+.fd-food{width:3.5rem;height:3.5rem;border:0.1875rem solid #E7DAC3;border-radius:50%;background:#FFF8E7;font-size:1.75rem;cursor:pointer;transition:transform .12s,box-shadow .15s}
+.fd-food:active{transform:scale(.92)}
+.fd-food.selected{border-color:#FFB64D;box-shadow:0 0 0 0.1875rem rgba(255,182,77,.35),0 0.1875rem 0.5rem rgba(255,152,0,.2)}
+.fd-food.correct{border-color:#43A047;background:#E8F5E9}
+.fd-answer{margin-top:0.5rem;text-align:center;color:#E53935;font-size:0.875rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🌑 影子猜猜乐 Shadow Match（Week 5）
+   ============================================================ */
+.sh-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
+.sh-title{text-align:center;font-size:0.8125rem;color:var(--sticker-ink);margin:0}
+.sh-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-top:0.25rem;width:100%;max-width:20rem}
+.sh-card{display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.75rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
+.sh-card:active{transform:scale(.96)}
+.sh-art{font-size:2.5rem;line-height:1}
+.sh-card.picked{border-color:#FFB64D;background:#FFEFCC}
+.sh-card.correct{border-color:#43A047;background:#E8F5E9}
+.sh-card.wrong{border-color:#E53935;background:#FFEBEE}
+.sh-card span{font-size:0.75rem;color:var(--sticker-ink);font-weight:var(--w-bold)}
+.sh-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🏃 动作模仿秀 Action Time（Week 5）
+   ============================================================ */
+.at-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
+.at-title{text-align:center;font-size:0.8125rem;color:var(--sticker-ink);margin:0;line-height:1.6}
+.at-title b{font-size:1.125rem;color:#3D5A3D}
+.at-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;width:100%;max-width:22rem}
+.at-card{display:flex;flex-direction:column;align-items:center;gap:0.125rem;padding:0.625rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
+.at-card:active{transform:scale(.96)}
+.at-art{font-size:2rem;line-height:1}
+.at-card.picked{border-color:#FFB64D;background:#FFEFCC}
+.at-card.correct{border-color:#43A047;background:#E8F5E9}
+.at-card.wrong{border-color:#E53935;background:#FFEBEE}
+.at-card span{font-size:0.8125rem;color:var(--sticker-ink);font-weight:var(--w-black)}
+.at-card small{font-size:0.625rem;color:#8C6B3D}
+.at-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项）
+   ============================================================ */
+.ref-action-wrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:0.625rem}
+.ref-action-stage{position:relative;flex:1;min-height:9rem;display:grid;place-items:center;overflow:hidden;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1.75rem;
+  background:linear-gradient(180deg,#CDEFF7 0%,#EAF7E6 58%,#D6E8A8 58%,#C2D98F 100%);
+  box-shadow:0 0.375rem 0 var(--sticker-shade),0 0.75rem 1.25rem rgba(92,65,29,.12)}
+.ref-action-stage::before{content:"";position:absolute;left:8%;top:10%;width:2.75rem;height:2.75rem;border-radius:50%;
+  background:#FFD66B;box-shadow:0 0 0 0.5rem rgba(255,214,107,.22)}
+.ref-action-ground{position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.18) 100%)}
+.ref-action-cloud{position:absolute;background:#fff;border-radius:6.1875rem;opacity:.86}
+.ref-action-cloud::before,.ref-action-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.ref-action-cloud.c1{left:24%;top:12%;width:4.5rem;height:1.375rem}
+.ref-action-cloud.c1::before{width:1.875rem;height:1.875rem;left:0.5rem;top:-0.8125rem}
+.ref-action-cloud.c1::after{width:1.375rem;height:1.375rem;right:0.625rem;top:-0.5625rem}
+.ref-action-cloud.c2{right:14%;top:34%;width:3.25rem;height:1rem;opacity:.7}
+.ref-action-cloud.c2::before{width:1.375rem;height:1.375rem;left:0.375rem;top:-0.5625rem}
+.ref-action-animal{position:relative;z-index:2;font-size:clamp(4.5rem,18vh,8rem);line-height:1;
+  transform-origin:50% 88%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
+.ref-action-emoji{display:block;line-height:1}
+.ref-action-img{position:absolute;left:50%;top:50%;width:clamp(7rem,26vh,10.5rem);height:auto;
+  transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;border-radius:50%;
+  filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
+.ref-action-animal.has-art .ref-action-emoji{display:none}
+.ref-action-spark{position:absolute;color:#FFF0B8;font-size:1.125rem;z-index:1;animation:actSpark 1.4s ease-in-out infinite}
+.ref-action-spark.s1{left:22%;bottom:30%}
+.ref-action-spark.s2{right:20%;top:30%;animation-delay:.5s}
+@keyframes actSpark{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+.ref-action-tip{margin:0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+
+.act-run{animation:actRun .55s ease-in-out infinite}
+.act-jump{animation:actJump .75s cubic-bezier(.3,0,.4,1) infinite}
+.act-swim{animation:actSwim 1.1s ease-in-out infinite}
+.act-climb{animation:actClimb .95s ease-in-out infinite}
+.act-roar{animation:actRoar .8s ease-in-out infinite}
+.act-eat{animation:actEat .55s ease-in-out infinite}
+.act-sleep{animation:actSleep 2s ease-in-out infinite}
+.act-fly{animation:actFly 1.05s ease-in-out infinite}
+.act-sing{animation:actRoar 1s ease-in-out infinite}
+.act-dance{animation:actDance 1s ease-in-out infinite}
+.act-pounce{animation:actPounce .9s ease-in-out infinite}
+.act-crawl{animation:actCrawl 1.25s ease-in-out infinite}
+.act-swing{animation:actSwing 1.15s ease-in-out infinite}
+.act-dig{animation:actDig .65s ease-in-out infinite}
+.act-stomp{animation:actStomp .75s ease-in-out infinite}
+.act-walk{animation:actWalk 1.05s ease-in-out infinite}
+.act-drink{animation:actDrink 1.05s ease-in-out infinite}
+.act-sit{animation:actSit 1.8s ease-in-out infinite}
+.act-stand{animation:actStand 1.6s ease-in-out infinite}
+.act-hide{animation:actHide 1.6s ease-in-out infinite}
+.act-scratch{animation:actScratch .6s ease-in-out infinite}
+.act-sniff{animation:actSniff .9s ease-in-out infinite}
+.act-peck{animation:actPeck .55s ease-in-out infinite}
+
+@keyframes actRun{0%,100%{transform:translateX(-0.35rem) rotate(-4deg)}50%{transform:translateX(0.35rem) rotate(4deg)}}
+@keyframes actJump{0%,100%{transform:translateY(0) scaleY(.94)}30%{transform:translateY(-1.6rem) scaleY(1.04)}62%{transform:translateY(0) scaleY(.9)}}
+@keyframes actSwim{0%,100%{transform:translateX(-0.5rem) rotate(-3deg)}50%{transform:translateX(0.5rem) rotate(3deg)}}
+@keyframes actClimb{0%,100%{transform:translateY(0.3rem) rotate(-6deg)}50%{transform:translateY(-0.6rem) rotate(6deg)}}
+@keyframes actRoar{0%,100%{transform:translateY(0)}45%{transform:translateY(-0.35rem) scale(1.14) rotate(-2deg)}}
+@keyframes actEat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.25rem) rotate(-4deg)}}
+@keyframes actSleep{0%,100%{transform:scale(.96) rotate(-6deg);opacity:.85}50%{transform:scale(1) rotate(-6deg);opacity:1}}
+@keyframes actFly{0%,100%{transform:translateY(-0.5rem) rotate(-3deg)}50%{transform:translateY(0.4rem) rotate(3deg)}}
+@keyframes actDance{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes actPounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-0.9rem) scale(1.06)}70%{transform:translateY(0.15rem) scale(.98)}}
+@keyframes actCrawl{0%,100%{transform:translateX(-0.6rem)}50%{transform:translateX(0.6rem)}}
+@keyframes actSwing{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes actDig{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.45rem) rotate(-8deg)}}
+@keyframes actStomp{0%,100%{transform:translateY(0) scaleY(1)}35%{transform:translateY(-0.5rem) scaleY(1.02)}60%{transform:translateY(0.1rem) scaleY(.94)}}
+@keyframes actWalk{0%,100%{transform:translateX(-0.25rem) rotate(-2deg)}50%{transform:translateX(0.25rem) rotate(2deg)}}
+@keyframes actDrink{0%,100%{transform:rotate(0) scaleY(1)}45%{transform:rotate(-8deg) scaleY(1.08)}70%{transform:rotate(2deg) scaleY(.98)}}
+@keyframes actSit{0%,100%{transform:translateY(0.55rem) scaleY(.9) scaleX(1.05)}50%{transform:translateY(0.3rem) scaleY(.94) scaleX(1.03)}}
+@keyframes actStand{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-0.35rem) scaleY(1.06)}}
+@keyframes actHide{0%,100%{transform:translateY(0.9rem) scale(.9);opacity:.45}50%{transform:translateY(0.5rem) scale(.96);opacity:.9}}
+@keyframes actScratch{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes actSniff{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.35rem) rotate(-7deg) scale(1.02)}}
+@keyframes actPeck{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(0.55rem) rotate(-10deg)}}
+
+/* ============================================================
+   🔍 局部特写 Body Zoom（进阶题：放大镜高亮身体部位）
+   ============================================================ */
+.ref-zoom-wrap{display:flex;flex-direction:column;align-items:center;flex:1;min-height:0;gap:0.5rem}
+.ref-zoom-lens{position:relative;width:clamp(9rem,27vh,13.5rem);aspect-ratio:1;border-radius:50%;overflow:hidden;
+  border:0.375rem solid var(--sticker-ink);
+  background:radial-gradient(circle at 50% 42%,#FFFDF2 0%,#FFE9B5 68%,#F6D48C 100%);
+  box-shadow:0 0.5rem 0 var(--sticker-shade),0 0.75rem 1.5rem rgba(92,65,29,.16)}
+.ref-zoom-art{position:absolute;left:50%;top:50%;font-size:9rem;line-height:1;white-space:nowrap;
+  transform:translate(calc(-50% + var(--fx)),calc(-50% + var(--fy))) scale(var(--fs));
+  filter:drop-shadow(0 0.25rem 0.4rem rgba(92,65,29,.18))}
+.ref-zoom-lens::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  box-shadow:inset 0 0 0 0.5rem rgba(255,255,255,.62)}
+.ref-zoom-spot{position:absolute;left:50%;top:50%;width:44%;aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-50%);border:0.1875rem dashed rgba(255,138,76,.78);animation:zoomPulse 2s ease-in-out infinite}
+@keyframes zoomPulse{0%,100%{opacity:.42;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.08)}}
+.ref-zoom-handle{width:1.125rem;height:2.75rem;margin-top:-0.5rem;border-radius:0 0 0.75rem 0.75rem;
+  background:var(--sticker-ink);transform:rotate(38deg);flex:none}
+.ref-zoom-tip{margin:0.25rem 0 0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+.ref-zoom-options{margin-top:0.25rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+
+/* ============================================================
+   ⚖️ 对比观察 Compare（进阶题：同框大小 / 高矮 / 快慢对照）
+   ============================================================ */
+.ref-cmp-wrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:0.625rem}
+.ref-cmp-stage{position:relative;flex:1;min-height:9.5rem;display:flex;align-items:flex-end;justify-content:center;
+  gap:clamp(1rem,7vw,3.5rem);padding:1.25rem 1.25rem 2.25rem;overflow:hidden;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1.75rem;
+  background:linear-gradient(180deg,#FDF4D8 0%,#F8EFD5 60%,#D6E8A8 60%,#C2D98F 100%);
+  box-shadow:0 0.375rem 0 var(--sticker-shade),0 0.75rem 1.25rem rgba(92,65,29,.12)}
+.ref-cmp-item{position:relative;z-index:2;font-size:clamp(3rem,12vh,5.5rem);line-height:1;
+  transform:scale(var(--s));transform-origin:50% 100%;
+  filter:drop-shadow(0 0.25rem 0 rgba(92,65,29,.16))}
+.ref-cmp-badge{position:absolute;right:-18%;top:-22%;font-style:normal;z-index:3;
+  font-size:clamp(1.25rem,4.5vh,1.9rem);pointer-events:none;
+  filter:drop-shadow(0 0.125rem 0.25rem rgba(92,65,29,.22))}
+.ref-cmp-stage.mode-state{background:linear-gradient(180deg,#FFF2D6 0%,#FBE8CF 60%,#D6E8A8 60%,#C2D98F 100%)}
+.ref-cmp-ring{position:absolute;inset:-16% -26%;border:0.2rem dashed #FF8A4C;border-radius:50%;
+  animation:cmpRing 1.6s ease-in-out infinite}
+@keyframes cmpRing{0%,100%{transform:scale(.95);opacity:.55}50%{transform:scale(1.06);opacity:1}}
+.ref-cmp-floor{position:absolute;left:6%;right:6%;bottom:1.5rem;height:0;
+  border-bottom:0.125rem dashed rgba(92,65,29,.35)}
+.ref-cmp-tip{margin:0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+.ref-cmp-options{margin-top:0.125rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+.ref-cmp-stage.mode-speed .ref-cmp-item::before{content:"";position:absolute;left:-55%;top:42%;width:55%;height:0.1875rem;
+  border-radius:1rem;background:rgba(92,65,29,.28);
+  box-shadow:0 0.5rem 0 rgba(92,65,29,.16),0 -0.5rem 0 rgba(92,65,29,.16)}
+.ref-cmp-stage.mode-height::after{content:"";position:absolute;right:12%;bottom:1.5rem;top:14%;width:0;
+  border-left:0.125rem dashed rgba(92,65,29,.3)}
+.ref-cmp-stage.mode-length::after{content:"";position:absolute;right:10%;bottom:34%;left:10%;height:0;
+  border-bottom:0.125rem dashed rgba(92,65,29,.3)}
+
+/* 进阶题统一 3 列 grid，3 个选项正好填满 */
+.ref-action-options,.ref-zoom-options,.ref-cmp-options{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+
+@media (max-height:45rem){
+  .ref-zoom-lens{width:clamp(7rem,24vh,10rem)}
+  .ref-zoom-art{font-size:7rem}
+  .ref-action-stage,.ref-cmp-stage{min-height:8rem}
+}
+
+/* ============================================================
+   🔥 BOSS 关专属样式（Week 6）
+   ============================================================ */
+.chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff;
+  box-shadow:0 0.25rem 0.625rem rgba(255,61,0,.35);animation:boss-chip-pulse 1.4s ease-in-out infinite}
+@keyframes boss-chip-pulse{0%,100%{box-shadow:0 0.25rem 0.625rem rgba(255,61,0,.35)}50%{box-shadow:0 0.375rem 1rem rgba(255,61,0,.55)}}
+
+.result-head .boss-banner{display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem;padding:0.375rem 0.875rem;
+  border-radius:6.1875rem;background:linear-gradient(135deg,#FF6B35,#FFB64D);color:#fff;font-size:0.8125rem;font-weight:var(--w-black);
+  letter-spacing:0.0375rem;box-shadow:0 0.25rem 0.75rem rgba(255,107,53,.4);
+  animation:boss-banner-pop .6s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes boss-banner-pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.result-head .boss-chest-reward{display:flex;align-items:center;justify-content:center;gap:0.375rem;margin-top:0.5rem;padding:0.375rem 0.75rem;
+  border-radius:0.625rem;background:linear-gradient(135deg,#FFE477,#FFC84D);color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-bold);
+  box-shadow:0 0.125rem 0.375rem rgba(255,152,0,.25);
+  animation:chest-reward-pop .8s cubic-bezier(.2,1.5,.4,1) .3s both}
+.result-head .boss-chest-reward b{font-size:1rem;color:#8A3D00}
+@keyframes chest-reward-pop{0%{transform:translateY(-0.5rem);opacity:0}100%{transform:translateY(0);opacity:1}}

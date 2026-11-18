@@ -88,7 +88,7 @@
 .chest-progress .bar{height:0.25rem;border-radius:0.125rem;background:rgba(92,65,29,.15);overflow:hidden}
 .chest-progress .bar i{display:block;height:100%;background:#FFB64D;border-radius:0.125rem;transition:width .5s}
 .chest-actions{display:flex;flex-direction:column;gap:0.375rem;width:100%;max-width:20rem;margin-top:0.75rem}
-.chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
+.chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
 .chest-actions .btn.ghost{background:#FFFFFF;color:#70624D;box-shadow:none;border-color:#E7DAC3}
 .chest-open{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:2rem 1rem;text-align:center}
 .chest-emoji{font-size:3.75rem;animation:chest-pop .55s cubic-bezier(.2,1.2,.4,1) both}

@@ -4,7 +4,6 @@
 
 /* ------------------------------------------------ collect */
 .collect-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.875rem}
-.collect-head .t{flex:1;min-width:0}
 .collect-head h1{font-size:clamp(1.5rem,4vw,1.875rem);font-weight:var(--w-black);letter-spacing:-0.0375rem;line-height:1.1}
 .collect-head p{font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.25rem}
 .collect-preview{height:clamp(11.875rem,26vh,15.625rem);border-radius:1.75rem;position:relative;overflow:hidden;
@@ -40,7 +39,6 @@
 .bg-thumb.sunset{background-image:url("images/background/sunset.webp")}
 .bg-thumb.night{background-image:url("images/background/night.webp")}
 .bg-thumb.jungle,.bg-thumb.sunset,.bg-thumb.night{background-size:cover;background-position:center 80%;background-repeat:no-repeat}
-.bg-item .bg-info{flex:1;min-width:0}
 .bg-item .bg-info b{font-size:0.8125rem;font-weight:var(--w-bold);display:block}
 .bg-item .bg-info span{font-size:0.65625rem;color:#9AA89B;display:block;margin-top:0.125rem}
 .bg-item .bg-info .price{margin-top:0.3125rem;display:inline-flex;width:fit-content}

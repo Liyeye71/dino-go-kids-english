@@ -37,9 +37,9 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
     words: themeWordList(set.words),
     scenes: (set.scenes || []).map((scene) => ({ ...scene, words: themeWordList(scene.words) })),
   }));
-/* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
+/* 每个主题 10 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
 const LEVELS_PER_THEME = 10;
-const PASS_STARS = 2;
+const PASS_STARS = 1;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
 const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
 function currentTheme() {

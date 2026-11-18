@@ -20,15 +20,33 @@
       return raw ? JSON.parse(raw) : {};
     } catch (e) { return {}; }
   }
-  function persist() {
+  /* 写入节流：连续答题时合并成一次 localStorage 写入，避免同步阻塞主线程 */
+  let persistTimer = null;
+  function flush() {
+    if (persistTimer) { clearTimeout(persistTimer); persistTimer = null; }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bank)); } catch (e) {}
   }
+  function persist() {
+    if (persistTimer) return;
+    persistTimer = setTimeout(flush, 300);
+  }
+  window.addEventListener("pagehide", flush);
 
   /* 对外 API */
   window.WrongBank = {
     /* 为某个场景的单词生成唯一 ID：zoo + lion → "zoo_lion" */
     makeId(sceneId, word) {
       return `${sceneId || ""}_${word || ""}`;
+    },
+
+    /* 统一入口：按题型 task 记录一次答题结果（仅动物园场景生效）
+       所有题型一视同仁：答错必收录，答对累计连续正确次数 */
+    applyResult(task, ok) {
+      if (!task || !task.wrongWordId) return false;
+      if (typeof isZooScene === "function" && !isZooScene()) return false;
+      if (ok) return this.recordCorrect(task.wrongWordId);
+      this.recordWrong(task.wrongWordId);
+      return false;
     },
 
     /* 答错时调用：自动收录 + 错误次数累加 + 打断连续正确 */

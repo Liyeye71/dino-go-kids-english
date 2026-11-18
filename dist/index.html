@@ -45,6 +45,11 @@
   --w-mid:700;
   --w-bold:800;
   --w-black:900;
+  /* 动物园贴纸体系：从 game/map/overlays 中提取的高频色 */
+  --sticker-ink:#5C411D;
+  --sticker-paper:#FFFDF7;
+  --sticker-line:#E4CFA9;
+  --sticker-shade:#D9C39B;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -81,7 +86,6 @@ h1,h2,h3,h4,p{margin:0}
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
   padding:calc(0.875rem + var(--safe-top)) 1.25rem calc(1.875rem + var(--safe-bottom));
 }
-.scroll::-webkit-scrollbar{display:none}
 .has-tab .scroll{padding-bottom:calc(6.5rem + var(--safe-bottom))}
 
 @media (min-width:700px) and (min-height:600px){
@@ -126,6 +130,11 @@ h1,h2,h3,h4,p{margin:0}
 .tabbar .tab:active .ic{transform:scale(.94)}
 
 /* ------------------------------------------------ shared atoms */
+/* 跨文件复用的原子规则：flex 子项省略布局 / 插画铺满 / 隐藏滚动条 */
+.collect-head .t,.bg-item .bg-info,.dex-sum .ds-main,.dex-reward .dr-main,.words-head .t,.gc-main,.evo-unlock .u-txt,.home-top .greet,.growth-panel .g-main,.task .t-body,.profile-head .t,.nc-l{flex:1;min-width:0}
+.wr-pic svg,.option.pic .pic svg,.mcard.art svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
+.scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar,.theme-tabs::-webkit-scrollbar{display:none}
+
 .eyebrow{font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.1125rem;color:var(--muted);text-transform:uppercase}
 .card{background:var(--paper);border:0.09375rem solid var(--line);border-radius:1.5rem;box-shadow:var(--shadow)}
 .btn{
@@ -183,7 +192,6 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ home */
 .home-top{display:flex;align-items:center;gap:0.6875rem;margin-top:0.125rem;margin-bottom:0.875rem}
-.home-top .greet{flex:1;min-width:0}
 .home-top .hi{font-size:1.25rem;font-weight:var(--w-black);letter-spacing:0.0125rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-top .hi b{color:var(--green)}
 .home-top .meta{display:flex;align-items:center;gap:0.25rem;font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem;letter-spacing:0.0125rem;white-space:nowrap;line-height:1;min-height:1rem}
@@ -222,7 +230,6 @@ h1,h2,h3,h4,p{margin:0}
   border:0.09375rem solid #EDF2E3;box-shadow:0 0.375rem 1rem rgba(74,97,50,.08);
   display:flex;align-items:center;gap:0.625rem;padding:0.625rem 0.625rem 0.5625rem 0.875rem;
 }
-.growth-panel .g-main{flex:1;min-width:0}
 .growth-panel .g-row{display:flex;align-items:baseline;gap:0.375rem;line-height:1.1}
 .growth-panel .lb{font-size:0.71875rem;font-weight:var(--w-bold);color:var(--muted);letter-spacing:0.0625rem}
 .growth-panel .val{font-size:1.125rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.0125rem}
@@ -248,7 +255,6 @@ h1,h2,h3,h4,p{margin:0}
 .task .ico.orange{background:#FFF0D2;color:#E69523}
 .task .ico.blue{background:#E6F4FF;color:#3D8FC4}
 .task .ico.coral{background:#FFE7DE;color:#E96A4B}
-.task .t-body{flex:1;min-width:0}
 .task .t-title{font-size:0.84375rem;font-weight:var(--w-mid);line-height:1.35}
 .task .t-sub{font-size:0.6875rem;font-weight:var(--w-read);color:#A0AFA3;margin-top:0.125rem;line-height:1.4}
 .task .reward{font-size:0.65625rem;font-weight:var(--w-black);color:#A98425;background:#FFF4CE;border-radius:6.1875rem;padding:0.1875rem 0.4375rem;letter-spacing:0.0125rem;white-space:nowrap}
@@ -325,7 +331,6 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ profile */
 .profile-head{display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem}
-.profile-head .t{flex:1;min-width:0}
 .profile-head h1{font-size:clamp(1.375rem,3.6vw,1.75rem);font-weight:var(--w-black);letter-spacing:-0.03125rem}
 .profile-head p{font-size:0.71875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.125rem}
 .profile-card{border-radius:1.625rem;padding:0.9375rem;display:flex;align-items:center;gap:0.75rem;position:relative;overflow:hidden;
@@ -401,7 +406,6 @@ h1,h2,h3,h4,p{margin:0}
 .theme-tabs{display:flex;gap:0.3125rem;width:max-content;max-width:100%;margin:0 auto 1.125rem;padding:0.3125rem;
   border-radius:6.1875rem;background:#F3EADA;border:0.09375rem solid #E7DAC3;
   box-shadow:inset 0 0.125rem 0.3125rem rgba(120,90,40,.07);overflow-x:auto;scrollbar-width:none}
-.theme-tabs::-webkit-scrollbar{display:none}
 .theme-tabs .tt{flex:none;display:flex;align-items:center;justify-content:center;gap:0.4375rem;
   padding:0.8125rem 0.875rem;border-radius:6.1875rem;white-space:nowrap;
   background:transparent;border:0;box-shadow:none;font-size:0.9375rem;font-weight:var(--w-bold);color:#8B7B5C;
@@ -428,7 +432,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ journey */
 .journey{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem;margin-bottom:0.875rem;
-  background:#FFFDF7;border:0.09375rem solid var(--line);border-radius:1.125rem;box-shadow:0 0.25rem 0 #EADAC0}
+  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.125rem;box-shadow:0 0.25rem 0 #EADAC0}
 .journey .j-lb{font-size:0.625rem;font-weight:var(--w-black);color:#947B5A;letter-spacing:0.075rem;white-space:nowrap}
 .journey .j-val{font-size:1rem;font-weight:var(--w-black);letter-spacing:0.0125rem;white-space:nowrap}
 .journey .j-val em{font-style:normal;font-size:0.65625rem;color:var(--muted);font-weight:var(--w-bold);margin-left:0.125rem}
@@ -449,7 +453,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ nodes：贴纸三态 */
 .mnode{position:absolute;z-index:3;width:3.75rem;height:3.75rem;transform:translate(-50%,-50%);border-radius:50%;
-  background:#FFFDF7;border:0.1875rem solid #fff;display:grid;place-items:center;font-size:1.75rem;line-height:1;
+  background:var(--sticker-paper);border:0.1875rem solid #fff;display:grid;place-items:center;font-size:1.75rem;line-height:1;
   box-shadow:0 0.3125rem 0.625rem rgba(90,70,30,.18),0 0 0 0.125rem rgba(214,198,166,.55);transition:transform .18s ease}
 .mnode[data-action]{cursor:pointer}
 .mnode:active{transform:translate(-50%,-50%) scale(.94)}
@@ -492,8 +496,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ next card */
 .next-card{display:flex;align-items:center;gap:0.75rem;margin-top:0.875rem;padding:0.8125rem 0.875rem;
-  background:#FFFDF7;border:0.09375rem solid var(--line);border-radius:1.375rem;box-shadow:0 0.25rem 0 #EADAC0}
-.nc-l{flex:1;min-width:0}
+  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.375rem;box-shadow:0 0.25rem 0 #EADAC0}
 .nc-kicker{display:flex;align-items:center;gap:0.25rem;font-size:0.59375rem;font-weight:var(--w-black);
   letter-spacing:0.09375rem;color:#B58A2E}
 .nc-kicker svg{width:0.5rem;height:0.5rem}
@@ -515,7 +518,7 @@ h1,h2,h3,h4,p{margin:0}
 .animal-scene-list{display:grid;gap:0.75rem;width:100%;margin:0}
 .animal-scene-card{position:relative;display:grid;grid-template-columns:minmax(8.5rem,46%) 1fr;grid-template-rows:1fr auto;align-items:stretch;gap:0.875rem;
   min-height:clamp(12.5rem,52vw,14.375rem);padding:0.75rem;text-align:left;color:var(--ink);
-  background:#FFFDF7;border:0.09375rem solid var(--line);border-radius:1.4375rem;box-shadow:0 0.25rem 0 #EADAC0;
+  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.4375rem;box-shadow:0 0.25rem 0 #EADAC0;
   cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
 .animal-scene-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #EADAC0}
 .animal-scene-card:focus-visible{outline:0.1875rem solid rgba(46,139,87,.35);outline-offset:0.1875rem}
@@ -529,7 +532,7 @@ h1,h2,h3,h4,p{margin:0}
 .animal-scene-go{grid-column:2;grid-row:2;justify-self:end;align-self:end;display:inline-flex;align-items:center;justify-content:center;gap:0.375rem;margin:0;
   min-width:7.25rem;padding:0.625rem 0.875rem;border-radius:6.1875rem;background:var(--green);color:#fff;
   font-size:0.78125rem;font-weight:var(--w-bold);box-shadow:0 0.1875rem 0 var(--green-d)}
-.animal-scene-card[data-scene="zoo"] .animal-scene-go{background:#7A5A2D;box-shadow:0 0.1875rem 0 #5C411D}
+.animal-scene-card[data-scene="zoo"] .animal-scene-go{background:#7A5A2D;box-shadow:0 0.1875rem 0 var(--sticker-ink)}
 .animal-scene-go b{font-size:1rem;line-height:1}
 
 /* ------------------------------------------------ animal static route sheet */
@@ -555,7 +558,7 @@ h1,h2,h3,h4,p{margin:0}
 .arm-close:active{transform:scale(.94)}
 .animal-route-path{position:absolute;inset:0;width:100%;height:100%}
 .animal-route-node{position:absolute;z-index:2;display:grid;place-items:center;width:2.875rem;height:2.875rem;padding:0;
-  transform:translate(-50%,-50%);border-radius:50%;background:#FFFDF7;border:0.1875rem solid #fff;
+  transform:translate(-50%,-50%);border-radius:50%;background:var(--sticker-paper);border:0.1875rem solid #fff;
   color:#6F8B91;font-size:0.875rem;font-weight:var(--w-black);box-shadow:0 0.25rem 0.625rem rgba(70,100,90,.14);
   cursor:pointer;transition:transform .15s ease}
 .animal-route-node:active{transform:translate(-50%,-50%) scale(.94)}
@@ -563,7 +566,7 @@ h1,h2,h3,h4,p{margin:0}
 .animal-route-node.current{background:#FFB64D;color:#fff;box-shadow:0 0 0 0.5rem rgba(255,214,143,.55),0 0.25rem 0.625rem rgba(130,90,30,.18)}
 /* 节点尺寸跟随地图容器宽度，右缘刚好盖住原编号并停在地名牌起点之前 */
 .animal-route-map.has-map .animal-route-node{width:5cqw;height:5cqw;font-size:max(0.5rem,2cqw);
-  border-width:0.2cqw;border-color:#FFFDF7;box-shadow:0 0.3cqw 0.9cqw rgba(60,45,20,.18)}
+  border-width:0.2cqw;border-color:var(--sticker-paper);box-shadow:0 0.3cqw 0.9cqw rgba(60,45,20,.18)}
 /* 保持 44px 级别的可点击热区，视觉节点可以更小 */
 .animal-route-map.has-map .animal-route-node::after{content:"";position:absolute;inset:-0.85rem;border-radius:50%}
 .animal-route-map.has-map .animal-route-node.locked{background:rgba(245,237,222,.94);color:#A8997D}
@@ -620,15 +623,6 @@ h1,h2,h3,h4,p{margin:0}
   background:#FFF8E7;color:#6B5B45;font-size:1.25rem;line-height:1;cursor:pointer;
   box-shadow:0 0.125rem 0.375rem rgba(80,60,25,.12);transition:transform .12s ease}
 .zoo-route-close:active{transform:scale(.94)}
-/* 10 个主题馆进度：已通过绿、当前馆金色、后续灰化 */
-.zoo-venue-strip{display:flex;align-items:center;justify-content:space-between;gap:0.2rem;padding:0 0.15rem 0.55rem}
-.zoo-venue-dot{flex:1 1 0;display:grid;place-items:center;max-width:2rem;aspect-ratio:1;border-radius:50%;
-  font-size:0.85rem;line-height:1;background:#F4EBD9;border:0.09rem solid #E3D4B8;
-  opacity:.5;filter:grayscale(.65);transition:transform .15s ease,opacity .15s ease}
-.zoo-venue-dot.done{opacity:.9;filter:none;background:#E6F2E4;border-color:#9DC5A2}
-.zoo-venue-dot.current{opacity:1;filter:none;background:#FFF1C9;border-color:#E2A83C;
-  box-shadow:0 0 0 0.18rem rgba(255,201,77,.28);transform:scale(1.12)}
-.zoo-venue-dot.locked{opacity:.38}
 /* 地图视口：小图完整显示，放大后在抽屉内部滚动 */
 .zoo-board-frame{position:relative}
 .zoo-board-viewport{max-height:min(58vh,32rem);overflow:auto;border-radius:1rem;
@@ -649,7 +643,7 @@ h1,h2,h3,h4,p{margin:0}
   font-variant-numeric:tabular-nums;letter-spacing:.02em}
 /* 50 格棋盘节点：自己绘制数字与底色，未到达关卡整体置灰 */
 .animal-route-map.has-map.zoo .zoo-step{width:5.8cqw;height:5.8cqw;padding:0;display:grid;place-items:center;
-  background:#FFFDF7;border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
+  background:var(--sticker-paper);border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
   font-weight:var(--w-black);font-variant-numeric:tabular-nums;
   box-shadow:0 0.16cqw 0.4cqw rgba(90,70,30,.14);transition:transform .12s ease}
 .zoo-step-num{position:relative;z-index:1;display:block;pointer-events:none}
@@ -672,19 +666,19 @@ h1,h2,h3,h4,p{margin:0}
    ============================================================ */
 .journey .j-track{position:relative;flex:1;display:flex;align-items:center;min-width:0}
 .j-chest{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:1.625rem;height:1.625rem;padding:0;
-  transform:translate(-50%,-50%);border:0.125rem solid #FFFDF7;border-radius:50%;
+  transform:translate(-50%,-50%);border:0.125rem solid var(--sticker-paper);border-radius:50%;
   background:#F1E6D0;color:#9A8763;font-size:0.8125rem;line-height:1;cursor:pointer;font-family:inherit;
   box-shadow:0 0.125rem 0.3125rem rgba(90,70,30,.2);transition:transform .12s ease}
 .j-chest:active{transform:translate(-50%,-50%) scale(.92)}
 .j-chest:disabled{cursor:default}
 .j-chest.locked{opacity:.55;background:#F3EADA;color:#B3A489;border-color:#F7F0E2;box-shadow:none}
 .j-chest.done{background:#E4EFD6;color:#4E7A45;font-weight:var(--w-black)}
-.j-chest.ready{background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;
+.j-chest.ready{background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);
   box-shadow:0 0.125rem 0 #D89732,0 0 0 0.25rem rgba(255,200,77,.26);animation:j-chest-bob 1.6s ease-in-out infinite}
 @keyframes j-chest-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
 /* BOSS 额外奖励宝箱：作为独立按钮跟在进度条右侧 */
 .j-chest.bonus{position:relative;left:auto;top:auto;transform:none;flex:none;width:1.75rem;height:1.75rem;animation:none;
-  background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;font-size:0.75rem}
+  background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);font-size:0.75rem}
 .j-chest.bonus:active{transform:scale(.92)}
 .j-chest.bonus b{position:absolute;right:-0.375rem;top:-0.375rem;min-width:0.875rem;height:0.875rem;padding:0 0.125rem;
   border-radius:6.1875rem;background:#E2622F;color:#fff;font-size:0.5625rem;line-height:1;display:grid;place-items:center}
@@ -692,14 +686,13 @@ h1,h2,h3,h4,p{margin:0}
 /* 全通关横幅 */
 .zoo-all-clear{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:0.625rem;padding:0.625rem 1rem;border-radius:0.75rem;
   background:linear-gradient(135deg,#FFE477,#FFB64D);box-shadow:0 0.25rem 0.625rem rgba(255,152,0,.3);
-  font-weight:var(--w-black);color:#5C411D;font-size:0.8125rem;
+  font-weight:var(--w-black);color:var(--sticker-ink);font-size:0.8125rem;
   animation:clear-glow 2.4s ease-in-out infinite}
 .zoo-all-clear span{font-size:1.25rem}
 @keyframes clear-glow{0%,100%{box-shadow:0 0.25rem 0.625rem rgba(255,152,0,.3)}50%{box-shadow:0 0.375rem 1rem rgba(255,107,53,.55)}}
 
 /* ============================================================
-   DinoGo · 恐龙英语 — 游戏样式
-   包含公共答题流程、结算和进化样式
+   DinoGo · 恐龙英语 — 答题页：进度 / 题型容器 / 选项 / 动态反馈
    ============================================================ */
 
 .quiz-page{display:flex;flex-direction:column;height:100%;padding-top:calc(0.5rem + var(--safe-top))}
@@ -709,8 +702,7 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:var(--w-mid)}
 .hearts{display:flex;align-items:center;gap:0.1875rem;flex:none}
 .quiz-body{flex:1;min-height:0;overflow:hidden;padding:0.5rem 1.25rem 0.125rem;display:flex;flex-direction:column;scrollbar-width:none}
-.quiz-body::-webkit-scrollbar{display:none}
-.quiz-prompt{display:flex;flex-direction:column;gap:0.4375rem;margin-top:0.25rem;flex:none}
+.quiz-prompt{display:flex;flex-direction:column;gap:0.4375rem;margin-top:0.75rem;flex:none}
 .quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:0.3125rem;height:1.375rem;padding:0 0.5rem;border-radius:0.4375rem;
   background:#E8F5D8;color:var(--green-d);font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
 .quiz-prompt h2{font-size:clamp(1.1875rem,3.2vw,1.4375rem);font-weight:var(--w-black);letter-spacing:-0.025rem}
@@ -752,11 +744,10 @@ h1,h2,h3,h4,p{margin:0}
 .option.wrong .key{background:#F07A6A;color:#fff}
 .option.dim{opacity:.55}
 /* 听音选图：图片选项 + 听力按钮 + 连线 + 跟读 + 情景对话 */
-.options.pic-grid{grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:0.5625rem;margin-top:0.75rem;flex:1;min-height:0}
+.options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);gap:0.5625rem;margin-top:0.75rem;flex:1;min-height:0}
 .option.pic{flex-direction:column;gap:0.125rem;padding:0.375rem;min-height:0;height:100%;position:relative;overflow:hidden}
 .option.pic .key{position:absolute;left:0.5rem;top:0.5rem;width:1.375rem;height:1.375rem;font-size:0.6875rem}
 .option.pic .pic{flex:1;min-height:0;min-width:0;width:100%;display:grid;place-items:center;overflow:hidden}
-.option.pic .pic svg{width:100%;height:100%;display:block}
 .option.pic .pic-word{font-size:0.875rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:-0.0125rem;flex:none}
 .big-speaker{width:clamp(4.5rem,14vh,6rem);height:clamp(4.5rem,14vh,6rem);border-radius:50%;display:grid;place-items:center;color:#fff;
   background:linear-gradient(160deg,#57BE84,#2E8B57);box-shadow:0 0.625rem 1.25rem rgba(46,139,87,.28);position:relative}
@@ -772,7 +763,6 @@ h1,h2,h3,h4,p{margin:0}
 .mcard{border-radius:1rem;background:#fff;border:0.125rem solid #EFE2CB;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;
   font-size:1.03125rem;font-weight:var(--w-bold);color:#4B443A;padding:0.375rem;transition:transform .12s ease;overflow:hidden}
 .mcard:active{transform:scale(.97)}
-.mcard.art svg{width:100%;height:100%;display:block}
 .mcard.sel{border-color:#3AA56B;box-shadow:0 0 0 0.1875rem rgba(58,165,107,.16)}
 .mcard.ok{border-color:#B9DDA1;background:#EFF8E4;opacity:.7}
 .repeat-word{margin-top:0.75rem;text-align:center;display:flex;flex-direction:column;gap:0.1875rem}
@@ -848,9 +838,15 @@ h1,h2,h3,h4,p{margin:0}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}
 }
 
+/* BOSS 关隐藏题：直接结算 / 挑战隐藏题 二选一 */
+.bonus-choose{display:flex;align-items:center;gap:0.5rem;width:100%}
+.bonus-choose .btn{flex:1 1 0;padding-left:0.5rem;padding-right:0.5rem;font-size:0.875rem}
+
+/* ============================================================
+   DinoGo · 恐龙英语 — 闯关结算与恐龙进化
+   ============================================================ */
 .result-page{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
 .result-scroll{flex:1;min-height:0;overflow-y:auto;padding:calc(1.125rem + var(--safe-top)) 1.25rem 1rem;scrollbar-width:none;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;gap:1rem}
-.result-scroll::-webkit-scrollbar{display:none}
 .confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .confetti i{position:absolute;display:block;border-radius:0.125rem;opacity:.85;animation:confettiFall linear both}
 .result-head{text-align:center;margin-top:0.125rem}
@@ -897,7 +893,6 @@ h1,h2,h3,h4,p{margin:0}
 .gc-phase{position:absolute;left:50%;bottom:0;transform:translateX(-50%);padding:0.1875rem 0.5625rem;border-radius:6.1875rem;
   background:#fff;border:0.0625rem solid #DFEAC9;font-size:0.625rem;font-weight:900;letter-spacing:0.025rem;color:#75915F;
   white-space:nowrap;box-shadow:0 0.125rem 0.3125rem rgba(80,100,50,.08);z-index:2}
-.gc-main{flex:1;min-width:0}
 .gc-kicker{display:flex;align-items:center;justify-content:space-between;gap:0.5rem}
 .gc-kicker .lb{font-size:0.65625rem;font-weight:900;letter-spacing:0.075rem;color:#7C9563}
 .gc-kicker .val{font-size:0.96875rem;font-weight:900;color:#2F7A4E;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -936,7 +931,6 @@ h1,h2,h3,h4,p{margin:0}
 
 .evo-page{position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;
   background:#BDEBFF;color:#5D4774;padding:calc(0.625rem + var(--safe-top)) 1.25rem calc(1.25rem + var(--safe-bottom))}
-.evo-page::-webkit-scrollbar{display:none}
 .evo-page .bg{position:absolute;inset:0;overflow:hidden;
   background:
     radial-gradient(circle at 84% 14%,#FFF9BC 0 3.125rem,rgba(255,241,150,.55) 3.1875rem 4.5rem,rgba(255,241,150,0) 4.5625rem),
@@ -996,7 +990,6 @@ h1,h2,h3,h4,p{margin:0}
 .evo-unlock .u-ico{width:3.375rem;height:3.375rem;border-radius:1.0625rem;background:linear-gradient(160deg,#FFF0A8,#FFC65C);border:0.125rem solid #FFF;
   display:grid;place-items:center;flex:none;box-shadow:0 0.25rem 0 rgba(213,143,54,.16)}
 .evo-unlock .u-ico svg{width:2.75rem;height:2.75rem}
-.evo-unlock .u-txt{flex:1;min-width:0}
 .evo-unlock .u-txt b{display:block;font-size:1rem;font-weight:var(--w-black);color:#5D4774}
 .evo-unlock .u-txt span{display:block;font-size:0.71875rem;font-weight:var(--w-read);color:#81768D;margin-top:0.1875rem;line-height:1.45}
 .evo-unlock .u-skill{display:flex;align-items:center;gap:0.375rem;margin-top:0.625rem;padding-top:0.625rem;
@@ -1004,6 +997,9 @@ h1,h2,h3,h4,p{margin:0}
 .evo-unlock .u-skill b{color:#E58B32}
 .evo-unlock .btn{margin-top:0.8125rem;min-height:3.125rem;font-size:1rem;color:#704314;background:linear-gradient(180deg,#FFE477,#FFC84D);border:0.09375rem solid rgba(255,255,255,.75);box-shadow:0 0.25rem 0 #D89732}
 
+/* ============================================================
+   DinoGo · 恐龙英语 — 扩展题型（涂鸦板 / 词汇拼图 / 动物喂食 / 影子 / 动作）与 BOSS 关
+   ============================================================ */
 /* ============================================================
    🎨 颜色涂鸦板 color_paint（Week 3）
    ============================================================ */
@@ -1016,7 +1012,7 @@ h1,h2,h3,h4,p{margin:0}
 .cp-swatch{width:1.75rem;height:1.75rem;border-radius:50%;border:0.1875rem solid #fff;box-shadow:0 0.125rem 0.25rem rgba(0,0,0,.18);cursor:pointer;transition:transform .12s}
 .cp-swatch:active{transform:scale(.88)}
 .cp-actions{display:flex;gap:0.5rem;margin-top:0.25rem}
-.cp-clear,.cp-size{padding:0.375rem 0.625rem;border:0;border-radius:0.5rem;background:#F4E5C6;color:#5C411D;font-size:0.75rem;font-weight:var(--w-bold);cursor:pointer}
+.cp-clear,.cp-size{padding:0.375rem 0.625rem;border:0;border-radius:0.5rem;background:#F4E5C6;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-bold);cursor:pointer}
 .cp-clear:active,.cp-size:active{transform:translateY(0.0625rem)}
 .cp-done{margin-top:0.75rem;width:100%;min-height:3rem;background:var(--green);color:#fff;border:0;border-radius:0.75rem;font-size:0.9375rem;font-weight:var(--w-black);box-shadow:0 0.1875rem 0 #2E6239;cursor:pointer;transition:transform .12s}
 .cp-done:active{transform:translateY(0.1875rem);box-shadow:0 0 0 #2E6239}
@@ -1029,7 +1025,7 @@ h1,h2,h3,h4,p{margin:0}
 .pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
 .pz-art{font-size:2.5rem;line-height:1}
 .pz-slots{display:flex;gap:0.25rem;margin:0.25rem 0}
-.pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:#5C411D;transition:background .15s}
+.pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:var(--sticker-ink);transition:background .15s}
 .pz-slot.filled{background:#FFE477;border-style:solid}
 .pz-letters{display:flex;flex-wrap:wrap;gap:0.25rem;justify-content:center;margin-top:0.5rem}
 .pz-letter{width:2rem;height:2.25rem;border:0;border-radius:0.375rem;background:#3D5A3D;color:#fff;font-size:1rem;font-weight:var(--w-black);cursor:pointer;transition:transform .12s}
@@ -1057,7 +1053,7 @@ h1,h2,h3,h4,p{margin:0}
    🌑 影子猜猜乐 Shadow Match（Week 5）
    ============================================================ */
 .sh-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
-.sh-title{text-align:center;font-size:0.8125rem;color:#5C411D;margin:0}
+.sh-title{text-align:center;font-size:0.8125rem;color:var(--sticker-ink);margin:0}
 .sh-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-top:0.25rem;width:100%;max-width:20rem}
 .sh-card{display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.75rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
 .sh-card:active{transform:scale(.96)}
@@ -1065,14 +1061,14 @@ h1,h2,h3,h4,p{margin:0}
 .sh-card.picked{border-color:#FFB64D;background:#FFEFCC}
 .sh-card.correct{border-color:#43A047;background:#E8F5E9}
 .sh-card.wrong{border-color:#E53935;background:#FFEBEE}
-.sh-card span{font-size:0.75rem;color:#5C411D;font-weight:var(--w-bold)}
+.sh-card span{font-size:0.75rem;color:var(--sticker-ink);font-weight:var(--w-bold)}
 .sh-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
 
 /* ============================================================
    🏃 动作模仿秀 Action Time（Week 5）
    ============================================================ */
 .at-wrap{display:flex;flex-direction:column;align-items:center;gap:0.625rem}
-.at-title{text-align:center;font-size:0.8125rem;color:#5C411D;margin:0;line-height:1.6}
+.at-title{text-align:center;font-size:0.8125rem;color:var(--sticker-ink);margin:0;line-height:1.6}
 .at-title b{font-size:1.125rem;color:#3D5A3D}
 .at-options{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;width:100%;max-width:22rem}
 .at-card{display:flex;flex-direction:column;align-items:center;gap:0.125rem;padding:0.625rem 0.5rem;border:0.125rem solid #E7DAC3;border-radius:0.75rem;background:#FFF8E7;cursor:pointer;font-family:inherit;transition:transform .12s,border-color .15s}
@@ -1081,9 +1077,148 @@ h1,h2,h3,h4,p{margin:0}
 .at-card.picked{border-color:#FFB64D;background:#FFEFCC}
 .at-card.correct{border-color:#43A047;background:#E8F5E9}
 .at-card.wrong{border-color:#E53935;background:#FFEBEE}
-.at-card span{font-size:0.8125rem;color:#5C411D;font-weight:var(--w-black)}
+.at-card span{font-size:0.8125rem;color:var(--sticker-ink);font-weight:var(--w-black)}
 .at-card small{font-size:0.625rem;color:#8C6B3D}
 .at-answer{margin-top:0.375rem;color:#E53935;font-size:0.8125rem;font-weight:var(--w-bold)}
+
+/* ============================================================
+   🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项）
+   ============================================================ */
+.ref-action-wrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:0.625rem}
+.ref-action-stage{position:relative;flex:1;min-height:9rem;display:grid;place-items:center;overflow:hidden;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1.75rem;
+  background:linear-gradient(180deg,#CDEFF7 0%,#EAF7E6 58%,#D6E8A8 58%,#C2D98F 100%);
+  box-shadow:0 0.375rem 0 var(--sticker-shade),0 0.75rem 1.25rem rgba(92,65,29,.12)}
+.ref-action-stage::before{content:"";position:absolute;left:8%;top:10%;width:2.75rem;height:2.75rem;border-radius:50%;
+  background:#FFD66B;box-shadow:0 0 0 0.5rem rgba(255,214,107,.22)}
+.ref-action-ground{position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.18) 100%)}
+.ref-action-cloud{position:absolute;background:#fff;border-radius:6.1875rem;opacity:.86}
+.ref-action-cloud::before,.ref-action-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.ref-action-cloud.c1{left:24%;top:12%;width:4.5rem;height:1.375rem}
+.ref-action-cloud.c1::before{width:1.875rem;height:1.875rem;left:0.5rem;top:-0.8125rem}
+.ref-action-cloud.c1::after{width:1.375rem;height:1.375rem;right:0.625rem;top:-0.5625rem}
+.ref-action-cloud.c2{right:14%;top:34%;width:3.25rem;height:1rem;opacity:.7}
+.ref-action-cloud.c2::before{width:1.375rem;height:1.375rem;left:0.375rem;top:-0.5625rem}
+.ref-action-animal{position:relative;z-index:2;font-size:clamp(4.5rem,18vh,8rem);line-height:1;
+  transform-origin:50% 88%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
+.ref-action-emoji{display:block;line-height:1}
+.ref-action-img{position:absolute;left:50%;top:50%;width:clamp(7rem,26vh,10.5rem);height:auto;
+  transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;border-radius:50%;
+  filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
+.ref-action-animal.has-art .ref-action-emoji{display:none}
+.ref-action-spark{position:absolute;color:#FFF0B8;font-size:1.125rem;z-index:1;animation:actSpark 1.4s ease-in-out infinite}
+.ref-action-spark.s1{left:22%;bottom:30%}
+.ref-action-spark.s2{right:20%;top:30%;animation-delay:.5s}
+@keyframes actSpark{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+.ref-action-tip{margin:0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+
+.act-run{animation:actRun .55s ease-in-out infinite}
+.act-jump{animation:actJump .75s cubic-bezier(.3,0,.4,1) infinite}
+.act-swim{animation:actSwim 1.1s ease-in-out infinite}
+.act-climb{animation:actClimb .95s ease-in-out infinite}
+.act-roar{animation:actRoar .8s ease-in-out infinite}
+.act-eat{animation:actEat .55s ease-in-out infinite}
+.act-sleep{animation:actSleep 2s ease-in-out infinite}
+.act-fly{animation:actFly 1.05s ease-in-out infinite}
+.act-sing{animation:actRoar 1s ease-in-out infinite}
+.act-dance{animation:actDance 1s ease-in-out infinite}
+.act-pounce{animation:actPounce .9s ease-in-out infinite}
+.act-crawl{animation:actCrawl 1.25s ease-in-out infinite}
+.act-swing{animation:actSwing 1.15s ease-in-out infinite}
+.act-dig{animation:actDig .65s ease-in-out infinite}
+.act-stomp{animation:actStomp .75s ease-in-out infinite}
+.act-walk{animation:actWalk 1.05s ease-in-out infinite}
+.act-drink{animation:actDrink 1.05s ease-in-out infinite}
+.act-sit{animation:actSit 1.8s ease-in-out infinite}
+.act-stand{animation:actStand 1.6s ease-in-out infinite}
+.act-hide{animation:actHide 1.6s ease-in-out infinite}
+.act-scratch{animation:actScratch .6s ease-in-out infinite}
+.act-sniff{animation:actSniff .9s ease-in-out infinite}
+.act-peck{animation:actPeck .55s ease-in-out infinite}
+
+@keyframes actRun{0%,100%{transform:translateX(-0.35rem) rotate(-4deg)}50%{transform:translateX(0.35rem) rotate(4deg)}}
+@keyframes actJump{0%,100%{transform:translateY(0) scaleY(.94)}30%{transform:translateY(-1.6rem) scaleY(1.04)}62%{transform:translateY(0) scaleY(.9)}}
+@keyframes actSwim{0%,100%{transform:translateX(-0.5rem) rotate(-3deg)}50%{transform:translateX(0.5rem) rotate(3deg)}}
+@keyframes actClimb{0%,100%{transform:translateY(0.3rem) rotate(-6deg)}50%{transform:translateY(-0.6rem) rotate(6deg)}}
+@keyframes actRoar{0%,100%{transform:translateY(0)}45%{transform:translateY(-0.35rem) scale(1.14) rotate(-2deg)}}
+@keyframes actEat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.25rem) rotate(-4deg)}}
+@keyframes actSleep{0%,100%{transform:scale(.96) rotate(-6deg);opacity:.85}50%{transform:scale(1) rotate(-6deg);opacity:1}}
+@keyframes actFly{0%,100%{transform:translateY(-0.5rem) rotate(-3deg)}50%{transform:translateY(0.4rem) rotate(3deg)}}
+@keyframes actDance{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes actPounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-0.9rem) scale(1.06)}70%{transform:translateY(0.15rem) scale(.98)}}
+@keyframes actCrawl{0%,100%{transform:translateX(-0.6rem)}50%{transform:translateX(0.6rem)}}
+@keyframes actSwing{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes actDig{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.45rem) rotate(-8deg)}}
+@keyframes actStomp{0%,100%{transform:translateY(0) scaleY(1)}35%{transform:translateY(-0.5rem) scaleY(1.02)}60%{transform:translateY(0.1rem) scaleY(.94)}}
+@keyframes actWalk{0%,100%{transform:translateX(-0.25rem) rotate(-2deg)}50%{transform:translateX(0.25rem) rotate(2deg)}}
+@keyframes actDrink{0%,100%{transform:rotate(0) scaleY(1)}45%{transform:rotate(-8deg) scaleY(1.08)}70%{transform:rotate(2deg) scaleY(.98)}}
+@keyframes actSit{0%,100%{transform:translateY(0.55rem) scaleY(.9) scaleX(1.05)}50%{transform:translateY(0.3rem) scaleY(.94) scaleX(1.03)}}
+@keyframes actStand{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-0.35rem) scaleY(1.06)}}
+@keyframes actHide{0%,100%{transform:translateY(0.9rem) scale(.9);opacity:.45}50%{transform:translateY(0.5rem) scale(.96);opacity:.9}}
+@keyframes actScratch{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes actSniff{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(0.35rem) rotate(-7deg) scale(1.02)}}
+@keyframes actPeck{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(0.55rem) rotate(-10deg)}}
+
+/* ============================================================
+   🔍 局部特写 Body Zoom（进阶题：放大镜高亮身体部位）
+   ============================================================ */
+.ref-zoom-wrap{display:flex;flex-direction:column;align-items:center;flex:1;min-height:0;gap:0.5rem}
+.ref-zoom-lens{position:relative;width:clamp(9rem,27vh,13.5rem);aspect-ratio:1;border-radius:50%;overflow:hidden;
+  border:0.375rem solid var(--sticker-ink);
+  background:radial-gradient(circle at 50% 42%,#FFFDF2 0%,#FFE9B5 68%,#F6D48C 100%);
+  box-shadow:0 0.5rem 0 var(--sticker-shade),0 0.75rem 1.5rem rgba(92,65,29,.16)}
+.ref-zoom-art{position:absolute;left:50%;top:50%;font-size:9rem;line-height:1;white-space:nowrap;
+  transform:translate(calc(-50% + var(--fx)),calc(-50% + var(--fy))) scale(var(--fs));
+  filter:drop-shadow(0 0.25rem 0.4rem rgba(92,65,29,.18))}
+.ref-zoom-lens::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  box-shadow:inset 0 0 0 0.5rem rgba(255,255,255,.62)}
+.ref-zoom-spot{position:absolute;left:50%;top:50%;width:44%;aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-50%);border:0.1875rem dashed rgba(255,138,76,.78);animation:zoomPulse 2s ease-in-out infinite}
+@keyframes zoomPulse{0%,100%{opacity:.42;transform:translate(-50%,-50%) scale(.9)}50%{opacity:.95;transform:translate(-50%,-50%) scale(1.08)}}
+.ref-zoom-handle{width:1.125rem;height:2.75rem;margin-top:-0.5rem;border-radius:0 0 0.75rem 0.75rem;
+  background:var(--sticker-ink);transform:rotate(38deg);flex:none}
+.ref-zoom-tip{margin:0.25rem 0 0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+.ref-zoom-options{margin-top:0.25rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+
+/* ============================================================
+   ⚖️ 对比观察 Compare（进阶题：同框大小 / 高矮 / 快慢对照）
+   ============================================================ */
+.ref-cmp-wrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:0.625rem}
+.ref-cmp-stage{position:relative;flex:1;min-height:9.5rem;display:flex;align-items:flex-end;justify-content:center;
+  gap:clamp(1rem,7vw,3.5rem);padding:1.25rem 1.25rem 2.25rem;overflow:hidden;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1.75rem;
+  background:linear-gradient(180deg,#FDF4D8 0%,#F8EFD5 60%,#D6E8A8 60%,#C2D98F 100%);
+  box-shadow:0 0.375rem 0 var(--sticker-shade),0 0.75rem 1.25rem rgba(92,65,29,.12)}
+.ref-cmp-item{position:relative;z-index:2;font-size:clamp(3rem,12vh,5.5rem);line-height:1;
+  transform:scale(var(--s));transform-origin:50% 100%;
+  filter:drop-shadow(0 0.25rem 0 rgba(92,65,29,.16))}
+.ref-cmp-badge{position:absolute;right:-18%;top:-22%;font-style:normal;z-index:3;
+  font-size:clamp(1.25rem,4.5vh,1.9rem);pointer-events:none;
+  filter:drop-shadow(0 0.125rem 0.25rem rgba(92,65,29,.22))}
+.ref-cmp-stage.mode-state{background:linear-gradient(180deg,#FFF2D6 0%,#FBE8CF 60%,#D6E8A8 60%,#C2D98F 100%)}
+.ref-cmp-ring{position:absolute;inset:-16% -26%;border:0.2rem dashed #FF8A4C;border-radius:50%;
+  animation:cmpRing 1.6s ease-in-out infinite}
+@keyframes cmpRing{0%,100%{transform:scale(.95);opacity:.55}50%{transform:scale(1.06);opacity:1}}
+.ref-cmp-floor{position:absolute;left:6%;right:6%;bottom:1.5rem;height:0;
+  border-bottom:0.125rem dashed rgba(92,65,29,.35)}
+.ref-cmp-tip{margin:0;text-align:center;font-size:0.8125rem;font-weight:var(--w-bold);color:#806039}
+.ref-cmp-options{margin-top:0.125rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+.ref-cmp-stage.mode-speed .ref-cmp-item::before{content:"";position:absolute;left:-55%;top:42%;width:55%;height:0.1875rem;
+  border-radius:1rem;background:rgba(92,65,29,.28);
+  box-shadow:0 0.5rem 0 rgba(92,65,29,.16),0 -0.5rem 0 rgba(92,65,29,.16)}
+.ref-cmp-stage.mode-height::after{content:"";position:absolute;right:12%;bottom:1.5rem;top:14%;width:0;
+  border-left:0.125rem dashed rgba(92,65,29,.3)}
+.ref-cmp-stage.mode-length::after{content:"";position:absolute;right:10%;bottom:34%;left:10%;height:0;
+  border-bottom:0.125rem dashed rgba(92,65,29,.3)}
+
+/* 进阶题统一 3 列 grid，3 个选项正好填满 */
+.ref-action-options,.ref-zoom-options,.ref-cmp-options{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem}
+
+@media (max-height:45rem){
+  .ref-zoom-lens{width:clamp(7rem,24vh,10rem)}
+  .ref-zoom-art{font-size:7rem}
+  .ref-action-stage,.ref-cmp-stage{min-height:8rem}
+}
 
 /* ============================================================
    🔥 BOSS 关专属样式（Week 6）
@@ -1099,12 +1234,15 @@ h1,h2,h3,h4,p{margin:0}
 @keyframes boss-banner-pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 
 .result-head .boss-chest-reward{display:flex;align-items:center;justify-content:center;gap:0.375rem;margin-top:0.5rem;padding:0.375rem 0.75rem;
-  border-radius:0.625rem;background:linear-gradient(135deg,#FFE477,#FFC84D);color:#5C411D;font-size:0.75rem;font-weight:var(--w-bold);
+  border-radius:0.625rem;background:linear-gradient(135deg,#FFE477,#FFC84D);color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-bold);
   box-shadow:0 0.125rem 0.375rem rgba(255,152,0,.25);
   animation:chest-reward-pop .8s cubic-bezier(.2,1.5,.4,1) .3s both}
 .result-head .boss-chest-reward b{font-size:1rem;color:#8A3D00}
 @keyframes chest-reward-pop{0%{transform:translateY(-0.5rem);opacity:0}100%{transform:translateY(0);opacity:1}}
 
+/* ============================================================
+   DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 连线 / 对话 / 拼词 / 喂食）
+   ============================================================ */
 /* ============================================================
    🖼 看图识词 · 平面插画风（原型）
    参考动物园地图概念稿：暖黄底 + 白色粗描边 + 贴纸卡片
@@ -1163,7 +1301,7 @@ h1,h2,h3,h4,p{margin:0}
   border:0.09375rem solid #fff;font-weight:900;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
 
 /* 选项：贴纸卡片 */
-.pic-page .options.pic-options{grid-template-columns:1fr 1fr;gap:0.625rem;margin-top:0.75rem}
+.pic-page .options.pic-options{grid-template-columns:repeat(3,1fr);gap:0.625rem;margin-top:0.75rem}
 .pic-page .option{min-height:3.75rem;border-radius:1.125rem;background:#fff;border:0.1875rem solid #fff;
   padding:0 0.625rem;gap:0.5rem;box-shadow:0 0.3125rem 0 rgba(150,100,20,.22),0 0.5rem 0.875rem rgba(120,80,20,.14);
   transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
@@ -1201,29 +1339,28 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page .quiz-top,.quiz-ref-page .quiz-body,.quiz-ref-page .quiz-foot{position:relative;z-index:1}
 .quiz-ref-page .quiz-top{padding-top:0.5rem}
 .quiz-ref-page .qbar{background:rgba(255,255,255,.75);border:0.09375rem solid #E8D5AE}
-.quiz-ref-page .circle-btn{background:#FFFDF6;border-color:#E8D5AE;box-shadow:0 0.1875rem 0 #D9C49C;color:#5C411D}
+.quiz-ref-page .circle-btn{background:#FFFDF6;border-color:#E8D5AE;box-shadow:0 0.1875rem 0 #D9C49C;color:var(--sticker-ink)}
 .quiz-ref-page .qcount{color:#6A4C2D}
 .ref-quiz-body{padding:0.375rem 1.25rem 0.25rem;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
-.ref-quiz-body::-webkit-scrollbar{display:none}
-.ref-stage-head{display:flex;align-items:center;justify-content:center;gap:0.75rem;flex:none;margin:0.25rem auto 0.625rem;text-align:left}
+.ref-stage-head{display:flex;align-items:center;justify-content:center;gap:0.75rem;flex:none;margin:0.875rem auto 0.75rem;text-align:left}
 .ref-stage-head h2{font-size:clamp(1.125rem,4vw,1.5rem);font-weight:var(--w-black);line-height:1.2;color:#4B3626}
-.ref-stage-badge{width:3rem;height:3rem;display:grid;place-items:center;flex:none;border:0.1875rem solid #5C411D;border-radius:1rem;
+.ref-stage-badge{width:3rem;height:3rem;display:grid;place-items:center;flex:none;border:0.1875rem solid var(--sticker-ink);border-radius:1rem;
   background:#FFE49A;box-shadow:0 0.25rem 0 #D7B66E;transform:rotate(-3deg)}
 .ref-stage-kicker{display:block;margin-bottom:0.1875rem;color:#A3793D;font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
 .quiz-ref-page .quiz-foot{padding-top:0.5rem;background:transparent}
 .quiz-ref-page .combo{border:0.09375rem solid #E8D5AE;background:rgba(255,253,246,.92);color:#806039;box-shadow:0 0.1875rem 0 rgba(92,65,29,.12)}
 .quiz-ref-page .combo.good{background:#EDF8E4;border-color:#9CC986;color:#39754A}
 .quiz-ref-page .combo.bad{background:#FFF0EA;border-color:#EBA18F;color:#A74F3D}
-.quiz-ref-page .quiz-foot .btn{border:0.125rem solid #5C411D;background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155;font-weight:var(--w-black)}
+.quiz-ref-page .quiz-foot .btn{border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155;font-weight:var(--w-black)}
 .quiz-ref-page .quiz-foot .btn:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #3F8155}
 .quiz-ref-page .quiz-foot .btn:disabled{background:#E5DCCB;border-color:#A49379;color:#93846D;box-shadow:0 0.1875rem 0 #BCAE96}
-.quiz-ref-page .option{border:0.125rem solid #E4CFA9;background:#FFFDF7;color:#4B3626;box-shadow:0 0.25rem 0 #D9C39B;border-radius:1rem}
+.quiz-ref-page .option{border:0.125rem solid var(--sticker-line);background:var(--sticker-paper);color:#4B3626;box-shadow:0 0.25rem 0 var(--sticker-shade);border-radius:1rem}
 .quiz-ref-page .option .key{background:#FFF0C9;color:#8D6835}
 .quiz-ref-page .option.correct{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .quiz-ref-page .option.wrong{border-color:#D87B68;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
 .quiz-ref-page .option.dim{opacity:.55}
 .ref-drag-ghost{position:fixed;z-index:1000;pointer-events:none;display:grid;place-items:center;min-width:3rem;min-height:3rem;padding:0.5rem;
-  border:0.125rem solid #5C411D;border-radius:1rem;background:#FFF3C9;color:#4B3626;box-shadow:0 0.5rem 1.25rem rgba(75,54,38,.22);
+  border:0.125rem solid var(--sticker-ink);border-radius:1rem;background:#FFF3C9;color:#4B3626;box-shadow:0 0.5rem 1.25rem rgba(75,54,38,.22);
   font-size:1.25rem;font-weight:var(--w-black);transform:translate(-50%,-50%)}
 .ref-drag-ghost svg{width:3.5rem;height:3.5rem;display:block}
 .quiz-ref-page .pz-slot.drop-ready{border-style:solid;border-color:#68A873;background:#EAF7E3}
@@ -1231,16 +1368,16 @@ h1,h2,h3,h4,p{margin:0}
 /* 看图识词 */
 .ref-pic-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
 .ref-picture-frame{position:relative;flex:1;min-height:10rem;max-height:24rem;width:min(100%,28rem);margin:0 auto;display:grid;place-items:center;
-  overflow:hidden;border:0.25rem solid #5C411D;border-radius:2rem;background:linear-gradient(180deg,#DDF3F5 0%,#F6F4D9 62%,#C9DFA1 62%,#B5D18C 100%);
+  overflow:hidden;border:0.25rem solid var(--sticker-ink);border-radius:2rem;background:linear-gradient(180deg,#DDF3F5 0%,#F6F4D9 62%,#C9DFA1 62%,#B5D18C 100%);
   box-shadow:0 0.375rem 0 #D3B984,0 0.75rem 1.5rem rgba(92,65,29,.14)}
 .ref-picture-frame::before{content:"";position:absolute;left:8%;top:12%;width:3rem;height:3rem;border-radius:50%;background:#FFD66B;box-shadow:0 0 0 0.5rem rgba(255,214,107,.25)}
 .ref-picture-tape{position:absolute;z-index:2;left:50%;top:-0.25rem;width:5rem;height:1.25rem;background:rgba(255,240,190,.86);transform:translateX(-50%) rotate(-2deg)}
 .ref-picture-art{position:relative;width:clamp(8rem,25vh,14rem);height:clamp(8rem,25vh,14rem);display:grid;place-items:center}
 .ref-picture-art .pic-img{border:0.25rem solid #FFFDF6;box-shadow:0 0.375rem 0 rgba(92,65,29,.18)}
 .ref-picture-art .pic-emoji{font-size:clamp(4rem,15vh,7rem)}
-.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid #E4CFA9;color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
-.quiz-ref-page .ref-pic-options{grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.875rem;flex:none}
-.quiz-ref-page .ref-pic-options .option{min-height:3.75rem;border:0.125rem solid #E4CFA9;box-shadow:0 0.25rem 0 #D9C39B}
+.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
+.quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
+.quiz-ref-page .ref-pic-options .option{min-height:3.75rem;border:0.125rem solid var(--sticker-line);box-shadow:0 0.25rem 0 var(--sticker-shade)}
 .quiz-ref-page .ref-pic-options .option .word{font-size:1.125rem;color:#4B3626}
 
 /* 听音选图 */
@@ -1249,42 +1386,43 @@ h1,h2,h3,h4,p{margin:0}
   padding:0;background:transparent;border:0;transition:transform .15s ease;cursor:pointer}
 .ref-listen-speaker:active{transform:scale(.94)}
 .ref-listen-speaker .ref-toast-art{width:100%;height:100%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.15))}
-.ref-listen-speaker>span{position:absolute;bottom:-0.125rem;padding:0.25rem 0.625rem;border:0.09375rem solid #E4CFA9;border-radius:6.1875rem;
+.ref-listen-speaker>span{position:absolute;bottom:-0.125rem;padding:0.25rem 0.625rem;border:0.09375rem solid var(--sticker-line);border-radius:6.1875rem;
   background:#FFFDF6;color:#765733;font-size:0.6875rem;font-weight:var(--w-bold);white-space:nowrap}
-.ref-listen-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin:0.75rem auto 0;flex:1;min-height:8rem}
+.ref-listen-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:min(100%,30rem);margin:0.75rem auto 0;flex:1;min-height:8rem}
 .ref-listen-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.25rem;
-  border:0.1875rem solid #E4CFA9;border-radius:1.25rem;background:#FFFDF7;box-shadow:0 0.25rem 0 #D9C39B;cursor:pointer;
+  border:0.1875rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer;
   padding:0.625rem 0.375rem;transition:transform .12s ease,box-shadow .12s ease}
-.ref-listen-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #D9C39B}
-.ref-listen-card.sel{border-color:#D8A646;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.25),0 0.25rem 0 #D9C39B;background:#FFF9E8}
+.ref-listen-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 var(--sticker-shade)}
+.ref-listen-card.sel{border-color:#D8A646;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.25),0 0.25rem 0 var(--sticker-shade);background:#FFF9E8}
 .ref-listen-card.ok{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-listen-card.wrong{border-color:#D87B68;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
 .ref-listen-card-art{width:clamp(3rem,10vw,4.25rem);height:clamp(3rem,10vw,4.25rem);display:grid;place-items:center}
-.ref-listen-card-art svg{width:100%;height:100%;display:block}
 .ref-listen-card-word{font-size:clamp(0.75rem,2.8vw,0.9375rem);font-weight:var(--w-black);color:#7A5A35;margin-top:0.125rem}
 .ref-listen-card-word.correct{color:#39754A}
 .ref-listen-card-word.wrong{color:#A74F3D}
 .ref-listen-mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;display:grid;place-items:center;
-  border:0.125rem solid #5C411D;border-radius:50%;background:#68BE83;color:#203B29;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1}
+  border:0.125rem solid var(--sticker-ink);border-radius:50%;background:#68BE83;color:#203B29;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1}
 .ref-listen-mark.bad{background:#F49385;color:#5C2B23}
 
 /* 单词连线 */
-.ref-match-area{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:1.5rem;width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem}
+.ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(2rem,9vw,4rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;
+  --match-card:clamp(4rem,13vw,5.25rem)}
 .ref-match-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
-.ref-match-col{display:flex;flex-direction:column;gap:0.75rem;z-index:1}
-.ref-match-row{display:flex;align-items:center;gap:0.5rem;transition:opacity .18s ease}
+.ref-match-col{display:flex;flex-direction:column;gap:1rem;z-index:1}
+.ref-match-row{display:flex;align-items:center;gap:0.625rem;transition:opacity .18s ease}
 .ref-match-row.done{opacity:.55}
-.ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 #D9C39B}
+.ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
+/* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
 .ref-match-col-left .ref-match-row{flex-direction:row}
-.ref-match-col-right .ref-match-row{flex-direction:row-reverse}
-.ref-match-art-card{display:flex;align-items:center;justify-content:center;width:clamp(3.5rem,11vw,4.5rem);height:clamp(3.5rem,11vw,4.5rem);flex:none;
-  border:0.1875rem solid #5C411D;border-radius:1rem;background:#FFFDF7;box-shadow:0 0.25rem 0 #D9C39B;cursor:pointer}
-.ref-match-art-card svg{width:2.25rem;height:2.25rem;display:block}
-.ref-match-word-card{min-width:clamp(4rem,14vw,5.5rem);padding:0.5rem 0.875rem;flex:none;text-align:center;
-  border:0.1875rem solid #5C411D;border-radius:1rem;background:#FFFDF7;box-shadow:0 0.25rem 0 #D9C39B;
-  color:#4B3626;font-size:clamp(0.875rem,3.2vw,1.125rem);font-weight:var(--w-black)}
+.ref-match-col-right .ref-match-row{flex-direction:row;min-height:var(--match-card)}
+.ref-match-art-card{display:flex;align-items:center;justify-content:center;width:var(--match-card);height:var(--match-card);flex:none;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
+.ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
+.ref-match-word-card{min-width:clamp(4.5rem,15vw,6rem);padding:0.625rem 1rem;flex:none;text-align:center;
+  border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
+  color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black)}
 .ref-match-dot{position:relative;display:grid;place-items:center;width:1.5rem;height:1.5rem;flex:none;
-  border:0.1875rem solid #5C411D;border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 #5C411D;
+  border:0.1875rem solid var(--sticker-ink);border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 var(--sticker-ink);
   cursor:pointer;touch-action:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
 .ref-match-dot:hover{transform:scale(1.15)}
 .ref-match-dot:active{transform:scale(.95)}
@@ -1292,20 +1430,19 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-dot .ok-check{font-size:0.75rem;font-style:normal;color:#243F2B;font-weight:var(--w-black)}
 .ref-match-path{fill:none;stroke:#8A76A8;stroke-width:0.375rem;stroke-linecap:round;stroke-dasharray:0.625rem 0.5rem}
 .ref-match-path.temp{stroke:#E4A14B;stroke-dasharray:none;opacity:.85}
-.quiz-ref-page .listen-row .listen{border:0.09375rem solid #E4CFA9;color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
+.quiz-ref-page .listen-row .listen{border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 
 /* 情景对话 */
 .ref-dialog-card{display:flex;flex-direction:column;gap:0.625rem;flex:none}
 .ref-dialog-row{display:flex;align-items:flex-end;gap:0.5rem}
 .ref-dialog-row.reply{justify-content:flex-end}
 .ref-dialog-person{width:4.5rem;height:5.75rem;flex:none}
-.ref-child-art{width:100%;height:100%;display:block}
 .ref-dialog-bubble{position:relative;display:flex;align-items:center;gap:0.5rem;flex:1;max-width:calc(100% - 5rem);min-height:4rem;padding:0.75rem;
-  border:0.125rem solid #5C411D;border-radius:1.25rem 1.25rem 1.25rem 0.25rem;background:#FFFDF7;box-shadow:0 0.25rem 0 #D9C39B}
+  border:0.125rem solid var(--sticker-ink);border-radius:1.25rem 1.25rem 1.25rem 0.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade)}
 .ref-dialog-row.reply .ref-dialog-bubble{border-radius:1.25rem 1.25rem 0.25rem 1.25rem;background:#FFF0F3}
 .ref-dialog-bubble p{font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
 .ref-dialog-bubble .blank{color:#6B8D46;border-bottom:0.125rem dashed #9DB97B;padding:0 0.125rem}
-.ref-dialog-name{display:grid;place-items:center;align-self:flex-start;flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:#FFE49A;color:#5C411D;font-size:0.75rem;font-weight:var(--w-black)}
+.ref-dialog-name{display:grid;place-items:center;align-self:flex-start;flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:#FFE49A;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-black)}
 .ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center}
 .ref-dialog-pic svg{width:100%;height:100%}
 .ref-dialog-listen{margin-top:0.25rem}
@@ -1314,37 +1451,34 @@ h1,h2,h3,h4,p{margin:0}
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
-.ref-puzzle-hint{padding:0.5rem 1rem;border:0.09375rem solid #E4CFA9;border-radius:1.25rem;background:rgba(255,253,247,.88)}
+.ref-puzzle-hint{padding:0.5rem 1rem;border:0.09375rem solid var(--sticker-line);border-radius:1.25rem;background:rgba(255,253,247,.88)}
 .ref-puzzle-hint .pz-art{width:6.5rem;height:6.5rem;display:grid;place-items:center}
-.ref-puzzle-hint .pz-art svg{width:100%;height:100%;display:block}
 .ref-puzzle-hint small{color:#806039;font-weight:var(--w-bold)}
 .quiz-ref-page .pz-slots{display:grid;grid-template-columns:repeat(var(--slot-count),minmax(0,2.75rem));justify-content:center;gap:0.375rem;width:100%;margin:0}
 .quiz-ref-page .pz-slot{width:auto;height:clamp(2.75rem,8vw,3.5rem);min-width:0;border:0.125rem dashed #A78C61;border-radius:0.75rem;background:#F2E4C8;
-  color:#5C411D;font-size:clamp(0.875rem,4vw,1.5rem);box-shadow:inset 0 0.1875rem 0.375rem rgba(92,65,29,.1)}
-.quiz-ref-page .pz-slot.filled{border-style:solid;border-color:#5C411D;background:#FFE49A;box-shadow:0 0.1875rem 0 #D1AE62}
+  color:var(--sticker-ink);font-size:clamp(0.875rem,4vw,1.5rem);box-shadow:inset 0 0.1875rem 0.375rem rgba(92,65,29,.1)}
+.quiz-ref-page .pz-slot.filled{border-style:solid;border-color:var(--sticker-ink);background:#FFE49A;box-shadow:0 0.1875rem 0 #D1AE62}
 .quiz-ref-page .pz-letters{gap:0.5rem;margin-top:0.25rem}
-.quiz-ref-page .pz-letter{width:2.75rem;height:3rem;border:0.125rem solid #5C411D;border-radius:0.75rem;background:#68BE83;color:#203B29;
+.quiz-ref-page .pz-letter{width:2.75rem;height:3rem;border:0.125rem solid var(--sticker-ink);border-radius:0.75rem;background:#68BE83;color:#203B29;
   box-shadow:0 0.25rem 0 #3F8155;font-size:1.25rem;touch-action:none;user-select:none}
 .quiz-ref-page .pz-letter.used{opacity:.25;pointer-events:none}
-.ref-puzzle-wrap .pz-check{width:min(100%,20rem);border:0.125rem solid #5C411D;background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155}
+.ref-puzzle-wrap .pz-check{width:min(100%,20rem);border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155}
 .ref-puzzle-wrap .pz-check:disabled{border-color:#A49379;background:#E5DCCB;box-shadow:0 0.1875rem 0 #BCAE96}
-.ref-puzzle-wrap .pz-answer{color:#5C411D}
+.ref-puzzle-wrap .pz-answer{color:var(--sticker-ink)}
 
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
 .ref-feed-animal{width:min(100%,22rem);padding:0.75rem;border:0.125rem dashed #B69662;border-radius:2rem;background:rgba(255,253,247,.82);transition:background .15s ease,transform .15s ease}
 .ref-feed-animal.drop-ready{background:#FFF0C9;transform:scale(1.03)}
 .ref-feed-animal .fd-art{width:8.5rem;height:8.5rem;display:grid;place-items:center}
-.ref-feed-animal .fd-art svg{width:100%;height:100%;display:block}
-.ref-feed-animal .fd-name{color:#5C411D;font-size:1.375rem}
+.ref-feed-animal .fd-name{color:var(--sticker-ink);font-size:1.375rem}
 .ref-feed-animal small{color:#806039;text-align:center;line-height:1.4}
 .quiz-ref-page .fd-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin-top:0}
 .quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:6rem;padding:0.375rem;
-  border:0.125rem solid #E4CFA9;border-radius:1.25rem;background:#FFFDF7;box-shadow:0 0.25rem 0 #D9C39B;touch-action:none;user-select:none}
-.quiz-ref-page .fd-food.selected{border-color:#D8A646;background:#FFF5D9;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.2),0 0.25rem 0 #D9C39B}
+  border:0.125rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);touch-action:none;user-select:none}
+.quiz-ref-page .fd-food.selected{border-color:#D8A646;background:#FFF5D9;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.2),0 0.25rem 0 var(--sticker-shade)}
 .quiz-ref-page .fd-food.correct{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-food-art{width:3.75rem;height:3.75rem;display:grid;place-items:center}
-.ref-food-art svg{width:100%;height:100%;display:block}
 .fd-food small{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#6A4C2D;font-size:0.6875rem;font-weight:var(--w-bold)}
 
 @media (min-width:48rem){
@@ -1353,7 +1487,7 @@ h1,h2,h3,h4,p{margin:0}
   .ref-match-area,.ref-dialog-card{width:min(100%,38rem);align-self:center}
 }
 @media (max-height:45rem){
-  .ref-stage-head{margin-top:0;margin-bottom:0.375rem}
+  .ref-stage-head{margin-top:0.5rem;margin-bottom:0.375rem}
   .ref-stage-badge{width:2.5rem;height:2.5rem}
   .ref-stage-head h2{font-size:1.0625rem}
   .ref-picture-art{width:7.5rem;height:7.5rem}
@@ -1375,14 +1509,12 @@ h1,h2,h3,h4,p{margin:0}
   background:#fff;border:0.09375rem solid var(--line);border-radius:0.8125rem;padding:0.375rem 0.625rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.06);flex:none}
 .dex-count span{font-size:0.6875rem;color:var(--muted);font-weight:var(--w-mid)}
 .dex-sum{border-radius:1.375rem;padding:0.8125rem 0.9375rem;display:flex;align-items:center;gap:0.8125rem}
-.dex-sum .ds-main{flex:1;min-width:0}
 .dex-sum .ds-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.4375rem}
 .dex-sum .ds-row b{font-size:0.75rem;font-weight:var(--w-bold)}
 .dex-sum .ds-row span{font-size:0.6875rem;font-weight:var(--w-black);color:var(--green-d)}
 .dex-sum .ds-foot{display:flex;align-items:center;gap:0.25rem;margin-top:0.4375rem;font-size:0.65625rem;font-weight:var(--w-mid);color:#A19278}
 .dex-sum .ds-badge{width:2.875rem;height:2.875rem;border-radius:0.9375rem;background:#FFF4CE;display:grid;place-items:center;flex:none;color:#B4811C}
 .dex-filters{display:flex;gap:0.375rem;margin-top:0.75rem;overflow-x:auto;scrollbar-width:none;padding-bottom:0.125rem}
-.dex-filters::-webkit-scrollbar{display:none}
 .dex-filters .f{height:1.875rem;padding:0 0.6875rem;border-radius:0.5625rem;background:#fff;border:0.09375rem solid #EEE2CD;
   font-size:0.71875rem;font-weight:var(--w-mid);color:#8C9B8C;display:flex;align-items:center;white-space:nowrap;flex:none}
 .dex-filters .f.on{background:var(--ink);border-color:var(--ink);color:#FFF6DF}
@@ -1417,7 +1549,6 @@ h1,h2,h3,h4,p{margin:0}
 .dex-reward{margin-top:0.875rem;border-radius:1.25rem;padding:0.625rem 0.8125rem;display:flex;align-items:center;gap:0.6875rem;
   background:#fff;border:0.09375rem solid var(--line);box-shadow:0 0.5rem 1.125rem rgba(94,70,30,.07)}
 .dex-reward .dr-ic{width:3.25rem;height:3.25rem;border-radius:0.875rem;overflow:hidden;flex:none;position:relative;border:0.0625rem solid rgba(0,0,0,.05)}
-.dex-reward .dr-main{flex:1;min-width:0}
 .dex-reward .dr-row{display:flex;justify-content:space-between;align-items:baseline;gap:0.5rem}
 .dex-reward .dr-row b{font-size:0.71875rem;font-weight:var(--w-black)}
 .dex-reward .dr-row span{font-size:0.6875rem;font-weight:var(--w-black);color:var(--green-d);white-space:nowrap}
@@ -1446,7 +1577,6 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ words */
 .words-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.625rem}
-.words-head .t{flex:1;min-width:0}
 .words-head h1{font-size:clamp(1.5rem,4vw,1.875rem);font-weight:var(--w-black);letter-spacing:-0.0375rem;line-height:1.05}
 .words-head p{font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem}
 .words-count{flex:none;display:flex;align-items:baseline;gap:0.125rem;padding:0.375rem 0.625rem;border-radius:0.75rem;background:#E8F5D8;
@@ -1468,7 +1598,6 @@ h1,h2,h3,h4,p{margin:0}
   background:#fff;border:0.09375rem solid var(--line);border-radius:1rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.04)}
 .word-row:active{transform:scale(.985);background:#FBFDF6}
 .wr-pic{width:3rem;height:3rem;border-radius:0.8125rem;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
-.wr-pic svg{width:100%;height:100%;display:block}
 .wr-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0.375rem}
 .wr-line{display:flex;align-items:baseline;justify-content:flex-start;gap:0.25rem;min-width:0}
 .wr-line b{font-size:1.375rem;font-weight:var(--w-black);letter-spacing:-0.025rem;line-height:1.12;min-width:0;
@@ -1491,7 +1620,6 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ collect */
 .collect-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.875rem}
-.collect-head .t{flex:1;min-width:0}
 .collect-head h1{font-size:clamp(1.5rem,4vw,1.875rem);font-weight:var(--w-black);letter-spacing:-0.0375rem;line-height:1.1}
 .collect-head p{font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.25rem}
 .collect-preview{height:clamp(11.875rem,26vh,15.625rem);border-radius:1.75rem;position:relative;overflow:hidden;
@@ -1527,7 +1655,6 @@ h1,h2,h3,h4,p{margin:0}
 .bg-thumb.sunset{background-image:url("images/background/sunset.webp")}
 .bg-thumb.night{background-image:url("images/background/night.webp")}
 .bg-thumb.jungle,.bg-thumb.sunset,.bg-thumb.night{background-size:cover;background-position:center 80%;background-repeat:no-repeat}
-.bg-item .bg-info{flex:1;min-width:0}
 .bg-item .bg-info b{font-size:0.8125rem;font-weight:var(--w-bold);display:block}
 .bg-item .bg-info span{font-size:0.65625rem;color:#9AA89B;display:block;margin-top:0.125rem}
 .bg-item .bg-info .price{margin-top:0.3125rem;display:inline-flex;width:fit-content}
@@ -1626,7 +1753,7 @@ h1,h2,h3,h4,p{margin:0}
 .chest-progress .bar{height:0.25rem;border-radius:0.125rem;background:rgba(92,65,29,.15);overflow:hidden}
 .chest-progress .bar i{display:block;height:100%;background:#FFB64D;border-radius:0.125rem;transition:width .5s}
 .chest-actions{display:flex;flex-direction:column;gap:0.375rem;width:100%;max-width:20rem;margin-top:0.75rem}
-.chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:#5C411D;border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
+.chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
 .chest-actions .btn.ghost{background:#FFFFFF;color:#70624D;box-shadow:none;border-color:#E7DAC3}
 .chest-open{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:2rem 1rem;text-align:center}
 .chest-emoji{font-size:3.75rem;animation:chest-pop .55s cubic-bezier(.2,1.2,.4,1) both}
@@ -1676,7 +1803,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
 @media (min-width:640px){
-  .options.pic-grid{grid-template-columns:repeat(4,1fr);grid-template-rows:minmax(0,1fr)}
+  .options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr)}
 }
 
 /* ------------------------------------------------ 矮屏（横屏/小窗口）：压缩答题页留白，把空间让给图片 */
@@ -3253,6 +3380,54 @@ window.DINO_WORD_RULES.push({
 (function () {
   "use strict";
 
+  /* ---------------- 关卡 / 场景上下文（供出题、结算、错题库共用） ---------------- */
+  /* 判断当前是否为动物园场景（启用动态出题引擎） */
+  function isZooScene() {
+    return state.theme === "animal" && state.scene === "zoo";
+  }
+
+  /* 当前动物园场景对象 */
+  function zooScene() {
+    return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
+  }
+
+  /* 每馆第 5 关为馆内 BOSS，最后一关为总 BOSS */
+  function isAnimalBossLevel(level) {
+    return isZooScene() && Number(level) % LEVELS_PER_VENUE === 0;
+  }
+  function isAnimalFinalBoss(level) {
+    const scene = zooScene();
+    return isZooScene() && !!scene && Number(level) === scene.levelCount;
+  }
+
+  window.isZooScene = isZooScene;
+  window.zooScene = zooScene;
+  window.isAnimalBossLevel = isAnimalBossLevel;
+  window.isAnimalFinalBoss = isAnimalFinalBoss;
+
+  /* 阶段门槛：每 5 关为一阶段，阶段内第 5 关需前 4 关累计 ≥8 星 */
+  const STAGE_SIZE = 5;
+  const STAGE_GATE_STARS = 8;
+  function stageStarsBefore(level) {
+    const L = Number(level) || 1;
+    const start = Math.floor((L - 1) / STAGE_SIZE) * STAGE_SIZE + 1;
+    const stars = themeProgress().stars || {};
+    let sum = 0;
+    for (let i = start; i < L; i++) sum += Number(stars[i]) || 0;
+    return sum;
+  }
+  function canEnterLevel(level) {
+    const L = Number(level) || 1;
+    if (!isZooScene()) return true;
+    if (L % STAGE_SIZE !== 0) return true;
+    return stageStarsBefore(L) >= STAGE_GATE_STARS;
+  }
+  window.STAGE_SIZE = STAGE_SIZE;
+  window.STAGE_GATE_STARS = STAGE_GATE_STARS;
+  window.stageStarsBefore = stageStarsBefore;
+  window.canEnterLevel = canEnterLevel;
+
+
   function defaultLevelGames() {
     return {
       1: ["pic", "listen", "pic", "listen", "pic"],
@@ -3269,9 +3444,12 @@ window.DINO_WORD_RULES.push({
   }
 
   function buildOptions(task, pool, count) {
+    /* 干扰项优先取同类词（名词配名词、动词配动词），避免选项跨类干扰 */
+    const sameCat = pool.filter((x) => x.word !== task.word && x.category && x.category === task.category);
+    const source = sameCat.length >= count - 1 ? sameCat : pool.filter((x) => x.word !== task.word);
     task.options = shuffle([
       task.word,
-      ...shuffle(pool.filter((x) => x.word !== task.word)).slice(0, count - 1).map((x) => x.word),
+      ...shuffle(source).slice(0, count - 1).map((x) => x.word),
     ]);
   }
 
@@ -3290,7 +3468,7 @@ window.DINO_WORD_RULES.push({
         title: "看图，选出正确的单词",
         pageClass: "pic-page",
         build(task, pool) {
-          buildOptions(task, pool, 4);
+          buildOptions(task, pool, 3);
         },
         render({ q, choiceButton, options }) {
           return {
@@ -3311,7 +3489,7 @@ window.DINO_WORD_RULES.push({
         title: "听单词，选出正确的图片",
         autoSpeak: true,
         build(task, pool) {
-          buildOptions(task, pool, 4);
+          buildOptions(task, pool, 3);
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
@@ -3406,10 +3584,7 @@ window.DINO_WORD_RULES.push({
               quiz.choiceCorrect = quiz.matchWrong === 0;
               if (quiz.choiceCorrect) {
                 quiz.correct++;
-                quiz.combo++;
                 q.pairs.forEach((p) => quiz.words.push(p.word));
-              } else {
-                quiz.combo = 0;
               }
               render();
               return;
@@ -3420,7 +3595,6 @@ window.DINO_WORD_RULES.push({
             quiz.pickWord = null;
             quiz.pickWordSide = null;
             quiz.hearts = Math.max(0, quiz.hearts - 1);
-            quiz.combo = 0;
             sfx("wrong");
             /* 🦁 动物园：配对失败 → 自动收录错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(wrongPair)) WrongBank.recordWrong(_makeWid(wrongPair));
@@ -3430,7 +3604,7 @@ window.DINO_WORD_RULES.push({
               render();
               return;
             }
-            toast("这两张不匹配，再试一次");
+            toast("答错了，继续努力");
           }
           render();
         },
@@ -3459,7 +3633,6 @@ window.DINO_WORD_RULES.push({
           quiz.revealed = true;
           quiz.choiceCorrect = true;
           quiz.correct++;
-          quiz.combo++;
           quiz.words.push(q.word);
           sfx("correct");
           /* 🦁 动物园：跟读完成 → 尝试清除错题库 */
@@ -3564,7 +3737,6 @@ window.DINO_WORD_RULES.push({
               <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
               ${!revealed ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>` : ""}
-              ${revealed ? `<div class="pz-answer">正确答案：<b>${q.word.toUpperCase()}</b>（${q.zh}）</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
@@ -3576,14 +3748,14 @@ window.DINO_WORD_RULES.push({
         build(task, pool) {
           /* 从 pool 里找 3 种不同的食物 emoji 作为选项 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
-          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎" }));
+          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
           if (foods.length < 3) {
             /* 兜底：用不重复的基础食物补足到 3 种 */
             const seen = new Set(foods.map((f) => f.word));
             const fallback = [
-              { word: "meat", emoji: "🥩" },
-              { word: "banana", emoji: "🍌" },
-              { word: "bamboo", emoji: "🎋" },
+              { word: "meat", emoji: "🥩", zh: "肉" },
+              { word: "banana", emoji: "🍌", zh: "香蕉" },
+              { word: "bamboo", emoji: "🎋", zh: "竹子" },
             ];
             for (const f of fallback) {
               if (foods.length >= 3) break;
@@ -3599,6 +3771,8 @@ window.DINO_WORD_RULES.push({
           task.correctFood = preferred && task.foods.some((f) => f.word === preferred)
             ? preferred
             : task.foods[0].word;
+          /* 答错提示用：正确食物的中文翻译 */
+          task.correctZh = (task.foods.find((f) => f.word === task.correctFood) || {}).zh || "";
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
@@ -3614,10 +3788,96 @@ window.DINO_WORD_RULES.push({
                 <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
               <div class="fd-foods">${foods}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="fd-answer">正确答案是：${q.correctFood.toUpperCase()}</div>` : ""}
             </div>`;
           const btn = revealed ? quizNextButton() : `<button type="button" class="btn" data-action="fd-check" ${quiz.selected ? "" : "disabled"}>喂给它 ${I.arrow(16)}</button>`;
           return { body, btn };
+        },
+      },
+      /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
+      action: {
+        label: "动作猜猜",
+        title: "看动作，选出正确的单词",
+        build(task, pool) {
+          buildOptions(task, pool, 3);
+        },
+        render({ q, quiz, options }) {
+          const motion = q.motion || "run";
+          const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
+            ? `<img class="ref-action-img" src="images/words/${q.assetKey}.png" alt=""
+                 onload="this.parentElement.classList.add('has-art')" onerror="this.remove()">`
+            : "";
+          return {
+            body: `<div class="ref-action-wrap">
+                <div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
+                  <span class="ref-action-sun"></span>
+                  <span class="ref-action-cloud c1"></span>
+                  <span class="ref-action-cloud c2"></span>
+                  <span class="ref-action-ground"></span>
+                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span>${actionArt}</span>
+                  <span class="ref-action-spark s1">✦</span>
+                  <span class="ref-action-spark s2">✦</span>
+                </div>
+                <p class="ref-action-tip">动物在干什么？</p>
+                <div class="options ref-action-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* 🔍 局部特写 Body Zoom（进阶题：放大镜高亮身体部位） */
+      body_zoom: {
+        label: "局部特写",
+        title: "放大看看，这是哪个部位？",
+        build(task, pool) {
+          buildOptions(task, pool, 3);
+        },
+        render({ q, quiz, options }) {
+          const f = q.focus || { x: "0%", y: "0%", scale: 2 };
+          return {
+            body: `<div class="ref-zoom-wrap">
+                <div class="ref-zoom-lens" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
+                  <span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>
+                  <span class="ref-zoom-spot"></span>
+                </div>
+                <span class="ref-zoom-handle" aria-hidden="true"></span>
+                <p class="ref-zoom-tip">这是谁身上的哪个部位？</p>
+                <div class="options ref-zoom-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* ⚖️ 对比观察 Compare（进阶题：同框大小 / 高矮 / 快慢对照） */
+      compare: {
+        label: "对比观察",
+        title: "对比看看，选出正确的单词",
+        build(task, pool) {
+          const adjPool = pool.filter((w) => w.category === "adj");
+          const pair = task.compare && task.compare.pair;
+          const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair)).slice(0, 3 - (pair ? 2 : 1));
+          task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
+        },
+        render({ q, quiz, options }) {
+          const c = q.compare || { a: { emoji: q.emoji || "🐾", scale: 1 }, b: { emoji: "🐾", scale: 1 }, target: "a" };
+          const a = c.a || {};
+          const b = c.b || {};
+          const item = (side, data) => `<div class="ref-cmp-item${c.target === side ? " target" : ""}" style="--s:${data.scale || 1}">
+              <span>${data.emoji || "🐾"}</span>
+              ${data.badge ? `<i class="ref-cmp-badge" aria-hidden="true">${data.badge}</i>` : ""}
+              ${c.target === side ? '<i class="ref-cmp-ring" aria-hidden="true"></i>' : ""}
+            </div>`;
+          return {
+            body: `<div class="ref-cmp-wrap">
+                <div class="ref-cmp-stage mode-${c.mode || "size"}" data-asset-key="${q.assetKey || q.word}" data-target="${c.target || "a"}" aria-hidden="true">
+                  ${item("a", a)}
+                  ${item("b", b)}
+                  <span class="ref-cmp-floor"></span>
+                </div>
+                <p class="ref-cmp-tip">圈出来的动物，用哪个词形容？</p>
+                <div class="options ref-cmp-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
         },
       },
       /* 🌑 影子猜猜乐 Shadow Match（Week 5 新增，等 shadow 图资源，先用 emoji 轮廓占位） */
@@ -3645,7 +3905,6 @@ window.DINO_WORD_RULES.push({
             <div class="sh-wrap">
               <p class="sh-title">影子里藏着什么动物？</p>
               <div class="sh-options">${optsHtml}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="sh-answer">正确答案：${q.word.toUpperCase()} (${q.zh})</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
@@ -3686,13 +3945,40 @@ window.DINO_WORD_RULES.push({
             <div class="at-wrap">
               <p class="at-title">哪个动作对应这个单词？<br><b>${q.word.toUpperCase()}</b> <small>${q.phon || ""}</small></p>
               <div class="at-options">${optsHtml}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="at-answer">正确答案：${q.word.toUpperCase()} (${q.zh})</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
       },
     };
   }
+
+  /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
+  window.definePlaceholderTheme = function definePlaceholderTheme(opts) {
+    const o = opts || {};
+    return window.defineDinoTheme({
+      id: o.id,
+      name: o.name,
+      chip: o.chip,
+      unit: o.unit,
+      emoji: o.emoji,
+      dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
+      playable: false,
+      words: [],
+      scenes: [],
+      map: {
+        title: "敬请期待",
+        intro: o.mapIntro || `「${o.name}」主题正在筹备中…`,
+        sceneSelector: false,
+        render() {
+          return `<div style="text-align:center;padding:2rem 1rem;color:${o.color}">
+        <div style="font-size:3rem;margin-bottom:0.75rem">${o.emoji}</div>
+        <h3 style="margin:0 0 0.25rem;color:${o.accent}">${o.name} · 主题筹备中</h3>
+        <p style="font-size:0.8125rem;margin:0;color:${o.tip || o.color}">${o.plan}</p>
+      </div>`;
+        },
+      },
+    });
+  };
 
   window.defineDinoTheme = function defineDinoTheme(config) {
     const levelGames = defaultLevelGames();
@@ -3726,28 +4012,17 @@ window.DINO_WORD_RULES.push({
    DinoGo · 恐龙英语 — 去旅行（占位主题）
    主题名称 + 基础占位配置，具体内容后续开放设计
    ============================================================ */
-defineDinoTheme({
+definePlaceholderTheme({
   id: "go",
   name: "去旅行",
   chip: "旅行单词",
   unit: "Unit 3 · 去旅行",
   emoji: "🗺️",
   dialog: { q: "Where are we going?", a: "We are going to {word}." },
-  playable: false,
-  words: [],
-  scenes: [],
-  map: {
-    title: "敬请期待",
-    intro: "「去旅行」主题正在筹备中…",
-    sceneSelector: false,
-    render() {
-      return `<div style="text-align:center;padding:2rem 1rem;color:#4A6E8A">
-        <div style="font-size:3rem;margin-bottom:0.75rem">🗺️</div>
-        <h3 style="margin:0 0 0.25rem;color:#3A6E8A">去旅行 · 主题筹备中</h3>
-        <p style="font-size:0.8125rem;margin:0;color:#7FB8DE">后续将开放世界地标、旅行场景与航线地图</p>
-      </div>`;
-    },
-  },
+  mapIntro: "「去旅行」主题正在筹备中…",
+  plan: "后续将开放世界地标、旅行场景与航线地图",
+  color: "#4A6E8A",
+  accent: "#3A6E8A",
 });
 
 </script>
@@ -3755,9 +4030,9 @@ defineDinoTheme({
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    陆地动物园：10 个主题馆 × 5 关 = 50 关，共用一张连续路线图
-   每馆 9~10 个词，覆盖 noun / verb / part / food / color 五类
-   海洋公园暂保留静态预览
-   闯关只使用当前场馆的 words，与词性词库完全独立
+   题库共 100 词（仅陆地动物园）：核心动物名词 30 + 动作动词 30 + 身体部位 20 + 特征形容词 20
+   每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
+   闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
 
 /* 每个主题馆固定 5 关 */
@@ -3818,181 +4093,224 @@ const ANIMAL_ZOO_NODES = [
 ];
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
+/* ============================================================
+   动物乐园题库（100 词，仅陆地动物园）
+   1. 核心动物名词 30 个：看图选词 / 听音识图 / 词汇拼图
+   2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
+   3. 身体部位 20 个：局部特写（放大镜高亮局部）
+   4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
+   ============================================================ */
+const ANIMAL_ZOO_WORDS = [
+  /* ---------------- 1. 核心动物名词 30 个 ---------------- */
+  { word: "lion",       zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion is the king of the zoo.",        emoji: "🦁", category: "noun", animal: true },
+  { word: "tiger",      zh: "老虎",   phon: "/ˈtaɪɡə(r)/",    example: "The tiger has orange fur.",               emoji: "🐯", category: "noun", animal: true },
+  { word: "monkey",     zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey climbs the tree.",             emoji: "🐒", category: "noun", animal: true },
+  { word: "panda",      zh: "熊猫",   phon: "/ˈpændə/",       example: "The panda eats bamboo.",                  emoji: "🐼", category: "noun", animal: true },
+  { word: "bear",       zh: "熊",     phon: "/beə(r)/",       example: "The bear is very big.",                   emoji: "🐻", category: "noun", animal: true },
+  { word: "zebra",      zh: "斑马",   phon: "/ˈzebrə/",       example: "The zebra has black and white stripes.",  emoji: "🦓", category: "noun", animal: true },
+  { word: "giraffe",    zh: "长颈鹿", phon: "/dʒəˈrɑːf/",     example: "The giraffe has a long neck.",            emoji: "🦒", category: "noun", animal: true },
+  { word: "elephant",   zh: "大象",   phon: "/ˈelɪfənt/",     example: "The elephant has a long trunk.",          emoji: "🐘", category: "noun", animal: true },
+  { word: "hippo",      zh: "河马",   phon: "/ˈhɪpəʊ/",       example: "The hippo likes water.",                  emoji: "🦛", category: "noun", animal: true },
+  { word: "crocodile",  zh: "鳄鱼",   phon: "/ˈkrɒkədaɪl/",   example: "The crocodile has sharp teeth.",          emoji: "🐊", category: "noun", animal: true },
+  { word: "kangaroo",   zh: "袋鼠",   phon: "/ˌkæŋɡəˈruː/",   example: "The kangaroo jumps very high.",           emoji: "🦘", category: "noun", animal: true },
+  { word: "rabbit",     zh: "兔子",   phon: "/ˈræbɪt/",       example: "The rabbit has long ears.",               emoji: "🐰", category: "noun", animal: true },
+  { word: "cow",        zh: "奶牛",   phon: "/kaʊ/",          example: "The cow is on the farm.",                 emoji: "🐄", category: "noun", animal: true },
+  { word: "fox",        zh: "狐狸",   phon: "/fɒks/",         example: "The fox is clever.",                      emoji: "🦊", category: "noun", animal: true },
+  { word: "wolf",       zh: "狼",     phon: "/wʊlf/",         example: "The wolf lives in the forest.",           emoji: "🐺", category: "noun", animal: true },
+  { word: "deer",       zh: "鹿",     phon: "/dɪə(r)/",       example: "The deer runs fast.",                     emoji: "🦌", category: "noun", animal: true },
+  { word: "sheep",      zh: "绵羊",   phon: "/ʃiːp/",         example: "The sheep has soft wool.",                emoji: "🐑", category: "noun", animal: true },
+  { word: "snake",      zh: "蛇",     phon: "/sneɪk/",        example: "The snake is long.",                      emoji: "🐍", category: "noun", animal: true },
+  { word: "turtle",     zh: "乌龟",   phon: "/ˈtɜːtl/",       example: "The turtle walks slowly.",                emoji: "🐢", category: "noun", animal: true },
+  { word: "goat",       zh: "山羊",   phon: "/ɡəʊt/",         example: "The goat climbs on rocks.",               emoji: "🐐", category: "noun", animal: true },
+  { word: "parrot",     zh: "鹦鹉",   phon: "/ˈpærət/",       example: "The parrot has colorful feathers.",       emoji: "🦜", category: "noun", animal: true },
+  { word: "duck",       zh: "鸭子",   phon: "/dʌk/",          example: "The duck swims in the pond.",             emoji: "🦆", category: "noun", animal: true },
+  { word: "peacock",    zh: "孔雀",   phon: "/ˈpiːkɒk/",      example: "The peacock has a beautiful tail.",       emoji: "🦚", category: "noun", animal: true },
+  { word: "donkey",     zh: "驴子",   phon: "/ˈdɒŋki/",       example: "The donkey works on the farm.",           emoji: "🫏", category: "noun", animal: true },
+  { word: "camel",      zh: "骆驼",   phon: "/ˈkæml/",        example: "The camel lives in the desert.",          emoji: "🐪", category: "noun", animal: true },
+  { word: "squirrel",   zh: "松鼠",   phon: "/ˈskwɪrəl/",     example: "The squirrel has a big tail.",            emoji: "🐿️", category: "noun", animal: true },
+  { word: "gorilla",    zh: "大猩猩", phon: "/ɡəˈrɪlə/",      example: "The gorilla is very strong.",             emoji: "🦍", category: "noun", animal: true },
+  { word: "rhino",      zh: "犀牛",   phon: "/ˈraɪnəʊ/",      example: "The rhino has a big horn.",               emoji: "🦏", category: "noun", animal: true },
+  { word: "cheetah",    zh: "猎豹",   phon: "/ˈtʃiːtə/",      example: "The cheetah runs very fast.",             emoji: "🐆", category: "noun", animal: true },
+  { word: "horse",      zh: "马",     phon: "/hɔːs/",         example: "The horse runs very fast.",               emoji: "🐴", category: "noun", animal: true },
+
+  /* ---------------- 2. 动作动词 30 个 ---------------- */
+  { word: "eat",        zh: "吃",     phon: "/iːt/",          example: "The panda likes to eat bamboo.",          emoji: "🍽️", category: "verb", actor: "🐼", motion: "eat" },
+  { word: "sleep",      zh: "睡觉",   phon: "/sliːp/",        example: "The cat likes to sleep.",                 emoji: "😴", category: "verb", actor: "🐱", motion: "sleep" },
+  { word: "jump",       zh: "跳",     phon: "/dʒʌmp/",        example: "The kangaroo can jump high.",             emoji: "🦘", category: "verb", actor: "🦘", motion: "jump" },
+  { word: "run",        zh: "跑",     phon: "/rʌn/",          example: "The deer can run fast.",                  emoji: "💨", category: "verb", actor: "🦌", motion: "run" },
+  { word: "swim",       zh: "游泳",   phon: "/swɪm/",         example: "The hippo can swim fast.",                emoji: "🏊", category: "verb", actor: "🦛", motion: "swim" },
+  { word: "climb",      zh: "爬",     phon: "/klaɪm/",        example: "The monkey climbs the tree.",             emoji: "🧗", category: "verb", actor: "🐒", motion: "climb" },
+  { word: "roar",       zh: "吼叫",   phon: "/rɔː(r)/",       example: "The lion roars loudly.",                  emoji: "🔊", category: "verb", actor: "🦁", motion: "roar" },
+  { word: "fly",        zh: "飞",     phon: "/flaɪ/",         example: "The parrot can fly.",                     emoji: "🕊️", category: "verb", actor: "🦜", motion: "fly" },
+  { word: "bark",       zh: "吠叫",   phon: "/bɑːk/",         example: "The dog barks at strangers.",             emoji: "🐕", category: "verb", actor: "🐕", motion: "roar",   assetKey: "action-bark" },
+  { word: "lick",       zh: "舔",     phon: "/lɪk/",          example: "The cat licks its fur.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "sniff",  assetKey: "action-lick" },
+  { word: "hunt",       zh: "捕猎",   phon: "/hʌnt/",         example: "The tiger hunts at night.",               emoji: "🏹", category: "verb", actor: "🐯", motion: "pounce" },
+  { word: "bite",       zh: "咬",     phon: "/baɪt/",         example: "The crocodile can bite hard.",            emoji: "🦷", category: "verb", actor: "🐊", motion: "pounce" },
+  { word: "trot",       zh: "小跑",   phon: "/trɒt/",         example: "The horse trots across the field.",       emoji: "🐴", category: "verb", actor: "🐴", motion: "walk",   assetKey: "action-trot" },
+  { word: "purr",       zh: "呼噜",   phon: "/pɜː(r)/",       example: "The cat purrs happily.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "stand",  assetKey: "action-purr" },
+  { word: "preen",      zh: "理毛",   phon: "/priːn/",        example: "The parrot preens its feathers.",         emoji: "🦜", category: "verb", actor: "🦜", motion: "sniff",  assetKey: "action-preen" },
+  { word: "wag",        zh: "摇尾巴", phon: "/wæɡ/",          example: "The dog wags its tail.",                  emoji: "🐕", category: "verb", actor: "🐕", motion: "sniff",  assetKey: "action-wag" },
+  { word: "graze",      zh: "吃草",   phon: "/ɡreɪz/",        example: "The sheep grazes on the grass.",          emoji: "🐑", category: "verb", actor: "🐑", motion: "drink",  assetKey: "action-graze" },
+  { word: "chase",      zh: "追逐",   phon: "/tʃeɪs/",        example: "The wolf chases the deer.",               emoji: "🏃", category: "verb", actor: "🐺", motion: "run" },
+  { word: "catch",      zh: "抓住",   phon: "/kætʃ/",         example: "The fox catches a rabbit.",               emoji: "🎯", category: "verb", actor: "🦊", motion: "pounce" },
+  { word: "walk",       zh: "走",     phon: "/wɔːk/",         example: "The turtle walks slowly.",                emoji: "🚶", category: "verb", actor: "🐢", motion: "walk" },
+  { word: "snort",      zh: "喷鼻息", phon: "/snɔːt/",        example: "The horse snorts loudly.",                emoji: "🐴", category: "verb", actor: "🐴", motion: "roar",   assetKey: "action-snort" },
+  { word: "drink",      zh: "喝",     phon: "/drɪŋk/",        example: "The hippo drinks water.",                 emoji: "🥤", category: "verb", actor: "🦛", motion: "drink",   assetKey: "action-drink" },
+  { word: "play",       zh: "玩",     phon: "/pleɪ/",         example: "The monkey likes to play.",               emoji: "🎾", category: "verb", actor: "🐒", motion: "dance",   assetKey: "action-play" },
+  { word: "sit",        zh: "坐",     phon: "/sɪt/",          example: "The panda sits on the grass.",            emoji: "🪑", category: "verb", actor: "🐼", motion: "sit",     assetKey: "action-sit" },
+  { word: "stand",      zh: "站",     phon: "/stænd/",        example: "The giraffe stands tall.",                emoji: "🧍", category: "verb", actor: "🦒", motion: "stand",   assetKey: "action-stand" },
+  { word: "fight",      zh: "打架",   phon: "/faɪt/",         example: "The gorillas fight for fun.",             emoji: "🥊", category: "verb", actor: "🦍", motion: "pounce",  assetKey: "action-fight" },
+  { word: "hide",       zh: "躲藏",   phon: "/haɪd/",         example: "The fox hides in the bushes.",            emoji: "🙈", category: "verb", actor: "🦊", motion: "hide",    assetKey: "action-hide" },
+  { word: "nap",        zh: "打盹",   phon: "/næp/",          example: "The cat takes a nap in the sun.",         emoji: "😸", category: "verb", actor: "🐱", motion: "sit",     assetKey: "action-nap" },
+  { word: "sniff",      zh: "闻",     phon: "/snɪf/",         example: "The wolf sniffs the ground.",             emoji: "👃", category: "verb", actor: "🐺", motion: "sniff",   assetKey: "action-sniff" },
+  { word: "bleat",      zh: "咩咩叫", phon: "/bliːt/",        example: "The sheep bleats on the grassland.",      emoji: "🐑", category: "verb", actor: "🐑", motion: "roar",    assetKey: "action-bleat" },
+
+  /* ---------------- 3. 身体部位 20 个 ---------------- */
+  { word: "tail",       zh: "尾巴",   phon: "/teɪl/",         example: "The monkey has a long tail.",             emoji: "🐒", category: "part", owner: "🐒", focus: { x: "20%", y: "10%", scale: 2.6 } },
+  { word: "ear",        zh: "耳朵",   phon: "/ɪə(r)/",        example: "The rabbit has long ears.",               emoji: "👂", category: "part", owner: "🐰", focus: { x: "0%", y: "14%", scale: 2.8 } },
+  { word: "trunk",      zh: "象鼻",   phon: "/trʌŋk/",        example: "The elephant uses its trunk.",            emoji: "🐘", category: "part", owner: "🐘", focus: { x: "8%", y: "-4%", scale: 2.2 } },
+  { word: "mane",       zh: "鬃毛",   phon: "/meɪn/",         example: "The lion has a big mane.",                emoji: "👑", category: "part", owner: "🦁", focus: { x: "-2%", y: "-16%", scale: 2.4 } },
+  { word: "wing",       zh: "翅膀",   phon: "/wɪŋ/",          example: "The duck has two wings.",                 emoji: "🦆", category: "part", owner: "🦆", focus: { x: "-14%", y: "2%", scale: 2.4 } },
+  { word: "paw",        zh: "脚掌",   phon: "/pɔː/",          example: "The bear has a big paw.",                 emoji: "🐾", category: "part", owner: "🐻", focus: { x: "6%", y: "22%", scale: 2.8 } },
+  { word: "stripe",     zh: "条纹",   phon: "/straɪp/",       example: "The zebra has black and white stripes.",  emoji: "🦓", category: "part", owner: "🦓", focus: { x: "0%", y: "0%", scale: 2.2 } },
+  { word: "fur",        zh: "皮毛",   phon: "/fɜː(r)/",       example: "The panda has soft fur.",                 emoji: "🐼", category: "part", owner: "🐼", focus: { x: "0%", y: "0%", scale: 2.4 } },
+  { word: "horn",       zh: "角",     phon: "/hɔːn/",         example: "The rhino has a sharp horn.",             emoji: "🦏", category: "part", owner: "🦏", focus: { x: "10%", y: "-16%", scale: 2.6 } },
+  { word: "tusk",       zh: "象牙",   phon: "/tʌsk/",         example: "The elephant has two long tusks.",        emoji: "🦷", category: "part", owner: "🐘", focus: { x: "-8%", y: "8%", scale: 2.8 } },
+  { word: "claw",       zh: "利爪",   phon: "/klɔː/",         example: "The tiger has sharp claws.",              emoji: "🐾", category: "part", owner: "🐯", focus: { x: "-4%", y: "22%", scale: 2.8 } },
+  { word: "feather",    zh: "羽毛",   phon: "/ˈfeðə(r)/",     example: "The peacock has colorful feathers.",      emoji: "🪶", category: "part", owner: "🦚", focus: { x: "0%", y: "-6%", scale: 2.2 } },
+  { word: "whisker",    zh: "胡须",   phon: "/ˈwɪskə(r)/",    example: "The cat has long whiskers.",              emoji: "🐱", category: "part", owner: "🐱", focus: { x: "0%", y: "6%", scale: 2.8 } },
+  { word: "beak",       zh: "喙",     phon: "/biːk/",         example: "The parrot has a strong beak.",           emoji: "🦜", category: "part", owner: "🦜", focus: { x: "0%", y: "8%", scale: 2.4 } },
+  { word: "hoof",       zh: "蹄",     phon: "/huːf/",         example: "The horse has strong hooves.",            emoji: "🐴", category: "part", owner: "🐴", focus: { x: "0%", y: "22%", scale: 2.8 } },
+  { word: "neck",       zh: "脖子",   phon: "/nek/",          example: "The giraffe has a long neck.",            emoji: "🦒", category: "part", owner: "🦒", focus: { x: "6%", y: "-20%", scale: 2.2 } },
+  { word: "tooth",      zh: "牙齿",   phon: "/tuːθ/",         example: "The crocodile has sharp teeth.",          emoji: "🦷", category: "part", owner: "🐊", focus: { x: "0%", y: "18%", scale: 2.6 } },
+  { word: "tongue",     zh: "舌头",   phon: "/tʌŋ/",          example: "The snake shows its tongue.",             emoji: "👅", category: "part", owner: "🐍", focus: { x: "0%", y: "8%", scale: 2.8 } },
+  { word: "leg",        zh: "腿",     phon: "/leɡ/",          example: "The zebra has four strong legs.",         emoji: "🦵", category: "part", owner: "🦓", focus: { x: "0%", y: "22%", scale: 2.6 } },
+  { word: "belly",      zh: "肚子",   phon: "/ˈbeli/",        example: "The cat has a soft belly.",               emoji: "🐱", category: "part", owner: "🐱", focus: { x: "0%", y: "6%", scale: 2.4 } },
+
+  /* ---------------- 4. 特征形容词 20 个（成对出现） ---------------- */
+  { word: "big",        zh: "大的",   phon: "/bɪɡ/",          example: "The elephant is big.",                    emoji: "🐘", category: "adj",
+    compare: { pair: "small", mode: "size", target: "a", a: { emoji: "🐘", scale: 1.35 }, b: { emoji: "🐭", scale: 0.62 } } },
+  { word: "small",      zh: "小的",   phon: "/smɔːl/",         example: "The mouse is small.",                     emoji: "🐭", category: "adj",
+    compare: { pair: "big", mode: "size", target: "b", a: { emoji: "🐘", scale: 1.35 }, b: { emoji: "🐭", scale: 0.62 } } },
+  { word: "tall",       zh: "高的",   phon: "/tɔːl/",          example: "The giraffe is tall.",                    emoji: "🦒", category: "adj",
+    compare: { pair: "short", mode: "height", target: "a", a: { emoji: "🦒", scale: 1.45 }, b: { emoji: "🐰", scale: 0.72 } } },
+  { word: "short",      zh: "矮的",   phon: "/ʃɔːt/",          example: "The rabbit is short.",                    emoji: "🐰", category: "adj",
+    compare: { pair: "tall", mode: "height", target: "b", a: { emoji: "🦒", scale: 1.45 }, b: { emoji: "🐰", scale: 0.72 } } },
+  { word: "long",       zh: "长的",   phon: "/lɒŋ/",           example: "The snake is long.",                      emoji: "🐍", category: "adj",
+    compare: { pair: "short", mode: "length", target: "a", a: { emoji: "🐍", scale: 1.15 }, b: { emoji: "🐇", scale: 0.92 } } },
+  { word: "fast",       zh: "快的",   phon: "/fɑːst/",         example: "The cheetah runs fast.",                  emoji: "🐆", category: "adj",
+    compare: { pair: "slow", mode: "speed", target: "a", a: { emoji: "🐆", scale: 1 }, b: { emoji: "🐢", scale: 1 } } },
+  { word: "slow",       zh: "慢的",   phon: "/sləʊ/",          example: "The turtle walks slowly.",                emoji: "🐢", category: "adj",
+    compare: { pair: "fast", mode: "speed", target: "b", a: { emoji: "🐆", scale: 1 }, b: { emoji: "🐢", scale: 1 } } },
+  { word: "fat",        zh: "胖的",   phon: "/fæt/",           example: "The pig is fat.",                         emoji: "🐷", category: "adj",
+    compare: { pair: "thin", mode: "size", target: "a", a: { emoji: "🐷", scale: 1.2 }, b: { emoji: "🐒", scale: 0.9 } } },
+  { word: "thin",       zh: "瘦的",   phon: "/θɪn/",           example: "The monkey is thin.",                     emoji: "🐒", category: "adj",
+    compare: { pair: "fat", mode: "size", target: "b", a: { emoji: "🐷", scale: 1.2 }, b: { emoji: "🐒", scale: 0.9 } } },
+  { word: "strong",     zh: "强壮的", phon: "/strɒŋ/",         example: "The gorilla is strong.",                  emoji: "🦍", category: "adj",
+    compare: { pair: "light", mode: "size", target: "a", a: { emoji: "🦍", scale: 1.2 }, b: { emoji: "🐭", scale: 0.7 } } },
+  { word: "quiet",      zh: "安静的", phon: "/ˈkwaɪət/",       example: "The rabbit is quiet.",                    emoji: "🐰", category: "adj",
+    compare: { pair: "noisy", mode: "sound", target: "a", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
+  { word: "noisy",      zh: "吵闹的", phon: "/ˈnɔɪzi/",        example: "The lion is noisy.",                      emoji: "🦁", category: "adj",
+    compare: { pair: "quiet", mode: "sound", target: "b", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
+  { word: "cute",       zh: "可爱的", phon: "/kjuːt/",         example: "The rabbit is very cute.",                emoji: "🐰", category: "adj",
+    compare: { pair: "clean", mode: "look", target: "a", a: { emoji: "🐰", scale: 1 }, b: { emoji: "🐷", scale: 0.95 } } },
+  { word: "clean",      zh: "干净的", phon: "/kliːn/",         example: "The cat is very clean.",                  emoji: "🐱", category: "adj",
+    compare: { pair: "cute", mode: "look", target: "a", a: { emoji: "🐱", scale: 1, badge: "✨" }, b: { emoji: "🐷", scale: 0.95, badge: "💧" } } },
+  { word: "heavy",      zh: "重的",   phon: "/ˈhevi/",         example: "The elephant is heavy.",                  emoji: "🐘", category: "adj",
+    compare: { pair: "light", mode: "weight", target: "a", a: { emoji: "🐘", scale: 1.15 }, b: { emoji: "🪶", scale: 0.9 } } },
+  { word: "light",      zh: "轻的",   phon: "/laɪt/",          example: "The feather is light.",                   emoji: "🪶", category: "adj",
+    compare: { pair: "heavy", mode: "weight", target: "b", a: { emoji: "🐘", scale: 1.15 }, b: { emoji: "🪶", scale: 0.9 } } },
+  { word: "hungry",     zh: "饥饿的", phon: "/ˈhʌŋɡri/",       example: "The wolf is hungry.",                     emoji: "🐺", category: "adj",
+    compare: { pair: "full", mode: "state", target: "a", a: { emoji: "🐺", scale: 1, badge: "🥣" }, b: { emoji: "🐺", scale: 1, badge: "🍗" } } },
+  { word: "full",       zh: "饱的",   phon: "/fʊl/",           example: "The wolf is full.",                       emoji: "🐺", category: "adj",
+    compare: { pair: "hungry", mode: "state", target: "b", a: { emoji: "🐺", scale: 1, badge: "🥣" }, b: { emoji: "🐺", scale: 1, badge: "🍗" } } },
+  { word: "angry",      zh: "愤怒的", phon: "/ˈæŋɡri/",        example: "The monkey looks angry.",                 emoji: "🐵", category: "adj",
+    compare: { pair: "scared", mode: "state", target: "a", a: { emoji: "🐵", scale: 1, badge: "💢" }, b: { emoji: "🐵", scale: 1, badge: "😱" } } },
+  { word: "scared",     zh: "害怕的", phon: "/skeəd/",         example: "The monkey looks scared.",                emoji: "🐵", category: "adj",
+    compare: { pair: "angry", mode: "state", target: "b", a: { emoji: "🐵", scale: 1, badge: "💢" }, b: { emoji: "🐵", scale: 1, badge: "😱" } } },
+];
+
+/* 素材键（assetKey）：题目与图片解耦
+   - 普通词默认用单词本身作为素材键
+   - 成对形容词共用同一个素材键，只通过前端高亮框（target）切换考察对象
+     例如 big / small 共用 "elephant-mouse" 底图，不必重复绘制 */
+const ANIMAL_ADJ_ASSET_KEYS = {
+  big: "elephant-mouse",     small: "elephant-mouse",
+  tall: "giraffe-rabbit",    short: "giraffe-rabbit",
+  long: "snake-rabbit",
+  fast: "cheetah-turtle",    slow: "cheetah-turtle",
+  fat: "pig-monkey",         thin: "pig-monkey",
+  strong: "gorilla-mouse",   light: "gorilla-mouse",
+  quiet: "rabbit-lion",      noisy: "rabbit-lion",
+  cute: "cat-pig",           clean: "cat-pig",
+  heavy: "elephant-feather", light: "elephant-feather",
+  hungry: "wolf-meal",       full: "wolf-meal",
+  angry: "monkey-mood",      scared: "monkey-mood",
+};
+ANIMAL_ZOO_WORDS.forEach((w) => {
+  w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
+});
+
 const ANIMAL_ZOO_VENUES = [
   {
     id: "lion",
     en: "Lion Savannah",
     zh: "狮子草原",
     icon: "🦁",
-    words: [
-      { word: "lion",    zh: "狮子",   phon: "/ˈlaɪən/", example: "The lion is the king.",        emoji: "🦁", category: "noun", animal: true, eats: "meat" },
-      { word: "cub",     zh: "幼崽",   phon: "/kʌb/",    example: "The lion cub plays with its mother.", emoji: "🐾", category: "noun", animal: true, eats: "meat" },
-      { word: "cheetah", zh: "猎豹",   phon: "/ˈtʃiːtə/", example: "The cheetah runs very fast.",  emoji: "🐆", category: "noun", animal: true, eats: "meat" },
-      { word: "mane",    zh: "鬃毛",   phon: "/meɪn/",   example: "The lion has a big mane.",     emoji: "👑", category: "part" },
-      { word: "paw",     zh: "爪子",   phon: "/pɔː/",    example: "The lion has a big paw.",      emoji: "🐾", category: "part" },
-      { word: "roar",    zh: "吼叫",   phon: "/rɔː(r)/", example: "The lion can roar loudly.",    emoji: "🔊", category: "verb" },
-      { word: "chase",   zh: "追逐",   phon: "/tʃeɪs/",  example: "Lions chase their food.",      emoji: "🏃", category: "verb" },
-      { word: "meat",    zh: "肉",     phon: "/miːt/",   example: "The lion eats meat.",          emoji: "🥩", category: "food" },
-      { word: "golden",  zh: "金色的", phon: "/ˈɡəʊldən/", example: "The lion has golden fur.",   emoji: "💛", category: "color" },
-    ],
   },
   {
     id: "monkey",
     en: "Monkey Island",
     zh: "猴子岛",
     icon: "🐒",
-    words: [
-      { word: "monkey",    zh: "猴子",   phon: "/ˈmʌŋki/",   example: "The monkey climbs trees.",     emoji: "🐒", category: "noun", animal: true, eats: "banana" },
-      { word: "gorilla",   zh: "大猩猩", phon: "/ɡəˈrɪlə/",  example: "The gorilla is very strong.",  emoji: "🦍", category: "noun", animal: true, eats: "banana" },
-      { word: "orangutan", zh: "猩猩",   phon: "/ɔːˈræŋuːtæn/", example: "The orangutan lives in the jungle.", emoji: "🦧", category: "noun", animal: true, eats: "banana" },
-      { word: "vine",      zh: "藤蔓",   phon: "/vaɪn/",     example: "Monkeys swing on the vine.",   emoji: "🌿", category: "noun" },
-      { word: "tail",      zh: "尾巴",   phon: "/teɪl/",     example: "The monkey has a long tail.",  emoji: "🐒", category: "part" },
-      { word: "climb",     zh: "爬",     phon: "/klaɪm/",    example: "Monkeys climb trees.",         emoji: "🧗", category: "verb" },
-      { word: "swing",     zh: "荡",     phon: "/swɪŋ/",     example: "Monkeys swing from tree to tree.", emoji: "🎋", category: "verb" },
-      { word: "banana",    zh: "香蕉",   phon: "/bəˈnɑːnə/", example: "Monkeys love bananas.",        emoji: "🍌", category: "food" },
-      { word: "brown",     zh: "棕色",   phon: "/braʊn/",    example: "The monkey has brown fur.",    emoji: "🤎", category: "color" },
-    ],
   },
   {
     id: "plains",
     en: "Giraffe & Zebra Plains",
     zh: "长颈鹿斑马平原",
     icon: "🦒",
-    words: [
-      { word: "giraffe",    zh: "长颈鹿", phon: "/dʒəˈrɑːf/", example: "The giraffe has a long neck.",  emoji: "🦒", category: "noun", animal: true, eats: "acacia" },
-      { word: "zebra",      zh: "斑马",   phon: "/ˈzebrə/",   example: "The zebra has stripes.",        emoji: "🦓", category: "noun", animal: true, eats: "grass" },
-      { word: "wildebeest", zh: "角马",   phon: "/ˈwɪldəbiːst/", example: "The wildebeest runs with the herd.", emoji: "🐂", category: "noun", animal: true, eats: "grass" },
-      { word: "neck",       zh: "脖子",   phon: "/nek/",      example: "The giraffe has a long neck.",  emoji: "📏", category: "part" },
-      { word: "stripe",     zh: "条纹",   phon: "/straɪp/",   example: "The zebra has black and white stripes.", emoji: "🦓", category: "part" },
-      { word: "run",        zh: "跑",     phon: "/rʌn/",      example: "Zebras can run fast.",          emoji: "💨", category: "verb" },
-      { word: "gallop",     zh: "疾驰",   phon: "/ˈɡæləp/",   example: "The zebra can gallop fast.",    emoji: "🐎", category: "verb" },
-      { word: "grass",      zh: "草",     phon: "/ɡrɑːs/",    example: "Zebras eat grass.",             emoji: "🌿", category: "food" },
-      { word: "acacia",     zh: "金合欢叶", phon: "/əˈkeɪʃə/", example: "The giraffe eats acacia leaves.", emoji: "🍃", category: "food" },
-      { word: "yellow",     zh: "黄色",   phon: "/ˈjeləʊ/",   example: "The savanna is yellow in the sun.", emoji: "💛", category: "color" },
-    ],
   },
   {
     id: "elephant",
     en: "Elephant Kingdom",
     zh: "大象王国",
     icon: "🐘",
-    words: [
-      { word: "elephant", zh: "大象", phon: "/ˈelɪfənt/", example: "The elephant has a long trunk.", emoji: "🐘", category: "noun", animal: true, eats: "peanut" },
-      { word: "rhino",    zh: "犀牛", phon: "/ˈraɪnəʊ/",  example: "The rhino has a big horn.",      emoji: "🦏", category: "noun", animal: true, eats: "peanut" },
-      { word: "calf",     zh: "幼象", phon: "/kɑːf/",     example: "The elephant calf stays near its mother.", emoji: "🐘", category: "noun", animal: true, eats: "peanut" },
-      { word: "trunk",    zh: "象鼻", phon: "/trʌŋk/",    example: "The elephant uses its trunk.",   emoji: "🐘", category: "part" },
-      { word: "horn",     zh: "角",   phon: "/hɔːn/",     example: "The rhino has a sharp horn.",    emoji: "🦏", category: "part" },
-      { word: "tusk",     zh: "象牙", phon: "/tʌsk/",     example: "The elephant has two long tusks.", emoji: "🦷", category: "part" },
-      { word: "stomp",    zh: "跺脚", phon: "/stɒmp/",    example: "The elephant stomps on the ground.", emoji: "🦶", category: "verb" },
-      { word: "charge",   zh: "冲锋", phon: "/tʃɑːdʒ/",   example: "The rhino can charge fast.",     emoji: "💨", category: "verb" },
-      { word: "peanut",   zh: "花生", phon: "/ˈpiːnʌt/",  example: "The elephant likes peanuts.",    emoji: "🥜", category: "food" },
-      { word: "grey",     zh: "灰色", phon: "/ɡreɪ/",     example: "The elephant is grey.",          emoji: "⚪", category: "color" },
-    ],
   },
   {
     id: "reptile",
     en: "Reptile Museum",
     zh: "爬行动物馆",
     icon: "🦎",
-    words: [
-      { word: "snake",     zh: "蛇",   phon: "/sneɪk/",      example: "The snake is long.",                 emoji: "🐍", category: "noun", animal: true, eats: "insect" },
-      { word: "crocodile", zh: "鳄鱼", phon: "/ˈkrɒkədaɪl/", example: "The crocodile has sharp teeth.",     emoji: "🐊", category: "noun", animal: true, eats: "fish" },
-      { word: "lizard",    zh: "蜥蜴", phon: "/ˈlɪzəd/",     example: "The lizard sits on a rock.",         emoji: "🦎", category: "noun", animal: true, eats: "insect" },
-      { word: "turtle",    zh: "乌龟", phon: "/ˈtɜːtl/",     example: "The turtle has a hard shell.",       emoji: "🐢", category: "noun", animal: true, eats: "fish" },
-      { word: "scales",    zh: "鳞片", phon: "/skeɪlz/",     example: "Snakes have scales.",                emoji: "🐍", category: "part" },
-      { word: "crawl",     zh: "爬行", phon: "/krɔːl/",      example: "Snakes crawl on the ground.",        emoji: "🐍", category: "verb" },
-      { word: "bite",      zh: "咬",   phon: "/baɪt/",       example: "The crocodile can bite hard.",       emoji: "🦷", category: "verb" },
-      { word: "insect",    zh: "昆虫", phon: "/ˈɪnsekt/",    example: "Lizards eat insects.",               emoji: "🐜", category: "food" },
-      { word: "fish",      zh: "鱼",   phon: "/fɪʃ/",        example: "The crocodile catches a fish.",      emoji: "🐟", category: "food" },
-      { word: "green",     zh: "绿色", phon: "/ɡriːn/",      example: "The lizard is green.",               emoji: "💚", category: "color" },
-    ],
   },
   {
     id: "tiger",
     en: "Tiger Temple",
     zh: "老虎庙",
     icon: "🐯",
-    words: [
-      { word: "tiger", zh: "老虎", phon: "/ˈtaɪɡə(r)/", example: "The tiger has stripes.",        emoji: "🐯", category: "noun", animal: true, eats: "deer" },
-      { word: "wolf",  zh: "狼",   phon: "/wʊlf/",      example: "The wolf lives in the forest.", emoji: "🐺", category: "noun", animal: true, eats: "deer" },
-      { word: "fox",   zh: "狐狸", phon: "/fɒks/",      example: "The fox is clever.",            emoji: "🦊", category: "noun", animal: true, eats: "deer" },
-      { word: "fangs", zh: "獠牙", phon: "/fæŋz/",      example: "Tigers have sharp fangs.",      emoji: "🦷", category: "part" },
-      { word: "claw",  zh: "爪子", phon: "/klɔː/",      example: "The tiger has sharp claws.",    emoji: "🐾", category: "part" },
-      { word: "hunt",  zh: "捕猎", phon: "/hʌnt/",      example: "Tigers hunt at night.",         emoji: "🏹", category: "verb" },
-      { word: "pounce", zh: "猛扑", phon: "/paʊns/",    example: "The tiger pounces on its food.", emoji: "🐯", category: "verb" },
-      { word: "deer",  zh: "鹿",   phon: "/dɪə(r)/",    example: "The tiger hunts deer.",         emoji: "🦌", category: "food" },
-      { word: "orange", zh: "橙色", phon: "/ˈɒrɪndʒ/",  example: "The tiger has orange fur.",     emoji: "🧡", category: "color" },
-    ],
   },
   {
     id: "panda",
     en: "Panda Pavilion",
     zh: "熊猫馆",
     icon: "🐼",
-    words: [
-      { word: "panda",   zh: "熊猫",   phon: "/ˈpændə/",   example: "The panda eats bamboo.",    emoji: "🐼", category: "noun", animal: true, eats: "bamboo" },
-      { word: "keeper",  zh: "饲养员", phon: "/ˈkiːpə(r)/", example: "The panda keeper feeds the panda.", emoji: "👩‍🌾", category: "noun" },
-      { word: "zoo",     zh: "动物园", phon: "/zuː/",      example: "The panda lives in the zoo.", emoji: "🏞️", category: "noun" },
-      { word: "fur",     zh: "毛",     phon: "/fɜː(r)/",   example: "The panda has soft fur.",   emoji: "🐼", category: "part" },
-      { word: "eat",     zh: "吃",     phon: "/iːt/",      example: "The panda eats bamboo.",    emoji: "🍽️", category: "verb" },
-      { word: "chew",    zh: "咀嚼",   phon: "/tʃuː/",     example: "Pandas chew bamboo slowly.", emoji: "🎋", category: "verb" },
-      { word: "bamboo",  zh: "竹子",   phon: "/ˌbæmˈbuː/", example: "Pandas eat bamboo.",        emoji: "🎋", category: "food" },
-      { word: "leaf",    zh: "叶子",   phon: "/liːf/",     example: "The panda eats bamboo leaves.", emoji: "🍃", category: "food" },
-      { word: "black",   zh: "黑色",   phon: "/blæk/",     example: "The panda has black eyes.", emoji: "🖤", category: "color" },
-      { word: "white",   zh: "白色",   phon: "/waɪt/",     example: "The panda has a white body.", emoji: "🤍", category: "color" },
-    ],
   },
   {
     id: "kangaroo",
     en: "Kangaroo Creek",
     zh: "袋鼠溪",
     icon: "🦘",
-    words: [
-      { word: "kangaroo",   zh: "袋鼠",   phon: "/ˌkæŋɡəˈruː/", example: "The kangaroo has a pouch.",           emoji: "🦘", category: "noun", animal: true, eats: "hay" },
-      { word: "koala",      zh: "考拉",   phon: "/kəʊˈɑːlə/",   example: "The koala sleeps all day.",           emoji: "🐨", category: "noun", animal: true, eats: "eucalyptus" },
-      { word: "joey",       zh: "小袋鼠", phon: "/ˈdʒəʊi/",     example: "The joey stays in the pouch.",        emoji: "🦘", category: "noun", animal: true, eats: "hay" },
-      { word: "pouch",      zh: "育儿袋", phon: "/paʊtʃ/",      example: "The baby kangaroo is in the pouch.",  emoji: "🦘", category: "part" },
-      { word: "ear",        zh: "耳朵",   phon: "/ɪə(r)/",      example: "The koala has fluffy ears.",          emoji: "👂", category: "part" },
-      { word: "sleep",      zh: "睡觉",   phon: "/sliːp/",      example: "The koala likes to sleep.",           emoji: "😴", category: "verb" },
-      { word: "hop",        zh: "蹦跳",   phon: "/hɒp/",        example: "Kangaroos hop across the grass.",     emoji: "🦘", category: "verb" },
-      { word: "hay",        zh: "干草",   phon: "/heɪ/",        example: "Kangaroos eat hay.",                  emoji: "🌾", category: "food" },
-      { word: "eucalyptus", zh: "桉树叶", phon: "/ˌjuːkəˈlɪptəs/", example: "Koalas eat eucalyptus leaves.",     emoji: "🌿", category: "food" },
-      { word: "red",        zh: "红色",   phon: "/red/",        example: "The kangaroo is red.",                emoji: "❤️", category: "color" },
-    ],
   },
   {
     id: "bird",
     en: "Bird Aviary",
     zh: "鸟舍",
     icon: "🦜",
-    words: [
-      { word: "peacock",  zh: "孔雀",   phon: "/ˈpiːkɒk/",    example: "The peacock has beautiful feathers.", emoji: "🦚", category: "noun", animal: true, eats: "seed" },
-      { word: "flamingo", zh: "火烈鸟", phon: "/fləˈmɪŋɡəʊ/", example: "The flamingo is pink.",               emoji: "🦩", category: "noun", animal: true, eats: "seed" },
-      { word: "owl",      zh: "猫头鹰", phon: "/aʊl/",        example: "The owl comes out at night.",          emoji: "🦉", category: "noun", animal: true, eats: "seed" },
-      { word: "wing",     zh: "翅膀",   phon: "/wɪŋ/",        example: "Birds have wings.",                    emoji: "🦅", category: "part" },
-      { word: "feather",  zh: "羽毛",   phon: "/ˈfeðə(r)/",   example: "The peacock has colorful feathers.",   emoji: "🪶", category: "part" },
-      { word: "fly",      zh: "飞",     phon: "/flaɪ/",       example: "Birds can fly.",                       emoji: "✈️", category: "verb" },
-      { word: "sing",     zh: "唱歌",   phon: "/sɪŋ/",        example: "Birds sing in the morning.",           emoji: "🎵", category: "verb" },
-      { word: "seed",     zh: "种子",   phon: "/siːd/",       example: "Birds eat seeds.",                     emoji: "🌰", category: "food" },
-      { word: "pink",     zh: "粉色",   phon: "/pɪŋk/",       example: "The flamingo is pink.",                emoji: "🌸", category: "color" },
-    ],
   },
   {
     id: "circus",
     en: "Animal Frolic Circus",
     zh: "动物欢乐马戏团",
     icon: "🎪",
-    words: [
-      { word: "bear",    zh: "熊",   phon: "/beə(r)/",    example: "The bear likes honey.",          emoji: "🐻", category: "noun", animal: true, eats: "honey" },
-      { word: "rabbit",  zh: "兔子", phon: "/ˈræbɪt/",   example: "The rabbit has long ears.",      emoji: "🐰", category: "noun", animal: true, eats: "carrot" },
-      { word: "clown",   zh: "小丑", phon: "/klaʊn/",    example: "The clown dances with the bear.", emoji: "🤡", category: "noun" },
-      { word: "whisker", zh: "胡须", phon: "/ˈwɪskə(r)/", example: "The rabbit has long whiskers.", emoji: "🐰", category: "part" },
-      { word: "jump",    zh: "跳",   phon: "/dʒʌmp/",    example: "Rabbits can jump high.",         emoji: "🦘", category: "verb" },
-      { word: "dance",   zh: "跳舞", phon: "/dɑːns/",    example: "The bear can dance.",            emoji: "💃", category: "verb" },
-      { word: "honey",   zh: "蜂蜜", phon: "/ˈhʌni/",    example: "Bears love honey.",              emoji: "🍯", category: "food" },
-      { word: "carrot",  zh: "胡萝卜", phon: "/ˈkærət/", example: "The rabbit eats a carrot.",      emoji: "🥕", category: "food" },
-      { word: "purple",  zh: "紫色", phon: "/ˈpɜːpl/",   example: "The circus tent has a purple flag.", emoji: "💜", category: "color" },
-    ],
   },
 ];
 
@@ -4011,8 +4329,7 @@ const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_VENUES.flatMap((venue, vi) =>
   })
 );
 
-/* 全场景词池：由 10 个馆的词表自动合并 */
-const ANIMAL_ZOO_WORDS = ANIMAL_ZOO_VENUES.flatMap((venue) => venue.words);
+/* 全场景词池：50 关共用同一套 100 词题库（仅陆地动物园） */
 
 const ANIMAL_SCENES = [
   {
@@ -4028,37 +4345,6 @@ const ANIMAL_SCENES = [
     venues: ANIMAL_ZOO_VENUES,
     levels: ANIMAL_ZOO_LEVELS,
     words: ANIMAL_ZOO_WORDS,
-  },
-  {
-    id: "ocean",
-    name: "海洋公园",
-    image: "./images/background/animal-ocean.webp",
-    description: "鲸鱼、海龟与海洋伙伴",
-    playable: false,
-    words: [
-      { word: "dolphin",    zh: "海豚",   phon: "/ˈdɒlfɪn/",      example: "The dolphin jumps out of the water.", emoji: "🐬" },
-      { word: "whale",      zh: "鲸鱼",   phon: "/weɪl/",         example: "The whale is very big.",           emoji: "🐋" },
-      { word: "shark",      zh: "鲨鱼",   phon: "/ʃɑːk/",         example: "The shark has sharp teeth.",       emoji: "🦈" },
-      { word: "octopus",    zh: "章鱼",   phon: "/ˈɒktəpəs/",     example: "The octopus has eight arms.",      emoji: "🐙" },
-      { word: "turtle",     zh: "海龟",   phon: "/ˈtɜːtl/",       example: "The turtle swims slowly.",         emoji: "🐢" },
-      { word: "seal",       zh: "海豹",   phon: "/siːl/",         example: "The seal claps its flippers.",     emoji: "🦭" },
-      { word: "crab",       zh: "螃蟹",   phon: "/kræb/",         example: "The crab walks sideways.",         emoji: "🦀" },
-      { word: "lobster",    zh: "龙虾",   phon: "/ˈlɒbstə(r)/",   example: "The lobster has two big claws.",   emoji: "🦞" },
-      { word: "jellyfish",  zh: "水母",   phon: "/ˈdʒelifɪʃ/",    example: "The jellyfish is soft.",           emoji: "🪼" },
-      { word: "squid",      zh: "鱿鱼",   phon: "/skwɪd/",        example: "The squid can swim fast.",         emoji: "🦑" },
-      { word: "shrimp",     zh: "虾",     phon: "/ʃrɪmp/",        example: "The shrimp is small.",             emoji: "🦐" },
-      { word: "clownfish",  zh: "小丑鱼", phon: "/ˈklaʊnfɪʃ/",    example: "The clownfish is orange.",         emoji: "🐠" },
-      { word: "pufferfish", zh: "河豚",   phon: "/ˈpʌfəfɪʃ/",     example: "The pufferfish blows up.",         emoji: "🐡" },
-      { word: "oyster",     zh: "牡蛎",   phon: "/ˈɔɪstə(r)/",    example: "There is a pearl in the oyster.",  emoji: "🦪" },
-      { word: "coral",      zh: "珊瑚",   phon: "/ˈkɒrəl/",       example: "The coral is colorful.",           emoji: "🪸" },
-      { word: "shell",      zh: "贝壳",   phon: "/ʃel/",          example: "I found a shell on the beach.",    emoji: "🐚" },
-      { word: "wave",       zh: "海浪",   phon: "/weɪv/",         example: "A big wave comes to the shore.",   emoji: "🌊" },
-      { word: "penguin",    zh: "企鹅",   phon: "/ˈpeŋɡwɪn/",     example: "The penguin cannot fly.",          emoji: "🐧" },
-      { word: "starfish",   zh: "海星",   phon: "/ˈstɑːfɪʃ/",     example: "The starfish has five arms." },
-      { word: "seahorse",   zh: "海马",   phon: "/ˈsiːhɔːs/",     example: "The seahorse is very small." },
-      { word: "seaweed",    zh: "海草",   phon: "/ˈsiːwiːd/",     example: "Seaweed grows in the sea." },
-      { word: "pelican",    zh: "鹈鹕",   phon: "/ˈpelɪkən/",     example: "The pelican has a big beak." },
-    ],
   },
 ];
 
@@ -4125,16 +4411,12 @@ function renderZooRouteSheet(scene, prog) {
   const stars = Object.values(prog.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
   const current = scene.levels[level - 1];
   const venue = current ? current.venue : scene.venues[scene.venues.length - 1];
-  const activeVenue = current ? current.venueIndex : scene.venues.length - 1;
-
-  const venueStrip = scene.venues.map((v, i) => {
-    const st = i < activeVenue ? "done" : i === activeVenue ? "current" : "locked";
-    return `<span class="zoo-venue-dot ${st}" title="${v.zh}"
-      aria-label="${v.zh}${i === activeVenue ? "，当前主题馆" : i < activeVenue ? "，已通过" : "，未解锁"}">${v.icon}</span>`;
-  }).join("");
+  const gateNeed = level % LEVELS_PER_VENUE === 0 && !canEnterLevel(level)
+    ? STAGE_GATE_STARS - stageStarsBefore(level)
+    : 0;
 
   const nodes = scene.levels.map((s) => {
-    const locked = s.level > level;
+    const locked = s.level > level || !canEnterLevel(s.level);
     const done = s.level < level;
     const isCurrent = s.level === level;
     const cls = [
@@ -4157,11 +4439,10 @@ function renderZooRouteSheet(scene, prog) {
       <div class="zoo-route-head">
         <div class="zoo-route-title">
           <strong>🦁 陆地动物园</strong>
-          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${total * 3}</small>
+          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${total * 3}${gateNeed ? ` · 还差 ${gateNeed} ★ 解锁` : ""}</small>
         </div>
         <button type="button" class="zoo-route-close" data-action="close-overlay" aria-label="关闭路线图">×</button>
       </div>
-      <div class="zoo-venue-strip" aria-label="主题馆进度">${venueStrip}</div>
       <div class="zoo-board-frame">
         <div class="zoo-board-viewport">
           <div class="zoo-board-inner">
@@ -4215,28 +4496,17 @@ defineDinoTheme({
    DinoGo · 恐龙英语 — 上学了（占位主题）
    主题名称 + 基础占位配置，具体内容后续开放设计
    ============================================================ */
-defineDinoTheme({
+definePlaceholderTheme({
   id: "school",
   name: "上学了",
   chip: "学科单词",
   unit: "Unit 4 · 上学了",
   emoji: "🎒",
   dialog: { q: "What's this?", a: "It's a {word}." },
-  playable: false,
-  words: [],
-  scenes: [],
-  map: {
-    title: "敬请期待",
-    intro: "「上学了」主题正在筹备中…",
-    sceneSelector: false,
-    render() {
-      return `<div style="text-align:center;padding:2rem 1rem;color:#8C6B3D">
-        <div style="font-size:3rem;margin-bottom:0.75rem">🎒</div>
-        <h3 style="margin:0 0 0.25rem;color:#5C411D">上学了 · 主题筹备中</h3>
-        <p style="font-size:0.8125rem;margin:0;color:#8C6B3D">后续将开放学科单词、课程表与校园场景</p>
-      </div>`;
-    },
-  },
+  mapIntro: "「上学了」主题正在筹备中…",
+  plan: "后续将开放学科单词、课程表与校园场景",
+  color: "#8C6B3D",
+  accent: "#5C411D",
 });
 
 </script>
@@ -4611,9 +4881,9 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
     words: themeWordList(set.words),
     scenes: (set.scenes || []).map((scene) => ({ ...scene, words: themeWordList(scene.words) })),
   }));
-/* 每个主题 10 关；每关 5 题：答对 3 题 1 星、4 题 2 星、5 题 3 星，≥2 星才解锁下一关 */
+/* 每个主题 10 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
 const LEVELS_PER_THEME = 10;
-const PASS_STARS = 2;
+const PASS_STARS = 1;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
 const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
 function currentTheme() {
@@ -5053,6 +5323,12 @@ document.addEventListener("click", (e) => {
     repeatDone();
   } else if (action === "next") {
     nextQuestion();
+  } else if (action === "bonus-start") {
+    bonusStart();
+  } else if (action === "bonus-skip") {
+    bonusSkip();
+  } else if (action === "open-bonus-chest") {
+    openBonusChest();
   } else if (action === "close-quiz") {
     quiz = null;
     const prevTheme = state.theme;
@@ -5185,12 +5461,11 @@ document.addEventListener("click", (e) => {
     quiz.revealed = true;
     quiz.choiceCorrect = true;
     quiz.correct++;
-    quiz.combo++;
     const q = quiz.order[quiz.index];
     quiz.words.push(q.word);
     sfx("correct");
     /* 🦁 动物园：涂鸦板算对 → 尝试清除错题库 */
-    if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+    WrongBank.applyResult(q, true);
     render();
 
   /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
@@ -5209,11 +5484,11 @@ document.addEventListener("click", (e) => {
     quiz.choiceCorrect = ok;
     quiz.selected = ok ? q.word : got;
     if (ok) {
-      quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+      quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true);
     } else {
-      quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
+      quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false);
     }
     render();
 
@@ -5230,10 +5505,10 @@ document.addEventListener("click", (e) => {
     const picked = el.dataset.word;
     const ok = picked === q.word;
     quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId); }
+    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true); }
+    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false); }
     render();
 
   /* 🏃 动作模仿秀 Action Time */
@@ -5243,10 +5518,10 @@ document.addEventListener("click", (e) => {
     const picked = el.dataset.word;
     const ok = picked === q.word;
     quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId); }
+    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true); }
+    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false); }
     render();
 
   } else if (action === "settings") {
@@ -5438,15 +5713,33 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       return raw ? JSON.parse(raw) : {};
     } catch (e) { return {}; }
   }
-  function persist() {
+  /* 写入节流：连续答题时合并成一次 localStorage 写入，避免同步阻塞主线程 */
+  let persistTimer = null;
+  function flush() {
+    if (persistTimer) { clearTimeout(persistTimer); persistTimer = null; }
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bank)); } catch (e) {}
   }
+  function persist() {
+    if (persistTimer) return;
+    persistTimer = setTimeout(flush, 300);
+  }
+  window.addEventListener("pagehide", flush);
 
   /* 对外 API */
   window.WrongBank = {
     /* 为某个场景的单词生成唯一 ID：zoo + lion → "zoo_lion" */
     makeId(sceneId, word) {
       return `${sceneId || ""}_${word || ""}`;
+    },
+
+    /* 统一入口：按题型 task 记录一次答题结果（仅动物园场景生效）
+       所有题型一视同仁：答错必收录，答对累计连续正确次数 */
+    applyResult(task, ok) {
+      if (!task || !task.wrongWordId) return false;
+      if (typeof isZooScene === "function" && !isZooScene()) return false;
+      if (ok) return this.recordCorrect(task.wrongWordId);
+      this.recordWrong(task.wrongWordId);
+      return false;
     },
 
     /* 答错时调用：自动收录 + 错误次数累加 + 打断连续正确 */
@@ -5517,216 +5810,249 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
 </script>
   <script>
 /* ============================================================
-   DynamicEngine · 动物园双层动态出题引擎
-   - 第一层：10 大题型随机抽 5 种不重复题型（按关卡难度分层）
-   - 第二层：五维标签过滤 → 错题加权抽词（WrongBank 协作）
-   - 第 10 关（BOSS 关）特殊规则：80% 从全局错题库抽词
-   - 与现有 _shared.js 的 defaultGames 题型（pic/listen/match/repeat/dialog）保持兼容
+   DynamicEngine · 动物乐园题库引擎（仅陆地动物园，100 词）
+   - 词库四类：核心动物名词 30 / 动作动词 30 / 身体部位 20 / 特征形容词 20
+   - 普通关固定 3 题：1 名词 + 1 动词 + 1 部位/形容词
+   - BOSS 关固定 5 题：3 名词 + 1 动词 + 1 部位/形容词
+   - 每题独立携带 category + assetKey，题型与素材解耦
+   - BOSS 专属规则后续迭代
+   - 错题库加权保留：答错过的词优先复现
    ============================================================ */
 (function () {
   "use strict";
 
-  /* 五维标签：每个词必须打一个 category */
-  const CATEGORIES = ["noun", "part", "verb", "color", "food"];
+  /* 普通关 3 题；BOSS 关 5 题 */
+  const QUIZ_SIZE = 3;
+  const BOSS_QUIZ_SIZE = 5;
+  window.QUIZ_SIZE = QUIZ_SIZE;
+  window.BOSS_QUIZ_SIZE = BOSS_QUIZ_SIZE;
 
-  /* 题型 → 所需词库标签 → 是否记录错题 → 关卡可用区间
-     只保留 6 个已实现奶油卡通风格的题型，其余 4 个（repeat/color_paint/shadow_match/action_time）
-     暂时"建设中"，不在此注册，等后续迭代再补 */
-  const GAME_RULES = [
-    { key: "pic",         label: "看图识词", cats: ["noun", "part", "color"],               recordWrong: true,  levels: [1, 10] },
-    { key: "listen",      label: "听音识词", cats: ["noun", "part", "verb"],                recordWrong: true,  levels: [1, 10] },
-    { key: "match",       label: "单词连线", cats: ["noun", "part", "verb", "color", "food"], recordWrong: false, levels: [1, 10] },
-    { key: "dialog",      label: "情景对话", cats: ["noun"],                                  recordWrong: false, levels: [1, 10], animalOnly: true },
-    { key: "word_puzzle", label: "词汇拼图", cats: ["noun"],                                  recordWrong: true,  levels: [2, 10] },
-    { key: "feed_animal", label: "动物喂食", cats: ["noun"],                                  recordWrong: true,  levels: [2, 10], animalOnly: true },
+  /* 四维词库标签 */
+  const CATEGORIES = ["noun", "verb", "part", "adj"];
+
+  /* 普通关固定配比：1 名词 + 1 动词 + 1 部位/形容词
+     保证每关既有基础认知题，又有互动进阶题 */
+  const NORMAL_MIX = [
+    { role: "noun",      count: 1 },
+    { role: "verb",      count: 1 },
+    { role: "partOrAdj", count: 1 },
   ];
 
-  /* 根据关卡号过滤出可用题型（难度分层） */
-  function availableGames(level) {
-    return GAME_RULES.filter((g) => level >= g.levels[0] && level <= g.levels[1]);
+  /* BOSS 关固定配比：3 名词 + 1 动词 + 1 部位/形容词 */
+  const BOSS_MIX = [
+    { role: "noun",      count: 3 },
+    { role: "verb",      count: 1 },
+    { role: "partOrAdj", count: 1 },
+  ];
+
+
+  /* 题型规则
+     basic    = 保底基础认知题（看图 / 听音 / 拼词）
+     advanced = 互动进阶题（动作 / 局部特写 / 对比观察） */
+  const GAME_RULES = [
+    { key: "pic",         label: "看图选词", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "listen",      label: "听音识图", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "word_puzzle", label: "词汇拼图", group: "basic",    cats: ["noun"], recordWrong: true, maxLetters: 8 },
+    { key: "action",      label: "动作猜猜", group: "advanced", cats: ["verb"], recordWrong: true },
+    { key: "body_zoom",   label: "局部特写", group: "advanced", cats: ["part"], recordWrong: true },
+    { key: "compare",     label: "对比观察", group: "advanced", cats: ["adj"],  recordWrong: true },
+  ];
+  const RULE_BY_KEY = GAME_RULES.reduce((map, rule) => {
+    map[rule.key] = rule;
+    return map;
+  }, {});
+
+  /* 名词题型按阶段递进：前两关只有看图/听音，第 3 关起加入词汇拼图 */
+  function nounTypesForStep(step) {
+    return step >= 3 ? ["pic", "listen", "word_puzzle"] : ["pic", "listen"];
   }
 
-  /* Fisher–Yates 洗牌 */
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  /* 第 5 题在「身体部位」和「形容词」之间按权重抽取：
+     前两关偏局部观察，第 3 关起逐步提高形容词对比题的权重 */
+  function pickPartOrAdjType(step) {
+    const adjWeight = step <= 2 ? 0.3 : 0.5;
+    return Math.random() < adjWeight ? "compare" : "body_zoom";
   }
 
-  /* 从候选集里不重复地随机抽 n 个 */
-  function pickN(candidates, n) {
-    return shuffle(candidates).slice(0, Math.min(n, candidates.length));
+  function wordId(sceneId, word) {
+    return WrongBank.makeId(sceneId, word);
   }
 
-  /* 判断某个词是否满足某个题型的标签要求 */
-  function wordMatchesGame(word, game) {
-    if (game.animalOnly && !word.animal) return false;
-    if (!word.category) {
-      /* 兼容旧词：没有 category 时按 type 字段兜底映射 */
-      if (word.type === "animal" && game.cats.includes("noun")) return true;
-      if (word.type === "body"   && game.cats.includes("part")) return true;
-      if (word.type === "color"  && game.cats.includes("color")) return true;
-      return false;
-    }
-    return game.cats.includes(word.category);
+  /* 单词是否符合某个题型：标签匹配 + 特殊资源（动作 / 部位 / 对比图）齐备 */
+  function fitsRule(w, rule) {
+    if (!w || !rule.cats.includes(w.category)) return false;
+    if (rule.maxLetters && String(w.word).length > rule.maxLetters) return false;
+    if (rule.key === "action" && !w.actor) return false;
+    if (rule.key === "body_zoom" && !w.owner) return false;
+    if (rule.key === "compare" && !w.compare) return false;
+    return true;
   }
 
-  /* 从当前关卡的 stop 词里，过滤出某个题型可用的候选词 */
-  function eligibleWords(stopWords, game, usedWordIds, sceneId) {
-    return stopWords.filter((w) => {
-      const wid = WrongBank.makeId(sceneId, w.word);
-      if (usedWordIds.has(wid)) return false;
-      if (!wordMatchesGame(w, game)) return false;
-      return true;
-    });
+  /* 同类型题型尽量不重复，让一关里题型更丰富 */
+  function pickType(types, usedTypes) {
+    const fresh = shuffle(types).filter((type) => !usedTypes.has(type));
+    return fresh[0] || shuffle(types)[0];
   }
 
-  /* 优先从当前馆取词；馆内词用完后允许本馆重复用词，最后才跨馆兜底 */
-  function pickCandidates(primary, secondary, game, usedWordIds, sceneId) {
-    let list = eligibleWords(primary, game, usedWordIds, sceneId);
-    if (list.length === 0) list = primary.filter((w) => wordMatchesGame(w, game));
-    if (list.length === 0) list = eligibleWords(secondary, game, usedWordIds, sceneId);
-    if (list.length === 0) list = secondary.filter((w) => wordMatchesGame(w, game));
-    return list;
+  /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重 */
+  function makeQuestion(type, pool, sceneId, usedWords, usedTypes) {
+    const rule = RULE_BY_KEY[type];
+    if (!rule) return null;
+
+    let candidates = pool.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+    if (!candidates.length) candidates = pool.filter((w) => fitsRule(w, rule));
+    if (!candidates.length) return null;
+
+    /* 错题库加权抽词：答错过的词优先复现 */
+    const target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+    usedWords.add(target.word);
+    usedTypes.add(type);
+    return { gameType: type, recordWrong: rule.recordWrong, targetWord: target };
   }
 
-  /* 生成标准关卡的 5 道题（双层抽题） */
-  function standardSession(stopWords, sceneWords, sceneId, level) {
-    const gamePool = availableGames(level);
-    const pickedGames = pickN(gamePool, 5);
-
-    const usedWordIds = new Set();
+  /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
+  function buildSession(level, pool, sceneId) {
+    const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
+    const mix = step === LEVELS_PER_VENUE ? BOSS_MIX : NORMAL_MIX;
+    const usedWords = new Set();
+    const usedTypes = new Set();
     const questions = [];
 
-    for (const game of pickedGames) {
-      const candidates = pickCandidates(stopWords, sceneWords, game, usedWordIds, sceneId);
-      if (candidates.length === 0) continue; /* 实在无匹配 → 跳过这个题型（自动降级） */
-
-      /* 第二层：错题加权抽词 */
-      const target = WrongBank.pickWithBias(candidates, (w) => WrongBank.makeId(sceneId, w.word));
-      usedWordIds.add(WrongBank.makeId(sceneId, target.word));
-
-      /* 生成干扰项（从整个场景词库里找同 category 的词） */
-      const distractors = makeDistractors(target, sceneWords, 2, sceneId, usedWordIds);
-
-      questions.push({
-        gameType: game.key,
-        recordWrong: game.recordWrong,
-        targetWord: target,
-        distractors,
-      });
-    }
-
-    /* 兜底：若不够 5 道，补足（优先补现有题型，且仍优先使用本馆词） */
-    while (questions.length < 5) {
-      const fallback = availableGames(level);
-      const fbGame = fallback[Math.floor(Math.random() * fallback.length)];
-      const fbCandidates = pickCandidates(stopWords, sceneWords, fbGame, usedWordIds, sceneId);
-      if (fbCandidates.length === 0) break;
-      const fbTarget = fbCandidates[Math.floor(Math.random() * fbCandidates.length)];
-      usedWordIds.add(WrongBank.makeId(sceneId, fbTarget.word));
-      questions.push({
-        gameType: fbGame.key,
-        recordWrong: fbGame.recordWrong,
-        targetWord: fbTarget,
-        distractors: makeDistractors(fbTarget, sceneWords, 2, sceneId, usedWordIds),
-      });
+    for (const slot of mix) {
+      for (let i = 0; i < slot.count; i++) {
+        let type = "action";
+        if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
+        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
+        if (question) questions.push(question);
+      }
     }
 
     return questions;
   }
 
-  /* 生成 BOSS 关（每馆第 5 关 / 第 50 关总 BOSS）：80% 从错题库抽词
-     语义：错题库词权重 = 普通词权重 × 4（等价于 80% 优先抽错题） */
-  function bossSession(stopWords, sceneWords, sceneId, step) {
-    /* 收集当前词池里在错题库中的词 */
-    const wrongIds = WrongBank.listInScene(sceneId);
-    const wrongWordObjs = sceneWords.filter((w) => wrongIds.includes(WrongBank.makeId(sceneId, w.word)));
-
-    /* 如果错题库不够多（< 3 词），全部走普通逻辑 */
-    if (wrongWordObjs.length < 3) {
-      return standardSession(stopWords, sceneWords, sceneId, step);
-    }
-
-    const gamePool = shuffle(availableGames(step));
-    const usedWordIds = new Set();
-    const questions = [];
-
-    /* BOSS 关 80% 加权：从 candidates 里挑词时，错题库词重复 4 次进候选池 */
-    function weightedPick(candidates) {
-      const weighted = [];
-      for (const c of candidates) {
-        if (WrongBank.isWrongWord(WrongBank.makeId(sceneId, c.word))) {
-          weighted.push(c, c, c, c); /* 权重 4 倍 */
-        } else {
-          weighted.push(c);
-        }
-      }
-      return weighted[Math.floor(Math.random() * weighted.length)];
-    }
-
-    /* 先把错题库词尽可能分配出去（上限 4 题，保 1-2 题普通词） */
-    const wrongPool = shuffle(wrongWordObjs).slice(0, Math.min(4, wrongWordObjs.length));
-    for (const w of wrongPool) {
-      for (const g of gamePool) {
-        if (wordMatchesGame(w, g)) {
-          usedWordIds.add(WrongBank.makeId(sceneId, w.word));
-          questions.push({
-            gameType: g.key, recordWrong: g.recordWrong,
-            targetWord: w,
-            distractors: makeDistractors(w, sceneWords, 2, sceneId, usedWordIds),
-          });
-          gamePool.splice(gamePool.indexOf(g), 1);
-          break;
-        }
-      }
-    }
-
-    /* 剩余的 1-2 题：BOSS 关专用加权抽词（错题库词权重 × 4） */
-    while (questions.length < 5) {
-      const g = gamePool[questions.length % gamePool.length];
-      const candidates = eligibleWords(sceneWords, g, usedWordIds, sceneId);
-      if (candidates.length === 0) continue;
-      const t = weightedPick(candidates);
-      usedWordIds.add(WrongBank.makeId(sceneId, t.word));
-      questions.push({
-        gameType: g.key, recordWrong: g.recordWrong,
-        targetWord: t,
-        distractors: makeDistractors(t, sceneWords, 2, sceneId, usedWordIds),
-      });
-    }
-
-    return questions;
+  /* 把引擎输出转换成现有 quiz.order 兼容的 task 对象 */
+  function toTask(question, allWords, dlg, sceneId) {
+    const w = allWords.find((x) => x.word === question.targetWord.word) || question.targetWord;
+    const task = {
+      type: question.gameType,
+      word: w.word,
+      zh: w.zh || "",
+      emoji: w.emoji || "",
+      art: w.art || (() => UNKNOWN_ART(w.word)),
+      phon: w.phon || "",
+      category: w.category || "",
+      /* 素材键：题目与图片解耦；成对形容词共用同一个 assetKey */
+      assetKey: w.assetKey || w.word,
+      animal: !!w.animal,
+      /* 进阶题型专用数据 */
+      actor: w.actor || "",
+      motion: w.motion || "",
+      owner: w.owner || "",
+      focus: w.focus || null,
+      compare: w.compare || null,
+      dlgQ: dlg.q,
+      dlgA: dlg.a,
+      recordWrong: question.recordWrong,
+      wrongWordId: wordId(sceneId, w.word),
+    };
+    const game = currentTheme().games[question.gameType];
+    if (game && game.build) game.build(task, allWords);
+    return task;
   }
 
-  /* 生成干扰项：从场景词库里抽同 category 的词，最多 2 个 */
-  function makeDistractors(target, sceneWords, count, sceneId, usedWordIds) {
-    const pool = sceneWords.filter((w) => {
-      const wid = WrongBank.makeId(sceneId, w.word);
-      if (wid === WrongBank.makeId(sceneId, target.word)) return false;
-      if (usedWordIds.has(wid)) return false;
-      if (w.category && target.category && w.category !== target.category) return false;
-      return true;
+  /* 兜底补题：只使用本次改造后的 6 个题型，避免抽到待建设题型 */
+  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "action", "body_zoom", "compare"];
+  function fillTasks(tasks, size, allWords, dlg, sceneId) {
+    const usedWords = new Set(tasks.map((task) => task.word));
+    let guard = 0;
+    while (tasks.length < size && guard++ < 20) {
+      const type = IMPLEMENTED_TYPES[Math.floor(Math.random() * IMPLEMENTED_TYPES.length)];
+      const rule = RULE_BY_KEY[type];
+      let candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+      if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
+      if (!candidates.length) break;
+      const w = candidates[Math.floor(Math.random() * candidates.length)];
+      usedWords.add(w.word);
+      tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId));
+    }
+    return tasks;
+  }
+
+  /* 关卡题型表（非动物园主题沿用）：优先取主题配置，缺省回退第 10 关 */
+  function levelPlan(level) {
+    const plans = currentTheme().levelGames || {};
+    return plans[level] || plans[10];
+  }
+
+  function buildTasks(level) {
+    const theme = currentTheme();
+    const pool = themeWords();
+    const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
+
+    /* 🦁 动物园场景：按四类题库 + 关卡模板动态组卷 */
+    if (isZooScene() && window.DynamicEngine) {
+      const sceneId = state.scene || "zoo";
+      const scene = zooScene();
+      const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
+      const size = isAnimalBossLevel(level) ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+
+      const questions = buildSession(level, allSceneWords, sceneId);
+      let tasks = questions
+        .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId));
+
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId).slice(0, size);
+    }
+
+    /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
+    const picks = shuffle(pool);
+    return levelPlan(level).map((type, i) => {
+      const w = picks[i % picks.length];
+      const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
+      const game = theme.games[type];
+      if (game.build) game.build(task, pool);
+      return task;
     });
-    return shuffle(pool).slice(0, count);
   }
 
   window.DynamicEngine = {
     GAME_RULES,
     CATEGORIES,
-    /* level：全局 1~50 关；step：馆内第 1~5 关；isFinal：是否第 50 关总 BOSS */
-    generateSession(sceneWords, stopWords, sceneId, level, step, isFinal) {
-      const localStep = Number(step) || 1;
-      const stopList = stopWords || sceneWords; /* 当前主题馆的词子集 */
-      if (isFinal) return bossSession(stopList, sceneWords, sceneId, localStep);
-      if (Number(level) % LEVELS_PER_VENUE === 0) {
-        /* 馆内 BOSS：错题加权只在当前馆的词池里生效 */
-        return bossSession(stopList, stopList, sceneId, localStep);
-      }
-      return standardSession(stopList, sceneWords, sceneId, localStep);
+    NORMAL_MIX,
+    BOSS_MIX,
+    buildTasks,
+
+    /* 兼容旧调用：level 全局 1~50；pool 为当前场景词池 */
+    generateSession(sceneWords, stopWords, sceneId, level) {
+      const pool = sceneWords && sceneWords.length ? sceneWords : (stopWords || themeWords());
+      return buildSession(level, pool, sceneId || state.scene || "zoo");
+    },
+
+    /* 隐藏题（BOSS 占位关第 6 题）：固定看图选词，答对奖励宝箱，不计入星级 */
+    buildBonusTask() {
+      const scene = zooScene();
+      const words = ((scene && scene.words && scene.words.length) ? scene.words : themeWords())
+        .filter((w) => w.category === "noun");
+      const sceneId = state.scene || "zoo";
+      const game = currentTheme().games.pic && currentTheme().games.pic.render ? currentTheme().games.pic : null;
+      if (!game || !words.length) return null;
+      const target = WrongBank.pickWithBias(words, (w) => wordId(sceneId, w.word));
+      if (!target) return null;
+      const task = {
+        type: "pic",
+        word: target.word,
+        zh: target.zh || "",
+        emoji: target.emoji || "",
+        art: target.art || (() => UNKNOWN_ART(target.word)),
+        phon: target.phon || "",
+        category: target.category || "",
+        recordWrong: false,
+        wrongWordId: wordId(sceneId, target.word),
+        isBonus: true,
+      };
+      if (game.build) game.build(task, words);
+      return task;
     },
   };
 })();
@@ -5738,6 +6064,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
    - 旅程里程碑：按当前主题星数上限三等分（10 关主题 10/20/30，50 关主题 50/100/150）
    - 领取：随机给一个恐龙形态（state.dex 里还没有的 STAGES key）
    - 存档：state.chests = { total: 已开数, unlocked: 额外待开数, claimed: { 进度键: [里程碑星数] } }
+   - 结算与进化见 result.js
    ============================================================ */
 (function () {
   "use strict";
@@ -5841,6 +6168,15 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       return dino;
     },
 
+    /* 隐藏题答对：额外发放 1 个宝箱（BOSS 关第 6 题奖励） */
+    grantBonus() {
+      const s = _state();
+      ensureChests();
+      s.chests.unlocked += 1;
+      save();
+      return 1;
+    },
+
     /* 只读：当前有多少个额外宝箱待开 */
     available() {
       ensureChests();
@@ -5868,14 +6204,262 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
 </script>
   <script>
 /* ============================================================
-   DinoGo · 恐龙英语 — 游戏流程
-   包含公共答题流程、闯关结算和恐龙进化
+   DinoGo · 恐龙英语 — 闯关结算与恐龙进化
+   由 chest.js 拆出：结算页 finishQuiz/screenResult，进化页 beginEvolution/screenEvolution
    ============================================================ */
+(function () {
+  'use strict';
 
-function levelPlan(level) {
-  const plans = currentTheme().levelGames || {};
-  return plans[level] || plans[10];
-}
+  /* ============================================================
+     闯关结算
+     ============================================================ */
+  function finishQuiz() {
+    if (!quiz) return;
+    /* 普通关 3 题：答对 3/2/1 题 → 3/2/1 星，≥1 星过关
+       BOSS 关 5 题：答对 5/4/3 题 → 3/2/1 星，≥4 题过关 */
+    const isBoss = isAnimalBossLevel(quiz.level);
+    const total = isBoss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+    const correct = Math.min(quiz.correct, total);
+    const accuracy = correct / total;
+    const stars = isBoss
+      ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
+      : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
+    const passed = isBoss ? correct >= 4 : correct >= 1;
+    const growthGain = quiz.correct * 24;
+    const prog = themeProgress();
+    const completedLevel = quiz.level;
+    const prevBest = prog.stars[completedLevel] || 0;
+    const best = Math.max(prevBest, stars);
+    /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
+    const starGain = Math.max(0, best - prevBest);
+    const isReplay = completedLevel < prog.level;
+    const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
+    state.growth += growthGain;
+    state.stars += starGain;
+    prog.stars[completedLevel] = best;
+    /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
+    if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
+    state.words += quiz.correct;
+    state.minutes += Math.max(1, Math.round(elapsed / 60));
+    state.threeStars += stars === 3 ? 1 : 0;
+    state.tasks.level = true;
+    recordLevel(stars);
+    const target = stageForGrowth(state.growth);
+    const canEvolve = stageIndex(target.key) > stageIndex(state.stage);
+    lastResult = {
+      level: completedLevel,
+      replay: isReplay,
+      prevBest,
+      best,
+      correct: quiz.correct,
+      total,
+      isBoss,
+      bonus: quiz.bonus,
+      accuracy: Math.round(accuracy * 100),
+      stars,
+      passed,
+      growthGain,
+      starGain,
+      seconds: elapsed,
+      newWords: quiz.correct,
+      canEvolve,
+      targetStage: target.key,
+      wordList: [...new Set(quiz.words)].slice(0, 5),
+    };
+    quiz = null;
+    save();
+    sfx(stars === 3 ? "win" : "coin");
+
+    /* 🔥 总 BOSS 关（第 50 关 动物欢乐马戏团）通关额外奖励 */
+    if (isAnimalFinalBoss(completedLevel) && passed && window.ChestManager) {
+      const bossChests = ChestManager.rewardBossClear();
+      lastResult.bossClear = true;
+      lastResult.bossChests = bossChests;
+      lastResult.allCleared = ChestManager.isAllCleared();
+    }
+
+    go("result", { replace: true });
+  }
+
+  function screenResult() {
+    if (!lastResult) {
+      setTimeout(() => go("home", { replace: true }), 0);
+      return `<section class="screen"></section>`;
+    }
+    const r = lastResult;
+    const st = stageMeta(state.stage);
+    const next = nextStage(st.key);
+    const pending = r.canEvolve && r.targetStage;
+    const target = pending ? stageMeta(r.targetStage) : null;
+    const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+    const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
+    const ss = String(r.seconds % 60).padStart(2, "0");
+    /* 下一关若被阶段门槛挡住（每 5 关需前 4 关累计 8 星），引导回刷本阶段 */
+    const nextLevel = Math.min(themeProgress().level, r.level + 1);
+    const gateBlocked = r.passed && !canEnterLevel(nextLevel);
+    const stageStart = Math.max(1, Math.floor((nextLevel - 1) / STAGE_SIZE) * STAGE_SIZE + 1);
+    const nextBtnLevel = r.passed ? (gateBlocked ? stageStart : nextLevel) : r.level;
+    const starRow = [0, 1, 2].map((i) => star(i === 1 ? 80 : 62, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
+    const confettiPieces = Array.from({ length: 26 }, (_, i) => {
+      const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
+      const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
+      return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
+    }).join("");
+    return `<section class="screen result-page" data-screen="result">
+    <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
+    <div class="confetti">${confettiPieces}</div>
+    <div class="result-scroll">
+      <div class="result-head">
+        ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
+        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
+        <h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
+        ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
+        <div class="result-stars">${starRow}</div>
+        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.isBoss ? `BOSS 关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 继续加油" : r.best === 1 ? "一星通关 · 继续挑战可以拿更多星星" : "还差一点点，重新挑战这一关吧"}</div>
+      </div>
+
+      <div class="result-card">
+        <div class="rc-top">
+          <div class="rc-growth">
+            <div class="g-ic">${I.leaf(28)}</div>
+            <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
+          </div>
+          <div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>
+        </div>
+        <div class="rc-div"></div>
+        <div class="rc-stats">
+          <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
+          <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
+          <div class="rc-stat"><b class="num">${r.newWords}</b><span>答对单词</span></div>
+        </div>
+        <div class="rc-words">
+          <span class="lb">WORDS</span>
+          ${(r.wordList.length ? r.wordList : themeWords().slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
+        </div>
+      </div>
+
+      <section class="grow-card${pending ? " ready" : ""}">
+        <div class="gc-top">
+          <div class="gc-pet">
+            <span class="halo"></span>
+            <div class="dino">${dino(state.stage)}</div>
+            <span class="gc-phase">${pending ? "可进化" : st.phase}</span>
+          </div>
+          <div class="gc-main">
+            <div class="gc-kicker"><span class="lb">EVOLUTION · 进化进度</span><span class="val num">${state.growth}<i> / ${next ? next.min : "MAX"}</i></span></div>
+            <div class="gc-title">${pending ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>` : next ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>` : "已经达到最高形态"}</div>
+            <div class="gc-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
+          </div>
+        </div>
+        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${pending ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化" : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大"}</p></div>
+      </section>
+    </div>
+
+    <div class="result-foot">
+      ${r.bonus && r.bonus.correct ? `<button class="btn ghost" data-action="open-bonus-chest">🎁 打开隐藏宝箱</button>` : ""}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${gateBlocked ? "回刷补星" : r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
+    </div>
+  </section>`;
+  }
+
+  /* ============================================================
+     恐龙进化
+     ============================================================ */
+  function beginEvolution() {
+    const from = stageMeta(state.stage);
+    const to = stageForGrowth(state.growth);
+    if (stageIndex(to.key) <= stageIndex(from.key)) {
+      toast("成长值还不够，再去闯一关吧");
+      go("home", { replace: true });
+      return;
+    }
+    const wasInDex = state.dex.includes(to.key);
+    const newDex = [...new Set([...state.dex, to.key])];
+    state.stage = to.key;
+    state.dex = newDex;
+    let dexReward = null;
+    if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
+      state.bgOwned.push("sunset");
+      dexReward = "落日山谷";
+    }
+    if (state.dex.length >= 6 && !state.bgOwned.includes("night")) {
+      state.bgOwned.push("night");
+      dexReward = "星空营地";
+    }
+    save();
+    evolutionInfo = { from, to, isNew: !wasInDex, dexReward };
+    sfx("evolve");
+    go("evolution");
+  }
+
+  function screenEvolution() {
+    if (!evolutionInfo) {
+      setTimeout(() => go("home", { replace: true }), 0);
+      return `<section class="screen"></section>`;
+    }
+    const info = evolutionInfo;
+    const dots = Array.from({ length: 34 }, (_, i) => {
+      const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
+      return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
+    }).join("");
+    return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
+    <div class="evo-page">
+      <div class="bg"></div><div class="stars">${dots}</div>
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <div class="evo-inner">
+        <div class="evo-top">
+          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / 05</div>
+          <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
+        </div>
+        <div class="evo-title">
+          <div class="en">EVOLUTION COMPLETE</div>
+          <h1>进化<em>成功</em>！</h1>
+          <div class="evo-stage">
+            <span class="st">${info.from.name} · LV.${stageIndex(info.from.key) + 1}</span>
+            <span class="arr">${I.arrow(15, "#F2C860")}</span>
+            <span class="st new">${I.crownMini(13, "#FFD25A")} ${info.to.name} · LV.${stageIndex(info.to.key) + 1}</span>
+          </div>
+        </div>
+        <div class="evo-dino">
+          <div class="glow"></div><div class="halo"></div>
+          <span class="spark" style="left:8%;top:18%">${spark(22, "#FFE08A")}</span>
+          <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
+          <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
+          <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
+          ${dino(info.to.key)}
+        </div>
+        <div class="evo-unlock">
+          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span></div>
+          <div class="u-main">
+            <div class="u-ico">${I.crownMini(30, "#8A5B15")}</div>
+            <div class="u-txt">
+              <b>${info.to.name}</b>
+              <span>${info.to.key === "ultra" ? "已收录进图鉴，4 种机甲形态可以在图鉴里自由切换" : "已收录进图鉴，外形和能力都更强了"}</span>
+            </div>
+            <div style="color:#FFD25A">${I.chevron(12)}</div>
+          </div>
+          <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
+          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
+          <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
+        </div>
+      </div>
+    </div>
+  </section>`;
+  }
+
+  /* 结算 / 进化函数由其他模块按全局名调用，这里统一暴露 */
+  window.finishQuiz = finishQuiz;
+  window.screenResult = screenResult;
+  window.beginEvolution = beginEvolution;
+  window.screenEvolution = screenEvolution;
+})();
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 游戏流程
+   包含公共答题流程
+   ============================================================ */
 
 const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
@@ -5889,121 +6473,20 @@ function artOf(word) {
   return artMap.map.get(word) || (() => UNKNOWN_ART(word));
 }
 
-/* 判断当前是否为动物园场景（启用动态出题引擎） */
-function isZooScene() {
-  return state.theme === "animal" && state.scene === "zoo";
-}
-
-/* 当前动物园场景对象 */
-function zooScene() {
-  return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
-}
-
-/* 关卡对应的主题馆信息：{ level, venue, step, x, y } */
-function zooLevelInfo(level) {
-  const scene = zooScene();
-  return scene && scene.levels ? scene.levels[level - 1] || null : null;
-}
-
-/* 每馆第 5 关为馆内 BOSS，最后一关为总 BOSS */
-function isAnimalBossLevel(level) {
-  return isZooScene() && Number(level) % LEVELS_PER_VENUE === 0;
-}
-function isAnimalFinalBoss(level) {
-  const scene = zooScene();
-  return isZooScene() && !!scene && Number(level) === scene.levelCount;
-}
-
-function buildTasks(level) {
-  const theme = currentTheme();
-  const pool = themeWords();
-  const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
-
-  /* 🦁 动物园场景：双层动态出题引擎（错题库加权 + 10抽5题型） */
-  if (isZooScene() && window.DynamicEngine) {
-    const sceneId = state.scene || "zoo";
-    const scene = zooScene();
-    /* 当前关卡所属主题馆：1~5 关 → 第 1 馆，6~10 关 → 第 2 馆…… */
-    const info = zooLevelInfo(level);
-    /* 整个场景的全量词池（用于生成干扰项 + 降级兜底） */
-    const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-    /* 场馆词取自主题原始配置，没有 art 插画函数；复用场景词里的同一词条补齐，避免 match 等题型渲染报错 */
-    const venueWords = info
-      ? info.venue.words.map((w) => allSceneWords.find((x) => x.word === w.word) || { ...w, art: wordArt(w) })
-      : pool;
-    let questions = DynamicEngine.generateSession(
-      allSceneWords, venueWords, sceneId, level,
-      info ? info.step : level, isAnimalFinalBoss(level)
-    );
-    /* 安全兜底：只保留 defaultGames 里已有 render 的题型（新题型 Week 2+ 才逐个上线） */
-    questions = questions.filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render);
-    /* 不够 5 道就降级：循环用已实现的题型补足 */
-    const implementedTypes = Object.keys(theme.games).filter((k) => theme.games[k].render);
-    while (questions.length < 5 && implementedTypes.length > 0) {
-      const fbType = implementedTypes[Math.floor(Math.random() * implementedTypes.length)];
-      const fbGame = theme.games[fbType];
-      let fbCandidates = venueWords.filter((w) => {
-        const wid = WrongBank.makeId(sceneId, w.word);
-        return !questions.some((q) => WrongBank.makeId(sceneId, q.targetWord.word) === wid);
-      });
-      if (fbCandidates.length === 0) {
-        fbCandidates = allSceneWords.filter((w) => {
-          const wid = WrongBank.makeId(sceneId, w.word);
-          return !questions.some((q) => WrongBank.makeId(sceneId, q.targetWord.word) === wid);
-        });
-      }
-      if (fbCandidates.length === 0) break;
-      const fbTarget = WrongBank.pickWithBias(fbCandidates, (w) => WrongBank.makeId(sceneId, w.word));
-      questions.push({ gameType: fbType, recordWrong: true, targetWord: fbTarget, distractors: [] });
-    }
-    /* 把 DynamicEngine 输出转为现有 quiz.order 兼容的 task 对象 */
-    return questions.slice(0, 5).map((q) => {
-      /* 从全量词池找完整的词对象 */
-      const w = allSceneWords.find((x) => x.word === q.targetWord.word)
-             || pool.find((x) => x.word === q.targetWord.word)
-             || q.targetWord;
-      const task = {
-        type: q.gameType,
-        word: w.word,
-        zh: w.zh || "",
-        emoji: w.emoji || "",
-        art: w.art || (() => UNKNOWN_ART(w.word)),
-        phon: w.phon || "",
-        category: w.category || "",
-        animal: !!w.animal,
-        eats: w.eats || "",
-        dlgQ: dlg.q,
-        dlgA: dlg.a,
-        recordWrong: q.recordWrong,
-        wrongWordId: WrongBank.makeId(sceneId, w.word),
-      };
-      /* 让现有题型的 build 自动填充 options / pairs 等字段（选项只取本馆词） */
-      const game = theme.games[q.gameType];
-      if (game && game.build) game.build(task, venueWords);
-      return task;
-    });
-  }
-
-  /* ✈️🍽️ 旅行 / 美食 / 海洋：原有固定题型顺序逻辑 */
-  const picks = shuffle(pool);
-  return levelPlan(level).map((type, i) => {
-    const w = picks[i % picks.length];
-    const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
-    const game = theme.games[type];
-    if (game.build) game.build(task, pool);
-    return task;
-  });
-}
-
 function startQuiz(level) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
+  /* 阶段门槛：每阶段第 5 关需前 4 关累计 8 星 */
+  if (window.canEnterLevel && !canEnterLevel(lvl)) {
+    toast(`还差 ${STAGE_GATE_STARS - stageStarsBefore(lvl)} 颗星才能进入第 ${lvl} 关`);
+    return;
+  }
   quiz = {
     level: lvl,
     index: 0,
     correct: 0,
     hearts: 3,
-    combo: 0,
     selected: null,
+    bonus: null,
     revealed: false,
     choiceCorrect: null,
     matched: [],
@@ -6012,7 +6495,7 @@ function startQuiz(level) {
     matchWrong: 0,
     startedAt: Date.now(),
     words: [],
-    order: buildTasks(lvl),
+    order: DynamicEngine.buildTasks(lvl),
   };
   lastResult = null;
   levelCue(currentTheme().id);
@@ -6022,7 +6505,7 @@ function startQuiz(level) {
 
 const FX_COLORS = ["#FFC94A", "#FF8A4C", "#5BC178", "#5FBCDA", "#FF6F61", "#B8E05A"];
 /* 答对：全屏庆祝特效 */
-function correctFx(combo) {
+function correctFx() {
   const confetti = Array.from({ length: 18 }, (_, i) => {
     const left = 5 + Math.round(Math.random() * 90);
     const delay = (Math.random() * 0.45).toFixed(2);
@@ -6036,18 +6519,32 @@ function correctFx(combo) {
     <div class="fx-badge">
       <span class="fx-check">${I.check(28)}</span>
       <b>太棒了！</b>
-      <span class="fx-sub">${combo >= 2 ? `连对 ${combo} 题 · 保持节奏！` : "答对啦，继续加油！"}</span>
+      <span class="fx-sub">答对啦，继续加油！</span>
     </div>
   </div>`;
 }
-/* 答错：醒目的正确答案提示（英文 + 中文） */
-function wrongFx(word, zh) {
+/* 答错提示：单词连线只提示继续努力；纯单词选项给出正确答案 + 中文 */
+function wrongFx(word, zh, isMatch, lead) {
+  if (isMatch) {
+    return `<div class="qfx bad-fx" aria-hidden="true">
+    <div class="fx-wrong">
+      <span class="fx-wrong-ic">✕</span>
+      <div class="fx-wrong-txt">
+        <b>答错了</b>
+        <span>继续努力</span>
+      </div>
+    </div>
+  </div>`;
+  }
+  const answer = word
+    ? `<span>正确答案是 ${word}${zh ? `<i class="fx-zh">${zh}</i>` : ""}</span>`
+    : `<span>再试一次</span>`;
   return `<div class="qfx bad-fx" aria-hidden="true">
     <div class="fx-wrong">
       <span class="fx-wrong-ic">✕</span>
       <div class="fx-wrong-txt">
-        <b>${word ? "正确答案是" : "别灰心"}</b>
-        <span>${word || "下一题继续加油"}${word && zh ? `<i class="fx-zh">${zh}</i>` : ""}</span>
+        <b>${lead || "打错了"}</b>
+        ${answer}
       </div>
     </div>
   </div>`;
@@ -6056,6 +6553,13 @@ function wrongFx(word, zh) {
 /* 答完题后统一的手动“下一题”按钮 */
 function quizNextButton() {
   if (!quiz) return "";
+  /* BOSS 关 5 题打完：可选是否挑战隐藏第 6 题 */
+  if (quiz.bonus && quiz.bonus.state === "ask") {
+    return `<div class="bonus-choose">
+      <button class="btn ghost" data-action="bonus-skip">直接结算</button>
+      <button class="btn" data-action="bonus-start">挑战隐藏题 🎁</button>
+    </div>`;
+  }
   const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "查看成绩" : "Next · 下一题";
   return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
@@ -6090,18 +6594,29 @@ function screenQuiz() {
     </button>`;
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
-  const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal"].includes(q.type);
-  let combo;
+  const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare"].includes(q.type);
+  const isMatch = q.type === "match";
+  const isFeed = q.type === "feed_animal";
+  /* 纯单词选项题给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
+  const answerWord = isMatch ? null : (isFeed ? q.correctFood : (q.options && q.word ? q.word : null));
+  const answerZh = isFeed ? q.correctZh : q.zh;
+  let hint;
   if (revealed) {
-    combo = quiz.choiceCorrect
-      ? `太棒了！连对 <b>${quiz.combo}</b> 题`
-      : `答错啦，正确答案是 <b>${q.word}</b>${q.zh ? `<i class="ans-zh">${q.zh}</i>` : ""}`;
-  } else if (quiz.combo >= 2) {
-    combo = `连对 <b>${quiz.combo}</b> 题 · 保持节奏！`;
+    if (q.isBonus) {
+      hint = quiz.choiceCorrect ? "隐藏挑战成功 · 获得 1 个宝箱 🎁" : "隐藏挑战失败 · 下次再来！";
+    } else if (quiz.choiceCorrect) {
+      hint = "太棒了！答对啦";
+    } else if (isMatch) {
+      hint = "答错了，继续努力！";
+    } else if (answerWord) {
+      hint = `${isFeed ? "答错了" : "打错了"}，正确答案是 <b>${answerWord}</b>${answerZh ? `<i class="ans-zh">${answerZh}</i>` : ""}`;
+    } else {
+      hint = "打错了，再试一次！";
+    }
   } else {
-    combo = `连续答对 3 题，可以拿到更多星星`;
+    hint = "选出正确答案，继续前进！";
   }
-  const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null, q.zh)) : "";
+  const fx = revealed ? (quiz.choiceCorrect ? correctFx() : wrongFx(answerWord, answerZh, isMatch, isFeed ? "答错了" : "")) : "";
   const refHead = refType ? `<div class="ref-stage-head">
       <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
       <div><span class="ref-stage-kicker">${isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</span>
@@ -6124,7 +6639,7 @@ function screenQuiz() {
       ${view.body}
     </div>
     <div class="quiz-foot">
-      <div class="combo${revealed ? (quiz.choiceCorrect ? " good" : " bad") : ""}">${revealed ? (quiz.choiceCorrect ? star(15) : I.info(15)) : I.flame(13)} ${combo}</div>
+      <div class="combo${revealed ? (quiz.choiceCorrect ? " good" : " bad") : ""}">${revealed ? (quiz.choiceCorrect ? star(15) : I.info(15)) : I.info(15)} ${hint}</div>
       ${view.btn}
     </div>
   </section>`;
@@ -6186,14 +6701,117 @@ function feedCheck() {
   const ok = quiz.selected === q.correctFood;
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
-    quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-    if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+    quiz.correct++; quiz.words.push(q.word); sfx("correct");
+    WrongBank.applyResult(q, true);
   } else {
-    quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
+    quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+    WrongBank.applyResult(q, false);
   }
   render();
 }
+
+function checkAnswer() {
+  if (!quiz || quiz.revealed || !quiz.selected) return;
+  const q = quiz.order[quiz.index];
+  const ok = quiz.selected === q.word;
+  quiz.revealed = true;
+  quiz.choiceCorrect = ok;
+  /* BOSS 关隐藏题：不计入星级、不扣生命，答对奖励一个宝箱 */
+  if (q.isBonus) {
+    quiz.bonus = { state: "playing", correct: ok };
+    WrongBank.applyResult(q, ok);
+    if (ok) {
+      if (window.ChestManager) ChestManager.grantBonus();
+      sfx("correct");
+    } else {
+      sfx("wrong");
+    }
+    render();
+    return;
+  }
+  if (ok) {
+    quiz.correct++;
+    quiz.words.push(q.word);
+    sfx("correct");
+    /* 🦁 动物园场景：答对 → 尝试清除错题库 */
+    WrongBank.applyResult(q, true);
+  } else {
+    quiz.hearts = Math.max(0, quiz.hearts - 1);
+    sfx("wrong");
+    /* 🦁 动物园场景：答错 → 自动收录错题库 */
+    WrongBank.applyResult(q, false);
+  }
+  render();
+}
+function nextQuestion() {
+  if (!quiz) return;
+  clearTimers();
+  const atEnd = quiz.index >= quiz.order.length - 1;
+  /* BOSS 关 5 题打完且生命未耗尽：先让玩家选择是否挑战隐藏题 */
+  if (atEnd && isAnimalBossLevel(quiz.level) && !quiz.bonus && quiz.hearts > 0) {
+    quiz.bonus = { state: "ask", correct: null };
+    render();
+    return;
+  }
+  if (atEnd || quiz.hearts <= 0) { finishQuiz(); return; }
+  quiz.index++;
+  quiz.selected = null;
+  quiz.revealed = false;
+  quiz.choiceCorrect = null;
+  quiz.matched = [];
+  quiz.pickWord = null;
+  quiz.pickWordSide = null;
+  quiz.matchWrong = 0;
+  render();
+  speakTask();
+}
+
+/* BOSS 关第 6 题：挑战隐藏题（答对奖励宝箱，不计星级） */
+function bonusStart() {
+  if (!quiz || !quiz.bonus || quiz.bonus.state !== "ask") return;
+  const task = window.DynamicEngine ? DynamicEngine.buildBonusTask() : null;
+  if (!task) { bonusSkip(); return; }
+  quiz.order.push(task);
+  quiz.bonus.state = "playing";
+  quiz.index++;
+  quiz.selected = null;
+  quiz.revealed = false;
+  quiz.choiceCorrect = null;
+  quiz.matched = [];
+  quiz.pickWord = null;
+  quiz.pickWordSide = null;
+  quiz.matchWrong = 0;
+  sfx("tap");
+  render();
+  speakTask();
+}
+
+/* 跳过隐藏题，直接结算 */
+function bonusSkip() {
+  if (!quiz) return;
+  if (quiz.bonus) quiz.bonus.state = "skipped";
+  finishQuiz();
+}
+
+/* 打开隐藏挑战奖励的宝箱（额外奖励后续迭代，先走现有恐龙奖励） */
+function openBonusChest() {
+  if (window.ChestManager) {
+    const dino = ChestManager.openOne();
+    if (dino) {
+      toast(`宝箱开出 ${dino.zh || "新恐龙"}！额外奖励即将上线`);
+      render();
+      return;
+    }
+  }
+  toast("宝箱已经打开啦");
+}
+
+</script>
+  <script>
+/* ============================================================
+   DinoGo · 恐龙英语 — 答题页视图层交互
+   由 main.js 拆出：单词连线画线、拖拽手势、渲染后绑定
+   ============================================================ */
 
 /* 六题型的视图层交互，不参与题目生成与判分 */
 window.QuizView = {
@@ -6225,8 +6843,8 @@ window.QuizView = {
     document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
   },
 
-  point(board, el) {
-    const b = board.getBoundingClientRect();
+  point(board, el, boardRect) {
+    const b = boardRect || board.getBoundingClientRect();
     const r = el.getBoundingClientRect();
     return { x: r.left + r.width / 2 - b.left, y: r.top + r.height / 2 - b.top };
   },
@@ -6252,7 +6870,7 @@ window.QuizView = {
       const left = findDot("art", word);
       const right = findDot("word", word);
       if (!left || !right) return;
-      svg.appendChild(this.makeCurvedPath(this.point(area, left), this.point(area, right)));
+      svg.appendChild(this.makeCurvedPath(this.point(area, left, rect), this.point(area, right, rect)));
     });
   },
 
@@ -6466,262 +7084,6 @@ window.QuizView = {
     setTimeout(() => source.removeEventListener("click", stop, true), 350);
   },
 };
-
-function checkAnswer() {
-  if (!quiz || quiz.revealed || !quiz.selected) return;
-  const q = quiz.order[quiz.index];
-  const ok = quiz.selected === q.word;
-  quiz.revealed = true;
-  quiz.choiceCorrect = ok;
-  if (ok) {
-    quiz.correct++;
-    quiz.combo++;
-    quiz.words.push(q.word);
-    sfx("correct");
-    /* 🦁 动物园场景：答对 → 尝试清除错题库 */
-    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
-  } else {
-    quiz.hearts = Math.max(0, quiz.hearts - 1);
-    quiz.combo = 0;
-    sfx("wrong");
-    /* 🦁 动物园场景：答错 → 自动收录错题库 */
-    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
-  }
-  render();
-}
-function nextQuestion() {
-  if (!quiz) return;
-  clearTimers();
-  if (quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0) { finishQuiz(); return; }
-  quiz.index++;
-  quiz.selected = null;
-  quiz.revealed = false;
-  quiz.choiceCorrect = null;
-  quiz.matched = [];
-  quiz.pickWord = null;
-  quiz.pickWordSide = null;
-  quiz.matchWrong = 0;
-  render();
-  speakTask();
-}
-
-function finishQuiz() {
-  if (!quiz) return;
-  const total = quiz.order.length;
-  const accuracy = quiz.correct / total;
-  /* 答对 3 题 1 星、4 题 2 星、5 题 3 星；2 星及以上才解锁下一关 */
-  const stars = quiz.correct >= total ? 3 : quiz.correct >= total - 1 ? 2 : quiz.correct >= total - 2 ? 1 : 0;
-  const passed = stars >= PASS_STARS;
-  const growthGain = quiz.correct * 24;
-  const prog = themeProgress();
-  const completedLevel = quiz.level;
-  const prevBest = prog.stars[completedLevel] || 0;
-  const best = Math.max(prevBest, stars);
-  /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
-  const starGain = Math.max(0, best - prevBest);
-  const isReplay = completedLevel < prog.level;
-  const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
-  state.growth += growthGain;
-  state.stars += starGain;
-  prog.stars[completedLevel] = best;
-  /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
-  if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
-  state.words += quiz.correct;
-  state.minutes += Math.max(1, Math.round(elapsed / 60));
-  state.threeStars += stars === 3 ? 1 : 0;
-  state.tasks.level = true;
-  recordLevel(stars);
-  const target = stageForGrowth(state.growth);
-  const canEvolve = stageIndex(target.key) > stageIndex(state.stage);
-  lastResult = {
-    level: completedLevel,
-    replay: isReplay,
-    prevBest,
-    best,
-    correct: quiz.correct,
-    total,
-    accuracy: Math.round(accuracy * 100),
-    stars,
-    passed,
-    growthGain,
-    starGain,
-    seconds: elapsed,
-    newWords: quiz.correct,
-    canEvolve,
-    targetStage: target.key,
-    wordList: [...new Set(quiz.words)].slice(0, 3),
-  };
-  quiz = null;
-  save();
-  sfx(stars === 3 ? "win" : "coin");
-
-  /* 🔥 总 BOSS 关（第 50 关 动物欢乐马戏团）通关额外奖励 */
-  if (isAnimalFinalBoss(completedLevel) && passed && window.ChestManager) {
-    const bossChests = ChestManager.rewardBossClear();
-    lastResult.bossClear = true;
-    lastResult.bossChests = bossChests;
-    lastResult.allCleared = ChestManager.isAllCleared();
-  }
-
-  go("result", { replace: true });
-}
-
-function screenResult() {
-  if (!lastResult) {
-    setTimeout(() => go("home", { replace: true }), 0);
-    return `<section class="screen"></section>`;
-  }
-  const r = lastResult;
-  const st = stageMeta(state.stage);
-  const next = nextStage(st.key);
-  const pending = r.canEvolve && r.targetStage;
-  const target = pending ? stageMeta(r.targetStage) : null;
-  const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
-  const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
-  const ss = String(r.seconds % 60).padStart(2, "0");
-  const starRow = [0, 1, 2].map((i) => star(i === 1 ? 80 : 62, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
-  const confettiPieces = Array.from({ length: 26 }, (_, i) => {
-    const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
-    const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
-    return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
-  }).join("");
-  return `<section class="screen result-page" data-screen="result">
-    <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
-    <div class="confetti">${confettiPieces}</div>
-    <div class="result-scroll">
-      <div class="result-head">
-        ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
-        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
-        <h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
-        ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
-        <div class="result-stars">${starRow}</div>
-        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 下一关已解锁" : r.best === 1 ? "一星通关 · 拿到两星才能解锁下一关" : "还差一点点，重新挑战这一关吧"}</div>
-      </div>
-
-      <div class="result-card">
-        <div class="rc-top">
-          <div class="rc-growth">
-            <div class="g-ic">${I.leaf(28)}</div>
-            <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
-          </div>
-          <div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>
-        </div>
-        <div class="rc-div"></div>
-        <div class="rc-stats">
-          <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
-          <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
-          <div class="rc-stat"><b class="num">${r.newWords}</b><span>答对单词</span></div>
-        </div>
-        <div class="rc-words">
-          <span class="lb">WORDS</span>
-          ${(r.wordList.length ? r.wordList : themeWords().slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
-        </div>
-      </div>
-
-      <section class="grow-card${pending ? " ready" : ""}">
-        <div class="gc-top">
-          <div class="gc-pet">
-            <span class="halo"></span>
-            <div class="dino">${dino(state.stage)}</div>
-            <span class="gc-phase">${pending ? "可进化" : st.phase}</span>
-          </div>
-          <div class="gc-main">
-            <div class="gc-kicker"><span class="lb">EVOLUTION · 进化进度</span><span class="val num">${state.growth}<i> / ${next ? next.min : "MAX"}</i></span></div>
-            <div class="gc-title">${pending ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>` : next ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>` : "已经达到最高形态"}</div>
-            <div class="gc-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
-          </div>
-        </div>
-        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${pending ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化" : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大"}</p></div>
-      </section>
-    </div>
-
-    <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${r.passed ? Math.min(themeProgress().level, r.level + 1) : r.level}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
-    </div>
-  </section>`;
-}
-
-function beginEvolution() {
-  const from = stageMeta(state.stage);
-  const to = stageForGrowth(state.growth);
-  if (stageIndex(to.key) <= stageIndex(from.key)) {
-    toast("成长值还不够，再去闯一关吧");
-    go("home", { replace: true });
-    return;
-  }
-  const wasInDex = state.dex.includes(to.key);
-  const newDex = [...new Set([...state.dex, to.key])];
-  state.stage = to.key;
-  state.dex = newDex;
-  let dexReward = null;
-  if (state.dex.length >= 4 && !state.bgOwned.includes("sunset")) {
-    state.bgOwned.push("sunset");
-    dexReward = "落日山谷";
-  }
-  if (state.dex.length >= 6 && !state.bgOwned.includes("night")) {
-    state.bgOwned.push("night");
-    dexReward = "星空营地";
-  }
-  save();
-  evolutionInfo = { from, to, isNew: !wasInDex, dexReward };
-  sfx("evolve");
-  go("evolution");
-}
-
-function screenEvolution() {
-  if (!evolutionInfo) {
-    setTimeout(() => go("home", { replace: true }), 0);
-    return `<section class="screen"></section>`;
-  }
-  const info = evolutionInfo;
-  const dots = Array.from({ length: 34 }, (_, i) => {
-    const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
-    return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
-  }).join("");
-  return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
-    <div class="evo-page">
-      <div class="bg"></div><div class="stars">${dots}</div>
-      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-      <div class="evo-inner">
-        <div class="evo-top">
-          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / 05</div>
-          <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
-        </div>
-        <div class="evo-title">
-          <div class="en">EVOLUTION COMPLETE</div>
-          <h1>进化<em>成功</em>！</h1>
-          <div class="evo-stage">
-            <span class="st">${info.from.name} · LV.${stageIndex(info.from.key) + 1}</span>
-            <span class="arr">${I.arrow(15, "#F2C860")}</span>
-            <span class="st new">${I.crownMini(13, "#FFD25A")} ${info.to.name} · LV.${stageIndex(info.to.key) + 1}</span>
-          </div>
-        </div>
-        <div class="evo-dino">
-          <div class="glow"></div><div class="halo"></div>
-          <span class="spark" style="left:8%;top:18%">${spark(22, "#FFE08A")}</span>
-          <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
-          <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
-          <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
-          ${dino(info.to.key)}
-        </div>
-        <div class="evo-unlock">
-          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span></div>
-          <div class="u-main">
-            <div class="u-ico">${I.crownMini(30, "#8A5B15")}</div>
-            <div class="u-txt">
-              <b>${info.to.name}</b>
-              <span>${info.to.key === "ultra" ? "已收录进图鉴，4 种机甲形态可以在图鉴里自由切换" : "已收录进图鉴，外形和能力都更强了"}</span>
-            </div>
-            <div style="color:#FFD25A">${I.chevron(12)}</div>
-          </div>
-          <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
-          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
-          <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
-        </div>
-      </div>
-    </div>
-  </section>`;
-}
 
 </script>
   <script>
@@ -7083,7 +7445,7 @@ function screenMap() {
     <span class="map-tag">${theme.emoji} ${theme.name}</span>
     <div class="caption">
       <b>第 ${level} 关 · ${theme.name}</b>
-      <span>5 道题 · ★×${PASS_STARS} 解锁下一关</span>
+      <span>${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</span>
     </div>
   </section>`;
   /* 占位主题（playable: false + 空词表）不显示"开始闯关"按钮 */
@@ -7092,7 +7454,7 @@ function screenMap() {
     <div class="nc-l">
       <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
       <h3>${theme.name}</h3>
-      <div class="nc-meta">${themeWords().length} 个词 · 5 道题 · ★×${PASS_STARS} 解锁下一关</div>
+      <div class="nc-meta">${themeWords().length} 个词 · ${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</div>
     </div>
     <button class="nc-btn" data-action="start-quiz">开始闯关${I.arrow(14)}</button>
   </section>`;

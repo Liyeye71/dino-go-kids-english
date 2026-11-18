@@ -5,6 +5,54 @@
 (function () {
   "use strict";
 
+  /* ---------------- 关卡 / 场景上下文（供出题、结算、错题库共用） ---------------- */
+  /* 判断当前是否为动物园场景（启用动态出题引擎） */
+  function isZooScene() {
+    return state.theme === "animal" && state.scene === "zoo";
+  }
+
+  /* 当前动物园场景对象 */
+  function zooScene() {
+    return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
+  }
+
+  /* 每馆第 5 关为馆内 BOSS，最后一关为总 BOSS */
+  function isAnimalBossLevel(level) {
+    return isZooScene() && Number(level) % LEVELS_PER_VENUE === 0;
+  }
+  function isAnimalFinalBoss(level) {
+    const scene = zooScene();
+    return isZooScene() && !!scene && Number(level) === scene.levelCount;
+  }
+
+  window.isZooScene = isZooScene;
+  window.zooScene = zooScene;
+  window.isAnimalBossLevel = isAnimalBossLevel;
+  window.isAnimalFinalBoss = isAnimalFinalBoss;
+
+  /* 阶段门槛：每 5 关为一阶段，阶段内第 5 关需前 4 关累计 ≥8 星 */
+  const STAGE_SIZE = 5;
+  const STAGE_GATE_STARS = 8;
+  function stageStarsBefore(level) {
+    const L = Number(level) || 1;
+    const start = Math.floor((L - 1) / STAGE_SIZE) * STAGE_SIZE + 1;
+    const stars = themeProgress().stars || {};
+    let sum = 0;
+    for (let i = start; i < L; i++) sum += Number(stars[i]) || 0;
+    return sum;
+  }
+  function canEnterLevel(level) {
+    const L = Number(level) || 1;
+    if (!isZooScene()) return true;
+    if (L % STAGE_SIZE !== 0) return true;
+    return stageStarsBefore(L) >= STAGE_GATE_STARS;
+  }
+  window.STAGE_SIZE = STAGE_SIZE;
+  window.STAGE_GATE_STARS = STAGE_GATE_STARS;
+  window.stageStarsBefore = stageStarsBefore;
+  window.canEnterLevel = canEnterLevel;
+
+
   function defaultLevelGames() {
     return {
       1: ["pic", "listen", "pic", "listen", "pic"],
@@ -21,9 +69,12 @@
   }
 
   function buildOptions(task, pool, count) {
+    /* 干扰项优先取同类词（名词配名词、动词配动词），避免选项跨类干扰 */
+    const sameCat = pool.filter((x) => x.word !== task.word && x.category && x.category === task.category);
+    const source = sameCat.length >= count - 1 ? sameCat : pool.filter((x) => x.word !== task.word);
     task.options = shuffle([
       task.word,
-      ...shuffle(pool.filter((x) => x.word !== task.word)).slice(0, count - 1).map((x) => x.word),
+      ...shuffle(source).slice(0, count - 1).map((x) => x.word),
     ]);
   }
 
@@ -42,7 +93,7 @@
         title: "看图，选出正确的单词",
         pageClass: "pic-page",
         build(task, pool) {
-          buildOptions(task, pool, 4);
+          buildOptions(task, pool, 3);
         },
         render({ q, choiceButton, options }) {
           return {
@@ -63,7 +114,7 @@
         title: "听单词，选出正确的图片",
         autoSpeak: true,
         build(task, pool) {
-          buildOptions(task, pool, 4);
+          buildOptions(task, pool, 3);
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
@@ -158,10 +209,7 @@
               quiz.choiceCorrect = quiz.matchWrong === 0;
               if (quiz.choiceCorrect) {
                 quiz.correct++;
-                quiz.combo++;
                 q.pairs.forEach((p) => quiz.words.push(p.word));
-              } else {
-                quiz.combo = 0;
               }
               render();
               return;
@@ -172,7 +220,6 @@
             quiz.pickWord = null;
             quiz.pickWordSide = null;
             quiz.hearts = Math.max(0, quiz.hearts - 1);
-            quiz.combo = 0;
             sfx("wrong");
             /* 🦁 动物园：配对失败 → 自动收录错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(wrongPair)) WrongBank.recordWrong(_makeWid(wrongPair));
@@ -182,7 +229,7 @@
               render();
               return;
             }
-            toast("这两张不匹配，再试一次");
+            toast("答错了，继续努力");
           }
           render();
         },
@@ -211,7 +258,6 @@
           quiz.revealed = true;
           quiz.choiceCorrect = true;
           quiz.correct++;
-          quiz.combo++;
           quiz.words.push(q.word);
           sfx("correct");
           /* 🦁 动物园：跟读完成 → 尝试清除错题库 */
@@ -316,7 +362,6 @@
               <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
               ${!revealed ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>` : ""}
-              ${revealed ? `<div class="pz-answer">正确答案：<b>${q.word.toUpperCase()}</b>（${q.zh}）</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
@@ -328,14 +373,14 @@
         build(task, pool) {
           /* 从 pool 里找 3 种不同的食物 emoji 作为选项 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
-          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎" }));
+          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
           if (foods.length < 3) {
             /* 兜底：用不重复的基础食物补足到 3 种 */
             const seen = new Set(foods.map((f) => f.word));
             const fallback = [
-              { word: "meat", emoji: "🥩" },
-              { word: "banana", emoji: "🍌" },
-              { word: "bamboo", emoji: "🎋" },
+              { word: "meat", emoji: "🥩", zh: "肉" },
+              { word: "banana", emoji: "🍌", zh: "香蕉" },
+              { word: "bamboo", emoji: "🎋", zh: "竹子" },
             ];
             for (const f of fallback) {
               if (foods.length >= 3) break;
@@ -351,6 +396,8 @@
           task.correctFood = preferred && task.foods.some((f) => f.word === preferred)
             ? preferred
             : task.foods[0].word;
+          /* 答错提示用：正确食物的中文翻译 */
+          task.correctZh = (task.foods.find((f) => f.word === task.correctFood) || {}).zh || "";
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
@@ -366,10 +413,96 @@
                 <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
               <div class="fd-foods">${foods}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="fd-answer">正确答案是：${q.correctFood.toUpperCase()}</div>` : ""}
             </div>`;
           const btn = revealed ? quizNextButton() : `<button type="button" class="btn" data-action="fd-check" ${quiz.selected ? "" : "disabled"}>喂给它 ${I.arrow(16)}</button>`;
           return { body, btn };
+        },
+      },
+      /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
+      action: {
+        label: "动作猜猜",
+        title: "看动作，选出正确的单词",
+        build(task, pool) {
+          buildOptions(task, pool, 3);
+        },
+        render({ q, quiz, options }) {
+          const motion = q.motion || "run";
+          const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
+            ? `<img class="ref-action-img" src="images/words/${q.assetKey}.png" alt=""
+                 onload="this.parentElement.classList.add('has-art')" onerror="this.remove()">`
+            : "";
+          return {
+            body: `<div class="ref-action-wrap">
+                <div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
+                  <span class="ref-action-sun"></span>
+                  <span class="ref-action-cloud c1"></span>
+                  <span class="ref-action-cloud c2"></span>
+                  <span class="ref-action-ground"></span>
+                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span>${actionArt}</span>
+                  <span class="ref-action-spark s1">✦</span>
+                  <span class="ref-action-spark s2">✦</span>
+                </div>
+                <p class="ref-action-tip">动物在干什么？</p>
+                <div class="options ref-action-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* 🔍 局部特写 Body Zoom（进阶题：放大镜高亮身体部位） */
+      body_zoom: {
+        label: "局部特写",
+        title: "放大看看，这是哪个部位？",
+        build(task, pool) {
+          buildOptions(task, pool, 3);
+        },
+        render({ q, quiz, options }) {
+          const f = q.focus || { x: "0%", y: "0%", scale: 2 };
+          return {
+            body: `<div class="ref-zoom-wrap">
+                <div class="ref-zoom-lens" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
+                  <span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>
+                  <span class="ref-zoom-spot"></span>
+                </div>
+                <span class="ref-zoom-handle" aria-hidden="true"></span>
+                <p class="ref-zoom-tip">这是谁身上的哪个部位？</p>
+                <div class="options ref-zoom-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* ⚖️ 对比观察 Compare（进阶题：同框大小 / 高矮 / 快慢对照） */
+      compare: {
+        label: "对比观察",
+        title: "对比看看，选出正确的单词",
+        build(task, pool) {
+          const adjPool = pool.filter((w) => w.category === "adj");
+          const pair = task.compare && task.compare.pair;
+          const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair)).slice(0, 3 - (pair ? 2 : 1));
+          task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
+        },
+        render({ q, quiz, options }) {
+          const c = q.compare || { a: { emoji: q.emoji || "🐾", scale: 1 }, b: { emoji: "🐾", scale: 1 }, target: "a" };
+          const a = c.a || {};
+          const b = c.b || {};
+          const item = (side, data) => `<div class="ref-cmp-item${c.target === side ? " target" : ""}" style="--s:${data.scale || 1}">
+              <span>${data.emoji || "🐾"}</span>
+              ${data.badge ? `<i class="ref-cmp-badge" aria-hidden="true">${data.badge}</i>` : ""}
+              ${c.target === side ? '<i class="ref-cmp-ring" aria-hidden="true"></i>' : ""}
+            </div>`;
+          return {
+            body: `<div class="ref-cmp-wrap">
+                <div class="ref-cmp-stage mode-${c.mode || "size"}" data-asset-key="${q.assetKey || q.word}" data-target="${c.target || "a"}" aria-hidden="true">
+                  ${item("a", a)}
+                  ${item("b", b)}
+                  <span class="ref-cmp-floor"></span>
+                </div>
+                <p class="ref-cmp-tip">圈出来的动物，用哪个词形容？</p>
+                <div class="options ref-cmp-options">${options(q.options)}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
+          };
         },
       },
       /* 🌑 影子猜猜乐 Shadow Match（Week 5 新增，等 shadow 图资源，先用 emoji 轮廓占位） */
@@ -397,7 +530,6 @@
             <div class="sh-wrap">
               <p class="sh-title">影子里藏着什么动物？</p>
               <div class="sh-options">${optsHtml}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="sh-answer">正确答案：${q.word.toUpperCase()} (${q.zh})</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
@@ -438,13 +570,40 @@
             <div class="at-wrap">
               <p class="at-title">哪个动作对应这个单词？<br><b>${q.word.toUpperCase()}</b> <small>${q.phon || ""}</small></p>
               <div class="at-options">${optsHtml}</div>
-              ${revealed && !quiz.choiceCorrect ? `<div class="at-answer">正确答案：${q.word.toUpperCase()} (${q.zh})</div>` : ""}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
       },
     };
   }
+
+  /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
+  window.definePlaceholderTheme = function definePlaceholderTheme(opts) {
+    const o = opts || {};
+    return window.defineDinoTheme({
+      id: o.id,
+      name: o.name,
+      chip: o.chip,
+      unit: o.unit,
+      emoji: o.emoji,
+      dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
+      playable: false,
+      words: [],
+      scenes: [],
+      map: {
+        title: "敬请期待",
+        intro: o.mapIntro || `「${o.name}」主题正在筹备中…`,
+        sceneSelector: false,
+        render() {
+          return `<div style="text-align:center;padding:2rem 1rem;color:${o.color}">
+        <div style="font-size:3rem;margin-bottom:0.75rem">${o.emoji}</div>
+        <h3 style="margin:0 0 0.25rem;color:${o.accent}">${o.name} · 主题筹备中</h3>
+        <p style="font-size:0.8125rem;margin:0;color:${o.tip || o.color}">${o.plan}</p>
+      </div>`;
+        },
+      },
+    });
+  };
 
   window.defineDinoTheme = function defineDinoTheme(config) {
     const levelGames = defaultLevelGames();

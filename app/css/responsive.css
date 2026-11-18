@@ -43,7 +43,7 @@
 
 /* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
 @media (min-width:640px){
-  .options.pic-grid{grid-template-columns:repeat(4,1fr);grid-template-rows:minmax(0,1fr)}
+  .options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr)}
 }
 
 /* ------------------------------------------------ 矮屏（横屏/小窗口）：压缩答题页留白，把空间让给图片 */

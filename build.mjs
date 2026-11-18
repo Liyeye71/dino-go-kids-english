@@ -6,7 +6,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.join(root, "app");
 const distDir = path.join(root, "dist");
 const iconsDir = path.join(appDir, "data", "images", "icons");
-const themeDir = path.join(appDir, "data", "level", "theme");
+const themeDir = path.join(appDir, "data", "theme");
 
 // 主题加载顺序：新增主题放入该目录后重新构建即可自动加入。
 const themeOrder = ["go.js", "animal.js", "school.js"];
@@ -18,7 +18,7 @@ const themeFiles = fs.readdirSync(themeDir)
   });
 
 // 依次内联拆分后的样式，顺序必须与 index.html 一致（responsive 放最后）
-const CSS_FILES = ["base", "home", "map", "game", "dex", "collect", "overlays", "responsive"];
+const CSS_FILES = ["base", "home", "map", "quiz", "result", "quiz-types", "game", "dex", "collect", "overlays", "responsive"];
 const css = CSS_FILES.map((name) => fs.readFileSync(path.join(appDir, "css", `${name}.css`), "utf8")).join("\n");
 const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
 
@@ -27,13 +27,13 @@ const JS_FILES = [
   "data/words/noun.js", "data/words/verb.js", "data/words/adj.js", "data/words/adv.js",
   "data/words/pron.js", "data/words/prep.js", "data/words/conj.js", "data/words/interj.js", "data/words/num.js",
   "data/words/rule/basic.js", "data/words/rule/advance.js", "data/words/rule/pro.js",
-  "data/level/_shared.js",
-  ...themeFiles.map((f) => `data/level/theme/${f}`),
+  "data/game/shared.js",
+  ...themeFiles.map((f) => `data/theme/${f}`),
   "data/sounds/sfx.js",
   "frame/core/utils.js", "frame/core/visual.js", "frame/core/data.js", "frame/core/words.js",
   "frame/core/state.js", "frame/core/ui.js", "frame/core/events.js", "frame/core/boot.js",
-  "data/game/wrongbank.js", "data/game/dynamic-engine.js", "data/game/chest.js",
-  "data/game/game.js",
+  "data/game/wrongbank.js", "data/game/dynamic-engine.js", "data/game/chest.js", "data/game/result.js",
+  "data/game/main.js", "data/game/quiz-view.js",
   "frame/home.js", "frame/map.js", "frame/dex.js", "frame/collect.js",
 ];
 let inlined = html.replace(/\n\s*<link rel="stylesheet" href="css\/[\w.-]+\.css">/g, "");
@@ -74,11 +74,11 @@ if (fs.existsSync(bgDir)) {
     fs.copyFileSync(path.join(bgDir, file), path.join(distDir, "images", "background", file));
   }
 }
-/* 单词插画：源文件放在 app/data/images/material/words/，缺图的单词回退 emoji */
+/* 单词插画：源文件放在 app/data/images/material/words/，支持 png / webp，缺图回退 emoji */
 const wordImgDir = path.join(appDir, "data", "images", "material", "words");
 if (fs.existsSync(wordImgDir)) {
   fs.mkdirSync(path.join(distDir, "images", "words"), { recursive: true });
-  for (const file of fs.readdirSync(wordImgDir).filter((f) => f.endsWith(".png"))) {
+  for (const file of fs.readdirSync(wordImgDir).filter((f) => /\.(png|webp)$/i.test(f))) {
     fs.copyFileSync(path.join(wordImgDir, file), path.join(distDir, "images", "words", file));
   }
 }

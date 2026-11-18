@@ -1,0 +1,150 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — 答题页：进度 / 题型容器 / 选项 / 动态反馈
+   ============================================================ */
+
+.quiz-page{display:flex;flex-direction:column;height:100%;padding-top:calc(0.5rem + var(--safe-top))}
+.quiz-top{display:flex;align-items:center;gap:0.625rem;padding:0.375rem 1.25rem 0;flex:none}
+.quiz-top .qbar{flex:1;height:0.75rem}
+.quiz-top .qcount{font-size:0.75rem;font-weight:var(--w-black);color:var(--green-d);white-space:nowrap}
+.quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:var(--w-mid)}
+.hearts{display:flex;align-items:center;gap:0.1875rem;flex:none}
+.quiz-body{flex:1;min-height:0;overflow:hidden;padding:0.5rem 1.25rem 0.125rem;display:flex;flex-direction:column;scrollbar-width:none}
+.quiz-prompt{display:flex;flex-direction:column;gap:0.4375rem;margin-top:0.75rem;flex:none}
+.quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:0.3125rem;height:1.375rem;padding:0 0.5rem;border-radius:0.4375rem;
+  background:#E8F5D8;color:var(--green-d);font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
+.quiz-prompt h2{font-size:clamp(1.1875rem,3.2vw,1.4375rem);font-weight:var(--w-black);letter-spacing:-0.025rem}
+.quiz-art{
+  flex:1;min-height:0;max-height:29.375rem;margin-top:0.75rem;border-radius:1.75rem;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,#FFFDF2 0%,#FFF3D6 55%,#FBE8BE 100%);
+  border:0.09375rem solid #F2DFB2;display:grid;place-items:center
+}
+.quiz-art::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(190,150,60,.16) 0.0625rem,transparent 0.0625rem);background-size:1.375rem 1.375rem}
+.quiz-art .blob{position:absolute;width:58%;max-width:15.625rem;aspect-ratio:1;border-radius:48% 52% 55% 45%/50% 46% 54% 50%;
+  background:#FFE6A9;opacity:.55}
+.quiz-art .fruit{position:relative;width:100%;height:100%;max-width:100%;max-height:100%;padding:5% 4%;
+  filter:drop-shadow(0 1rem 1.125rem rgba(160,98,24,.2));animation:pop .45s cubic-bezier(.2,1.4,.4,1) both}
+.quiz-art .art-tag{position:absolute;left:0.875rem;top:0.875rem;font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.08125rem;color:#C49A3E}
+.quiz-art .art-spark{position:absolute;color:#E8C377;opacity:.8}
+.quiz-art .s1{left:2.125rem;top:4.75rem}
+.quiz-art .s2{right:2.375rem;top:7rem}
+.quiz-art .s3{left:3.25rem;bottom:5.5rem}
+.listen{height:2.125rem;padding:0 0.75rem;border-radius:6.1875rem;background:#fff;
+  display:inline-flex;align-items:center;gap:0.3125rem;font-size:0.71875rem;font-weight:var(--w-bold);color:#9B7620;
+  box-shadow:0 0.3125rem 0.75rem rgba(155,118,32,.16)}
+.quiz-art .listen{position:absolute;right:0.875rem;bottom:0.875rem}
+.listen-row{display:flex;justify-content:flex-end;margin-top:0.5rem;flex:none}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex:none;margin-top:0.875rem}
+.option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;gap:0.5625rem;
+  padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}
+.option .key{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:#F3EFE4;display:grid;place-items:center;
+  font-size:0.75rem;font-weight:var(--w-black);color:#A6987B;flex:none;transition:all .15s ease}
+.option .word{font-size:1.125rem;font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2}
+.option .mark{margin-left:auto;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.option .mark.radio{background:#fff;border:0.125rem solid #3AA56B}
+.option .mark.radio i{display:block;width:0.625rem;height:0.625rem;border-radius:50%;background:#3AA56B}
+.option.sel{border-color:#3AA56B;background:#F4FBEC;box-shadow:0 0.25rem 0 #D7EBC4,0 0.5rem 1rem rgba(58,165,107,.12)}
+.option.sel .key{background:#DFF2CC;color:var(--green-d)}
+.option.correct{border-color:#3AA56B;background:#EDF9E1}
+.option.correct .key{background:#3AA56B;color:#fff}
+.option.wrong{border-color:#F07A6A;background:#FFF0EC;animation:shake .4s ease}
+.option.wrong .key{background:#F07A6A;color:#fff}
+.option.dim{opacity:.55}
+/* 听音选图：图片选项 + 听力按钮 + 连线 + 跟读 + 情景对话 */
+.options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);gap:0.5625rem;margin-top:0.75rem;flex:1;min-height:0}
+.option.pic{flex-direction:column;gap:0.125rem;padding:0.375rem;min-height:0;height:100%;position:relative;overflow:hidden}
+.option.pic .key{position:absolute;left:0.5rem;top:0.5rem;width:1.375rem;height:1.375rem;font-size:0.6875rem}
+.option.pic .pic{flex:1;min-height:0;min-width:0;width:100%;display:grid;place-items:center;overflow:hidden}
+.option.pic .pic-word{font-size:0.875rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:-0.0125rem;flex:none}
+.big-speaker{width:clamp(4.5rem,14vh,6rem);height:clamp(4.5rem,14vh,6rem);border-radius:50%;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(160deg,#57BE84,#2E8B57);box-shadow:0 0.625rem 1.25rem rgba(46,139,87,.28);position:relative}
+.big-speaker:active{transform:scale(.95)}
+.quiz-art .listen-tip{position:absolute;left:0;right:0;bottom:1rem;text-align:center;font-size:0.71875rem;font-weight:var(--w-bold);color:#A89A7E}
+/* 听音选图：把空间让给 2×2 图片卡，喇叭区固定为小高度 */
+.quiz-art.listen-art{flex:0 0 auto;height:clamp(9.125rem,24vh,13.5rem);max-height:13.5rem;margin-top:0.625rem;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.375rem;padding:0.5rem 0}
+.quiz-art.listen-art .big-speaker{width:clamp(4rem,12vh,5.25rem);height:clamp(4rem,12vh,5.25rem);flex:none}
+.quiz-art.listen-art .listen-tip{position:static;bottom:auto;flex:none}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);gap:0.75rem;margin-top:0.875rem;flex:1;min-height:0}
+.match-col{display:flex;flex-direction:column;gap:0.5625rem;min-height:0}
+.mcard{border-radius:1rem;background:#fff;border:0.125rem solid #EFE2CB;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;
+  font-size:1.03125rem;font-weight:var(--w-bold);color:#4B443A;padding:0.375rem;transition:transform .12s ease;overflow:hidden}
+.mcard:active{transform:scale(.97)}
+.mcard.sel{border-color:#3AA56B;box-shadow:0 0 0 0.1875rem rgba(58,165,107,.16)}
+.mcard.ok{border-color:#B9DDA1;background:#EFF8E4;opacity:.7}
+.repeat-word{margin-top:0.75rem;text-align:center;display:flex;flex-direction:column;gap:0.1875rem}
+.repeat-word b{font-size:1.75rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:-0.025rem}
+.repeat-word span{font-size:0.8125rem;font-weight:var(--w-mid);color:#A89A7E}
+.repeat-word i{font-size:0.6875rem;font-style:normal;font-weight:var(--w-mid);color:#B3A588;margin-top:0.125rem}
+.dialog-card{display:flex;flex-direction:column;gap:0.5625rem;margin-top:0.875rem}
+.dlg{display:flex;gap:0.5625rem;align-items:center;background:#fff;border:0.125rem solid #EFE2CB;border-radius:1.125rem;padding:0.6875rem 0.8125rem}
+.dlg.me{background:#F5FBEA;border-color:#DDEECB}
+.dlg .who{width:1.5rem;height:1.5rem;border-radius:50%;flex:none;display:grid;place-items:center;font-size:0.75rem;font-weight:var(--w-black);
+  color:#fff;background:#C9B58C}
+.dlg.me .who{background:var(--green)}
+.dlg p{font-size:0.9375rem;font-weight:var(--w-bold);color:#4B443A;line-height:1.45}
+.dlg .blank{color:var(--green-d);border-bottom:0.125rem dashed #9ACB7D;padding:0 0.125rem}
+.dlg-pic{width:3.5rem;height:3.5rem;flex:none;margin-left:auto;display:grid;place-items:center}
+.dlg-pic svg{width:100%;height:100%}
+.options.one-col{grid-template-columns:1fr;grid-auto-rows:minmax(0,1fr);gap:0.5rem;margin-top:0.625rem;flex:1;min-height:0}
+.options.one-col .option{min-height:0;padding:0 0.75rem}
+.options.one-col .option .word{font-size:1.125rem}
+.quiz-foot{flex:none;padding:0.625rem 1.25rem calc(1.125rem + var(--safe-bottom));display:flex;flex-direction:column;gap:0.625rem;background:var(--cream)}
+.combo{min-height:2.75rem;border-radius:0.9375rem;display:flex;align-items:center;justify-content:center;gap:0.375rem;
+  background:linear-gradient(90deg,#FFF0C9,#FFE4A6);border:0.09375rem solid #F5D48B;
+  font-size:0.8125rem;font-weight:var(--w-bold);color:#95691A;padding:0.4375rem 0.75rem;text-align:center;transition:background .2s ease}
+.combo b{color:#7C5209}
+.combo .ans-zh{font-style:normal;font-weight:var(--w-bold);font-size:0.875rem;color:inherit;opacity:.8;margin-left:0.1875rem}
+.combo.good{background:linear-gradient(90deg,#EAF9D8,#D6F1BF);border-color:#B9DDA1;color:#2E7A4C}
+.combo.good b{color:#1E6B47}
+.combo.bad{background:#FFF1ED;border-color:#F5BCAF;color:#B0553F}
+.combo.bad b{color:#C04532}
+
+/* ------------------------------------------------ 答题动态反馈 */
+.qfx{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.ok-fx::before{content:"";position:absolute;left:50%;top:40%;width:min(80vw,23.75rem);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,210,90,.5) 0%,rgba(255,210,90,0) 66%);
+  transform:translate(-50%,-50%);animation:fxGlow .95s ease both}
+.fx-confetti{position:absolute;inset:0}
+.fx-confetti i{position:absolute;top:-8%;display:block;animation:fxFall linear both}
+.fx-badge{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;padding:1.125rem 1.875rem 1rem;border-radius:1.625rem;
+  background:linear-gradient(160deg,#FFFDF4,#FFF0C4);border:0.125rem solid #FFDE8E;
+  box-shadow:0 1.125rem 2.5rem rgba(120,80,10,.22),0 0 0 0.625rem rgba(255,214,102,.16);
+  animation:fxPop .45s cubic-bezier(.2,1.5,.4,1) both,fxOut .3s 1.45s ease both}
+.fx-badge .fx-check{width:3.25rem;height:3.25rem;border-radius:50%;margin-bottom:0.4375rem;display:grid;place-items:center;
+  background:linear-gradient(180deg,#5BC178,#2E8B57);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.3)}
+.fx-badge b{font-size:1.5rem;font-weight:var(--w-black);color:#7C5209;letter-spacing:0.0625rem;line-height:1.15}
+.fx-badge .fx-sub{font-size:0.75rem;font-weight:var(--w-bold);color:#A9852C;margin-top:0.1875rem;white-space:nowrap}
+
+.bad-fx .fx-wrong{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:0.6875rem;padding:0.75rem 1.125rem;border-radius:1.25rem;
+  background:#FFF7F3;border:0.125rem solid #F5B6A8;box-shadow:0 1rem 2.125rem rgba(150,50,30,.18);
+  animation:fxPop .4s cubic-bezier(.2,1.4,.4,1) both,fxOut .3s 1.5s ease both}
+.fx-wrong-ic{width:2.25rem;height:2.25rem;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:#F07A6A;color:#fff;font-size:1.125rem;font-weight:var(--w-black);box-shadow:0 0.25rem 0.625rem rgba(200,70,50,.25)}
+.fx-wrong-txt b{display:block;font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.075rem;color:#B0654F}
+.fx-wrong-txt span{display:block;font-size:1.5625rem;font-weight:var(--w-black);color:#C04532;line-height:1.15;
+  letter-spacing:-0.01875rem;margin-top:0.0625rem;max-width:min(58vw,20rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fx-wrong-txt .fx-zh{font-style:normal;font-size:0.5625em;font-weight:900;color:#B0654F;margin-left:0.375rem}
+
+@keyframes fxPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes fxOut{to{opacity:0;transform:translate(-50%,-50%) scale(.94)}}
+@keyframes fxFall{
+  0%{opacity:0;transform:translateY(-1.25rem) rotate(0)}
+  10%{opacity:1}
+  100%{opacity:.8;transform:translateY(108vh) rotate(560deg)}
+}
+@keyframes fxGlow{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
+  45%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}
+}
+
+/* BOSS 关隐藏题：直接结算 / 挑战隐藏题 二选一 */
+.bonus-choose{display:flex;align-items:center;gap:0.5rem;width:100%}
+.bonus-choose .btn{flex:1 1 0;padding-left:0.5rem;padding-right:0.5rem;font-size:0.875rem}

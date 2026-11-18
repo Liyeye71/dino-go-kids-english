@@ -3,6 +3,7 @@
    - 旅程里程碑：按当前主题星数上限三等分（10 关主题 10/20/30，50 关主题 50/100/150）
    - 领取：随机给一个恐龙形态（state.dex 里还没有的 STAGES key）
    - 存档：state.chests = { total: 已开数, unlocked: 额外待开数, claimed: { 进度键: [里程碑星数] } }
+   - 结算与进化见 result.js
    ============================================================ */
 (function () {
   "use strict";
@@ -104,6 +105,15 @@
       s.chests.total += 1;
       save();
       return dino;
+    },
+
+    /* 隐藏题答对：额外发放 1 个宝箱（BOSS 关第 6 题奖励） */
+    grantBonus() {
+      const s = _state();
+      ensureChests();
+      s.chests.unlocked += 1;
+      save();
+      return 1;
     },
 
     /* 只读：当前有多少个额外宝箱待开 */

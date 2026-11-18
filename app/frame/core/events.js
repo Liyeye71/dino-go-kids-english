@@ -113,6 +113,12 @@ document.addEventListener("click", (e) => {
     repeatDone();
   } else if (action === "next") {
     nextQuestion();
+  } else if (action === "bonus-start") {
+    bonusStart();
+  } else if (action === "bonus-skip") {
+    bonusSkip();
+  } else if (action === "open-bonus-chest") {
+    openBonusChest();
   } else if (action === "close-quiz") {
     quiz = null;
     const prevTheme = state.theme;
@@ -245,12 +251,11 @@ document.addEventListener("click", (e) => {
     quiz.revealed = true;
     quiz.choiceCorrect = true;
     quiz.correct++;
-    quiz.combo++;
     const q = quiz.order[quiz.index];
     quiz.words.push(q.word);
     sfx("correct");
     /* 🦁 动物园：涂鸦板算对 → 尝试清除错题库 */
-    if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+    WrongBank.applyResult(q, true);
     render();
 
   /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
@@ -269,11 +274,11 @@ document.addEventListener("click", (e) => {
     quiz.choiceCorrect = ok;
     quiz.selected = ok ? q.word : got;
     if (ok) {
-      quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+      quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true);
     } else {
-      quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
+      quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false);
     }
     render();
 
@@ -290,10 +295,10 @@ document.addEventListener("click", (e) => {
     const picked = el.dataset.word;
     const ok = picked === q.word;
     quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId); }
+    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true); }
+    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false); }
     render();
 
   /* 🏃 动作模仿秀 Action Time */
@@ -303,10 +308,10 @@ document.addEventListener("click", (e) => {
     const picked = el.dataset.word;
     const ok = picked === q.word;
     quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId); }
+    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      WrongBank.applyResult(q, true); }
+    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      WrongBank.applyResult(q, false); }
     render();
 
   } else if (action === "settings") {
