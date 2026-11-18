@@ -34,6 +34,51 @@ const I = {
   volume: (s = 20, c = "currentColor") => `<svg width="${sz(s)}" height="${sz(s)}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h4L14 5v14l-6-4.5H4z"/><path d="M17 9a4 4 0 0 1 0 6"/></svg>`,
 };
 
+/* ------------------------------------------------ quiz UI art */
+/* 答题页通用奶油卡通素材；题目单词图仍由 wordArt/artOf 提供 */
+const QuizUiArt = {
+  speaker() {
+    return `<svg class="ref-toast-art" viewBox="0 0 180 150" aria-hidden="true">
+      <path d="M38 58Q22 28 52 21Q90 7 128 21Q158 28 142 58V128Q142 139 131 139H49Q38 139 38 128Z" fill="#F6C878" stroke="#5C411D" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M49 61Q38 39 60 33Q90 22 120 33Q142 39 131 61V119Q131 127 123 127H57Q49 127 49 119Z" fill="#FFF0C9"/>
+      <path d="M64 69H78L99 53V102L78 85H64Z" fill="#68BE83" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M110 66Q123 77 110 89M121 55Q145 77 121 100" fill="none" stroke="#5C411D" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="67" cy="116" r="4" fill="#E59B56"/><circle cx="113" cy="116" r="4" fill="#E59B56"/>
+    </svg>`;
+  },
+  child(kind = "boy") {
+    const girl = kind === "girl";
+    const hair = girl ? "#633F2C" : "#7A4A2B";
+    const shirt = girl ? "#F49AB2" : "#75B9E8";
+    return `<svg class="ref-child-art" viewBox="0 0 120 150" aria-hidden="true">
+      ${girl ? `<path d="M25 66Q15 22 60 15Q105 22 95 70L91 105H29Z" fill="${hair}" stroke="#5C411D" stroke-width="5"/>` : ""}
+      <path d="M30 137Q31 102 60 101Q89 102 90 137Z" fill="${shirt}" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M42 104V94H78V104" fill="#FFD8B5" stroke="#5C411D" stroke-width="5"/>
+      <ellipse cx="60" cy="62" rx="36" ry="40" fill="#FFD8B5" stroke="#5C411D" stroke-width="5"/>
+      <path d="M25 57Q20 23 58 18Q93 18 97 50Q79 48 65 31Q54 48 25 57Z" fill="${hair}" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      ${girl ? `<path d="M31 47Q19 69 29 91M91 46Q103 69 92 93" fill="none" stroke="${hair}" stroke-width="12" stroke-linecap="round"/>` : ""}
+      <circle cx="46" cy="63" r="4" fill="#5C411D"/><circle cx="75" cy="63" r="4" fill="#5C411D"/>
+      <circle cx="37" cy="75" r="6" fill="#F5A2A0" opacity=".65"/><circle cx="84" cy="75" r="6" fill="#F5A2A0" opacity=".65"/>
+      <path class="ref-child-mouth" d="M50 80Q60 90 71 80" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+      <path d="M44 120L60 132L76 120" fill="none" stroke="#FFF8E7" stroke-width="5" stroke-linecap="round"/>
+    </svg>`;
+  },
+  scene() {
+    return `<svg class="ref-scene-svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="#FFFFFF" opacity=".72">
+        <path d="M24 67Q25 52 42 53Q47 33 67 39Q82 38 87 54Q105 53 106 68Z"/>
+        <path d="M292 105Q293 92 307 92Q312 76 328 81Q342 80 346 94Q362 93 363 106Z"/>
+      </g>
+      <g fill="#F4C95D" opacity=".65">
+        <path d="M349 34L354 45L366 47L357 56L359 68L349 62L338 68L340 56L331 47L344 45Z"/>
+        <path d="M54 143L58 151L67 153L60 159L61 168L54 164L46 168L47 159L40 153L49 151Z"/>
+      </g>
+      <path d="M0 278Q45 253 92 276T187 274T286 277T400 266V300H0Z" fill="#BBD98B" opacity=".42"/>
+      <path d="M0 291Q60 273 120 290T244 288T400 282V300H0Z" fill="#91C875" opacity=".36"/>
+    </svg>`;
+  },
+};
+
 /* ------------------------------------------------ dino art */
 /* 蜡笔手绘霸王龙：一张位图对应一个成长阶段，坐标系 0 0 768 768，脚底在 y=730 */
 const DINO_ART = {

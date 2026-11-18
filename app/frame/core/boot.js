@@ -8,6 +8,7 @@ let SCREEN_FN = {};
 function render() {
   const fn = SCREEN_FN[current] || screenHome;
   $("#view").innerHTML = fn();
+  if (window.QuizView) QuizView.afterRender();
   if (current === "home") fitHomeWord();
 }
 

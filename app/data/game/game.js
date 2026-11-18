@@ -56,9 +56,12 @@ function buildTasks(level) {
     const scene = zooScene();
     /* 当前关卡所属主题馆：1~5 关 → 第 1 馆，6~10 关 → 第 2 馆…… */
     const info = zooLevelInfo(level);
-    const venueWords = info ? info.venue.words : pool;
     /* 整个场景的全量词池（用于生成干扰项 + 降级兜底） */
     const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
+    /* 场馆词取自主题原始配置，没有 art 插画函数；复用场景词里的同一词条补齐，避免 match 等题型渲染报错 */
+    const venueWords = info
+      ? info.venue.words.map((w) => allSceneWords.find((x) => x.word === w.word) || { ...w, art: wordArt(w) })
+      : pool;
     let questions = DynamicEngine.generateSession(
       allSceneWords, venueWords, sceneId, level,
       info ? info.step : level, isAnimalFinalBoss(level)
@@ -136,6 +139,7 @@ function startQuiz(level) {
     choiceCorrect: null,
     matched: [],
     pickWord: null,
+    pickWordSide: null,
     matchWrong: 0,
     startedAt: Date.now(),
     words: [],
@@ -217,6 +221,7 @@ function screenQuiz() {
     </button>`;
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
+  const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal"].includes(q.type);
   let combo;
   if (revealed) {
     combo = quiz.choiceCorrect
@@ -228,19 +233,25 @@ function screenQuiz() {
     combo = `连续答对 3 题，可以拿到更多星星`;
   }
   const fx = revealed ? (quiz.choiceCorrect ? correctFx(quiz.combo) : wrongFx(q.options ? q.word : null, q.zh)) : "";
-  return `<section class="screen quiz-page ${game.pageClass || ""}" data-screen="quiz">
+  const refHead = refType ? `<div class="ref-stage-head">
+      <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
+      <div><span class="ref-stage-kicker">${isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</span>
+      <h2>${game.title}</h2></div>
+    </div>` : "";
+  return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page" : ""}" data-screen="quiz" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
     ${fx}
+    ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
     <div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
       <div class="bar qbar"><i style="width:${Math.round((quiz.index / total) * 100)}%"></i></div>
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
       <div class="hearts">${hearts}</div>
     </div>
-    <div class="quiz-body">
-      <div class="quiz-prompt">
+    <div class="quiz-body${refType ? " ref-quiz-body" : ""}">
+      ${refType ? refHead : `<div class="quiz-prompt">
         <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
         <h2>${game.title}</h2>
-      </div>
+      </div>`}
       ${view.body}
     </div>
     <div class="quiz-foot">
@@ -280,6 +291,313 @@ function callGameAction(action, value) {
 function matchPickWord(word) { callGameAction("onPickWord", word); }
 function matchPickArt(word) { callGameAction("onPickArt", word); }
 function repeatDone() { callGameAction("onDone"); }
+
+/* 拼图和喂食的共享动作：点击与拖拽走同一条状态、计分路径 */
+function puzzlePlace(letterId, slotId = null) {
+  if (!quiz || quiz.revealed) return;
+  const q = quiz.order[quiz.index];
+  const slot = slotId === null
+    ? q.puzzleSlots.find((s) => s.filled === null)
+    : q.puzzleSlots.find((s) => s.id === Number(slotId));
+  const letter = q.puzzleLetters.find((l) => l.id === letterId);
+  if (!slot || slot.filled !== null || !letter || q.puzzleSlots.some((s) => s.filled === letterId)) return;
+  slot.filled = letterId;
+  sfx("tap");
+  render();
+}
+function feedPick(food, shouldRender = true) {
+  if (!quiz || quiz.revealed) return;
+  quiz.selected = food;
+  sfx("tap");
+  if (shouldRender) render();
+}
+function feedCheck() {
+  if (!quiz || quiz.revealed || !quiz.selected) return;
+  const q = quiz.order[quiz.index];
+  const ok = quiz.selected === q.correctFood;
+  quiz.revealed = true; quiz.choiceCorrect = ok;
+  if (ok) {
+    quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
+    if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId);
+  } else {
+    quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
+    if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId);
+  }
+  render();
+}
+
+/* 六题型的视图层交互，不参与题目生成与判分 */
+window.QuizView = {
+  abort: null,
+  observer: null,
+  drag: null,
+
+  afterRender() {
+    this.cleanup();
+    const root = document.querySelector(".quiz-ref-page");
+    if (!root || !quiz) return;
+    const q = quiz.order[quiz.index];
+    this.abort = new AbortController();
+    if (q.type === "match") this.setupMatch(root);
+    if (q.type === "word_puzzle" || q.type === "feed_animal") this.setupDragging(root);
+  },
+
+  cleanup() {
+    if (this.abort) this.abort.abort();
+    if (this.observer) this.observer.disconnect();
+    this.abort = null;
+    this.observer = null;
+    this.clearDragVisual();
+    this.drag = null;
+  },
+
+  clearDragVisual() {
+    document.querySelectorAll(".ref-drag-ghost").forEach((el) => el.remove());
+    document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
+  },
+
+  point(board, el) {
+    const b = board.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2 - b.left, y: r.top + r.height / 2 - b.top };
+  },
+
+  curve(a, b) {
+    const direction = b.x >= a.x ? 1 : -1;
+    const bend = Math.max(2.5 * 16, Math.abs(b.x - a.x) * 0.45);
+    return `M ${a.x} ${a.y} C ${a.x + bend * direction} ${a.y}, ${b.x - bend * direction} ${b.y}, ${b.x} ${b.y}`;
+  },
+
+  /* 重绘已配对的连线 */
+  drawMatch() {
+    const area = document.querySelector("[data-match-area]");
+    if (!area || !quiz) return;
+    const svg = area.querySelector(".ref-match-svg");
+    const rect = area.getBoundingClientRect();
+    if (!svg || !rect.width || !rect.height) return;
+    svg.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+    svg.innerHTML = "";
+    const dots = [...area.querySelectorAll("[data-match-dot]")];
+    const findDot = (side, word) => dots.find((d) => d.dataset.matchSide === side && d.dataset.word === word);
+    (quiz.matched || []).forEach((word) => {
+      const left = findDot("art", word);
+      const right = findDot("word", word);
+      if (!left || !right) return;
+      svg.appendChild(this.makeCurvedPath(this.point(area, left), this.point(area, right)));
+    });
+  },
+
+  makeCurvedPath(p1, p2, cls = "ref-match-path") {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const midX = (p1.x + p2.x) / 2;
+    const d = `M ${p1.x} ${p1.y} C ${midX} ${p1.y}, ${midX} ${p2.y}, ${p2.x} ${p2.y}`;
+    path.setAttribute("d", d);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "#8A76A8");
+    path.setAttribute("stroke-width", "0.375rem");
+    path.setAttribute("stroke-dasharray", "0.625rem 0.5rem");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("class", cls);
+    return path;
+  },
+
+  setupMatch(root) {
+    const area = root.querySelector("[data-match-area]");
+    if (!area) return;
+    this.drawMatch();
+    if (window.ResizeObserver) {
+      this.observer = new ResizeObserver(() => this.drawMatch());
+      this.observer.observe(area);
+    }
+    const options = { signal: this.abort.signal };
+    area.querySelectorAll("[data-match-dot]").forEach((dot) => {
+      dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
+    });
+  },
+
+  /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */
+  startMatchDrag(e, dot) {
+    if (!quiz || quiz.revealed || e.button !== 0) return;
+    const word = dot.dataset.word;
+    const side = dot.dataset.matchSide;
+    const area = dot.closest("[data-match-area]");
+    if (!area || quiz.matched.includes(word)) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const svg = area.querySelector(".ref-match-svg");
+    const start = this.point(area, dot);
+    const path = this.makeCurvedPath(start, start, "ref-match-path temp");
+    svg.appendChild(path);
+
+    const drag = { pointerId: e.pointerId, dot, area, path, startedAt: Date.now(), moved: false, start };
+    this.drag = drag;
+    try { dot.setPointerCapture(e.pointerId); } catch {}
+
+    const move = (ev) => {
+      if (ev.pointerId !== drag.pointerId) return;
+      const dx = ev.clientX - e.clientX;
+      const dy = ev.clientY - e.clientY;
+      if (!drag.moved && Math.hypot(dx, dy) > 6) drag.moved = true;
+      if (!drag.moved) return;
+      ev.preventDefault();
+      const rect = area.getBoundingClientRect();
+      const end = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+      const midX = (start.x + end.x) / 2;
+      path.setAttribute("d", `M ${start.x} ${start.y} C ${midX} ${start.y}, ${midX} ${end.y}, ${end.x} ${end.y}`);
+    };
+    const finish = (ev, cancelled) => {
+      if (ev.pointerId !== drag.pointerId) return;
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", cancel);
+      if (!cancelled) {
+        try { if (dot.hasPointerCapture(ev.pointerId)) dot.releasePointerCapture(ev.pointerId); } catch {}
+      }
+      path.remove();
+      this.drag = null;
+
+      if (cancelled) return;
+
+      if (drag.moved) {
+        /* 拖拽模式：找释放位置的另一个侧圆点 */
+        const target = document.elementFromPoint(ev.clientX, ev.clientY);
+        const targetDot = target && target.closest("[data-match-dot]");
+        if (targetDot && targetDot !== dot && targetDot.dataset.matchSide !== side) {
+          this.tryConnect(dot, targetDot);
+        }
+      } else {
+        /* 点击模式：切换选中点，若已有另一个侧的选中点则配对 */
+        this.trySelectOrPair(dot);
+      }
+    };
+    const up = (ev) => finish(ev, false);
+    const cancel = (ev) => finish(ev, true);
+    document.addEventListener("pointermove", move, { signal: this.abort.signal });
+    document.addEventListener("pointerup", up, { signal: this.abort.signal });
+    document.addEventListener("pointercancel", cancel, { signal: this.abort.signal });
+  },
+
+  /* 点击配对：参考 temp 的 tryConnect 逻辑 — 同侧切换、异侧配对 */
+  trySelectOrPair(dot) {
+    if (!quiz || quiz.revealed) return;
+    const word = dot.dataset.word;
+    const side = dot.dataset.matchSide;
+
+    /* 如果 quiz.pickWord 已有值，表示另一侧已选中 */
+    if (quiz.pickWord && quiz.pickWordSide && quiz.pickWordSide !== side) {
+      /* 另一侧已选中 — 尝试配对 */
+      const pickedWord = quiz.pickWord;
+      if (side === "art") {
+        /* 当前点是 art（左），之前 pickWord 是 word（右） */
+        matchPickWord(pickedWord);
+        matchPickArt(word);
+      } else {
+        /* 当前点是 word（右），之前 pickWord 是 art（左） */
+        matchPickWord(word);
+        matchPickArt(pickedWord);
+      }
+      return;
+    }
+
+    /* 同侧或首次点击 — 设置当前选中点 */
+    matchPickWord(word);
+    quiz.pickWordSide = side;
+    render();
+  },
+
+  /* 拖拽到另一个圆点：直接配对 */
+  tryConnect(dotA, dotB) {
+    if (!quiz || quiz.revealed) return;
+    const a = { word: dotA.dataset.word, side: dotA.dataset.matchSide };
+    const b = { word: dotB.dataset.word, side: dotB.dataset.matchSide };
+    if (a.side === b.side) return;
+
+    quiz.pickWordSide = a.side;
+    quiz.pickWord = a.word;
+
+    if (a.side === "art") {
+      matchPickWord(b.word);
+      matchPickArt(a.word);
+    } else {
+      matchPickWord(a.word);
+      matchPickArt(b.word);
+    }
+  },
+
+  setupDragging(root) {
+    const options = { signal: this.abort.signal };
+    root.querySelectorAll("[data-drag]").forEach((source) => {
+      source.addEventListener("pointerdown", (e) => this.startDrag(e, source), options);
+    });
+  },
+
+  startDrag(e, source) {
+    if (!quiz || quiz.revealed || e.button !== 0 || source.disabled) return;
+    const drag = {
+      pointerId: e.pointerId, source, kind: source.dataset.drag,
+      value: source.dataset.drag === "puzzle" ? Number(source.dataset.letter) : source.dataset.food,
+      x: e.clientX, y: e.clientY, moved: false, ghost: null,
+    };
+    this.drag = drag;
+    try { source.setPointerCapture(e.pointerId); } catch {}
+    const options = { signal: this.abort.signal };
+    const move = (ev) => {
+      if (ev.pointerId !== drag.pointerId) return;
+      if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) <= 6) return;
+      ev.preventDefault();
+      if (!drag.moved) {
+        drag.moved = true;
+        drag.ghost = document.createElement("span");
+        drag.ghost.className = "ref-drag-ghost";
+        const art = source.querySelector(".ref-food-art");
+        if (drag.kind === "food" && art) drag.ghost.innerHTML = art.innerHTML;
+        else drag.ghost.textContent = source.textContent.trim();
+        document.body.appendChild(drag.ghost);
+      }
+      drag.ghost.style.left = `${ev.clientX}px`;
+      drag.ghost.style.top = `${ev.clientY}px`;
+      document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY);
+      const target = hit && (drag.kind === "food" ? hit.closest("[data-feed-drop]") : hit.closest(".pz-slot"));
+      if (target) target.classList.add("drop-ready");
+    };
+    const finish = (ev, cancelled) => {
+      if (ev.pointerId !== drag.pointerId) return;
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", cancel);
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY);
+      this.clearDragVisual();
+      this.drag = null;
+      try { if (source.hasPointerCapture(ev.pointerId)) source.releasePointerCapture(ev.pointerId); } catch {}
+      if (cancelled || !drag.moved) return;
+      this.suppressClick(source);
+      if (drag.kind === "puzzle") {
+        const slot = hit && hit.closest(".pz-slot");
+        if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
+      } else {
+        const target = hit && hit.closest("[data-feed-drop]");
+        if (target) {
+          feedPick(drag.value, false);
+          feedCheck();
+        }
+      }
+    };
+    const up = (ev) => finish(ev, false);
+    const cancel = (ev) => finish(ev, true);
+    document.addEventListener("pointermove", move, options);
+    document.addEventListener("pointerup", up, options);
+    document.addEventListener("pointercancel", cancel, options);
+  },
+
+  suppressClick(source) {
+    const stop = (e) => { e.preventDefault(); e.stopPropagation(); };
+    source.addEventListener("click", stop, { capture: true, once: true });
+    setTimeout(() => source.removeEventListener("click", stop, true), 350);
+  },
+};
+
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
@@ -312,6 +630,7 @@ function nextQuestion() {
   quiz.choiceCorrect = null;
   quiz.matched = [];
   quiz.pickWord = null;
+  quiz.pickWordSide = null;
   quiz.matchWrong = 0;
   render();
   speakTask();
@@ -398,6 +717,7 @@ function screenResult() {
     return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
   }).join("");
   return `<section class="screen result-page" data-screen="result">
+    <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
     <div class="confetti">${confettiPieces}</div>
     <div class="result-scroll">
       <div class="result-head">
@@ -448,7 +768,6 @@ function screenResult() {
 
     <div class="result-foot">
       ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${r.passed ? Math.min(themeProgress().level, r.level + 1) : r.level}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
-      <button class="back" data-action="close-quiz">返回闯关地图</button>
     </div>
   </section>`;
 }

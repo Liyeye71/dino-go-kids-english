@@ -12,22 +12,15 @@
   const CATEGORIES = ["noun", "part", "verb", "color", "food"];
 
   /* 题型 → 所需词库标签 → 是否记录错题 → 关卡可用区间
-     gameType 直接复用 defaultGames 的 key（pic/listen/match/repeat/dialog）
-     + 5 个新题型 key 保持 snake_case */
+     只保留 6 个已实现奶油卡通风格的题型，其余 4 个（repeat/color_paint/shadow_match/action_time）
+     暂时"建设中"，不在此注册，等后续迭代再补 */
   const GAME_RULES = [
-    /* 现有题型（已在 _shared.js defaultGames 里实现 render） */
-    { key: "pic",          label: "看图识词",   cats: ["noun", "part", "color"],                recordWrong: true,  levels: [1, 10] },
-    { key: "listen",       label: "听音识词",   cats: ["noun", "part", "verb"],                 recordWrong: true,  levels: [1, 10] },
-    { key: "match",        label: "句子连线",   cats: ["noun", "part", "verb", "color", "food"], recordWrong: false, levels: [1, 10] },
-    { key: "dialog",       label: "情景对话",   cats: ["noun"],                                 recordWrong: false, levels: [1, 10], animalOnly: true },
-    { key: "repeat",       label: "情景大声说", cats: ["noun", "verb"],                         recordWrong: false, levels: [3, 10] },
-
-    /* 新增题型（Week 1 只注册规则不实现 render，后续逐步补） */
-    { key: "word_puzzle",  label: "词汇拼图",   cats: ["noun"],                                 recordWrong: true,  levels: [3, 10], render: "shared.buildPuzzleRender" },
-    { key: "shadow_match", label: "影子猜猜乐", cats: ["noun"],                                 recordWrong: true,  levels: [2, 10], render: "shared.buildShadowRender" },
-    { key: "feed_animal",  label: "动物喂食",   cats: ["noun"],                                 recordWrong: true,  levels: [2, 10], render: "shared.buildFeedRender", animalOnly: true },
-    { key: "action_time",  label: "动作模仿秀", cats: ["verb"],                                 recordWrong: true,  levels: [2, 10], render: "shared.buildActionRender" },
-    { key: "color_paint",  label: "颜色涂鸦板", cats: ["color"],                                recordWrong: false, levels: [3, 10], render: "shared.buildPaintRender" },
+    { key: "pic",         label: "看图识词", cats: ["noun", "part", "color"],               recordWrong: true,  levels: [1, 10] },
+    { key: "listen",      label: "听音识词", cats: ["noun", "part", "verb"],                recordWrong: true,  levels: [1, 10] },
+    { key: "match",       label: "单词连线", cats: ["noun", "part", "verb", "color", "food"], recordWrong: false, levels: [1, 10] },
+    { key: "dialog",      label: "情景对话", cats: ["noun"],                                  recordWrong: false, levels: [1, 10], animalOnly: true },
+    { key: "word_puzzle", label: "词汇拼图", cats: ["noun"],                                  recordWrong: true,  levels: [2, 10] },
+    { key: "feed_animal", label: "动物喂食", cats: ["noun"],                                  recordWrong: true,  levels: [2, 10], animalOnly: true },
   ];
 
   /* 根据关卡号过滤出可用题型（难度分层） */

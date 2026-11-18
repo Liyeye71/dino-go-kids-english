@@ -255,14 +255,7 @@ document.addEventListener("click", (e) => {
 
   /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
   } else if (action === "pz-letter") {
-    if (!quiz || quiz.revealed) return;
-    const letterId = Number(el.dataset.letter);
-    const q = quiz.order[quiz.index];
-    const slot = q.puzzleSlots.find((s) => s.filled === null);
-    if (!slot) return;
-    slot.filled = letterId;
-    sfx("tap");
-    render();
+    puzzlePlace(Number(el.dataset.letter));
   } else if (action === "pz-check") {
     if (!quiz || quiz.revealed) return;
     const q = quiz.order[quiz.index];
@@ -286,19 +279,9 @@ document.addEventListener("click", (e) => {
 
   /* 🍎 动物喂食 Feed Animal */
   } else if (action === "fd-pick") {
-    if (!quiz || quiz.revealed) return;
-    quiz.selected = el.dataset.food;
-    sfx("tap"); render();
+    feedPick(el.dataset.food);
   } else if (action === "fd-check") {
-    if (!quiz || quiz.revealed || !quiz.selected) return;
-    const q = quiz.order[quiz.index];
-    const ok = quiz.selected === q.correctFood;
-    quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.combo++; quiz.words.push(q.word); sfx("correct");
-      if (isZooScene() && q.wrongWordId) WrongBank.recordCorrect(q.wrongWordId); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); quiz.combo = 0; sfx("wrong");
-      if (isZooScene() && q.recordWrong && q.wrongWordId) WrongBank.recordWrong(q.wrongWordId); }
-    render();
+    feedCheck();
 
   /* 🌑 影子猜猜乐 Shadow Match */
   } else if (action === "sh-pick") {

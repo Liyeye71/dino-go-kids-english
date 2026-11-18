@@ -91,6 +91,53 @@ function openAnimalScene(sceneId) {
   if (window.ZooRouteView) setTimeout(() => ZooRouteView.focusCurrent(), 60);
 }
 
+/* 触屏左右滑动切换主题：左滑下一个，右滑上一个 */
+function stepTheme(step) {
+  const idx = WORD_SETS.findIndex((t) => t.id === currentTheme().id);
+  const next = WORD_SETS[idx + step];
+  if (!next) return;
+  state.theme = next.id;
+  save();
+  sfx("tap");
+  render();
+}
+
+(function bindThemeSwipe() {
+  const EDGE = 24;   /* 两侧边缘留给 iOS 返回手势 */
+  const DIST = 60;   /* 最小横向位移 */
+  let fromX = 0, fromY = 0, fromAt = 0, active = false;
+
+  document.addEventListener("touchstart", (e) => {
+    active = false;
+    if (e.touches.length !== 1) return;
+    const target = e.target;
+    if (!target.closest || !target.closest('.screen[data-screen="map"]')) return;
+    /* 主题栏本身可横向滚动时，把手势让给滚动 */
+    const tabs = target.closest(".theme-tabs");
+    if (tabs && tabs.scrollWidth > tabs.clientWidth + 2) return;
+    const t = e.touches[0];
+    if (t.clientX < EDGE || t.clientX > window.innerWidth - EDGE) return;
+    fromX = t.clientX;
+    fromY = t.clientY;
+    fromAt = Date.now();
+    active = true;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (e) => {
+    if (!active) return;
+    active = false;
+    const t = e.changedTouches[0];
+    if (!t || Date.now() - fromAt > 800) return;
+    const dx = t.clientX - fromX;
+    const dy = t.clientY - fromY;
+    /* 横向位移足够大且明显大于纵向，才判定为切主题，避免误伤上下滚动 */
+    if (Math.abs(dx) < DIST || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+    stepTheme(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  document.addEventListener("touchcancel", () => { active = false; }, { passive: true });
+})();
+
 /* 未接入关卡逻辑的场景：保留静态路线预览 */
 function openAnimalPreview(scene) {
   const points = [[48, 249], [144, 231], [115, 180], [218, 159], [262, 102], [198, 48]];

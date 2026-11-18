@@ -8,15 +8,15 @@
   function defaultLevelGames() {
     return {
       1: ["pic", "listen", "pic", "listen", "pic"],
-      2: ["pic", "listen", "pic", "listen", "pic"],
-      3: ["pic", "listen", "match", "pic", "listen"],
-      4: ["listen", "pic", "match", "listen", "pic"],
-      5: ["pic", "match", "repeat", "listen", "pic"],
-      6: ["listen", "repeat", "match", "pic", "listen"],
-      7: ["pic", "match", "repeat", "dialog", "listen"],
-      8: ["listen", "dialog", "match", "repeat", "pic"],
-      9: ["dialog", "match", "listen", "dialog", "repeat"],
-      10: ["dialog", "listen", "dialog", "match", "repeat"],
+      2: ["pic", "listen", "feed_animal", "pic", "listen"],
+      3: ["pic", "listen", "match", "feed_animal", "listen"],
+      4: ["listen", "pic", "match", "word_puzzle", "pic"],
+      5: ["pic", "match", "word_puzzle", "listen", "pic"],
+      6: ["listen", "feed_animal", "match", "pic", "listen"],
+      7: ["pic", "match", "word_puzzle", "dialog", "listen"],
+      8: ["listen", "dialog", "match", "feed_animal", "pic"],
+      9: ["dialog", "match", "listen", "dialog", "word_puzzle"],
+      10: ["dialog", "listen", "word_puzzle", "match", "feed_animal"],
     };
   }
 
@@ -26,18 +26,6 @@
       ...shuffle(pool.filter((x) => x.word !== task.word)).slice(0, count - 1).map((x) => x.word),
     ]);
   }
-
-  /* 看图识词：平面插画风场景底图（纯内联 SVG，离线可用） */
-  const PIC_SCENE = `<svg class="pic-scene" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 52 Q64 20 132 44 T266 42 T400 30 L400 120 L0 120 Z" fill="#9AD97F"/>
-    <path d="M0 74 Q88 52 178 70 T400 62 L400 120 L0 120 Z" fill="#72C166"/>
-    <g fill="#57AF57" opacity=".85">
-      <path d="M36 92q5-18 10 0 5-18 10 0z"/>
-      <path d="M96 104q4-14 8 0 4-14 8 0z"/>
-      <path d="M298 96q5-17 10 0 5-17 10 0z"/>
-      <path d="M352 110q4-13 8 0 4-13 8 0z"/>
-    </g>
-  </svg>`;
 
   /* 单词主图：优先取 images/words/{word}.png，缺图时回退 emoji */
   function wordHeroArt(w) {
@@ -58,16 +46,14 @@
         },
         render({ q, choiceButton, options }) {
           return {
-            body: `<div class="pic-art">
-                ${PIC_SCENE}
-                <span class="pic-sun" aria-hidden="true"></span>
-                <span class="pic-cloud pc1" aria-hidden="true"></span>
-                <span class="pic-cloud pc2" aria-hidden="true"></span>
-                <div class="pic-bubble">What is it?</div>
-                <div class="pic-hero">${wordHeroArt(q)}</div>
-                ${listenPill()}
-              </div>
-              <div class="options pic-options">${options(q.options)}</div>`,
+            body: `<div class="ref-pic-wrap">
+                <div class="ref-picture-frame">
+                  <span class="ref-picture-tape" aria-hidden="true"></span>
+                  <div class="ref-picture-art">${wordHeroArt(q)}</div>
+                  ${listenPill()}
+                </div>
+                <div class="options ref-pic-options">${options(q.options)}</div>
+              </div>`,
             btn: choiceButton("选一个答案"),
           };
         },
@@ -79,24 +65,33 @@
         build(task, pool) {
           buildOptions(task, pool, 4);
         },
-        render({ q, quiz, optionClass, choiceButton, letters, artOf }) {
+        render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
+          const selected = quiz.selected;
+          const cards = q.options.map((opt) => {
+            const isCorrect = revealed && opt === q.word;
+            const isWrong = revealed && opt === selected && opt !== q.word;
+            const isSel = !revealed && selected === opt;
+            const cls = ["ref-listen-card"]
+              .concat(isCorrect ? ["ok"] : [])
+              .concat(isWrong ? ["wrong"] : [])
+              .concat(isSel ? ["sel"] : [])
+              .join(" ");
+            return `<button class="${cls}" data-action="select" data-word="${opt}" aria-label="选择 ${opt}">
+              <span class="ref-listen-card-art">${artOf(opt)()}</span>
+              ${revealed ? `<span class="ref-listen-card-word${isCorrect ? " correct" : ""}${isWrong ? " wrong" : ""}">${opt}</span>` : ""}
+              ${isCorrect ? `<i class="ref-listen-mark">✓</i>` : ""}
+              ${isWrong ? `<i class="ref-listen-mark bad">✕</i>` : ""}
+            </button>`;
+          }).join("");
           return {
-            body: `<div class="quiz-art listen-art">
-                <div class="blob"></div>
-                <div class="art-tag">LISTEN &amp; CHOOSE</div>
-                <button class="big-speaker" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">${I.speaker(46)}</button>
-                <div class="listen-tip">听发音，选出对应的图片</div>
-                ${listenPill()}
-              </div>
-              <div class="options pic-grid">${q.options.map((opt, i) => {
-                const cls = optionClass(opt, "option pic");
-                const label = revealed && opt === q.word ? `<b class="pic-word">${opt}</b>` : "";
-                return `<button class="${cls}" data-action="select" data-word="${opt}">
-                  <span class="key">${letters[i]}</span><span class="pic">${artOf(opt)()}</span>${label}
-                </button>`;
-              }).join("")}</div>`,
-            btn: choiceButton("选一张图片"),
+            body: `<div class="ref-listen-wrap">
+                <button class="ref-listen-speaker" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">
+                  ${QuizUiArt.speaker()}<span>点我，再听一遍</span>
+                </button>
+                <div class="ref-listen-grid">${cards}</div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
           };
         },
       },
@@ -110,13 +105,30 @@
           task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art })));
         },
         render({ q, quiz }) {
-          const solved = quiz.matched;
-          const wordCol = q.words.map((w) => `<button class="mcard word ${solved.includes(w) ? "ok" : ""} ${quiz.pickWord === w ? "sel" : ""}"
-              data-action="match-word" data-word="${w}">${w}</button>`).join("");
-          const artCol = q.arts.map((p) => `<button class="mcard art ${solved.includes(p.word) ? "ok" : ""}"
-              data-action="match-art" data-word="${p.word}">${p.art()}</button>`).join("");
+          const solved = new Set(quiz.matched || []);
+          const selected = quiz.pickWord;
+          const leftCol = q.arts.map((p) => {
+            const isDone = solved.has(p.word);
+            const isSel = selected === p.word && !isDone;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
+              <div class="ref-match-art-card">${p.art()}</div>
+              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+            </div>`;
+          }).join("");
+          const rightCol = q.words.map((w) => {
+            const isDone = solved.has(w);
+            const isSel = selected === w && !isDone;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
+              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+              <div class="ref-match-word-card">${w}</div>
+            </div>`;
+          }).join("");
           return {
-            body: `<div class="match-grid"><div class="match-col">${wordCol}</div><div class="match-col">${artCol}</div></div>
+            body: `<div class="ref-match-area" data-match-area>
+                <svg class="ref-match-svg" aria-hidden="true"></svg>
+                <div class="ref-match-col ref-match-col-left">${leftCol}</div>
+                <div class="ref-match-col ref-match-col-right">${rightCol}</div>
+              </div>
               <div class="listen-row">${listenPill()}</div>`,
             btn: quiz.revealed ? quizNextButton() : `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`,
           };
@@ -124,6 +136,7 @@
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
           quiz.pickWord = word;
+          quiz.pickWordSide = "word";
           sfx("tap");
           render();
         },
@@ -136,6 +149,7 @@
           if (word === quiz.pickWord) {
             quiz.matched.push(word);
             quiz.pickWord = null;
+            quiz.pickWordSide = null;
             sfx("correct");
             /* 🦁 动物园：配对成功 → 尝试清除错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(word)) WrongBank.recordCorrect(_makeWid(word));
@@ -156,6 +170,7 @@
             quiz.matchWrong++;
             const wrongPair = quiz.pickWord; /* 被选错的那个单词 */
             quiz.pickWord = null;
+            quiz.pickWordSide = null;
             quiz.hearts = Math.max(0, quiz.hearts - 1);
             quiz.combo = 0;
             sfx("wrong");
@@ -216,12 +231,14 @@
         render({ q, quiz, choiceButton, options }) {
           const revealed = quiz.revealed;
           return {
-            body: `<div class="dialog-card">
-                <div class="dlg"><span class="who">A</span><p>${q.dlgQ}</p><span class="dlg-pic">${q.art()}</span></div>
-                <div class="dlg me"><span class="who">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
+            body: `<div class="ref-dialog-card">
+                <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
+                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${q.art()}</span></div></div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
+                  <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
-              <div class="listen-row">${listenPill()}</div>
-              <div class="options one-col">${options(q.options)}</div>`,
+              <div class="listen-row ref-dialog-listen">${listenPill()}</div>
+              <div class="options one-col ref-dialog-options">${options(q.options)}</div>`,
             btn: choiceButton("选一个单词"),
           };
         },
@@ -279,24 +296,24 @@
           task.puzzleLetters = shuffled.map((ch, i) => ({ ch, id: i, placed: false }));
           task.puzzleSlots = letters.map((ch, i) => ({ id: i, filled: null }));
         },
-        render({ q, quiz }) {
+        render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
           const slotsHtml = q.puzzleSlots.map((s) => {
-            const letter = s.filled ? q.puzzleLetters.find((l) => l.id === s.filled) : null;
+            const letter = s.filled !== null ? q.puzzleLetters.find((l) => l.id === s.filled) : null;
             return `<div class="pz-slot ${letter ? "filled" : ""}" data-slot="${s.id}">${letter ? letter.ch : ""}</div>`;
           }).join("");
           const lettersHtml = q.puzzleLetters.map((l) => {
             const used = q.puzzleSlots.some((s) => s.filled === l.id);
-            return `<button type="button" class="pz-letter ${used ? "used" : ""}" data-action="pz-letter" data-letter="${l.id}" ${used ? "disabled" : ""}>${l.ch}</button>`;
+            return `<button type="button" class="pz-letter ${used ? "used" : ""}" data-action="pz-letter" data-drag="puzzle" data-letter="${l.id}" ${used ? "disabled" : ""}>${l.ch}</button>`;
           }).join("");
           const allFilled = q.puzzleSlots.every((s) => s.filled !== null);
           const body = `
-            <div class="pz-wrap">
-              <div class="pz-hint">
-                <div class="pz-art">${q.emoji || "❓"}</div>
+            <div class="pz-wrap ref-puzzle-wrap">
+              <div class="pz-hint ref-puzzle-hint">
+                <div class="pz-art">${artOf(q.word)()}</div>
                 <small>${q.zh}</small>
               </div>
-              <div class="pz-slots">${slotsHtml}</div>
+              <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
               ${!revealed ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>` : ""}
               ${revealed ? `<div class="pz-answer">正确答案：<b>${q.word.toUpperCase()}</b>（${q.zh}）</div>` : ""}
@@ -335,18 +352,18 @@
             ? preferred
             : task.foods[0].word;
         },
-        render({ q, quiz }) {
+        render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
           const foods = q.foods.map((f) =>
             `<button type="button" class="fd-food ${revealed && f.word === q.correctFood ? "correct" : ""} ${quiz.selected === f.word ? "selected" : ""}"
-              data-action="fd-pick" data-food="${f.word}">${f.emoji || "🍎"}</button>`
+              data-action="fd-pick" data-drag="food" data-food="${f.word}"><span class="ref-food-art">${artOf(f.word)()}</span><small>${f.word}</small></button>`
           ).join("");
           const body = `
-            <div class="fd-wrap">
-              <div class="fd-animal">
-                <div class="fd-art">${q.emoji || "🐾"}</div>
+            <div class="fd-wrap ref-feed-wrap">
+              <div class="fd-animal ref-feed-animal" data-feed-drop>
+                <div class="fd-art">${artOf(q.word)()}</div>
                 <div class="fd-name">${q.word.toUpperCase()}</div>
-                <small>${q.zh} 爱吃什么？</small>
+                <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
               <div class="fd-foods">${foods}</div>
               ${revealed && !quiz.choiceCorrect ? `<div class="fd-answer">正确答案是：${q.correctFood.toUpperCase()}</div>` : ""}
