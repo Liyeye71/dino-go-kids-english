@@ -1,6 +1,5 @@
 node_modules/
 temp/
-dist/
 preview/
 *.zip
 .trae/
