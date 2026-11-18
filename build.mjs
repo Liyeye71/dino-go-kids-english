@@ -82,6 +82,14 @@ if (fs.existsSync(wordImgDir)) {
     fs.copyFileSync(path.join(wordImgDir, file), path.join(distDir, "images", "words", file));
   }
 }
+/* 分类单词插画：动物素材放在 words/animal/ 下 */
+const animalWordDir = path.join(wordImgDir, "animal");
+if (fs.existsSync(animalWordDir)) {
+  fs.mkdirSync(path.join(distDir, "images", "words", "animal"), { recursive: true });
+  for (const file of fs.readdirSync(animalWordDir).filter((f) => f.endsWith(".webp"))) {
+    fs.copyFileSync(path.join(animalWordDir, file), path.join(distDir, "images", "words", "animal", file));
+  }
+}
 
 const kb = (n) => (n / 1024).toFixed(0) + " KB";
 console.log("dist/index.html   " + kb(fs.statSync(path.join(distDir, "index.html")).size));

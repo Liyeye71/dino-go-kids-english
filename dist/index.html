@@ -3479,11 +3479,20 @@ window.DINO_WORD_RULES.push({
     ]);
   }
 
-  /* 单词主图：优先取 images/words/{word}.png，缺图时回退 emoji */
+  /* 单词主图：优先 images/words/animal/{word}.webp，其次 images/words/{word}.png，缺图时回退 emoji */
+  window.wordArtFallback = function (img) {
+    if (!img.dataset.fallback) {
+      img.dataset.fallback = "png";
+      img.src = img.src.replace("/animal/", "/").replace(/\.webp$/, ".png");
+      return;
+    }
+    img.style.display = "none";
+    img.nextElementSibling.style.display = "grid";
+  };
   function wordHeroArt(w) {
     const emoji = w.emoji || wordGlyph(w.word);
-    return `<img class="pic-img" src="images/words/${w.word}.png" alt="" loading="eager" decoding="async"
-      onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+    return `<img class="pic-img" src="images/words/animal/${w.word}.webp" alt="" loading="eager" decoding="async"
+      onerror="wordArtFallback(this)">
       <span class="pic-emoji" style="display:none">${emoji}</span>`;
   }
 
