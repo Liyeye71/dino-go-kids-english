@@ -46,7 +46,7 @@ function startQuiz(level) {
 }
 
 const FX_COLORS = ["#FFC94A", "#FF8A4C", "#5BC178", "#5FBCDA", "#FF6F61", "#B8E05A"];
-/* 答对：全屏庆祝特效 */
+/* 答对：全屏庆祝特效只给鼓励语，答案信息统一放在最下方提示栏 */
 function correctFx() {
   const confetti = Array.from({ length: 18 }, (_, i) => {
     const left = 5 + Math.round(Math.random() * 90);
@@ -60,33 +60,18 @@ function correctFx() {
     <div class="fx-confetti">${confetti}</div>
     <div class="fx-badge">
       <span class="fx-check">${I.check(28)}</span>
-      <b>太棒了！</b>
-      <span class="fx-sub">答对啦，继续加油！</span>
+      <b>你真棒，答对了</b>
     </div>
   </div>`;
 }
-/* 答错提示：单词连线只提示继续努力；纯单词选项给出正确答案 + 中文 */
-function wrongFx(word, zh, isMatch, lead) {
-  if (isMatch) {
-    return `<div class="qfx bad-fx" aria-hidden="true">
-    <div class="fx-wrong">
-      <span class="fx-wrong-ic">✕</span>
-      <div class="fx-wrong-txt">
-        <b>答错了</b>
-        <span>继续努力</span>
-      </div>
-    </div>
-  </div>`;
-  }
-  const answer = word
-    ? `<span>正确答案是 ${word}${zh ? `<i class="fx-zh">${zh}</i>` : ""}</span>`
-    : `<span>再试一次</span>`;
+/* 答错：全屏提示只给鼓励语，答案信息统一放在最下方提示栏 */
+function wrongFx() {
   return `<div class="qfx bad-fx" aria-hidden="true">
     <div class="fx-wrong">
       <span class="fx-wrong-ic">✕</span>
       <div class="fx-wrong-txt">
-        <b>${lead || "打错了"}</b>
-        ${answer}
+        <b>答错了</b>
+        <span>继续努力哦</span>
       </div>
     </div>
   </div>`;
@@ -116,6 +101,8 @@ function screenQuiz() {
   const game = currentTheme().games[q.type];
   const selected = quiz.selected;
   const revealed = quiz.revealed;
+  /* 进度条按「已答完的题数」计算，答完最后一题正好 100% */
+  const progress = Math.round(((quiz.index + (revealed ? 1 : 0)) / total) * 100);
   const hearts = [0, 1, 2].map((i) => I.heart(16, "#FF6F61", i < quiz.hearts ? 1 : 0.22)).join("");
   const letters = ["A", "B", "C", "D"];
   const optionClass = (opt, base = "option") => {
@@ -148,33 +135,37 @@ function screenQuiz() {
   if (revealed) {
     if (q.isBonus) {
       hint = quiz.choiceCorrect ? "隐藏挑战成功 · 获得 1 个宝箱 🎁" : "隐藏挑战失败 · 下次再来！";
-    } else if (quiz.choiceCorrect) {
-      hint = "太棒了！答对啦";
     } else if (isMatch) {
-      hint = "答错了，继续努力！";
+      hint = quiz.choiceCorrect ? "你真棒，答对了" : "答错了，继续努力哦";
     } else if (answerWord) {
-      hint = `${isFeed ? "答错了" : "打错了"}，正确答案是 <b>${answerWord}</b>${answerZh ? `<i class="ans-zh">${answerZh}</i>` : ""}`;
+      hint = `正确答案是 <b>${answerWord}</b>${answerZh ? `<i class="ans-zh">${answerZh}</i>` : ""}`;
     } else {
-      hint = "打错了，再试一次！";
+      hint = quiz.choiceCorrect ? "你真棒，答对了" : "答错了，继续努力哦";
     }
   } else {
     hint = "选出正确答案，继续前进！";
   }
-  const fx = revealed ? (quiz.choiceCorrect ? correctFx() : wrongFx(answerWord, answerZh, isMatch, isFeed ? "答错了" : "")) : "";
+  const fx = revealed ? (quiz.choiceCorrect ? correctFx() : wrongFx()) : "";
   const refHead = refType ? `<div class="ref-stage-head">
       <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
       <div><span class="ref-stage-kicker">${isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</span>
       <h2>${game.title}</h2></div>
     </div>` : "";
+  const frameTop = refType && state.scene === "zoo"
+    ? `<div class="quiz-top quiz-top--frame">
+      <button class="frame-btn" data-action="close-quiz" aria-label="返回闯关"><img src="data/icons/btn-home.webp" alt=""></button>
+      <button class="frame-btn" data-action="close-quiz" aria-label="关闭并返回路线图"><img src="data/icons/btn-paw.webp" alt=""></button>
+    </div>`
+    : `<div class="quiz-top">
+      <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
+      <div class="bar qbar"><i style="width:${progress}%"></i></div>
+      <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
+      <div class="hearts">${hearts}</div>
+    </div>`;
   return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page" : ""}" data-screen="quiz" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
     ${fx}
     ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
-    <div class="quiz-top">
-      <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
-      <div class="bar qbar"><i style="width:${Math.round((quiz.index / total) * 100)}%"></i></div>
-      <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
-      <div class="hearts">${hearts}</div>
-    </div>
+    ${frameTop}
     <div class="quiz-body${refType ? " ref-quiz-body" : ""}">
       ${refType ? refHead : `<div class="quiz-prompt">
         <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
@@ -218,7 +209,6 @@ function callGameAction(action, value) {
 }
 function matchPickWord(word) { callGameAction("onPickWord", word); }
 function matchPickArt(word) { callGameAction("onPickArt", word); }
-function repeatDone() { callGameAction("onDone"); }
 
 /* 拼图和喂食的共享动作：点击与拖拽走同一条状态、计分路径 */
 function puzzlePlace(letterId, slotId = null) {

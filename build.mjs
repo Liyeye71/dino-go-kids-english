@@ -27,12 +27,12 @@ const JS_FILES = [
   "data/words/noun.js", "data/words/verb.js", "data/words/adj.js", "data/words/adv.js",
   "data/words/pron.js", "data/words/prep.js", "data/words/conj.js", "data/words/interj.js", "data/words/num.js",
   "data/words/rule/basic.js", "data/words/rule/advance.js", "data/words/rule/pro.js",
-  "data/game/shared.js",
+  "data/game/shared.js", "data/game/dynamic-engine.js",
   ...themeFiles.map((f) => `data/theme/${f}`),
   "data/sounds/sfx.js",
   "frame/core/utils.js", "frame/core/visual.js", "frame/core/data.js", "frame/core/words.js",
   "frame/core/state.js", "frame/core/ui.js", "frame/core/events.js", "frame/core/boot.js",
-  "data/game/wrongbank.js", "data/game/dynamic-engine.js", "data/game/chest.js", "data/game/result.js",
+  "data/game/wrongbank.js", "data/game/chest.js", "data/game/result.js",
   "data/game/main.js", "data/game/quiz-view.js",
   "frame/home.js", "frame/map.js", "frame/dex.js", "frame/collect.js",
 ];
@@ -55,7 +55,7 @@ fs.writeFileSync(path.join(distDir, "index.html"), inlined);
 for (const file of ["manifest.webmanifest", "sw.js"]) {
   fs.copyFileSync(path.join(appDir, file), path.join(distDir, file));
 }
-for (const file of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"]) {
+for (const file of fs.readdirSync(iconsDir)) {
   fs.copyFileSync(path.join(iconsDir, file), path.join(distDir, "data", "icons", file));
 }
 /* 恐龙素材：源文件放在 app/data/images/material/dino/（.webp 供页面使用） */

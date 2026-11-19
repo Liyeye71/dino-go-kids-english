@@ -41,6 +41,27 @@
   .dex-card .stg{font-size:0.65625rem}
 }
 
+/* ------------------------------------------------ 大屏答题页：按视口宽高流体缩放，内容收成手机比例居中 */
+@media (min-width:640px){
+  /* 内容宽度同时受屏宽和屏高约束：矮屏自动收窄，保持竖屏比例 */
+  .quiz-ref-page{--quiz-w:clamp(20rem,72vh,32rem)}
+
+  .quiz-ref-page .quiz-top,
+  .quiz-ref-page .ref-quiz-body,
+  .quiz-ref-page .quiz-foot{width:100%;max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
+
+  /* 听音选图：卡片跟随可用高度缩放，不再被 flex 拉成长条 */
+  .ref-listen-wrap{justify-content:center}
+  .quiz-ref-page .ref-listen-grid{flex:none;width:min(100%,26rem);height:clamp(8rem,22vh,11rem);min-height:0}
+
+  /* 其余题型的主容器 / 卡片也按同一视口比例收缩 */
+  .ref-picture-frame{width:min(100%,28rem,70vh)}
+  .ref-match-area{--match-card:clamp(3.75rem,min(13vw,8.5vh),5.25rem)}
+  .quiz-ref-page .ref-action-stage,
+  .quiz-ref-page .ref-cmp-stage{min-height:clamp(7rem,20vh,11rem)}
+  .ref-zoom-lens{width:clamp(8rem,min(27vh,32vw),13.5rem)}
+}
+
 /* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
 @media (min-width:640px){
   .options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr)}
@@ -55,7 +76,6 @@
   .options{margin-top:0.625rem}
   .option{min-height:3.875rem}
   .match-grid{margin-top:0.625rem}
-  .repeat-word b{font-size:1.5rem}
   .dialog-card{margin-top:0.625rem;gap:0.4375rem}
   .options.one-col{margin-top:0.5rem}
   .result-scroll{padding-top:calc(0.75rem + var(--safe-top));padding-bottom:0.125rem;gap:0.75rem}

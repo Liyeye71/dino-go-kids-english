@@ -72,10 +72,6 @@
 .mcard:active{transform:scale(.97)}
 .mcard.sel{border-color:#3AA56B;box-shadow:0 0 0 0.1875rem rgba(58,165,107,.16)}
 .mcard.ok{border-color:#B9DDA1;background:#EFF8E4;opacity:.7}
-.repeat-word{margin-top:0.75rem;text-align:center;display:flex;flex-direction:column;gap:0.1875rem}
-.repeat-word b{font-size:1.75rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:-0.025rem}
-.repeat-word span{font-size:0.8125rem;font-weight:var(--w-mid);color:#A89A7E}
-.repeat-word i{font-size:0.6875rem;font-style:normal;font-weight:var(--w-mid);color:#B3A588;margin-top:0.125rem}
 .dialog-card{display:flex;flex-direction:column;gap:0.5625rem;margin-top:0.875rem}
 .dlg{display:flex;gap:0.5625rem;align-items:center;background:#fff;border:0.125rem solid #EFE2CB;border-radius:1.125rem;padding:0.6875rem 0.8125rem}
 .dlg.me{background:#F5FBEA;border-color:#DDEECB}
@@ -115,7 +111,6 @@
 .fx-badge .fx-check{width:3.25rem;height:3.25rem;border-radius:50%;margin-bottom:0.4375rem;display:grid;place-items:center;
   background:linear-gradient(180deg,#5BC178,#2E8B57);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.3)}
 .fx-badge b{font-size:1.5rem;font-weight:var(--w-black);color:#7C5209;letter-spacing:0.0625rem;line-height:1.15}
-.fx-badge .fx-sub{font-size:0.75rem;font-weight:var(--w-bold);color:#A9852C;margin-top:0.1875rem;white-space:nowrap}
 
 .bad-fx .fx-wrong{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
   display:flex;align-items:center;gap:0.6875rem;padding:0.75rem 1.125rem;border-radius:1.25rem;
@@ -126,7 +121,6 @@
 .fx-wrong-txt b{display:block;font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.075rem;color:#B0654F}
 .fx-wrong-txt span{display:block;font-size:1.5625rem;font-weight:var(--w-black);color:#C04532;line-height:1.15;
   letter-spacing:-0.01875rem;margin-top:0.0625rem;max-width:min(58vw,20rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fx-wrong-txt .fx-zh{font-style:normal;font-size:0.5625em;font-weight:900;color:#B0654F;margin-left:0.375rem}
 
 @keyframes fxPop{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}

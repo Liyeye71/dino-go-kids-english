@@ -2,75 +2,6 @@
    全局事件：点击动作分发、浏览器后退与手势拦截
    ============================================================ */
 
-/* 🎨 涂鸦板全局状态（Week 3 color_paint） */
-const PaintState = {
-  canvas: null, ctx: null,
-  currentColor: "#E53935", brushSize: 8,
-  drawing: false, lastX: 0, lastY: 0,
-  colors: { red: "#E53935", yellow: "#FDD835", blue: "#1E88E5", green: "#43A047",
-    pink: "#EC407A", black: "#212121", orange: "#FB8C00", white: "#FAFAFA",
-    brown: "#8D6E63", grey: "#9E9E9E", golden: "#F2B33D", purple: "#8E44AD" },
-
-  /* Canvas 初始化（render 后自动调用） */
-  init() {
-    const c = document.querySelector(".cp-canvas");
-    if (!c) return false;
-    this.canvas = c;
-    this.ctx = c.getContext("2d");
-    this.ctx.fillStyle = "#FFFFFF";
-    this.ctx.fillRect(0, 0, c.width, c.height);
-    this._bind();
-    return true;
-  },
-
-  _pos(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    const scaleX = this.canvas.width / rect.width;
-    const scaleY = this.canvas.height / rect.height;
-    const p = (e.touches && e.touches[0]) || e;
-    return { x: (p.clientX - rect.left) * scaleX, y: (p.clientY - rect.top) * scaleY };
-  },
-
-  _bind() {
-    const c = this.canvas;
-    const self = this;
-    const start = (e) => { e.preventDefault(); self.drawing = true; const p = self._pos(e); self.lastX = p.x; self.lastY = p.y; };
-    const move  = (e) => { if (!self.drawing) return; e.preventDefault(); const p = self._pos(e); self._draw(self.lastX, self.lastY, p.x, p.y); self.lastX = p.x; self.lastY = p.y; };
-    const end   = () => { self.drawing = false; };
-    c.addEventListener("mousedown", start);
-    c.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", end);
-    c.addEventListener("touchstart", start, { passive: false });
-    c.addEventListener("touchmove", move, { passive: false });
-    window.addEventListener("touchend", end);
-  },
-
-  _draw(x1, y1, x2, y2) {
-    const ctx = this.ctx;
-    ctx.strokeStyle = this.currentColor;
-    ctx.lineWidth = this.brushSize;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-  },
-
-  clear() {
-    if (!this.ctx) return;
-    this.ctx.fillStyle = "#FFFFFF";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  },
-};
-
-/* 每次 render 后自动检查是否要初始化涂鸦板 Canvas */
-const _origRender = window.render;
-window.render = function () {
-  _origRender();
-  setTimeout(() => PaintState.init(), 30); /* DOM 更新后初始化 */
-};
-
 /* ------------------------------------------------ events */
 function renderAndResetScroll() {
   render();
@@ -109,8 +40,6 @@ document.addEventListener("click", (e) => {
     matchPickWord(el.dataset.word);
   } else if (action === "match-art") {
     matchPickArt(el.dataset.word);
-  } else if (action === "repeat-done") {
-    repeatDone();
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "bonus-start") {
@@ -235,29 +164,6 @@ document.addEventListener("click", (e) => {
   } else if (action === "chest-close") {
     closeOverlay();
     render();
-  } else if (action === "cp-color") {
-    PaintState.currentColor = PaintState.colors[el.dataset.color] || PaintState.currentColor;
-    sfx("tap");
-  } else if (action === "cp-clear") {
-    PaintState.clear();
-    sfx("tap");
-  } else if (action === "cp-size") {
-    PaintState.brushSize = PaintState.brushSize >= 16 ? 4 : PaintState.brushSize + 4;
-    toast(`笔触 ${PaintState.brushSize}px`);
-    sfx("tap");
-  } else if (action === "cp-done") {
-    /* 完成涂色 → 直接判对 → 进入下一题 */
-    if (!quiz || quiz.revealed) return;
-    quiz.revealed = true;
-    quiz.choiceCorrect = true;
-    quiz.correct++;
-    const q = quiz.order[quiz.index];
-    quiz.words.push(q.word);
-    sfx("correct");
-    /* 🦁 动物园：涂鸦板算对 → 尝试清除错题库 */
-    WrongBank.applyResult(q, true);
-    render();
-
   /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
   } else if (action === "pz-letter") {
     puzzlePlace(Number(el.dataset.letter));
@@ -287,32 +193,6 @@ document.addEventListener("click", (e) => {
     feedPick(el.dataset.food);
   } else if (action === "fd-check") {
     feedCheck();
-
-  /* 🌑 影子猜猜乐 Shadow Match */
-  } else if (action === "sh-pick") {
-    if (!quiz || quiz.revealed) return;
-    const q = quiz.order[quiz.index];
-    const picked = el.dataset.word;
-    const ok = picked === q.word;
-    quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
-      WrongBank.applyResult(q, true); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
-      WrongBank.applyResult(q, false); }
-    render();
-
-  /* 🏃 动作模仿秀 Action Time */
-  } else if (action === "at-pick") {
-    if (!quiz || quiz.revealed) return;
-    const q = quiz.order[quiz.index];
-    const picked = el.dataset.word;
-    const ok = picked === q.word;
-    quiz.selected = picked; quiz.revealed = true; quiz.choiceCorrect = ok;
-    if (ok) { quiz.correct++; quiz.words.push(q.word); sfx("correct");
-      WrongBank.applyResult(q, true); }
-    else { quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
-      WrongBank.applyResult(q, false); }
-    render();
 
   } else if (action === "settings") {
     openSettings();
