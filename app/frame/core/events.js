@@ -64,6 +64,14 @@ document.addEventListener("click", (e) => {
         }, 0);
       }
     }
+  } else if (action === "speak-answer") {
+    /* 结果条喇叭：朗读正确答案 */
+    const q = quiz && quiz.order[quiz.index];
+    if (q) speak(q.word || q.correctFood || "");
+  } else if (action === "close-quiz-map") {
+    /* 脚丫：直接回路线图，不重开场景闯关抽屉 */
+    quiz = null;
+    go("map", { replace: true });
   } else if (action === "evolve") {
     beginEvolution();
   } else if (action === "collect-tab") {
@@ -180,7 +188,7 @@ document.addEventListener("click", (e) => {
     quiz.choiceCorrect = ok;
     quiz.selected = ok ? q.word : got;
     if (ok) {
-      quiz.correct++; quiz.words.push(q.word); sfx("correct");
+      quiz.correct++; quiz.words.push(q.word); sfx("excellent");
       WrongBank.applyResult(q, true);
     } else {
       quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");

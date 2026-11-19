@@ -46,7 +46,7 @@ function startQuiz(level) {
 }
 
 const FX_COLORS = ["#FFC94A", "#FF8A4C", "#5BC178", "#5FBCDA", "#FF6F61", "#B8E05A"];
-/* 答对：全屏庆祝特效只给鼓励语，答案信息统一放在最下方提示栏 */
+/* 答对：只撒彩纸，鼓励语与答案统一收进居中的结果卡 */
 function correctFx() {
   const confetti = Array.from({ length: 18 }, (_, i) => {
     const left = 5 + Math.round(Math.random() * 90);
@@ -58,22 +58,6 @@ function correctFx() {
   }).join("");
   return `<div class="qfx ok-fx" aria-hidden="true">
     <div class="fx-confetti">${confetti}</div>
-    <div class="fx-badge">
-      <span class="fx-check">${I.check(28)}</span>
-      <b>你真棒，答对了</b>
-    </div>
-  </div>`;
-}
-/* 答错：全屏提示只给鼓励语，答案信息统一放在最下方提示栏 */
-function wrongFx() {
-  return `<div class="qfx bad-fx" aria-hidden="true">
-    <div class="fx-wrong">
-      <span class="fx-wrong-ic">✕</span>
-      <div class="fx-wrong-txt">
-        <b>答错了</b>
-        <span>继续努力哦</span>
-      </div>
-    </div>
   </div>`;
 }
 
@@ -87,7 +71,7 @@ function quizNextButton() {
       <button class="btn" data-action="bonus-start">挑战隐藏题 🎁</button>
     </div>`;
   }
-  const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "查看成绩" : "Next · 下一题";
+  const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "See results" : "Next";
   return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
 
@@ -119,7 +103,7 @@ function screenQuiz() {
     const mark = revealed && opt === q.word ? `<span class="mark">${I.check(11)}</span>`
       : !revealed && opt === selected ? `<span class="mark radio"><i></i></span>` : "";
     return `<button class="${cls}" data-action="select" data-word="${opt}">
-      <span class="key">${letters[i]}</span><span class="word">${opt}</span>${mark}
+      <span class="word">${opt}</span>${mark}
     </button>`;
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
@@ -131,21 +115,74 @@ function screenQuiz() {
     : (isFeed ? q.correctFood
       : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null));
   const answerZh = isFeed ? q.correctZh : q.zh;
-  let hint;
-  if (revealed) {
-    if (q.isBonus) {
-      hint = quiz.choiceCorrect ? "隐藏挑战成功 · 获得 1 个宝箱 🎁" : "隐藏挑战失败 · 下次再来！";
-    } else if (isMatch) {
-      hint = quiz.choiceCorrect ? "你真棒，答对了" : "答错了，继续努力哦";
-    } else if (answerWord) {
-      hint = `正确答案是 <b>${answerWord}</b>${answerZh ? `<i class="ans-zh">${answerZh}</i>` : ""}`;
-    } else {
-      hint = quiz.choiceCorrect ? "你真棒，答对了" : "答错了，继续努力哦";
-    }
-  } else {
-    hint = "选出正确答案，继续前进！";
-  }
-  const fx = revealed ? (quiz.choiceCorrect ? correctFx() : wrongFx()) : "";
+  const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
+  /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
+  const ok = !!quiz.choiceCorrect;
+  const bonusAsk = quiz.bonus && quiz.bonus.state === "ask";
+  const statusTitle = q.isBonus
+    ? (ok ? "隐藏题通关！宝箱 +1 🎁" : "隐藏题未通过，继续努力")
+    : (ok ? "答对了，你真棒！" : "回答错误，继续努力");
+  const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
+    ? "看结果 ➔" : "Next ➔";
+  const answerBox = answerWord
+    ? `<div class="zoo-answer-box">
+        <span class="zoo-answer-label">正确答案：</span>
+        <span class="zoo-answer-word">${answerWord}</span>
+        <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
+          <svg viewBox="0 0 48 48" fill="none">
+            <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
+            <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
+            <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
+          </svg>
+        </button>
+        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
+        ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
+      </div>`
+    : "";
+  const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
+  const actionArea = bonusAsk ? view.btn
+    : `<button class="zoo-action-btn" data-action="next">
+        ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
+      </button>`;
+  const decor = ok
+    ? `<svg class="zoo-decor-grass" viewBox="0 0 80 26" fill="none">
+        <path d="M4 24 L14 6 L22 20 L34 2 L44 21 L56 7 L66 24 Z" fill="#63b848" stroke="#1e6b3b" stroke-width="3" stroke-linejoin="round"/>
+      </svg>
+      <svg class="zoo-decor-vine" viewBox="0 0 160 130" fill="none">
+        <path d="M10 12 Q70 25 135 18 Q145 65 138 115" stroke="#2d7a36" stroke-width="6" stroke-linecap="round"/>
+        <path d="M55 16 C45 2, 72 0, 74 16 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
+        <path d="M105 22 C110 38, 130 34, 124 18 Z" fill="#54a838" stroke="#1e6b3b" stroke-width="2.5"/>
+        <path d="M138 58 C154 52, 156 74, 138 74 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
+        <g transform="translate(126, 22)">
+          <circle cx="0" cy="-7" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
+          <circle cx="7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
+          <circle cx="4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
+          <circle cx="-4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
+          <circle cx="-7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
+          <circle cx="0" cy="0" r="4" fill="#ffe066"/>
+        </g>
+      </svg>`
+    : `<svg class="zoo-decor-leaf" viewBox="0 0 110 50" fill="none">
+        <path d="M8 14 Q55 24 98 12" stroke="#9e4332" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M36 16 C30 2, 54 2, 52 17 Z" fill="#f7a052" stroke="#8f2d1f" stroke-width="2.5"/>
+        <path d="M68 18 C72 34, 92 30, 86 15 Z" fill="#f27d52" stroke="#8f2d1f" stroke-width="2.5"/>
+      </svg>`;
+  const resultPop = revealed ? `<div class="zoo-feedback-card ${ok ? "is-correct" : "is-wrong"}${bonusAsk ? " is-stack" : ""}" role="status" aria-live="polite">
+      ${decor}
+      <div class="zoo-feedback-header">
+        <span class="zoo-status-badge" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">${ok
+            ? `<path d="M6.5 16.5 L13 23 L25.5 9.5" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>`
+            : `<path d="M9.5 9.5 L22.5 22.5 M22.5 9.5 L9.5 22.5" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round"/>`}</svg>
+        </span>
+        <h2 class="zoo-feedback-title">${statusTitle}</h2>
+      </div>
+      <div class="zoo-feedback-body">
+        ${answerBox}
+        ${actionArea}
+      </div>
+    </div>` : "";
+  const fx = revealed && ok ? correctFx() : "";
   const refHead = refType ? `<div class="ref-stage-head">
       <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
       <div><span class="ref-stage-kicker">${isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</span>
@@ -153,8 +190,16 @@ function screenQuiz() {
     </div>` : "";
   const frameTop = refType && state.scene === "zoo"
     ? `<div class="quiz-top quiz-top--frame">
-      <button class="frame-btn" data-action="close-quiz" aria-label="返回闯关"><img src="data/icons/btn-home.webp" alt=""></button>
-      <button class="frame-btn" data-action="close-quiz" aria-label="关闭并返回路线图"><img src="data/icons/btn-paw.webp" alt=""></button>
+      <button class="frame-btn" data-action="close-quiz" aria-label="返回闯关页面">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5"/><path d="M10 21v-5h4v5"/>
+        </svg>
+      </button>
+      <button class="frame-btn" data-action="close-quiz-map" aria-label="返回路线图">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <ellipse cx="12" cy="15.2" rx="3.4" ry="2.9"/><circle cx="6.8" cy="9.6" r="1.9"/><circle cx="10.2" cy="6.9" r="1.9"/><circle cx="13.8" cy="6.9" r="1.9"/><circle cx="17.2" cy="9.6" r="1.9"/>
+        </svg>
+      </button>
     </div>`
     : `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
@@ -173,10 +218,8 @@ function screenQuiz() {
       </div>`}
       ${view.body}
     </div>
-    <div class="quiz-foot">
-      <div class="combo${revealed ? (quiz.choiceCorrect ? " good" : " bad") : ""}">${revealed ? (quiz.choiceCorrect ? star(15) : I.info(15)) : I.info(15)} ${hint}</div>
-      ${view.btn}
-    </div>
+    ${resultPop}
+    <div class="quiz-foot">${revealed ? "" : view.btn}</div>
   </section>`;
 }
 
@@ -235,7 +278,7 @@ function feedCheck() {
   const ok = quiz.selected === q.correctFood;
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
-    quiz.correct++; quiz.words.push(q.word); sfx("correct");
+    quiz.correct++; quiz.words.push(q.word); sfx("excellent");
     WrongBank.applyResult(q, true);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
@@ -256,7 +299,7 @@ function checkAnswer() {
     WrongBank.applyResult(q, ok);
     if (ok) {
       if (window.ChestManager) ChestManager.grantBonus();
-      sfx("correct");
+      sfx("excellent");
     } else {
       sfx("wrong");
     }
@@ -266,7 +309,7 @@ function checkAnswer() {
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
-    sfx("correct");
+    sfx("excellent");
     /* 🦁 动物园场景：答对 → 尝试清除错题库 */
     WrongBank.applyResult(q, true);
   } else {

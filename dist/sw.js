@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "0.67";
+const VERSION = "0.69";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,8 +7,6 @@ const ASSETS = [
   "./data/icons/icon-192.png",
   "./data/icons/icon-512.png",
   "./data/icons/apple-touch-icon.png",
-  "./data/icons/btn-home.webp",
-  "./data/icons/btn-paw.webp",
   "./images/dino/egg.webp",
   "./images/dino/baby.webp",
   "./images/dino/teen.webp",

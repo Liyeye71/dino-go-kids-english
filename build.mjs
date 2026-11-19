@@ -18,7 +18,12 @@ const themeFiles = fs.readdirSync(themeDir)
   });
 
 // 依次内联拆分后的样式，顺序必须与 index.html 一致（responsive 放最后）
-const CSS_FILES = ["base", "home", "map", "quiz", "result", "quiz-types", "game", "dex", "collect", "overlays", "responsive"];
+// 主题样式放在 css/theme/ 下，按文件名排序自动登记，新增主题无需改动本文件
+const themeCssDir = path.join(appDir, "css", "theme");
+const themeCss = fs.existsSync(themeCssDir)
+  ? fs.readdirSync(themeCssDir).filter((f) => f.endsWith(".css")).sort().map((f) => `theme/${f.replace(/\.css$/, "")}`)
+  : [];
+const CSS_FILES = ["base", "home", "map", "quiz", "result", "quiz-types", "game", "dex", "collect", "overlays", ...themeCss, "responsive"];
 const css = CSS_FILES.map((name) => fs.readFileSync(path.join(appDir, "css", `${name}.css`), "utf8")).join("\n");
 const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
 
@@ -36,7 +41,7 @@ const JS_FILES = [
   "data/game/main.js", "data/game/quiz-view.js",
   "frame/home.js", "frame/map.js", "frame/dex.js", "frame/collect.js",
 ];
-let inlined = html.replace(/\n\s*<link rel="stylesheet" href="css\/[\w.-]+\.css">/g, "");
+let inlined = html.replace(/\n\s*<link rel="stylesheet" href="css\/(?:[\w.-]+\/)*[\w.-]+\.css">/g, "");
 inlined = inlined.replace("</head>", () => `  <style>\n${css}\n  </style>\n</head>`);
 for (const file of JS_FILES) {
   const src = fs.readFileSync(path.join(appDir, file), "utf8").replace(/<\/script>/gi, "<\\/script>");

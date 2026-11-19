@@ -284,7 +284,6 @@
           return {
             body: `<div class="ref-pic-wrap">
                 <div class="ref-picture-frame">
-                  <span class="ref-picture-tape" aria-hidden="true"></span>
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
                   ${listenPill()}
                 </div>
@@ -393,6 +392,7 @@
               if (quiz.choiceCorrect) {
                 quiz.correct++;
                 q.pairs.forEach((p) => quiz.words.push(p.word));
+                sfx("excellent");
               }
               render();
               return;

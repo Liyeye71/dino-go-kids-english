@@ -1,0 +1,83 @@
+/* ============================================================
+   zoo 主题：只覆盖视觉参数与位置，结构与题型引擎复用 game.css
+   新增主题时在本目录新建同名 css 即可，构建会自动登记
+   ============================================================ */
+/* zoo 主题：只切换变量（背景素材 + 选项框风格），结构复用通用规则 */
+.quiz-ref-page[data-scene="zoo"]{
+  --ref-frame-image:url("images/background/frame-animal-zoo-4x3.webp");
+  --ref-frame-size:cover;
+  --ref-frame-pos:50% 50%;
+
+  --opt-line:#956220;--opt-line-w:0.1875rem;
+  --opt-rim:#EAB373;--opt-rim-w:0.125rem;
+  --opt-base:#C78C28;--opt-base-h:0.25rem;
+  --opt-hi:radial-gradient(130% 100% at 12% 0%, #FFF3D8 0%, rgba(255,243,216,0) 46%);
+  --opt-fill:linear-gradient(180deg,#FFE7C1 0%,#FDE4BB 72%,#F3D29B 100%);
+  --opt-radius:1.0625rem;
+  --opt-shadow:rgba(120,80,20,.18);
+  --opt-key-bg:#FFF3D2;--opt-key-line:#C79A54;--opt-key-w:0.125rem;--opt-key-ink:#8A6415;
+
+  --opt-ok-line:#5C8F47;--opt-ok-rim:#B9DDA3;
+  --opt-ok-hi:radial-gradient(130% 100% at 12% 0%, #F6FFEC 0%, rgba(246,255,236,0) 46%);
+  --opt-ok-fill:linear-gradient(180deg,#EDF9DC 0%,#DDF0C2 100%);--opt-ok-base:#9AC78B;
+
+  --opt-bad-line:#C25A48;--opt-bad-rim:#F0B7A8;
+  --opt-bad-hi:radial-gradient(130% 100% at 12% 0%, #FFF6F1 0%, rgba(255,246,241,0) 46%);
+  --opt-bad-fill:linear-gradient(180deg,#FFF1EA 0%,#FFE0D4 100%);--opt-bad-base:#E5AA9B;
+}
+/* 竖版：背景放大到纸面 90%，左右框裁切，页头压到纸面内 */
+@media (max-aspect-ratio:1/1){
+  .quiz-ref-page[data-scene="zoo"]{
+    --ref-frame-image:url("images/background/frame-animal-zoo-portrait.webp");
+    --ref-frame-size:auto 145%;
+    --ref-frame-pos:50% 40%;
+    padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
+  }
+}
+.quiz-ref-page[data-scene="zoo"] .ref-scene-svg{display:none}
+.quiz-ref-page[data-scene="zoo"] .option:active{
+  transform:translateY(0.125rem);
+  box-shadow:inset 0 0 0 var(--opt-rim-w) var(--opt-rim),0 0.125rem 0 var(--opt-base);
+}
+/* zoo 框模式：两个圆按钮锚定在纸框上沿两角，用百分比锚点固定，尺寸随根字号等比缩放 */
+.quiz-ref-page[data-scene="zoo"]{
+  --frame-btn-x:10%;      /* 锚点：距页面左右边缘 */
+  --frame-btn-y:22%;      /* 锚点：距页面顶部 */
+  --frame-btn-size:2.875rem}
+.quiz-ref-page[data-scene="zoo"] .quiz-top--frame{position:static;display:block;flex:none;
+  width:auto;max-width:none;height:2.75rem;margin:0;padding:0}
+.quiz-ref-page[data-scene="zoo"] .frame-btn{position:absolute;top:var(--frame-btn-y);z-index:4;
+  width:var(--frame-btn-size);height:var(--frame-btn-size);transform:translateY(-50%)}
+.quiz-ref-page[data-scene="zoo"] .frame-btn[data-action="close-quiz"]{left:var(--frame-btn-x)}
+.quiz-ref-page[data-scene="zoo"] .frame-btn[data-action="close-quiz-map"]{right:var(--frame-btn-x)}
+.quiz-ref-page[data-scene="zoo"] .frame-btn svg{width:56%;height:56%}
+.quiz-ref-page[data-scene="zoo"] .frame-btn:active{transform:translateY(-50%) scale(.96)}
+/* 标题块略微放大并下移，避开纸面上沿 */
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head{margin-top:1.375rem;margin-bottom:0.625rem}
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head h2{font-size:clamp(1.25rem,4.4vw,1.625rem)}
+.quiz-ref-page[data-scene="zoo"] .ref-stage-badge{width:3.125rem;height:3.125rem}
+.frame-btn{flex:none;display:grid;place-items:center;width:2.5rem;height:2.5rem;padding:0;cursor:pointer;
+  color:#8A5A22;border:0.125rem solid #C08A48;border-radius:50%;
+  background:linear-gradient(180deg,#FFF8E6 0%,#FFEDC9 100%);
+  box-shadow:0 0.1875rem 0 #D9B47A,0 0.25rem 0.5rem rgba(70,45,10,.18);
+  transition:transform .12s ease,box-shadow .12s ease}
+.frame-btn svg{display:block;width:1.375rem;height:1.375rem}
+.frame-btn:active{transform:translateY(0.0625rem) scale(.96);box-shadow:0 0.125rem 0 #D9B47A}
+
+/* zoo 纸面安全区：横屏时内容宽度同时受屏宽与屏高约束，保证答题块落在背景纸面以内 */
+.quiz-ref-page[data-scene="zoo"]{container-type:size;--quiz-w:100%;--pic-w:min(100%,25rem,58cqh)}
+.quiz-ref-page[data-scene="zoo"] .ref-quiz-body,
+.quiz-ref-page[data-scene="zoo"] .quiz-foot{width:var(--quiz-w);max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
+.quiz-ref-page[data-scene="zoo"] .ref-picture-frame{width:var(--pic-w)}
+.quiz-ref-page[data-scene="zoo"] .ref-quiz-body{padding-top:1.25rem}
+.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option{padding:0 0.5rem;gap:0.375rem}
+.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option .word{font-size:clamp(0.9375rem,2.6vw,1.125rem)}
+/* 横屏：纸面宽度受限，收窄内容 */
+@media (min-aspect-ratio:1/1){
+  /* 纸面上边界（背景 cover 缩放后） */
+  .quiz-ref-page[data-scene="zoo"]{--quiz-w:min(calc(100% - 2.5rem),57cqw,74cqh);
+    --paper-top:max(23.4cqh,calc(50cqh - 20.31cqw))}
+  .quiz-ref-page[data-scene="zoo"][data-type="pic"]{--quiz-w:min(calc(100% - 2rem),66cqw,78cqh)}
+  /* 标题留在纸面外的天空，题卡整体下移到纸面以内 */
+  .quiz-ref-page[data-scene="zoo"] .ref-stage-head + *{padding-top:max(0px,calc(var(--paper-top) - 4.5rem))}
+}
