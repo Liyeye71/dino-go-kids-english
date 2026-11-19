@@ -6632,8 +6632,10 @@ function screenQuiz() {
   const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare"].includes(q.type);
   const isMatch = q.type === "match";
   const isFeed = q.type === "feed_animal";
-  /* 纯单词选项题给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
-  const answerWord = isMatch ? null : (isFeed ? q.correctFood : (q.options && q.word ? q.word : null));
+  /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
+  const answerWord = isMatch ? null
+    : (isFeed ? q.correctFood
+      : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null));
   const answerZh = isFeed ? q.correctZh : q.zh;
   let hint;
   if (revealed) {
