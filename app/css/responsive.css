@@ -553,6 +553,13 @@
   transform: scale(1.1);
   transform-origin: center;
 }
+.quiz-ref-page .ref-listen-grid .ref-listen-card-art {
+  transform: scale(1.25);
+}
+.quiz-ref-page .ref-listen-speaker .ref-toast-art {
+  transform: scale(1.15);
+  transform-origin: center;
+}
 
 /* 11. 手机窄屏微调：收紧边框，弱化两侧装饰 */
 @media (max-width: 480px) {
