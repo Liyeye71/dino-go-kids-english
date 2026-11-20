@@ -133,7 +133,6 @@
 .listen.is-shaking,
 .zoo-audio-btn.is-shaking,
 .ref-listen-speaker.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
-.ref-listen-speaker.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
 .listen.is-shaking svg,
 .zoo-audio-btn.is-shaking svg,
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}

@@ -76,6 +76,11 @@
   background-position:var(--ref-frame-pos),0 0;
   background-repeat:no-repeat,repeat}
 .ref-scene-svg{position:absolute;inset:0;width:100%;height:100%}
+/* DinoGo Logo：独立于 ref-scene-svg，不受 slice 裁剪 → iPhone 等长屏自适应 */
+.dinogo-logo{position:absolute;left:0;right:0;bottom:0.35rem;z-index:0;
+  width:min(92%,32rem);aspect-ratio:700/125;margin:0 auto;pointer-events:none;
+  transform-origin:center bottom}
+.dinogo-logo-wrap{display:flex;justify-content:center}
 .quiz-ref-page .quiz-top,.quiz-ref-page .quiz-body,.quiz-ref-page .quiz-foot{position:relative;z-index:1}
 .quiz-ref-page .quiz-top{padding-top:0.5rem}
 .quiz-ref-page .qbar{background:rgba(255,255,255,.75);border:0.09375rem solid #E8D5AE}
