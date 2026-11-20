@@ -64,18 +64,209 @@ const QuizUiArt = {
     </svg>`;
   },
   scene() {
-    return `<svg class="ref-scene-svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g fill="#FFFFFF" opacity=".72">
-        <path d="M24 67Q25 52 42 53Q47 33 67 39Q82 38 87 54Q105 53 106 68Z"/>
-        <path d="M292 105Q293 92 307 92Q312 76 328 81Q342 80 346 94Q362 93 363 106Z"/>
-      </g>
-      <g fill="#F4C95D" opacity=".65">
-        <path d="M349 34L354 45L366 47L357 56L359 68L349 62L338 68L340 56L331 47L344 45Z"/>
-        <path d="M54 143L58 151L67 153L60 159L61 168L54 164L46 168L47 159L40 153L49 151Z"/>
-      </g>
-      <path d="M0 278Q45 253 92 276T187 274T286 277T400 266V300H0Z" fill="#BBD98B" opacity=".42"/>
-      <path d="M0 291Q60 273 120 290T244 288T400 282V300H0Z" fill="#91C875" opacity=".36"/>
-    </svg>`;
+    return `
+      <!-- 底层背景：云朵 + 小树 + 公路车队 + 最底层单行贴纸艺术字 -->
+      <svg class="ref-scene-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <!-- 贴纸柔投影 -->
+          <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
+          </filter>
+          <!-- DinoGo 焦糖棕渐变 -->
+          <linearGradient id="dinogo-grad-en" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F0C9A5"/>
+            <stop offset="28%" stop-color="#C89468"/>
+            <stop offset="100%" stop-color="#9E6B40"/>
+          </linearGradient>
+          <!-- 恐龙英语 蜂蜜橙渐变 -->
+          <linearGradient id="dinogo-grad-zh" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FDEFCE"/>
+            <stop offset="28%" stop-color="#F7CE8A"/>
+            <stop offset="100%" stop-color="#E69E59"/>
+          </linearGradient>
+          <!-- 小恐龙奶油绿渐变 -->
+          <linearGradient id="dinogo-grad-dino" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#B8E196"/>
+            <stop offset="100%" stop-color="#97C975"/>
+          </linearGradient>
+
+          <!-- 小恐龙外轮廓 -->
+          <g id="dinogo-dino-shape">
+            <path d="M337 31 Q346 19 354 32 Z"/>
+            <path d="M352 44 Q366 37 364 52 Z"/>
+            <path d="M360 62 Q374 58 369 73 Z"/>
+            <path d="M363 81 Q376 80 369 94 Z"/>
+            <path d="M370 98 Q382 95 379 109 Z"/>
+            <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"/>
+          </g>
+
+          <!-- 逐字歪头跳动排版：DinoGo -->
+          <g id="dinogo-text-en" text-anchor="middle" font-weight="400"
+             font-family="'ZCOOL KuaiLe', ui-rounded, 'SF Pro Rounded', sans-serif">
+            <text x="58"  y="89" font-size="68" transform="rotate(-8 58 89)">D</text>
+            <text x="103" y="83" font-size="64" transform="rotate(6 103 83)">i</text>
+            <text x="140" y="90" font-size="64" transform="rotate(-5 140 90)">n</text>
+            <text x="186" y="84" font-size="64" transform="rotate(7 186 84)">o</text>
+            <text x="236" y="90" font-size="68" transform="rotate(-6 236 90)">G</text>
+            <text x="285" y="84" font-size="64" transform="rotate(6 285 84)">o</text>
+          </g>
+
+          <!-- 逐字歪头跳动排版：恐龙英语 -->
+          <g id="dinogo-text-zh" text-anchor="middle" font-weight="400"
+             font-family="'ZCOOL KuaiLe', 'Hiragino Maru Gothic ProN', 'Yuanti SC', 'YouYuan', sans-serif">
+            <text x="358" y="89" font-size="64" transform="rotate(-6 358 89)">恐</text>
+            <text x="424" y="82" font-size="64" transform="rotate(5 424 82)">龙</text>
+            <text x="490" y="90" font-size="64" transform="rotate(-5 490 90)">英</text>
+            <text x="556" y="83" font-size="64" transform="rotate(6 556 83)">语</text>
+          </g>
+        </defs>
+
+        <!-- 蓬松白云 -->
+        <g fill="#FFFFFF" opacity=".78">
+          <path d="M105 110 Q110 88 134 90 Q144 70 168 76 Q188 76 194 94 Q214 94 214 112 Z"/>
+          <path d="M585 155 Q590 138 610 140 Q618 124 638 130 Q654 130 658 144 Q674 144 674 158 Z"/>
+          <path d="M40 245 Q45 232 62 234 Q70 220 88 225 Q102 225 106 238 Q120 238 120 248 Z" opacity=".7"/>
+        </g>
+
+        <!-- 两侧圆润绘本小树 -->
+        <g stroke="#8E673E" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="38" y="422" width="12" height="46" rx="5" fill="#C99B6B"/>
+          <circle cx="44" cy="400" r="34" fill="#B6D78F"/>
+          <rect x="96" y="438" width="11" height="38" rx="5" fill="#C99B6B"/>
+          <circle cx="101" cy="420" r="26" fill="#F8C88C"/>
+          <rect x="748" y="418" width="12" height="48" rx="5" fill="#C99B6B"/>
+          <circle cx="754" cy="396" r="34" fill="#B6D78F"/>
+          <rect x="692" y="436" width="11" height="40" rx="5" fill="#C99B6B"/>
+          <circle cx="698" cy="418" r="25" fill="#C9E3A1"/>
+        </g>
+
+        <!-- 柔和草坡地平线 -->
+        <path d="M0 464 Q200 446 400 460 T800 456 V600 H0 Z" fill="#F3E4BE"/>
+
+        <!-- 弯弯小镇公路 -->
+        <path d="M-20 480 Q210 504 410 502 T820 476 L820 520 Q610 544 410 544 T-20 522 Z" fill="#EBD0AC" stroke="#C59D6C" stroke-width="2.5"/>
+        <path d="M-10 501 Q210 524 410 523 T810 498" fill="none" stroke="#FFFDF6" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="14 14" opacity=".9"/>
+
+        <!-- 左侧珊瑚红小巴士 -->
+        <g transform="translate(115 458)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="0" y="6" width="58" height="28" rx="9" fill="#F1987E"/>
+          <rect x="7" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="20" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="33" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="46" y="12" width="7" height="9" rx="2.5" fill="#FFF8E8"/>
+          <circle cx="14" cy="35" r="6" fill="#A67A52"/><circle cx="14" cy="35" r="2.2" fill="#FFF8E8"/>
+          <circle cx="44" cy="35" r="6" fill="#A67A52"/><circle cx="44" cy="35" r="2.2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 中间奶油黄小汽车 -->
+        <g transform="translate(302 478)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M8 18 Q13 4 26 4 Q39 4 43 18 Z" fill="#FFE08C"/>
+          <rect x="2" y="16" width="48" height="15" rx="7" fill="#FFD36E"/>
+          <path d="M14 16 Q17 8 24 8 V16 Z M28 8 Q35 8 38 16 H28 Z" fill="#FFFDF6" stroke-width="1.8"/>
+          <circle cx="13" cy="31" r="5.5" fill="#A67A52"/><circle cx="13" cy="31" r="2" fill="#FFF8E8"/>
+          <circle cx="38" cy="31" r="5.5" fill="#A67A52"/><circle cx="38" cy="31" r="2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 右侧晴空蓝小汽车 -->
+        <g transform="translate(585 465)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M9 18 Q14 4 27 4 Q40 4 44 18 Z" fill="#B7DCF2"/>
+          <rect x="2" y="16" width="48" height="15" rx="7" fill="#9BCBE8"/>
+          <path d="M15 16 Q18 8 25 8 V16 Z M29 8 Q36 8 39 16 H29 Z" fill="#FFFDF6" stroke-width="1.8"/>
+          <circle cx="13" cy="31" r="5.5" fill="#A67A52"/><circle cx="13" cy="31" r="2" fill="#FFF8E8"/>
+          <circle cx="38" cy="31" r="5.5" fill="#A67A52"/><circle cx="38" cy="31" r="2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 草丛与小花 -->
+        <g stroke="#86A860" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M225 480 Q223 472 218 470 M225 480 Q226 470 226 466 M225 480 Q230 472 233 470"/>
+          <path d="M510 482 Q508 474 503 472 M510 482 Q511 472 511 468 M510 482 Q515 474 518 472"/>
+        </g>
+        <circle cx="246" cy="472" r="4" fill="#F4A58C"/>
+        <circle cx="655" cy="466" r="4" fill="#F4A58C"/>
+
+        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（位于答题框与屏幕底边之间的呼吸区，居中锚定） -->
+        <svg x="220" y="548" width="360" height="62" viewBox="0 0 700 125" overflow="visible">
+          <!-- 第 1 层：白色模切贴纸外描边 -->
+          <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+            <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
+            <use href="#dinogo-text-en"/>
+            <use href="#dinogo-text-zh"/>
+          </g>
+
+          <!-- 第 2 层：右侧卡通小绿恐龙 -->
+          <g transform="translate(375 4) scale(0.84)" stroke="#6A401D" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+            <g fill="#F8C284">
+              <path d="M337 31 Q346 19 354 32 Z"/>
+              <path d="M352 44 Q366 37 364 52 Z"/>
+              <path d="M360 62 Q374 58 369 73 Z"/>
+              <path d="M363 81 Q376 80 369 94 Z"/>
+              <path d="M370 98 Q382 95 379 109 Z"/>
+            </g>
+            <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"
+              fill="url(#dinogo-grad-dino)"/>
+            <path d="M312 85 C323 86 334 94 335 112 C335 122 330 128 320 127 C309 124 305 108 308 92 Z"
+              fill="#FEF2C4" stroke="none"/>
+            <path d="M312 85 C323 86 334 94 335 112 C335 121 331 127 323 128"
+              fill="none" stroke="#6A401D" stroke-width="3.2"/>
+            <path d="M308 88 Q295 89 294 94 Q296 99 308 97" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+            <path d="M337 93 Q324 95 324 100 Q326 105 338 102" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+            <circle cx="314" cy="54" r="3.4" fill="#5D3718" stroke="none"/>
+            <circle cx="334" cy="59" r="3.4" fill="#5D3718" stroke="none"/>
+            <path d="M316 64 Q321 69 327 65" fill="none" stroke="#5D3718" stroke-width="3"/>
+            <ellipse cx="306" cy="59" rx="4.5" ry="2.8" fill="#F3A697" stroke="none" opacity="0.85"/>
+            <ellipse cx="340" cy="66" rx="4.8" ry="3" fill="#F3A697" stroke="none" opacity="0.85"/>
+          </g>
+
+          <!-- 第 3 层：3D 巧克力棕立体底厚 -->
+          <g transform="translate(0 5)" fill="#7A4E2A" stroke="#7A4E2A" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+            <use href="#dinogo-text-en"/>
+            <use href="#dinogo-text-zh"/>
+          </g>
+
+          <!-- 第 4 层：双色渐变主字 + 圆角棕描边 -->
+          <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+          <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+
+          <!-- 第 5 层：糖果高光点与童趣小星星 -->
+          <g fill="#FFFFFF" opacity="0.82">
+            <ellipse cx="44" cy="48" rx="6" ry="3" transform="rotate(-24 44 48)"/>
+            <ellipse cx="222" cy="48" rx="7" ry="3" transform="rotate(-22 222 48)"/>
+            <ellipse cx="344" cy="46" rx="6" ry="3" transform="rotate(-20 344 46)"/>
+            <ellipse cx="478" cy="46" rx="6" ry="3" transform="rotate(-18 478 46)"/>
+          </g>
+          <path d="M18 38 L21 45 L28 47 L21 50 L18 57 L15 50 L8 47 L15 45 Z" fill="#FFD36E" stroke="#7A4E2A" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#7A4E2A" stroke-width="2"/>
+        </svg>
+      </svg>
+
+      <!-- 左上角童趣小飞机 -->
+      <svg class="zoo-deco-plane" viewBox="0 0 130 82" aria-hidden="true">
+        <path d="M6 62 Q24 58 38 46" fill="none" stroke="#C89B63" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5 6" opacity=".75"/>
+        <g stroke="#7D512C" stroke-width="2.6" stroke-linejoin="round">
+          <path d="M40 34 L30 22 L46 28 Z" fill="#F6C8A0"/>
+          <ellipse cx="72" cy="38" rx="30" ry="14" fill="#FCE2BD"/>
+          <path d="M58 42 Q76 58 92 44 L76 38 Z" fill="#A8D5EE"/>
+          <path d="M58 28 Q74 14 86 26 L72 31 Z" fill="#BFE2F5"/>
+          <circle cx="76" cy="34" r="5" fill="#FFFDF8"/>
+          <ellipse cx="105" cy="38" rx="4" ry="13" fill="#F5B28B"/>
+        </g>
+      </svg>
+
+      <!-- 右上角条纹热气球 -->
+      <svg class="zoo-deco-balloons" viewBox="0 0 130 135" aria-hidden="true">
+        <g stroke="#7D512C" stroke-width="2.4" stroke-linejoin="round">
+          <path d="M48 10 C22 10 14 34 22 56 C28 70 38 78 48 82 C58 78 68 70 74 56 C82 34 74 10 48 10 Z" fill="#FAD2BE"/>
+          <path d="M48 10 C38 14 34 38 38 64 C40 72 44 78 48 82 C52 78 56 72 58 64 C62 38 58 14 48 10 Z" fill="#FFF5DF"/>
+          <path d="M41 82 L43 92 M55 82 L53 92" stroke-width="2"/>
+          <rect x="40" y="92" width="16" height="12" rx="3" fill="#D9A874"/>
+          <g transform="translate(64 38) scale(0.72)">
+            <path d="M48 10 C22 10 14 34 22 56 C28 70 38 78 48 82 C58 78 68 70 74 56 C82 34 74 10 48 10 Z" fill="#BFE2F2"/>
+            <path d="M48 10 C38 14 34 38 38 64 C40 72 44 78 48 82 C52 78 56 72 58 64 C62 38 58 14 48 10 Z" fill="#FCE0B8"/>
+            <path d="M41 82 L43 92 M55 82 L53 92" stroke-width="2"/>
+            <rect x="40" y="92" width="16" height="12" rx="3" fill="#D9A874"/>
+          </g>
+        </g>
+      </svg>`;
   },
 };
 

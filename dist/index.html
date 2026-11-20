@@ -20,6 +20,15 @@
    DinoGo · 恐龙英语 — interactive iOS / iPad app
    ============================================================ */
 
+/* 站酷快乐体（子集化：DinoGo/恐龙英语 + 完整英文字母），默认不启用，用时显式设 font-family:var(--font-brand) */
+@font-face{
+  font-family:"ZCOOL KuaiLe";
+  src:url("./font/ZCOOLKuaiLe.woff2") format("woff2");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
 :root{
   --ink:#1D3A2E;
   --ink-2:#4F665A;
@@ -37,10 +46,12 @@
   --shadow:0 0.625rem 1.5rem rgba(94,70,30,.08);
   --safe-top:env(safe-area-inset-top,0);
   --safe-bottom:env(safe-area-inset-bottom,0);
-  /* 字体系统：圆体优先 + 高字重标题 + 常规正文 */
+  /* 正文默认：圆体链，不包含 ZCOOL KuaiLe */
   --font-round:ui-rounded,"SF Pro Rounded","Hiragino Maru Gothic ProN",
                "M PLUS Rounded 1c","PingFang SC","HarmonyOS Sans SC",
                "MiSans","Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif;
+  /* 品牌手写体（按需使用） */
+  --font-brand:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
   --w-read:500;
   --w-mid:700;
   --w-bold:800;
@@ -132,7 +143,7 @@ h1,h2,h3,h4,p{margin:0}
 /* ------------------------------------------------ shared atoms */
 /* 跨文件复用的原子规则：flex 子项省略布局 / 插画铺满 / 隐藏滚动条 */
 .collect-head .t,.bg-item .bg-info,.dex-sum .ds-main,.dex-reward .dr-main,.words-head .t,.gc-main,.evo-unlock .u-txt,.home-top .greet,.growth-panel .g-main,.task .t-body,.profile-head .t,.nc-l{flex:1;min-width:0}
-.wr-pic svg,.option.pic .pic svg,.mcard.art svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
+.wr-pic svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
 .scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar,.theme-tabs::-webkit-scrollbar{display:none}
 
 .eyebrow{font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.1125rem;color:var(--muted);text-transform:uppercase}
@@ -154,7 +165,6 @@ h1,h2,h3,h4,p{margin:0}
 .bar{height:0.75rem;border-radius:6.1875rem;background:#EEE2CD;box-shadow:inset 0 0.125rem 0.25rem rgba(93,68,25,.08);overflow:hidden}
 .bar>i{display:block;height:100%;border-radius:6.1875rem;background:linear-gradient(90deg,#A9D84B,#3AA56B);position:relative;transition:width .6s cubic-bezier(.22,.9,.3,1)}
 .bar>i::after{content:"";position:absolute;left:0.3125rem;right:0.4375rem;top:0.125rem;height:0.1875rem;border-radius:0.5625rem;background:rgba(255,255,255,.55)}
-.bar.gold>i{background:linear-gradient(90deg,#FFD86B,#FFB13D)}
 
 .star-pill{display:flex;align-items:center;gap:0.375rem;height:2.25rem;padding:0 0.75rem 0 0.5625rem;border-radius:6.1875rem;
   background:#fff;border:0.09375rem solid #EFE1C8;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.07);
@@ -274,8 +284,6 @@ h1,h2,h3,h4,p{margin:0}
 .word-card .w-emoji{display:inline-block;margin-right:.25em;font-size:.95em;vertical-align:-.06em}
 .word-card .w-pron-row{display:flex;align-items:center;flex-wrap:wrap;column-gap:1.125rem;row-gap:0.25rem;margin-top:0.25rem}
 .word-card .w-phon{font-size:0.78125rem;font-weight:var(--w-read);color:#A68A4E;letter-spacing:0.0125rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
-.word-card .w-example{font-size:0.78125rem;font-weight:var(--w-read);line-height:1.6;letter-spacing:0.00625rem;color:#7A5A1A;white-space:nowrap}
-.word-card .w-example-zh{font-size:0.71875rem;font-weight:var(--w-read);line-height:1.6;color:#A68A4E;white-space:nowrap}
 @keyframes spk-shake{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(.94)}65%{transform:rotate(8deg) scale(.94)}}
 .word-card .spk:active{animation:spk-shake .24s ease}
 
@@ -451,41 +459,6 @@ h1,h2,h3,h4,p{margin:0}
   background:rgba(255,253,247,.88);border:0.0625rem solid rgba(214,198,166,.8);
   backdrop-filter:blur(0.25rem);-webkit-backdrop-filter:blur(0.25rem)}
 
-/* ------------------------------------------------ nodes：贴纸三态 */
-.mnode{position:absolute;z-index:3;width:3.75rem;height:3.75rem;transform:translate(-50%,-50%);border-radius:50%;
-  background:var(--sticker-paper);border:0.1875rem solid #fff;display:grid;place-items:center;font-size:1.75rem;line-height:1;
-  box-shadow:0 0.3125rem 0.625rem rgba(90,70,30,.18),0 0 0 0.125rem rgba(214,198,166,.55);transition:transform .18s ease}
-.mnode[data-action]{cursor:pointer}
-.mnode:active{transform:translate(-50%,-50%) scale(.94)}
-.mnode .disc{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;font-size:inherit;line-height:1}
-.mnode .num{position:absolute;left:-0.4375rem;top:-0.4375rem;z-index:1;min-width:1.3125rem;height:1.3125rem;padding:0 0.25rem;
-  border-radius:6.1875rem;background:#FFF7DD;border:0.125rem solid #EDD2A3;display:grid;place-items:center;
-  font-size:0.6875rem;font-weight:var(--w-black);color:#8A6415;line-height:1;font-variant-numeric:tabular-nums}
-.mnode .state{position:absolute;right:-0.375rem;bottom:-0.375rem;width:1.375rem;height:1.375rem;border-radius:50%;
-  display:grid;place-items:center;background:var(--green);color:#fff;border:0.125rem solid #fff;
-  box-shadow:0 0.125rem 0.25rem rgba(30,90,60,.3);font-size:0.6875rem;font-weight:var(--w-black);line-height:1}
-.mnode.done{border-color:#DFF2C8}
-.mnode.locked{filter:grayscale(.55);opacity:.62;
-  box-shadow:0 0.25rem 0.5rem rgba(90,70,30,.12),0 0 0 0.125rem rgba(214,198,166,.55)}
-.mnode.now{width:4.5rem;height:4.5rem;font-size:2.0625rem;border-color:#F4FFDC;
-  box-shadow:0 0 0 0.4375rem rgba(184,224,90,.42),0 0.5rem 1rem rgba(70,110,40,.24)}
-.mnode.now .ring{position:absolute;inset:-0.875rem;border-radius:50%;border:0.125rem dashed #9CC247;
-  opacity:.75;animation:spin 22s linear infinite}
-.mnode.now .go{position:absolute;left:50%;bottom:calc(100% + 0.75rem);transform:translateX(-50%);
-  padding:0.3125rem 0.625rem;border-radius:6.1875rem;white-space:nowrap;
-  background:var(--lime);color:#25401A;font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.0375rem;
-  border:0.09375rem solid #fff;box-shadow:0 0.1875rem 0 #93BD3E}
-.mnode.now .go:after{content:"";position:absolute;left:50%;bottom:-0.3125rem;width:0.5rem;height:0.5rem;
-  background:var(--lime);border-right:0.09375rem solid #fff;border-bottom:0.09375rem solid #fff;
-  transform:translateX(-50%) rotate(45deg)}
-/* 靠近卡片顶部的当前节点：GO 气泡放到节点右侧，避免被裁切或压住下一站 */
-.mnode.now.go-right .go{left:calc(100% + 0.5rem);top:50%;bottom:auto;transform:translateY(-50%)}
-.mnode.now.go-right .go:after{left:-0.3125rem;top:50%;bottom:auto;transform:translateY(-50%) rotate(45deg);
-  border:0;border-left:0.09375rem solid #fff;border-bottom:0.09375rem solid #fff}
-.mnode.chest{width:3rem;height:3rem;background:linear-gradient(145deg,#FFF6DF,#FFD98A);border-color:#fff;
-  box-shadow:0 0.3125rem 0.625rem rgba(150,110,30,.24),0 0 0 0.125rem rgba(230,196,120,.7)}
-.mnode.chest .disc{font-size:1.375rem}
-
 /* ------------------------------------------------ caption */
 .caption{position:absolute;z-index:4;left:8%;right:8%;bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;
   padding:0.5rem 0.75rem;border-radius:0.875rem;
@@ -513,27 +486,6 @@ h1,h2,h3,h4,p{margin:0}
   .map-hero h1{font-size:2.125rem}
   .map-card{height:30rem}
 }
-
-/* ------------------------------------------------ animal scene selector */
-.animal-scene-list{display:grid;gap:0.75rem;width:100%;margin:0}
-.animal-scene-card{position:relative;display:grid;grid-template-columns:minmax(8.5rem,46%) 1fr;grid-template-rows:1fr auto;align-items:stretch;gap:0.875rem;
-  min-height:clamp(12.5rem,52vw,14.375rem);padding:0.75rem;text-align:left;color:var(--ink);
-  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.4375rem;box-shadow:0 0.25rem 0 #EADAC0;
-  cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
-.animal-scene-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #EADAC0}
-.animal-scene-card:focus-visible{outline:0.1875rem solid rgba(46,139,87,.35);outline-offset:0.1875rem}
-.animal-scene-image{display:block;grid-row:1 / 3;min-width:0;height:100%;overflow:hidden;border-radius:1.125rem;background:#F4E5C6;
-  border:0.0625rem solid #E5CFA7}
-.animal-scene-image img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
-.animal-scene-info{display:flex;grid-column:2;grid-row:1;flex-direction:column;align-items:center;justify-content:center;min-width:0;text-align:center}
-.animal-scene-info strong{font-size:1.0625rem;font-weight:var(--w-black);line-height:1.4}
-.animal-scene-info small{display:block;margin-top:0.375rem;color:var(--muted);font-size:0.6875rem;font-weight:var(--w-read);line-height:1.45}
-.animal-scene-info small+small{margin-top:0.125rem}
-.animal-scene-go{grid-column:2;grid-row:2;justify-self:end;align-self:end;display:inline-flex;align-items:center;justify-content:center;gap:0.375rem;margin:0;
-  min-width:7.25rem;padding:0.625rem 0.875rem;border-radius:6.1875rem;background:var(--green);color:#fff;
-  font-size:0.78125rem;font-weight:var(--w-bold);box-shadow:0 0.1875rem 0 var(--green-d)}
-.animal-scene-card[data-scene="zoo"] .animal-scene-go{background:#7A5A2D;box-shadow:0 0.1875rem 0 var(--sticker-ink)}
-.animal-scene-go b{font-size:1rem;line-height:1}
 
 /* ------------------------------------------------ animal static route sheet */
 /* 弹层只保留地图与开始按钮：地图宽度与按钮一致，高度按视口为按钮留出空间 */
@@ -573,19 +525,6 @@ h1,h2,h3,h4,p{margin:0}
 .animal-route-map.has-map .animal-route-node.current{box-shadow:0 0 0 0.7cqw rgba(255,214,143,.55),0 0.3cqw 0.9cqw rgba(130,90,30,.18)}
 .animal-route-start{width:100%;min-height:3.25rem;margin-top:0.875rem;background:var(--green);color:#fff}
 .animal-route-start:disabled{opacity:1;pointer-events:none}
-
-@media (max-width:360px){
-  .animal-scene-card{grid-template-columns:minmax(7.25rem,44%) 1fr;gap:0.5rem;padding:0.625rem}
-  .animal-scene-info strong{font-size:0.9375rem}
-  .animal-scene-info small{font-size:0.625rem}
-  .animal-scene-go{min-width:5.75rem;padding:0.5rem 0.5rem;font-size:0.6875rem}
-}
-@media (min-width:700px){
-  .animal-scene-list{gap:1rem}
-  .animal-scene-card{grid-template-columns:minmax(14rem,40%) 1fr;padding:0.875rem}
-  .animal-scene-info strong{font-size:1.25rem}
-  .animal-scene-info small{font-size:0.78125rem}
-}
 
 /* ============================================================
    🦁 Zoo 入口图层（整张地图）
@@ -706,26 +645,9 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:0.3125rem;height:1.375rem;padding:0 0.5rem;border-radius:0.4375rem;
   background:#E8F5D8;color:var(--green-d);font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
 .quiz-prompt h2{font-size:clamp(1.1875rem,3.2vw,1.4375rem);font-weight:var(--w-black);letter-spacing:-0.025rem}
-.quiz-art{
-  flex:1;min-height:0;max-height:29.375rem;margin-top:0.75rem;border-radius:1.75rem;position:relative;overflow:hidden;
-  background:radial-gradient(circle at 50% 42%,#FFFDF2 0%,#FFF3D6 55%,#FBE8BE 100%);
-  border:0.09375rem solid #F2DFB2;display:grid;place-items:center
-}
-.quiz-art::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background-image:radial-gradient(rgba(190,150,60,.16) 0.0625rem,transparent 0.0625rem);background-size:1.375rem 1.375rem}
-.quiz-art .blob{position:absolute;width:58%;max-width:15.625rem;aspect-ratio:1;border-radius:48% 52% 55% 45%/50% 46% 54% 50%;
-  background:#FFE6A9;opacity:.55}
-.quiz-art .fruit{position:relative;width:100%;height:100%;max-width:100%;max-height:100%;padding:5% 4%;
-  filter:drop-shadow(0 1rem 1.125rem rgba(160,98,24,.2));animation:pop .45s cubic-bezier(.2,1.4,.4,1) both}
-.quiz-art .art-tag{position:absolute;left:0.875rem;top:0.875rem;font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.08125rem;color:#C49A3E}
-.quiz-art .art-spark{position:absolute;color:#E8C377;opacity:.8}
-.quiz-art .s1{left:2.125rem;top:4.75rem}
-.quiz-art .s2{right:2.375rem;top:7rem}
-.quiz-art .s3{left:3.25rem;bottom:5.5rem}
 .listen{height:2.125rem;padding:0 0.75rem;border-radius:6.1875rem;background:#fff;
   display:inline-flex;align-items:center;gap:0.3125rem;font-size:0.71875rem;font-weight:var(--w-bold);color:#9B7620;
   box-shadow:0 0.3125rem 0.75rem rgba(155,118,32,.16)}
-.quiz-art .listen{position:absolute;right:0.875rem;bottom:0.875rem}
 .listen-row{display:flex;justify-content:flex-end;margin-top:0.5rem;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex:none;margin-top:0.875rem}
 .option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;gap:0.5625rem;
@@ -743,38 +665,6 @@ h1,h2,h3,h4,p{margin:0}
 .option.wrong{border-color:#F07A6A;background:#FFF0EC;animation:shake .4s ease}
 .option.wrong .key{background:#F07A6A;color:#fff}
 .option.dim{opacity:.55}
-/* 听音选图：图片选项 + 听力按钮 + 连线 + 跟读 + 情景对话 */
-.options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr);gap:0.5625rem;margin-top:0.75rem;flex:1;min-height:0}
-.option.pic{flex-direction:column;gap:0.125rem;padding:0.375rem;min-height:0;height:100%;position:relative;overflow:hidden}
-.option.pic .key{position:absolute;left:0.5rem;top:0.5rem;width:1.375rem;height:1.375rem;font-size:0.6875rem}
-.option.pic .pic{flex:1;min-height:0;min-width:0;width:100%;display:grid;place-items:center;overflow:hidden}
-.option.pic .pic-word{font-size:0.875rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:-0.0125rem;flex:none}
-.big-speaker{width:clamp(4.5rem,14vh,6rem);height:clamp(4.5rem,14vh,6rem);border-radius:50%;display:grid;place-items:center;color:#fff;
-  background:linear-gradient(160deg,#57BE84,#2E8B57);box-shadow:0 0.625rem 1.25rem rgba(46,139,87,.28);position:relative}
-.big-speaker:active{transform:scale(.95)}
-.quiz-art .listen-tip{position:absolute;left:0;right:0;bottom:1rem;text-align:center;font-size:0.71875rem;font-weight:var(--w-bold);color:#A89A7E}
-/* 听音选图：把空间让给 2×2 图片卡，喇叭区固定为小高度 */
-.quiz-art.listen-art{flex:0 0 auto;height:clamp(9.125rem,24vh,13.5rem);max-height:13.5rem;margin-top:0.625rem;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.375rem;padding:0.5rem 0}
-.quiz-art.listen-art .big-speaker{width:clamp(4rem,12vh,5.25rem);height:clamp(4rem,12vh,5.25rem);flex:none}
-.quiz-art.listen-art .listen-tip{position:static;bottom:auto;flex:none}
-.match-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);gap:0.75rem;margin-top:0.875rem;flex:1;min-height:0}
-.match-col{display:flex;flex-direction:column;gap:0.5625rem;min-height:0}
-.mcard{border-radius:1rem;background:#fff;border:0.125rem solid #EFE2CB;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;
-  font-size:1.03125rem;font-weight:var(--w-bold);color:#4B443A;padding:0.375rem;transition:transform .12s ease;overflow:hidden}
-.mcard:active{transform:scale(.97)}
-.mcard.sel{border-color:#3AA56B;box-shadow:0 0 0 0.1875rem rgba(58,165,107,.16)}
-.mcard.ok{border-color:#B9DDA1;background:#EFF8E4;opacity:.7}
-.dialog-card{display:flex;flex-direction:column;gap:0.5625rem;margin-top:0.875rem}
-.dlg{display:flex;gap:0.5625rem;align-items:center;background:#fff;border:0.125rem solid #EFE2CB;border-radius:1.125rem;padding:0.6875rem 0.8125rem}
-.dlg.me{background:#F5FBEA;border-color:#DDEECB}
-.dlg .who{width:1.5rem;height:1.5rem;border-radius:50%;flex:none;display:grid;place-items:center;font-size:0.75rem;font-weight:var(--w-black);
-  color:#fff;background:#C9B58C}
-.dlg.me .who{background:var(--green)}
-.dlg p{font-size:0.9375rem;font-weight:var(--w-bold);color:#4B443A;line-height:1.45}
-.dlg .blank{color:var(--green-d);border-bottom:0.125rem dashed #9ACB7D;padding:0 0.125rem}
-.dlg-pic{width:3.5rem;height:3.5rem;flex:none;margin-left:auto;display:grid;place-items:center}
-.dlg-pic svg{width:100%;height:100%}
 .options.one-col{grid-template-columns:1fr;grid-auto-rows:minmax(0,1fr);gap:0.5rem;margin-top:0.625rem;flex:1;min-height:0}
 .options.one-col .option{min-height:0;padding:0 0.75rem}
 .options.one-col .option .word{font-size:1.125rem}
@@ -790,7 +680,7 @@ h1,h2,h3,h4,p{margin:0}
 .fx-confetti{position:absolute;inset:0}
 .fx-confetti i{position:absolute;top:-8%;display:block;animation:fxFall linear both}
 
-/* 答后结果卡：森林奶油风（参考 temp/correnct、woring），固定从屏幕正中心弹出 */
+/* 答后结果卡：森林奶油风，固定从屏幕正中心弹出 */
 .zoo-feedback-card{position:fixed;left:50%;top:50%;z-index:40;
   width:min(92vw,27rem);max-height:82dvh;overflow:visible;
   display:flex;flex-direction:column;gap:0.625rem;padding:1rem 1rem 1.0625rem;border-radius:1.25rem;
@@ -1013,7 +903,7 @@ h1,h2,h3,h4,p{margin:0}
    ============================================================ */
 
 /* ============================================================
-   🧩 词汇拼图 Word Puzzle（Week 5）
+   🧩 词汇拼图 Word Puzzle
    ============================================================ */
 .pz-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
 .pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
@@ -1027,10 +917,9 @@ h1,h2,h3,h4,p{margin:0}
 .pz-letter.used{opacity:.3;pointer-events:none}
 .pz-check{margin-top:0.75rem;width:100%;min-height:2.75rem}
 .pz-check:disabled{opacity:.5;cursor:not-allowed}
-.pz-answer{margin-top:0.5rem;text-align:center;color:#3D5A3D;font-size:0.875rem;font-weight:var(--w-bold)}
 
 /* ============================================================
-   🍎 动物喂食 Feed Animal（Week 5）
+   🍎 动物喂食 Feed Animal
    ============================================================ */
 .fd-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
 .fd-animal{display:flex;flex-direction:column;align-items:center;gap:0.125rem}
@@ -1041,7 +930,6 @@ h1,h2,h3,h4,p{margin:0}
 .fd-food:active{transform:scale(.92)}
 .fd-food.selected{border-color:#FFB64D;box-shadow:0 0 0 0.1875rem rgba(255,182,77,.35),0 0.1875rem 0.5rem rgba(255,152,0,.2)}
 .fd-food.correct{border-color:#43A047;background:#E8F5E9}
-.fd-answer{margin-top:0.5rem;text-align:center;color:#E53935;font-size:0.875rem;font-weight:var(--w-bold)}
 
 /* ============================================================
    🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项）
@@ -1183,7 +1071,7 @@ h1,h2,h3,h4,p{margin:0}
 }
 
 /* ============================================================
-   🔥 BOSS 关专属样式（Week 6）
+   🔥 BOSS 关专属样式
    ============================================================ */
 .chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff;
   box-shadow:0 0.25rem 0.625rem rgba(255,61,0,.35);animation:boss-chip-pulse 1.4s ease-in-out infinite}
@@ -1206,8 +1094,7 @@ h1,h2,h3,h4,p{margin:0}
    DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 连线 / 对话 / 拼词 / 喂食）
    ============================================================ */
 /* ============================================================
-   🖼 看图识词 · 平面插画风（原型）
-   参考动物园地图概念稿：暖黄底 + 白色粗描边 + 贴纸卡片
+   🖼 看图识词：暖黄底 + 白色粗描边 + 贴纸卡片
    ============================================================ */
 .quiz-page.pic-page{background:linear-gradient(180deg,#FCE8B0 0%,#F8DA8C 62%,#F4CF77 100%)}
 .quiz-page.pic-page::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
@@ -1222,48 +1109,15 @@ h1,h2,h3,h4,p{margin:0}
 .pic-page .quiz-prompt .chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff}
 .pic-page .quiz-prompt h2{font-size:clamp(1.125rem,3vw,1.375rem);color:#2C4A32}
 
-/* 插画舞台 */
-.pic-art{position:relative;flex:1;min-height:8rem;margin-top:0.5rem;border-radius:1.75rem;overflow:hidden;
-  border:0.25rem solid #fff;
-  background:linear-gradient(180deg,#CDEFF7 0%,#E6F7EE 56%,#FFF6D9 100%);
-  box-shadow:0 0.5rem 0 rgba(150,100,20,.18),0 1rem 1.75rem rgba(120,80,20,.18)}
-.pic-scene{position:absolute;left:0;right:0;bottom:0;width:100%;height:42%;display:block}
-.pic-sun{position:absolute;right:1.375rem;top:1rem;width:2.75rem;height:2.75rem;border-radius:50%;
-  background:#FFD25A;box-shadow:0 0 0 0.5rem rgba(255,210,90,.22)}
-.pic-sun::before{content:"";position:absolute;inset:-0.8125rem;border-radius:50%;
-  border:0.3125rem dotted rgba(255,200,70,.5)}
-.pic-cloud{position:absolute;background:#fff;border-radius:6.1875rem;
-  filter:drop-shadow(0 0.125rem 0 rgba(120,170,190,.16))}
-.pic-cloud::before,.pic-cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
-.pc1{left:27%;top:11%;width:4.5rem;height:1.375rem}
-.pc1::before{width:1.875rem;height:1.875rem;left:0.5rem;top:-0.8125rem}
-.pc1::after{width:1.375rem;height:1.375rem;right:0.625rem;top:-0.5625rem}
-.pc2{right:17%;top:38%;width:3.25rem;height:1rem;opacity:.75}
-.pc2::before{width:1.375rem;height:1.375rem;left:0.375rem;top:-0.5625rem}
-.pic-hero{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
-  width:clamp(7.5rem,34vh,15rem);height:clamp(7.5rem,34vh,15rem);display:grid;place-items:center;
-  filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.12));
-  animation:picHeroIn .45s cubic-bezier(.2,1.4,.4,1) both}
-@keyframes picHeroIn{
-  from{opacity:0;transform:translate(-50%,-50%) scale(.88)}
-  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
-}
-.pic-hero::before{content:none}
 .pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;
   border:0.25rem solid #fff;background:#FFF9E9;
   box-shadow:0 0.5rem 0 rgba(70,60,25,.16),0 0.75rem 1.125rem rgba(70,60,25,.18)}
 .pic-emoji{font-size:clamp(3.25rem,16vh,7rem);line-height:1;
   filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.16))}
-.pic-bubble{position:absolute;left:0.75rem;top:0.75rem;z-index:2;padding:0.375rem 0.75rem;border-radius:0.9375rem;
-  background:#fff;color:#3D7330;font-size:0.75rem;font-weight:900;letter-spacing:0.03125rem;
-  box-shadow:0 0.1875rem 0 rgba(140,95,25,.18);transform:rotate(-2deg)}
-.pic-bubble::after{content:"";position:absolute;left:1rem;bottom:-0.375rem;width:0.75rem;height:0.75rem;
-  background:#fff;border-radius:0 0.1875rem 0.1875rem 0;transform:rotate(45deg)}
 .pic-page .listen{position:absolute;right:0.875rem;bottom:0.875rem;background:#fff;color:#8A6415;
   border:0.09375rem solid #fff;font-weight:900;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
 
 /* 选项：贴纸卡片 */
-.pic-page .options.pic-options{grid-template-columns:repeat(3,1fr);gap:0.625rem;margin-top:0.75rem}
 .pic-page .option{min-height:3.75rem;border-radius:1.125rem;background:#fff;border:0.1875rem solid #fff;
   padding:0 0.625rem;gap:0.5rem;box-shadow:0 0.3125rem 0 rgba(150,100,20,.22),0 0.5rem 0.875rem rgba(120,80,20,.14);
   transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
@@ -1326,12 +1180,6 @@ h1,h2,h3,h4,p{margin:0}
 .ref-stage-kicker{display:block;margin-bottom:0.1875rem;color:#A3793D;font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
 .quiz-ref-page .quiz-foot{padding-top:0.5rem;background:transparent}
 
-/* 答后答案喇叭：结果卡与舞台共用 */
-.ans-spk{flex:none;width:1.5rem;height:1.5rem;padding:0;display:grid;place-items:center;cursor:pointer;
-  border:0.125rem solid #6B4A24;border-radius:50%;background:#FFE7B8;color:#6B4A24;
-  box-shadow:0 0.125rem 0 rgba(107,74,36,.35)}
-.ans-spk svg{width:0.75rem;height:0.75rem;display:block}
-.ans-spk:active{transform:translateY(0.125rem);box-shadow:none}
 .quiz-ref-page .quiz-foot .btn{border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155;font-weight:var(--w-black)}
 .quiz-ref-page .quiz-foot .btn:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #3F8155}
 .quiz-ref-page .quiz-foot .btn:disabled{background:#E5DCCB;border-color:#A49379;color:#93846D;box-shadow:0 0.1875rem 0 #BCAE96}
@@ -1362,8 +1210,6 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:3.75rem}
 .quiz-ref-page .ref-pic-options .option .word{font-size:1.125rem;color:#4B3626}
-
-/* zoo 主题变量、框按钮与纸面安全区：已抽离到 css/theme/zoo.css（构建自动登记） */
 
 /* 听音选图 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -1449,7 +1295,8 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page .pz-letter.used{opacity:.25;pointer-events:none}
 .ref-puzzle-wrap .pz-check{width:min(100%,20rem);border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155}
 .ref-puzzle-wrap .pz-check:disabled{border-color:#A49379;background:#E5DCCB;box-shadow:0 0.1875rem 0 #BCAE96}
-.ref-puzzle-wrap .pz-answer{color:var(--sticker-ink)}
+/* 答后移除检查按钮时保留同尺寸占位，避免题目区因剩余空间重分配而上下移位 */
+.ref-puzzle-wrap .pz-check-spacer{flex:none;width:min(100%,20rem);min-height:2.75rem;margin-top:0.75rem;visibility:hidden}
 
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
@@ -1711,7 +1558,7 @@ h1,h2,h3,h4,p{margin:0}
 .toast.out{animation:toastOut .25s ease both}
 
 /* ============================================================
-   🎁 神秘宝箱开箱（Week 4）
+   🎁 神秘宝箱开箱
    ============================================================ */
 .chest-sheet{display:flex;flex-direction:column;align-items:center;padding:1.25rem 1rem 1.5rem;background:linear-gradient(180deg,#FFF9EC 0%,#FFEED5 100%)}
 .chest-reveal{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:0.5rem 0;width:100%}
@@ -1749,9 +1596,7 @@ h1,h2,h3,h4,p{margin:0}
    ============================================================ */
 /* zoo 主题：只切换变量（背景素材 + 选项框风格），结构复用通用规则 */
 .quiz-ref-page[data-scene="zoo"]{
-  --ref-frame-image:url("images/background/frame-animal-zoo-4x3.webp");
-  --ref-frame-size:cover;
-  --ref-frame-pos:50% 50%;
+  /* 背景由 responsive.css 方案二接管（暖杏绘本小镇渐变 + SVG 场景） */
 
   --opt-line:#956220;--opt-line-w:0.1875rem;
   --opt-rim:#EAB373;--opt-rim-w:0.125rem;
@@ -1773,9 +1618,6 @@ h1,h2,h3,h4,p{margin:0}
 /* 竖版：背景放大到纸面 90%，左右框裁切，页头压到纸面内 */
 @media (max-aspect-ratio:1/1){
   .quiz-ref-page[data-scene="zoo"]{
-    --ref-frame-image:url("images/background/frame-animal-zoo-portrait.webp");
-    --ref-frame-size:auto 145%;
-    --ref-frame-pos:50% 40%;
     padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
   }
 }
@@ -1830,12 +1672,8 @@ h1,h2,h3,h4,p{margin:0}
   .word-card .w-emoji{font-size:2.75rem}
   .word-card .w-kicker{font-size:0.6875rem}
   .word-card .w-phon{font-size:0.8125rem}
-  .word-card .w-example{font-size:0.8125rem}
-  .word-card .w-example-zh{font-size:0.75rem}
   .option{min-height:4.875rem}
   .option .word{font-size:1.125rem}
-  .quiz-art{max-height:32.5rem}
-  .quiz-art .blob{max-width:21.25rem}
   .chart .col .b{width:1.75rem}
   .result-scroll{padding-left:2rem;padding-right:2rem}
   .result-foot{padding-left:2rem;padding-right:2rem}
@@ -1871,21 +1709,12 @@ h1,h2,h3,h4,p{margin:0}
   .ref-zoom-lens{width:clamp(8rem,min(27vh,32vw),13.5rem)}
 }
 
-/* ------------------------------------------------ 宽屏：听音选图改成一行 4 张，图片不会被压扁 */
-@media (min-width:640px){
-  .options.pic-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:minmax(0,1fr)}
-}
-
 /* ------------------------------------------------ 矮屏（横屏/小窗口）：压缩答题页留白，把空间让给图片 */
 @media (max-height:700px){
   .quiz-prompt{gap:0.3125rem;margin-top:0.125rem}
   .quiz-prompt .chip{height:1.25rem;font-size:0.625rem}
-  .quiz-art{margin-top:0.5625rem}
-  .quiz-art.listen-art{height:clamp(7rem,19vh,10.5rem)}
   .options{margin-top:0.625rem}
   .option{min-height:3.875rem}
-  .match-grid{margin-top:0.625rem}
-  .dialog-card{margin-top:0.625rem;gap:0.4375rem}
   .options.one-col{margin-top:0.5rem}
   .result-scroll{padding-top:calc(0.75rem + var(--safe-top));padding-bottom:0.125rem;gap:0.75rem}
   .result-stars{margin-top:0.3125rem}
@@ -1918,11 +1747,10 @@ h1,h2,h3,h4,p{margin:0}
 }
 
 /* ============================================================
-   答题页三端统一架构补丁
-   统一答题页槽位与纸面安全框，覆盖 zoo.css / responsive.css 中的冲突规则
+   答题页统一版式：外壳 / 纸面安全框 / 题型槽位
    ============================================================ */
 
-/* 1. 统一答题页外壳：解除 zoo.css 与 responsive.css 的宽度/比例冲突 */
+/* 1. 统一答题页外壳：宽度与安全区 */
 .quiz-ref-page {
   container-type: size;
   display: flex;
@@ -1932,18 +1760,7 @@ h1,h2,h3,h4,p{margin:0}
   --stage-max-w: min(100%, 42rem);
 }
 
-/* 2. zoo 场景改用纯风景底图铺满，不再用 cover 裁切画框图反推坐标 */
-.quiz-ref-page[data-scene="zoo"] {
-  --ref-frame-image: url("images/background/animal-zoo.webp") !important;
-  --ref-frame-size: cover !important;
-  --ref-frame-pos: center center !important;
-  padding-top: calc(0.5rem + var(--safe-top)) !important;
-}
-
-/* 清除原来横屏用公式硬算的 padding-top 偏移 */
-.quiz-ref-page[data-scene="zoo"] .ref-stage-head + * {
-  padding-top: 0 !important;
-}
+/* 2. zoo 场景：由方案二样式接管背景与顶部偏移 */
 
 /* 3. 顶栏、主体纸面、底栏共用同一套宽度与居中基准 */
 .quiz-ref-page .quiz-top,
@@ -2080,6 +1897,290 @@ h1,h2,h3,h4,p{margin:0}
 @media (min-width: 900px) and (min-height: 600px) {
   .app {
     max-width: min(60rem, 92vw);
+  }
+}
+
+/* ============================================================
+   方案二：暖杏绘本小镇（童趣背景 + 底层单行艺术字 + 三端固定槽位）
+   ============================================================ */
+
+/* 1. 答题页外壳：统一坐标系 + 暖杏奶油贴纸配色 */
+.quiz-ref-page[data-scene="zoo"] {
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(0.5rem + var(--safe-top)) !important;
+  background: #FFF8EA !important;
+  --stage-max-w: min(100%, 42rem);
+
+  /* 暖杏奶油选项按钮配色 */
+  --opt-line: #C89B63;
+  --opt-line-w: 0.15625rem;
+  --opt-rim: rgba(255, 255, 255, 0.9);
+  --opt-rim-w: 0.125rem;
+  --opt-base: #DFB989;
+  --opt-base-h: 0.25rem;
+  --opt-hi: linear-gradient(180deg, rgba(255,255,255,.8) 0%, rgba(255,255,255,0) 52%);
+  --opt-fill: linear-gradient(180deg, #FFFDF8 0%, #FDEED4 100%);
+  --opt-radius: 1.125rem;
+  --opt-shadow: rgba(156, 112, 62, 0.12);
+  --opt-key-bg: #FFE9BF;
+  --opt-key-line: #D8AD74;
+  --opt-key-w: 0.09375rem;
+  --opt-key-ink: #845A2B;
+
+  /* 答对：柔和抹茶绿 */
+  --opt-ok-line: #76AF68;
+  --opt-ok-rim: rgba(255, 255, 255, 0.85);
+  --opt-ok-hi: linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 50%);
+  --opt-ok-fill: linear-gradient(180deg, #EEF9E3 0%, #DCF0C8 100%);
+  --opt-ok-base: #A4CC92;
+
+  /* 答错：柔和蜜桃粉 */
+  --opt-bad-line: #DC8470;
+  --opt-bad-rim: rgba(255, 255, 255, 0.85);
+  --opt-bad-hi: linear-gradient(180deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 50%);
+  --opt-bad-fill: linear-gradient(180deg, #FFF4F0 0%, #FFE2D8 100%);
+  --opt-bad-base: #E8AEA0;
+}
+
+/* 2. 启用矢量背景层，并清除横屏下的顶部偏移 */
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head + * {
+  padding-top: 0 !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-scene-svg {
+  display: block !important;
+}
+
+/* 3. 暖杏奶油天空底色 */
+.quiz-ref-page[data-scene="zoo"] .ref-scene-bg {
+  background-image:
+    radial-gradient(circle at 20% 12%, rgba(255, 255, 255, 0.85) 0%, transparent 45%),
+    radial-gradient(circle at 82% 18%, rgba(255, 232, 196, 0.55) 0%, transparent 48%),
+    linear-gradient(180deg, #FFFBF2 0%, #FDF2DC 62%, #F9E5C2 100%) !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+}
+
+/* 4. 左上小飞机、右上热气球：贴边锚定，宽屏舒展、竖屏不遮挡 */
+.zoo-deco-plane,
+.zoo-deco-balloons {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+.zoo-deco-plane {
+  left: clamp(0.5rem, 3vw, 2.25rem);
+  top: clamp(3.25rem, 10vh, 5.5rem);
+  width: clamp(4.75rem, 13vw, 8.25rem);
+  height: auto;
+  animation: zooPlaneDrift 6s ease-in-out infinite;
+}
+.zoo-deco-balloons {
+  right: clamp(0.5rem, 3vw, 2.25rem);
+  top: clamp(3rem, 9vh, 5rem);
+  width: clamp(4.5rem, 12vw, 7.75rem);
+  height: auto;
+  animation: zooBalloonFloat 5.2s ease-in-out infinite;
+}
+@keyframes zooPlaneDrift {
+  0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+  50% { transform: translate(0.35rem, -0.35rem) rotate(2deg); }
+}
+@keyframes zooBalloonFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.5rem); }
+}
+
+/* 5. 顶栏 & 底栏：统一居中宽度，底栏为最下层艺术字留出呼吸空间 */
+.quiz-ref-page[data-scene="zoo"] .quiz-top,
+.quiz-ref-page[data-scene="zoo"] .quiz-foot {
+  width: var(--stage-max-w) !important;
+  max-width: var(--stage-max-w) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  flex: none;
+}
+.quiz-ref-page[data-scene="zoo"] .quiz-top {
+  padding-top: 0.25rem !important;
+}
+.quiz-ref-page[data-scene="zoo"] .quiz-foot {
+  height: auto !important;
+  min-height: calc(4.25rem + var(--safe-bottom));
+  padding-top: 0.45rem !important;
+  padding-bottom: calc(2.55rem + var(--safe-bottom)) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .circle-btn {
+  background: #FFFDF8;
+  border: 0.125rem solid #D9B482;
+  box-shadow: 0 0.1875rem 0 #D4AC77;
+  color: #7A532A;
+}
+.quiz-ref-page[data-scene="zoo"] .qbar {
+  background: rgba(255, 253, 248, 0.92);
+  border: 0.125rem solid #D9B482;
+}
+.quiz-ref-page[data-scene="zoo"] .qcount {
+  color: #704B25;
+  background: rgba(255, 253, 248, 0.9);
+  padding: 0.1875rem 0.625rem;
+  border-radius: 6.1875rem;
+  border: 0.09375rem solid #E2C59B;
+}
+.quiz-ref-page[data-scene="zoo"] .qcount em {
+  color: #A69175;
+}
+
+/* 6. 核心答题安全区：暖奶油绘本画纸卡片 */
+.quiz-ref-page[data-scene="zoo"] .ref-quiz-body {
+  position: relative;
+  width: calc(var(--stage-max-w) - 1.5rem) !important;
+  max-width: calc(var(--stage-max-w) - 1.5rem) !important;
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0.5rem auto 0 !important;
+  padding: clamp(0.75rem, 2cqh, 1.25rem) clamp(0.75rem, 3cqw, 1.5rem) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+
+  background: linear-gradient(180deg, rgba(255,253,248,0.72) 0%, rgba(255,249,236,0.62) 100%) !important;
+  backdrop-filter: blur(0.1875rem) saturate(1.08);
+  -webkit-backdrop-filter: blur(0.1875rem) saturate(1.08);
+  border: 0.3125rem solid rgba(216,176,122,0.82) !important;
+  border-radius: 1.5rem !important;
+  box-shadow:
+    0 0 0 0.125rem rgba(158,114,66,0.62),
+    inset 0 0 0 0.125rem rgba(246,229,200,0.78),
+    0 0.3125rem 0 rgba(196,152,98,0.65),
+    0 0.875rem 1.75rem rgba(140, 98, 50, 0.14) !important;
+}
+
+/* 7. 顶部题型标题：暖杏圆润胶囊，所有题型锁死同一高度与位置 */
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head {
+  flex: none;
+  margin: 0 auto clamp(0.5rem, 1.8cqh, 0.9rem) !important;
+  min-height: 2.75rem;
+  padding: 0.25rem 1.125rem 0.3125rem 0.5rem;
+  border-radius: 1.125rem;
+  background: linear-gradient(180deg, #FFEDCB 0%, #FBD9A4 100%);
+  border: 0.125rem solid #C6985F;
+  box-shadow:
+    inset 0 0.125rem 0 rgba(255, 255, 255, 0.78),
+    0 0.1875rem 0 #D8AE78;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-stage-badge {
+  width: 2.375rem !important;
+  height: 2.375rem !important;
+  background: #FFFDF8 !important;
+  border-color: #C6985F !important;
+  box-shadow: 0 0.125rem 0 #DFBA88 !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-stage-kicker {
+  color: #9C6F3B !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head h2 {
+  font-size: clamp(1rem, 2.7cqw, 1.35rem) !important;
+  color: #633F1D !important;
+}
+
+/* 8. 收编所有题型包裹层：统一“上区居中展示 + 下区贴底选项” */
+.quiz-ref-page[data-scene="zoo"] .ref-pic-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-listen-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-action-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-feed-wrap {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: clamp(0.45rem, 1.5cqh, 0.85rem) !important;
+}
+
+/* 9. 统一各题型视觉舞台：温和木色相框 */
+.quiz-ref-page[data-scene="zoo"] .ref-picture-frame,
+.quiz-ref-page[data-scene="zoo"] .ref-action-stage,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-stage {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: 48cqh !important;
+  width: min(100%, 28rem) !important;
+  margin: 0 auto !important;
+  border-color: #C89B63 !important;
+  box-shadow: 0 0.25rem 0 #E7CFA9, 0 0.625rem 1.25rem rgba(156, 112, 62, 0.1) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-lens {
+  width: clamp(7.75rem, min(28cqh, 42cqw), 13rem) !important;
+  margin: auto 0 0 !important;
+  flex: none;
+  border-color: #B68752 !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-handle {
+  margin-bottom: auto !important;
+  background: #B68752 !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-listen-speaker {
+  flex: none !important;
+  height: clamp(5rem, 16cqh, 8rem) !important;
+  margin: auto 0 !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-listen-grid {
+  flex: none !important;
+  width: 100% !important;
+  max-width: 34rem !important;
+  height: clamp(7rem, 22cqh, 10.5rem) !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+}
+
+/* 10. 底部选项栏：统一贴底、等高三列 */
+.quiz-ref-page[data-scene="zoo"] .ref-pic-options,
+.quiz-ref-page[data-scene="zoo"] .ref-action-options,
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-options,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-options {
+  flex: none !important;
+  width: 100% !important;
+  max-width: 34rem !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(0.375rem, 1.5cqw, 0.75rem) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option,
+.quiz-ref-page[data-scene="zoo"] .ref-action-options .option,
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-options .option,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-options .option {
+  min-height: clamp(3.125rem, 8cqh, 4.25rem) !important;
+  padding: 0 clamp(0.375rem, 1.2cqw, 0.75rem) !important;
+  justify-content: center;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-action-tip,
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-tip,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-tip {
+  flex: none;
+  margin: 0 !important;
+  color: #8C663D;
+  font-size: clamp(0.75rem, 2cqw, 0.9375rem);
+}
+
+/* 11. 手机窄屏微调：收紧边框，弱化两侧装饰 */
+@media (max-width: 480px) {
+  .quiz-ref-page[data-scene="zoo"] .ref-quiz-body {
+    width: calc(100% - 1rem) !important;
+    max-width: calc(100% - 1rem) !important;
+    border-width: 0.25rem !important;
+    border-radius: 1.25rem !important;
+  }
+  .zoo-deco-plane,
+  .zoo-deco-balloons {
+    opacity: 0.55;
   }
 }
 
@@ -4214,7 +4315,9 @@ window.DINO_WORD_RULES.push({
               </div>
               <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
-              ${!revealed ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>` : ""}
+              ${!revealed
+                ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>`
+                : `<span class="pz-check-spacer" aria-hidden="true"></span>`}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },
@@ -5120,18 +5223,209 @@ const QuizUiArt = {
     </svg>`;
   },
   scene() {
-    return `<svg class="ref-scene-svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <g fill="#FFFFFF" opacity=".72">
-        <path d="M24 67Q25 52 42 53Q47 33 67 39Q82 38 87 54Q105 53 106 68Z"/>
-        <path d="M292 105Q293 92 307 92Q312 76 328 81Q342 80 346 94Q362 93 363 106Z"/>
-      </g>
-      <g fill="#F4C95D" opacity=".65">
-        <path d="M349 34L354 45L366 47L357 56L359 68L349 62L338 68L340 56L331 47L344 45Z"/>
-        <path d="M54 143L58 151L67 153L60 159L61 168L54 164L46 168L47 159L40 153L49 151Z"/>
-      </g>
-      <path d="M0 278Q45 253 92 276T187 274T286 277T400 266V300H0Z" fill="#BBD98B" opacity=".42"/>
-      <path d="M0 291Q60 273 120 290T244 288T400 282V300H0Z" fill="#91C875" opacity=".36"/>
-    </svg>`;
+    return `
+      <!-- 底层背景：云朵 + 小树 + 公路车队 + 最底层单行贴纸艺术字 -->
+      <svg class="ref-scene-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <!-- 贴纸柔投影 -->
+          <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
+          </filter>
+          <!-- DinoGo 焦糖棕渐变 -->
+          <linearGradient id="dinogo-grad-en" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F0C9A5"/>
+            <stop offset="28%" stop-color="#C89468"/>
+            <stop offset="100%" stop-color="#9E6B40"/>
+          </linearGradient>
+          <!-- 恐龙英语 蜂蜜橙渐变 -->
+          <linearGradient id="dinogo-grad-zh" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FDEFCE"/>
+            <stop offset="28%" stop-color="#F7CE8A"/>
+            <stop offset="100%" stop-color="#E69E59"/>
+          </linearGradient>
+          <!-- 小恐龙奶油绿渐变 -->
+          <linearGradient id="dinogo-grad-dino" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#B8E196"/>
+            <stop offset="100%" stop-color="#97C975"/>
+          </linearGradient>
+
+          <!-- 小恐龙外轮廓 -->
+          <g id="dinogo-dino-shape">
+            <path d="M337 31 Q346 19 354 32 Z"/>
+            <path d="M352 44 Q366 37 364 52 Z"/>
+            <path d="M360 62 Q374 58 369 73 Z"/>
+            <path d="M363 81 Q376 80 369 94 Z"/>
+            <path d="M370 98 Q382 95 379 109 Z"/>
+            <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"/>
+          </g>
+
+          <!-- 逐字歪头跳动排版：DinoGo -->
+          <g id="dinogo-text-en" text-anchor="middle" font-weight="400"
+             font-family="'ZCOOL KuaiLe', ui-rounded, 'SF Pro Rounded', sans-serif">
+            <text x="58"  y="89" font-size="68" transform="rotate(-8 58 89)">D</text>
+            <text x="103" y="83" font-size="64" transform="rotate(6 103 83)">i</text>
+            <text x="140" y="90" font-size="64" transform="rotate(-5 140 90)">n</text>
+            <text x="186" y="84" font-size="64" transform="rotate(7 186 84)">o</text>
+            <text x="236" y="90" font-size="68" transform="rotate(-6 236 90)">G</text>
+            <text x="285" y="84" font-size="64" transform="rotate(6 285 84)">o</text>
+          </g>
+
+          <!-- 逐字歪头跳动排版：恐龙英语 -->
+          <g id="dinogo-text-zh" text-anchor="middle" font-weight="400"
+             font-family="'ZCOOL KuaiLe', 'Hiragino Maru Gothic ProN', 'Yuanti SC', 'YouYuan', sans-serif">
+            <text x="358" y="89" font-size="64" transform="rotate(-6 358 89)">恐</text>
+            <text x="424" y="82" font-size="64" transform="rotate(5 424 82)">龙</text>
+            <text x="490" y="90" font-size="64" transform="rotate(-5 490 90)">英</text>
+            <text x="556" y="83" font-size="64" transform="rotate(6 556 83)">语</text>
+          </g>
+        </defs>
+
+        <!-- 蓬松白云 -->
+        <g fill="#FFFFFF" opacity=".78">
+          <path d="M105 110 Q110 88 134 90 Q144 70 168 76 Q188 76 194 94 Q214 94 214 112 Z"/>
+          <path d="M585 155 Q590 138 610 140 Q618 124 638 130 Q654 130 658 144 Q674 144 674 158 Z"/>
+          <path d="M40 245 Q45 232 62 234 Q70 220 88 225 Q102 225 106 238 Q120 238 120 248 Z" opacity=".7"/>
+        </g>
+
+        <!-- 两侧圆润绘本小树 -->
+        <g stroke="#8E673E" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="38" y="422" width="12" height="46" rx="5" fill="#C99B6B"/>
+          <circle cx="44" cy="400" r="34" fill="#B6D78F"/>
+          <rect x="96" y="438" width="11" height="38" rx="5" fill="#C99B6B"/>
+          <circle cx="101" cy="420" r="26" fill="#F8C88C"/>
+          <rect x="748" y="418" width="12" height="48" rx="5" fill="#C99B6B"/>
+          <circle cx="754" cy="396" r="34" fill="#B6D78F"/>
+          <rect x="692" y="436" width="11" height="40" rx="5" fill="#C99B6B"/>
+          <circle cx="698" cy="418" r="25" fill="#C9E3A1"/>
+        </g>
+
+        <!-- 柔和草坡地平线 -->
+        <path d="M0 464 Q200 446 400 460 T800 456 V600 H0 Z" fill="#F3E4BE"/>
+
+        <!-- 弯弯小镇公路 -->
+        <path d="M-20 480 Q210 504 410 502 T820 476 L820 520 Q610 544 410 544 T-20 522 Z" fill="#EBD0AC" stroke="#C59D6C" stroke-width="2.5"/>
+        <path d="M-10 501 Q210 524 410 523 T810 498" fill="none" stroke="#FFFDF6" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="14 14" opacity=".9"/>
+
+        <!-- 左侧珊瑚红小巴士 -->
+        <g transform="translate(115 458)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="0" y="6" width="58" height="28" rx="9" fill="#F1987E"/>
+          <rect x="7" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="20" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="33" y="12" width="9" height="9" rx="2.5" fill="#FFF8E8"/>
+          <rect x="46" y="12" width="7" height="9" rx="2.5" fill="#FFF8E8"/>
+          <circle cx="14" cy="35" r="6" fill="#A67A52"/><circle cx="14" cy="35" r="2.2" fill="#FFF8E8"/>
+          <circle cx="44" cy="35" r="6" fill="#A67A52"/><circle cx="44" cy="35" r="2.2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 中间奶油黄小汽车 -->
+        <g transform="translate(302 478)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M8 18 Q13 4 26 4 Q39 4 43 18 Z" fill="#FFE08C"/>
+          <rect x="2" y="16" width="48" height="15" rx="7" fill="#FFD36E"/>
+          <path d="M14 16 Q17 8 24 8 V16 Z M28 8 Q35 8 38 16 H28 Z" fill="#FFFDF6" stroke-width="1.8"/>
+          <circle cx="13" cy="31" r="5.5" fill="#A67A52"/><circle cx="13" cy="31" r="2" fill="#FFF8E8"/>
+          <circle cx="38" cy="31" r="5.5" fill="#A67A52"/><circle cx="38" cy="31" r="2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 右侧晴空蓝小汽车 -->
+        <g transform="translate(585 465)" stroke="#7D512C" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M9 18 Q14 4 27 4 Q40 4 44 18 Z" fill="#B7DCF2"/>
+          <rect x="2" y="16" width="48" height="15" rx="7" fill="#9BCBE8"/>
+          <path d="M15 16 Q18 8 25 8 V16 Z M29 8 Q36 8 39 16 H29 Z" fill="#FFFDF6" stroke-width="1.8"/>
+          <circle cx="13" cy="31" r="5.5" fill="#A67A52"/><circle cx="13" cy="31" r="2" fill="#FFF8E8"/>
+          <circle cx="38" cy="31" r="5.5" fill="#A67A52"/><circle cx="38" cy="31" r="2" fill="#FFF8E8"/>
+        </g>
+
+        <!-- 草丛与小花 -->
+        <g stroke="#86A860" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M225 480 Q223 472 218 470 M225 480 Q226 470 226 466 M225 480 Q230 472 233 470"/>
+          <path d="M510 482 Q508 474 503 472 M510 482 Q511 472 511 468 M510 482 Q515 474 518 472"/>
+        </g>
+        <circle cx="246" cy="472" r="4" fill="#F4A58C"/>
+        <circle cx="655" cy="466" r="4" fill="#F4A58C"/>
+
+        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（位于答题框与屏幕底边之间的呼吸区，居中锚定） -->
+        <svg x="220" y="548" width="360" height="62" viewBox="0 0 700 125" overflow="visible">
+          <!-- 第 1 层：白色模切贴纸外描边 -->
+          <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+            <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
+            <use href="#dinogo-text-en"/>
+            <use href="#dinogo-text-zh"/>
+          </g>
+
+          <!-- 第 2 层：右侧卡通小绿恐龙 -->
+          <g transform="translate(375 4) scale(0.84)" stroke="#6A401D" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+            <g fill="#F8C284">
+              <path d="M337 31 Q346 19 354 32 Z"/>
+              <path d="M352 44 Q366 37 364 52 Z"/>
+              <path d="M360 62 Q374 58 369 73 Z"/>
+              <path d="M363 81 Q376 80 369 94 Z"/>
+              <path d="M370 98 Q382 95 379 109 Z"/>
+            </g>
+            <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"
+              fill="url(#dinogo-grad-dino)"/>
+            <path d="M312 85 C323 86 334 94 335 112 C335 122 330 128 320 127 C309 124 305 108 308 92 Z"
+              fill="#FEF2C4" stroke="none"/>
+            <path d="M312 85 C323 86 334 94 335 112 C335 121 331 127 323 128"
+              fill="none" stroke="#6A401D" stroke-width="3.2"/>
+            <path d="M308 88 Q295 89 294 94 Q296 99 308 97" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+            <path d="M337 93 Q324 95 324 100 Q326 105 338 102" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+            <circle cx="314" cy="54" r="3.4" fill="#5D3718" stroke="none"/>
+            <circle cx="334" cy="59" r="3.4" fill="#5D3718" stroke="none"/>
+            <path d="M316 64 Q321 69 327 65" fill="none" stroke="#5D3718" stroke-width="3"/>
+            <ellipse cx="306" cy="59" rx="4.5" ry="2.8" fill="#F3A697" stroke="none" opacity="0.85"/>
+            <ellipse cx="340" cy="66" rx="4.8" ry="3" fill="#F3A697" stroke="none" opacity="0.85"/>
+          </g>
+
+          <!-- 第 3 层：3D 巧克力棕立体底厚 -->
+          <g transform="translate(0 5)" fill="#7A4E2A" stroke="#7A4E2A" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+            <use href="#dinogo-text-en"/>
+            <use href="#dinogo-text-zh"/>
+          </g>
+
+          <!-- 第 4 层：双色渐变主字 + 圆角棕描边 -->
+          <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+          <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+
+          <!-- 第 5 层：糖果高光点与童趣小星星 -->
+          <g fill="#FFFFFF" opacity="0.82">
+            <ellipse cx="44" cy="48" rx="6" ry="3" transform="rotate(-24 44 48)"/>
+            <ellipse cx="222" cy="48" rx="7" ry="3" transform="rotate(-22 222 48)"/>
+            <ellipse cx="344" cy="46" rx="6" ry="3" transform="rotate(-20 344 46)"/>
+            <ellipse cx="478" cy="46" rx="6" ry="3" transform="rotate(-18 478 46)"/>
+          </g>
+          <path d="M18 38 L21 45 L28 47 L21 50 L18 57 L15 50 L8 47 L15 45 Z" fill="#FFD36E" stroke="#7A4E2A" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#7A4E2A" stroke-width="2"/>
+        </svg>
+      </svg>
+
+      <!-- 左上角童趣小飞机 -->
+      <svg class="zoo-deco-plane" viewBox="0 0 130 82" aria-hidden="true">
+        <path d="M6 62 Q24 58 38 46" fill="none" stroke="#C89B63" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5 6" opacity=".75"/>
+        <g stroke="#7D512C" stroke-width="2.6" stroke-linejoin="round">
+          <path d="M40 34 L30 22 L46 28 Z" fill="#F6C8A0"/>
+          <ellipse cx="72" cy="38" rx="30" ry="14" fill="#FCE2BD"/>
+          <path d="M58 42 Q76 58 92 44 L76 38 Z" fill="#A8D5EE"/>
+          <path d="M58 28 Q74 14 86 26 L72 31 Z" fill="#BFE2F5"/>
+          <circle cx="76" cy="34" r="5" fill="#FFFDF8"/>
+          <ellipse cx="105" cy="38" rx="4" ry="13" fill="#F5B28B"/>
+        </g>
+      </svg>
+
+      <!-- 右上角条纹热气球 -->
+      <svg class="zoo-deco-balloons" viewBox="0 0 130 135" aria-hidden="true">
+        <g stroke="#7D512C" stroke-width="2.4" stroke-linejoin="round">
+          <path d="M48 10 C22 10 14 34 22 56 C28 70 38 78 48 82 C58 78 68 70 74 56 C82 34 74 10 48 10 Z" fill="#FAD2BE"/>
+          <path d="M48 10 C38 14 34 38 38 64 C40 72 44 78 48 82 C52 78 56 72 58 64 C62 38 58 14 48 10 Z" fill="#FFF5DF"/>
+          <path d="M41 82 L43 92 M55 82 L53 92" stroke-width="2"/>
+          <rect x="40" y="92" width="16" height="12" rx="3" fill="#D9A874"/>
+          <g transform="translate(64 38) scale(0.72)">
+            <path d="M48 10 C22 10 14 34 22 56 C28 70 38 78 48 82 C58 78 68 70 74 56 C82 34 74 10 48 10 Z" fill="#BFE2F2"/>
+            <path d="M48 10 C38 14 34 38 38 64 C40 72 44 78 48 82 C52 78 56 72 58 64 C62 38 58 14 48 10 Z" fill="#FCE0B8"/>
+            <path d="M41 82 L43 92 M55 82 L53 92" stroke-width="2"/>
+            <rect x="40" y="92" width="16" height="12" rx="3" fill="#D9A874"/>
+          </g>
+        </g>
+      </svg>`;
   },
 };
 
@@ -5228,7 +5522,6 @@ const DEFAULT_STATE = {
   progress: {},
   log: {},
   words: 0,
-  minutes: 0,
   threeStars: 0,
   tasks: { level: false },
   bg: "jungle",
@@ -5279,7 +5572,7 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
     words: themeWordList(set.words),
     scenes: (set.scenes || []).map((scene) => ({ ...scene, words: themeWordList(scene.words) })),
   }));
-/* 每个主题 10 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
+/* 普通主题 10 关，动物乐园按场景各 50 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
 const LEVELS_PER_THEME = 10;
 const PASS_STARS = 1;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
@@ -5636,18 +5929,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "start-quiz") {
     closeOverlay();
     startQuiz(el.dataset.level);
-  } else if (action === "review-level") {
-    startQuiz(Number(el.dataset.level));
-  } else if (action === "locked-level") {
-    toast("先拿到两星通过前一关，才能解锁这一关");
   } else if (action === "select") {
     selectOption(el.dataset.word);
   } else if (action === "listen-selected") {
     listenSelected();
-  } else if (action === "match-word") {
-    matchPickWord(el.dataset.word);
-  } else if (action === "match-art") {
-    matchPickArt(el.dataset.word);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "bonus-start") {
@@ -5714,16 +5999,6 @@ document.addEventListener("click", (e) => {
   } else if (action === "open-animal-scene") {
     sfx("tap");
     openAnimalScene(el.dataset.scene);
-  } else if (action === "animal-node") {
-    const level = Number(el.dataset.level) || 1;
-    const prog = themeProgress();
-    if (level > prog.level) {
-      toast(`先拿到两星通过第 ${prog.level} 关，才能解锁这一关`);
-      return;
-    }
-    sfx("tap");
-    closeOverlay();
-    startQuiz(level);
   } else if (action === "zoo-node") {
     /* 🦁 路线弹框里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
@@ -5834,8 +6109,6 @@ document.addEventListener("click", (e) => {
     recordSay();
   } else if (action === "play-voice") {
     playVoice();
-  } else if (action === "open-map") {
-    go("map");
   }
 });
 
@@ -5850,7 +6123,7 @@ window.addEventListener("popstate", (e) => {
 document.addEventListener("gesturestart", (e) => e.preventDefault());
 
 /* ============================================================
-   🎁 神秘宝箱开箱 overlay（Week 4）
+   神秘宝箱开箱 overlay
    ============================================================ */
 function buildChestOverlay(stage) {
   const left = !stage;
@@ -5903,7 +6176,7 @@ function buildChestOverlay(stage) {
    ============================================================ */
 
 /* ------------------------------------------------ render */
-/* 页面渲染表在 boot() 里装配，保证四个 Tab 文件都已加载 */
+/* 页面渲染表在 boot() 里装配，保证各屏幕模块都已加载 */
 let SCREEN_FN = {};
 function render() {
   const fn = SCREEN_FN[current] || screenHome;
@@ -6272,7 +6545,6 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     state.words += quiz.correct;
-    state.minutes += Math.max(1, Math.round(elapsed / 60));
     state.threeStars += stars === 3 ? 1 : 0;
     state.tasks.level = true;
     recordLevel(stars);
@@ -7838,7 +8110,7 @@ function openBuyBg(id) {
   const bg = bgMeta(id);
   if (!bg || bg.price === 0) return;
   if (state.stars < bg.price) { toast("星星不够啦，再去闯一关吧"); return; }
-  pendingBuy = { type: "bg", id };
+  pendingBuy = id;
   openOverlay(`<div class="overlay dialog-wrap">
     <div class="dialog">
       <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"></div>
@@ -7853,7 +8125,7 @@ function openBuyBg(id) {
 }
 function confirmBuy() {
   if (!pendingBuy) return;
-  const bg = bgMeta(pendingBuy.id);
+  const bg = bgMeta(pendingBuy);
   if (state.bgOwned.includes(bg.id)) { state.bg = bg.id; pendingBuy = null; closeOverlay(); render(); return; }
   if (state.stars < bg.price) { toast("星星不够啦"); return; }
   state.stars -= bg.price;

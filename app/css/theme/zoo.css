@@ -4,9 +4,7 @@
    ============================================================ */
 /* zoo 主题：只切换变量（背景素材 + 选项框风格），结构复用通用规则 */
 .quiz-ref-page[data-scene="zoo"]{
-  --ref-frame-image:url("images/background/frame-animal-zoo-4x3.webp");
-  --ref-frame-size:cover;
-  --ref-frame-pos:50% 50%;
+  /* 背景由 responsive.css 方案二接管（暖杏绘本小镇渐变 + SVG 场景） */
 
   --opt-line:#956220;--opt-line-w:0.1875rem;
   --opt-rim:#EAB373;--opt-rim-w:0.125rem;
@@ -28,9 +26,6 @@
 /* 竖版：背景放大到纸面 90%，左右框裁切，页头压到纸面内 */
 @media (max-aspect-ratio:1/1){
   .quiz-ref-page[data-scene="zoo"]{
-    --ref-frame-image:url("images/background/frame-animal-zoo-portrait.webp");
-    --ref-frame-size:auto 145%;
-    --ref-frame-pos:50% 40%;
     padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
   }
 }

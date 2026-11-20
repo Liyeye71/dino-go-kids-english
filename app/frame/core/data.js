@@ -37,7 +37,6 @@ const DEFAULT_STATE = {
   progress: {},
   log: {},
   words: 0,
-  minutes: 0,
   threeStars: 0,
   tasks: { level: false },
   bg: "jungle",

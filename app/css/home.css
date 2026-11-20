@@ -86,8 +86,6 @@
 .word-card .w-emoji{display:inline-block;margin-right:.25em;font-size:.95em;vertical-align:-.06em}
 .word-card .w-pron-row{display:flex;align-items:center;flex-wrap:wrap;column-gap:1.125rem;row-gap:0.25rem;margin-top:0.25rem}
 .word-card .w-phon{font-size:0.78125rem;font-weight:var(--w-read);color:#A68A4E;letter-spacing:0.0125rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
-.word-card .w-example{font-size:0.78125rem;font-weight:var(--w-read);line-height:1.6;letter-spacing:0.00625rem;color:#7A5A1A;white-space:nowrap}
-.word-card .w-example-zh{font-size:0.71875rem;font-weight:var(--w-read);line-height:1.6;color:#A68A4E;white-space:nowrap}
 @keyframes spk-shake{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(.94)}65%{transform:rotate(8deg) scale(.94)}}
 .word-card .spk:active{animation:spk-shake .24s ease}
 

@@ -56,7 +56,7 @@ function openBuyBg(id) {
   const bg = bgMeta(id);
   if (!bg || bg.price === 0) return;
   if (state.stars < bg.price) { toast("星星不够啦，再去闯一关吧"); return; }
-  pendingBuy = { type: "bg", id };
+  pendingBuy = id;
   openOverlay(`<div class="overlay dialog-wrap">
     <div class="dialog">
       <div class="bg-thumb ${bg.cls}" style="width:100%;height:6rem;border-radius:1rem"></div>
@@ -71,7 +71,7 @@ function openBuyBg(id) {
 }
 function confirmBuy() {
   if (!pendingBuy) return;
-  const bg = bgMeta(pendingBuy.id);
+  const bg = bgMeta(pendingBuy);
   if (state.bgOwned.includes(bg.id)) { state.bg = bg.id; pendingBuy = null; closeOverlay(); render(); return; }
   if (state.stars < bg.price) { toast("星星不够啦"); return; }
   state.stars -= bg.price;

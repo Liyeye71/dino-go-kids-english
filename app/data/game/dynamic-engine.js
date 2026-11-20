@@ -468,7 +468,9 @@
               </div>
               <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
-              ${!revealed ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>` : ""}
+              ${!revealed
+                ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>`
+                : `<span class="pz-check-spacer" aria-hidden="true"></span>`}
             </div>`;
           return { body, btn: revealed ? quizNextButton() : "" };
         },

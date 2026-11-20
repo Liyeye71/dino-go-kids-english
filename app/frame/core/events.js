@@ -28,18 +28,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "start-quiz") {
     closeOverlay();
     startQuiz(el.dataset.level);
-  } else if (action === "review-level") {
-    startQuiz(Number(el.dataset.level));
-  } else if (action === "locked-level") {
-    toast("先拿到两星通过前一关，才能解锁这一关");
   } else if (action === "select") {
     selectOption(el.dataset.word);
   } else if (action === "listen-selected") {
     listenSelected();
-  } else if (action === "match-word") {
-    matchPickWord(el.dataset.word);
-  } else if (action === "match-art") {
-    matchPickArt(el.dataset.word);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "bonus-start") {
@@ -106,16 +98,6 @@ document.addEventListener("click", (e) => {
   } else if (action === "open-animal-scene") {
     sfx("tap");
     openAnimalScene(el.dataset.scene);
-  } else if (action === "animal-node") {
-    const level = Number(el.dataset.level) || 1;
-    const prog = themeProgress();
-    if (level > prog.level) {
-      toast(`先拿到两星通过第 ${prog.level} 关，才能解锁这一关`);
-      return;
-    }
-    sfx("tap");
-    closeOverlay();
-    startQuiz(level);
   } else if (action === "zoo-node") {
     /* 🦁 路线弹框里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
@@ -226,8 +208,6 @@ document.addEventListener("click", (e) => {
     recordSay();
   } else if (action === "play-voice") {
     playVoice();
-  } else if (action === "open-map") {
-    go("map");
   }
 });
 
@@ -242,7 +222,7 @@ window.addEventListener("popstate", (e) => {
 document.addEventListener("gesturestart", (e) => e.preventDefault());
 
 /* ============================================================
-   🎁 神秘宝箱开箱 overlay（Week 4）
+   神秘宝箱开箱 overlay
    ============================================================ */
 function buildChestOverlay(stage) {
   const left = !stage;

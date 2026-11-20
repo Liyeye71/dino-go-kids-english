@@ -52,41 +52,6 @@
   background:rgba(255,253,247,.88);border:0.0625rem solid rgba(214,198,166,.8);
   backdrop-filter:blur(0.25rem);-webkit-backdrop-filter:blur(0.25rem)}
 
-/* ------------------------------------------------ nodes：贴纸三态 */
-.mnode{position:absolute;z-index:3;width:3.75rem;height:3.75rem;transform:translate(-50%,-50%);border-radius:50%;
-  background:var(--sticker-paper);border:0.1875rem solid #fff;display:grid;place-items:center;font-size:1.75rem;line-height:1;
-  box-shadow:0 0.3125rem 0.625rem rgba(90,70,30,.18),0 0 0 0.125rem rgba(214,198,166,.55);transition:transform .18s ease}
-.mnode[data-action]{cursor:pointer}
-.mnode:active{transform:translate(-50%,-50%) scale(.94)}
-.mnode .disc{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;font-size:inherit;line-height:1}
-.mnode .num{position:absolute;left:-0.4375rem;top:-0.4375rem;z-index:1;min-width:1.3125rem;height:1.3125rem;padding:0 0.25rem;
-  border-radius:6.1875rem;background:#FFF7DD;border:0.125rem solid #EDD2A3;display:grid;place-items:center;
-  font-size:0.6875rem;font-weight:var(--w-black);color:#8A6415;line-height:1;font-variant-numeric:tabular-nums}
-.mnode .state{position:absolute;right:-0.375rem;bottom:-0.375rem;width:1.375rem;height:1.375rem;border-radius:50%;
-  display:grid;place-items:center;background:var(--green);color:#fff;border:0.125rem solid #fff;
-  box-shadow:0 0.125rem 0.25rem rgba(30,90,60,.3);font-size:0.6875rem;font-weight:var(--w-black);line-height:1}
-.mnode.done{border-color:#DFF2C8}
-.mnode.locked{filter:grayscale(.55);opacity:.62;
-  box-shadow:0 0.25rem 0.5rem rgba(90,70,30,.12),0 0 0 0.125rem rgba(214,198,166,.55)}
-.mnode.now{width:4.5rem;height:4.5rem;font-size:2.0625rem;border-color:#F4FFDC;
-  box-shadow:0 0 0 0.4375rem rgba(184,224,90,.42),0 0.5rem 1rem rgba(70,110,40,.24)}
-.mnode.now .ring{position:absolute;inset:-0.875rem;border-radius:50%;border:0.125rem dashed #9CC247;
-  opacity:.75;animation:spin 22s linear infinite}
-.mnode.now .go{position:absolute;left:50%;bottom:calc(100% + 0.75rem);transform:translateX(-50%);
-  padding:0.3125rem 0.625rem;border-radius:6.1875rem;white-space:nowrap;
-  background:var(--lime);color:#25401A;font-size:0.6875rem;font-weight:var(--w-black);letter-spacing:0.0375rem;
-  border:0.09375rem solid #fff;box-shadow:0 0.1875rem 0 #93BD3E}
-.mnode.now .go:after{content:"";position:absolute;left:50%;bottom:-0.3125rem;width:0.5rem;height:0.5rem;
-  background:var(--lime);border-right:0.09375rem solid #fff;border-bottom:0.09375rem solid #fff;
-  transform:translateX(-50%) rotate(45deg)}
-/* 靠近卡片顶部的当前节点：GO 气泡放到节点右侧，避免被裁切或压住下一站 */
-.mnode.now.go-right .go{left:calc(100% + 0.5rem);top:50%;bottom:auto;transform:translateY(-50%)}
-.mnode.now.go-right .go:after{left:-0.3125rem;top:50%;bottom:auto;transform:translateY(-50%) rotate(45deg);
-  border:0;border-left:0.09375rem solid #fff;border-bottom:0.09375rem solid #fff}
-.mnode.chest{width:3rem;height:3rem;background:linear-gradient(145deg,#FFF6DF,#FFD98A);border-color:#fff;
-  box-shadow:0 0.3125rem 0.625rem rgba(150,110,30,.24),0 0 0 0.125rem rgba(230,196,120,.7)}
-.mnode.chest .disc{font-size:1.375rem}
-
 /* ------------------------------------------------ caption */
 .caption{position:absolute;z-index:4;left:8%;right:8%;bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;
   padding:0.5rem 0.75rem;border-radius:0.875rem;
@@ -114,27 +79,6 @@
   .map-hero h1{font-size:2.125rem}
   .map-card{height:30rem}
 }
-
-/* ------------------------------------------------ animal scene selector */
-.animal-scene-list{display:grid;gap:0.75rem;width:100%;margin:0}
-.animal-scene-card{position:relative;display:grid;grid-template-columns:minmax(8.5rem,46%) 1fr;grid-template-rows:1fr auto;align-items:stretch;gap:0.875rem;
-  min-height:clamp(12.5rem,52vw,14.375rem);padding:0.75rem;text-align:left;color:var(--ink);
-  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.4375rem;box-shadow:0 0.25rem 0 #EADAC0;
-  cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
-.animal-scene-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #EADAC0}
-.animal-scene-card:focus-visible{outline:0.1875rem solid rgba(46,139,87,.35);outline-offset:0.1875rem}
-.animal-scene-image{display:block;grid-row:1 / 3;min-width:0;height:100%;overflow:hidden;border-radius:1.125rem;background:#F4E5C6;
-  border:0.0625rem solid #E5CFA7}
-.animal-scene-image img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
-.animal-scene-info{display:flex;grid-column:2;grid-row:1;flex-direction:column;align-items:center;justify-content:center;min-width:0;text-align:center}
-.animal-scene-info strong{font-size:1.0625rem;font-weight:var(--w-black);line-height:1.4}
-.animal-scene-info small{display:block;margin-top:0.375rem;color:var(--muted);font-size:0.6875rem;font-weight:var(--w-read);line-height:1.45}
-.animal-scene-info small+small{margin-top:0.125rem}
-.animal-scene-go{grid-column:2;grid-row:2;justify-self:end;align-self:end;display:inline-flex;align-items:center;justify-content:center;gap:0.375rem;margin:0;
-  min-width:7.25rem;padding:0.625rem 0.875rem;border-radius:6.1875rem;background:var(--green);color:#fff;
-  font-size:0.78125rem;font-weight:var(--w-bold);box-shadow:0 0.1875rem 0 var(--green-d)}
-.animal-scene-card[data-scene="zoo"] .animal-scene-go{background:#7A5A2D;box-shadow:0 0.1875rem 0 var(--sticker-ink)}
-.animal-scene-go b{font-size:1rem;line-height:1}
 
 /* ------------------------------------------------ animal static route sheet */
 /* 弹层只保留地图与开始按钮：地图宽度与按钮一致，高度按视口为按钮留出空间 */
@@ -174,19 +118,6 @@
 .animal-route-map.has-map .animal-route-node.current{box-shadow:0 0 0 0.7cqw rgba(255,214,143,.55),0 0.3cqw 0.9cqw rgba(130,90,30,.18)}
 .animal-route-start{width:100%;min-height:3.25rem;margin-top:0.875rem;background:var(--green);color:#fff}
 .animal-route-start:disabled{opacity:1;pointer-events:none}
-
-@media (max-width:360px){
-  .animal-scene-card{grid-template-columns:minmax(7.25rem,44%) 1fr;gap:0.5rem;padding:0.625rem}
-  .animal-scene-info strong{font-size:0.9375rem}
-  .animal-scene-info small{font-size:0.625rem}
-  .animal-scene-go{min-width:5.75rem;padding:0.5rem 0.5rem;font-size:0.6875rem}
-}
-@media (min-width:700px){
-  .animal-scene-list{gap:1rem}
-  .animal-scene-card{grid-template-columns:minmax(14rem,40%) 1fr;padding:0.875rem}
-  .animal-scene-info strong{font-size:1.25rem}
-  .animal-scene-info small{font-size:0.78125rem}
-}
 
 /* ============================================================
    🦁 Zoo 入口图层（整张地图）

@@ -35,7 +35,6 @@
     /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     state.words += quiz.correct;
-    state.minutes += Math.max(1, Math.round(elapsed / 60));
     state.threeStars += stars === 3 ? 1 : 0;
     state.tasks.level = true;
     recordLevel(stars);

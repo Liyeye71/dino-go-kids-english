@@ -22,11 +22,7 @@ const ASSETS = [
   "./images/background/animal-zoo.webp",
   "./images/background/animal-zoo-cover.webp",
   "./images/background/animal-zoo-map.webp",
-  "./images/background/animal-ocean.webp",
-  "./images/background/frame-animal-zoo-portrait.webp",
-  "./images/background/frame-animal-zoo-4x3.webp",
-  "./images/background/frame-animal-ocean-portrait.webp",
-  "./images/background/frame-animal-ocean-4x3.webp"
+  "./images/background/animal-ocean.webp"
 ];
 
 self.addEventListener("install", (event) => {

@@ -95,6 +95,15 @@ if (fs.existsSync(animalWordDir)) {
     fs.copyFileSync(path.join(animalWordDir, file), path.join(distDir, "images", "words", "animal", file));
   }
 }
+/* 字体资源：app/font/ 下的 ttf/otf 统一复制到 dist/font/ */
+const fontDir = path.join(appDir, "font");
+if (fs.existsSync(fontDir)) {
+  const out = path.join(distDir, "font");
+  fs.mkdirSync(out, { recursive: true });
+  for (const file of fs.readdirSync(fontDir).filter((f) => /\.(ttf|otf|woff2?|eot)$/i.test(f))) {
+    fs.copyFileSync(path.join(fontDir, file), path.join(out, file));
+  }
+}
 
 const kb = (n) => (n / 1024).toFixed(0) + " KB";
 console.log("dist/index.html   " + kb(fs.statSync(path.join(distDir, "index.html")).size));
