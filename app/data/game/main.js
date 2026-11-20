@@ -202,6 +202,7 @@ function screenQuiz() {
     </div>
     ${resultPop}
     <div class="quiz-foot">${revealed ? "" : view.btn}</div>
+    ${refType ? `<div class="ref-logo">${QuizUiArt.logo()}</div>` : ""}
   </section>`;
 }
 
