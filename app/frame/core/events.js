@@ -8,6 +8,15 @@ function renderAndResetScroll() {
   const sc = $(".scroll");
   if (sc) sc.scrollTop = 0;
 }
+/* 喇叭按钮点击抖动反馈 */
+function shakeBtn(el) {
+  if (!el) return;
+  el.classList.remove("is-shaking");
+  /* 强制 reflow 让动画可重放 */
+  void el.offsetWidth;
+  el.classList.add("is-shaking");
+  setTimeout(() => el.classList.remove("is-shaking"), 560);
+}
 
 document.addEventListener("click", (e) => {
   if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
@@ -31,6 +40,7 @@ document.addEventListener("click", (e) => {
   } else if (action === "select") {
     selectOption(el.dataset.word);
   } else if (action === "listen-selected") {
+    shakeBtn(el);
     listenSelected();
   } else if (action === "next") {
     nextQuestion();
@@ -58,6 +68,7 @@ document.addEventListener("click", (e) => {
     }
   } else if (action === "speak-answer") {
     /* 结果条喇叭：朗读正确答案 */
+    shakeBtn(el);
     const q = quiz && quiz.order[quiz.index];
     if (q) speak(q.word || q.correctFood || "");
   } else if (action === "evolve") {
@@ -201,6 +212,7 @@ document.addEventListener("click", (e) => {
     resetVoice();
     closeOverlay();
   } else if (action === "speak-word") {
+    shakeBtn(el);
     speak(el.dataset.word);
   } else if (action === "open-review") {
     openReview();

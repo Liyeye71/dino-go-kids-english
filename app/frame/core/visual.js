@@ -72,17 +72,17 @@ const QuizUiArt = {
           <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
             <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
           </filter>
-          <!-- DinoGo 焦糖棕渐变 -->
+          <!-- DinoGo 焦糖棕渐变（调淡版） -->
           <linearGradient id="dinogo-grad-en" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F0C9A5"/>
-            <stop offset="28%" stop-color="#C89468"/>
-            <stop offset="100%" stop-color="#9E6B40"/>
+            <stop offset="0%" stop-color="#F7DDB8"/>
+            <stop offset="28%" stop-color="#D6A77C"/>
+            <stop offset="100%" stop-color="#B4825C"/>
           </linearGradient>
-          <!-- 恐龙英语 蜂蜜橙渐变 -->
+          <!-- 恐龙英语 蜂蜜橙渐变（调淡版） -->
           <linearGradient id="dinogo-grad-zh" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FDEFCE"/>
-            <stop offset="28%" stop-color="#F7CE8A"/>
-            <stop offset="100%" stop-color="#E69E59"/>
+            <stop offset="0%" stop-color="#FDF5DC"/>
+            <stop offset="28%" stop-color="#FAD9A4"/>
+            <stop offset="100%" stop-color="#F0B578"/>
           </linearGradient>
           <!-- 小恐龙奶油绿渐变 -->
           <linearGradient id="dinogo-grad-dino" x1="0" y1="0" x2="1" y2="1">
@@ -184,9 +184,9 @@ const QuizUiArt = {
         <circle cx="246" cy="472" r="4" fill="#F4A58C"/>
         <circle cx="655" cy="466" r="4" fill="#F4A58C"/>
 
-        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（位于答题框与屏幕底边之间的呼吸区，居中锚定） -->
-        <svg x="220" y="548" width="360" height="62" viewBox="0 0 700 125" overflow="visible">
-          <!-- 第 1 层：白色模切贴纸外描边 -->
+        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（上移贴近答题框底边） -->
+        <svg x="220" y="535" width="360" height="62" viewBox="0 0 700 125" overflow="visible">
+          <!-- 第 1 层：白色模切贴纸外描边（恢复安全边距，防止内容临边） -->
           <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
             <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
             <use href="#dinogo-text-en"/>
@@ -217,15 +217,15 @@ const QuizUiArt = {
             <ellipse cx="340" cy="66" rx="4.8" ry="3" fill="#F3A697" stroke="none" opacity="0.85"/>
           </g>
 
-          <!-- 第 3 层：3D 巧克力棕立体底厚 -->
-          <g transform="translate(0 5)" fill="#7A4E2A" stroke="#7A4E2A" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+          <!-- 第 3 层：巧克力棕立体底厚（调淡版 #A07C55） -->
+          <g transform="translate(0 5)" fill="#A07C55" stroke="#A07C55" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
             <use href="#dinogo-text-en"/>
             <use href="#dinogo-text-zh"/>
           </g>
 
-          <!-- 第 4 层：双色渐变主字 + 圆角棕描边 -->
-          <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
-          <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+          <!-- 第 4 层：双色渐变主字 + 圆角棕描边（调淡版描边 #A07C55） -->
+          <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#A07C55" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+          <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#A07C55" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
 
           <!-- 第 5 层：糖果高光点与童趣小星星 -->
           <g fill="#FFFFFF" opacity="0.82">

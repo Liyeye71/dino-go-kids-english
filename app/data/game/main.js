@@ -100,8 +100,13 @@ function screenQuiz() {
   const choiceButton = () => (revealed ? quizNextButton() : "");
   const options = (list) => list.map((opt, i) => {
     const cls = optionClass(opt);
-    const mark = revealed && opt === q.word ? `<span class="mark">${I.check(11)}</span>`
-      : !revealed && opt === selected ? `<span class="mark radio"><i></i></span>` : "";
+    let mark = "";
+    if (revealed) {
+      if (opt === q.word) mark = `<span class="mark">${I.check(11)}</span>`;
+      else if (opt === selected) mark = `<span class="mark bad">${I.close(12, "#fff")}</span>`;
+    } else if (opt === selected) {
+      mark = `<span class="mark radio"><i></i></span>`;
+    }
     return `<button class="${cls}" data-action="select" data-word="${opt}">
       <span class="word">${opt}</span>${mark}
     </button>`;
@@ -222,9 +227,9 @@ function selectOption(word) {
   sfx("tap");
   checkAnswer();
 }
-/* 听发音按钮：沿用原「答完听发音」的位置 */
+/* 听发音按钮：纯喇叭图标 + 圆形底色 */
 function listenPill() {
-  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(14)} 听发音</button>`;
+  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(16)}</button>`;
 }
 /* 听发音：需先点击选项，答题后朗读正确答案 */
 function listenSelected() {
