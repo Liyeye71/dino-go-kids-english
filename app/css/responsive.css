@@ -107,3 +107,169 @@
   .option .key{width:1.375rem;height:1.375rem;font-size:0.6875rem}
   .option .word{font-size:0.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
+
+/* ============================================================
+   答题页三端统一架构补丁
+   统一答题页槽位与纸面安全框，覆盖 zoo.css / responsive.css 中的冲突规则
+   ============================================================ */
+
+/* 1. 统一答题页外壳：解除 zoo.css 与 responsive.css 的宽度/比例冲突 */
+.quiz-ref-page {
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(0.5rem + var(--safe-top)) !important;
+  /* 统一三端内容最大宽度：手机全宽，iPad/PC 舒适居中 */
+  --stage-max-w: min(100%, 42rem);
+}
+
+/* 2. zoo 场景改用纯风景底图铺满，不再用 cover 裁切画框图反推坐标 */
+.quiz-ref-page[data-scene="zoo"] {
+  --ref-frame-image: url("images/background/animal-zoo.webp") !important;
+  --ref-frame-size: cover !important;
+  --ref-frame-pos: center center !important;
+  padding-top: calc(0.5rem + var(--safe-top)) !important;
+}
+
+/* 清除原来横屏用公式硬算的 padding-top 偏移 */
+.quiz-ref-page[data-scene="zoo"] .ref-stage-head + * {
+  padding-top: 0 !important;
+}
+
+/* 3. 顶栏、主体纸面、底栏共用同一套宽度与居中基准 */
+.quiz-ref-page .quiz-top,
+.quiz-ref-page .quiz-foot {
+  width: var(--stage-max-w) !important;
+  max-width: var(--stage-max-w) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  flex: none;
+}
+
+/* 4. 把 .ref-quiz-body 本身做成“奶油纸面安全框”，100% 包住所有题型不越界 */
+.quiz-ref-page .ref-quiz-body {
+  width: calc(var(--stage-max-w) - 1.5rem) !important;
+  max-width: calc(var(--stage-max-w) - 1.5rem) !important;
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0.5rem auto 0 !important;
+  padding: clamp(0.75rem, 2cqh, 1.25rem) clamp(0.75rem, 3cqw, 1.5rem) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+
+  /* 奶油纸面视觉（适配 zoo 贴纸风） */
+  background: rgba(255, 252, 242, 0.94);
+  border: 0.1875rem solid #D7BA89;
+  border-radius: 1.5rem;
+  box-shadow: 0 0.375rem 0 rgba(149, 98, 32, 0.18), 0 0.75rem 1.5rem rgba(92, 65, 29, 0.12);
+}
+
+/* 5. 标题槽位锁死：所有题型标题高度、间距完全一致 */
+.quiz-ref-page .ref-stage-head {
+  flex: none;
+  margin: 0 0 clamp(0.5rem, 1.8cqh, 1rem) !important;
+  min-height: 3rem;
+}
+.quiz-ref-page .ref-stage-badge {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+}
+.quiz-ref-page .ref-stage-head h2 {
+  font-size: clamp(1.0625rem, 2.8cqw, 1.4375rem) !important;
+}
+
+/* 6. 收编所有题型包裹层：统一占满纸面剩余高度，内部采用“上展示 + 下选项” */
+.quiz-ref-page .ref-pic-wrap,
+.quiz-ref-page .ref-listen-wrap,
+.quiz-ref-page .ref-action-wrap,
+.quiz-ref-page .ref-zoom-wrap,
+.quiz-ref-page .ref-cmp-wrap,
+.quiz-ref-page .ref-puzzle-wrap,
+.quiz-ref-page .ref-feed-wrap {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: clamp(0.5rem, 1.6cqh, 0.875rem) !important;
+}
+
+/* 7. 统一所有题型的“视觉展示区”高度（占中间弹性区，不撑破、不塌陷） */
+.quiz-ref-page .ref-picture-frame,
+.quiz-ref-page .ref-action-stage,
+.quiz-ref-page .ref-cmp-stage {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: 52cqh !important;
+  width: min(100%, 30rem) !important;
+  margin: 0 auto !important;
+}
+
+/* 局部特写（放大镜）：固定比例居中，不再顶在最上方 */
+.quiz-ref-page .ref-zoom-lens {
+  width: clamp(8.5rem, min(32cqh, 46cqw), 14rem) !important;
+  margin: auto 0 0 !important;
+  flex: none;
+}
+.quiz-ref-page .ref-zoom-handle {
+  margin-bottom: auto !important;
+}
+
+/* 听音选图：喇叭区固定比例，图片选项网格统一贴底且高度稳定 */
+.quiz-ref-page .ref-listen-speaker {
+  flex: none !important;
+  height: clamp(5.5rem, 18cqh, 8.5rem) !important;
+  margin: auto 0 !important;
+}
+.quiz-ref-page .ref-listen-grid {
+  flex: none !important;
+  width: 100% !important;
+  max-width: 34rem !important;
+  height: clamp(7.5rem, 24cqh, 11.5rem) !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+}
+
+/* 8. 统一所有文字选择题的“底部选项槽位”：永远钉在纸面最下方、等高对齐 */
+.quiz-ref-page .ref-pic-options,
+.quiz-ref-page .ref-action-options,
+.quiz-ref-page .ref-zoom-options,
+.quiz-ref-page .ref-cmp-options {
+  flex: none !important;
+  width: 100% !important;
+  max-width: 34rem !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(0.375rem, 1.5cqw, 0.75rem) !important;
+}
+
+.quiz-ref-page .ref-pic-options .option,
+.quiz-ref-page .ref-action-options .option,
+.quiz-ref-page .ref-zoom-options .option,
+.quiz-ref-page .ref-cmp-options .option {
+  min-height: clamp(3.25rem, 8.5cqh, 4.5rem) !important;
+  padding: 0 clamp(0.375rem, 1.2cqw, 0.75rem) !important;
+  justify-content: center;
+}
+
+/* 9. 进阶题型的小提示语统一紧凑排版 */
+.quiz-ref-page .ref-action-tip,
+.quiz-ref-page .ref-zoom-tip,
+.quiz-ref-page .ref-cmp-tip {
+  flex: none;
+  margin: 0 !important;
+  font-size: clamp(0.75rem, 2cqw, 0.9375rem);
+}
+
+/* 10. 宽屏（PC / 横屏 iPad）：适当放宽 .app 容器，让答题视野更舒展 */
+@media (min-width: 900px) and (min-height: 600px) {
+  .app {
+    max-width: min(60rem, 92vw);
+  }
+}

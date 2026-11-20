@@ -123,7 +123,7 @@ function screenQuiz() {
     ? (ok ? "隐藏题通关！宝箱 +1 🎁" : "隐藏题未通过，继续努力")
     : (ok ? "答对了，你真棒！" : "回答错误，继续努力");
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
-    ? "看结果 ➔" : "Next ➔";
+    ? "Result" : "Next";
   const answerBox = answerWord
     ? `<div class="zoo-answer-box">
         <span class="zoo-answer-label">正确答案：</span>
@@ -189,18 +189,7 @@ function screenQuiz() {
       <h2>${game.title}</h2></div>
     </div>` : "";
   const frameTop = refType && state.scene === "zoo"
-    ? `<div class="quiz-top quiz-top--frame">
-      <button class="frame-btn" data-action="close-quiz" aria-label="返回闯关页面">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5"/><path d="M10 21v-5h4v5"/>
-        </svg>
-      </button>
-      <button class="frame-btn" data-action="close-quiz-map" aria-label="返回路线图">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <ellipse cx="12" cy="15.2" rx="3.4" ry="2.9"/><circle cx="6.8" cy="9.6" r="1.9"/><circle cx="10.2" cy="6.9" r="1.9"/><circle cx="13.8" cy="6.9" r="1.9"/><circle cx="17.2" cy="9.6" r="1.9"/>
-        </svg>
-      </button>
-    </div>`
+    ? `<button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>`
     : `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
       <div class="bar qbar"><i style="width:${progress}%"></i></div>
