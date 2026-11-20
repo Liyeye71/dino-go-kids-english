@@ -87,12 +87,14 @@ if (fs.existsSync(wordImgDir)) {
     fs.copyFileSync(path.join(wordImgDir, file), path.join(distDir, "images", "words", file));
   }
 }
-/* 分类单词插画：动物素材放在 words/animal/ 下 */
-const animalWordDir = path.join(wordImgDir, "animal");
-if (fs.existsSync(animalWordDir)) {
-  fs.mkdirSync(path.join(distDir, "images", "words", "animal"), { recursive: true });
-  for (const file of fs.readdirSync(animalWordDir).filter((f) => f.endsWith(".webp"))) {
-    fs.copyFileSync(path.join(animalWordDir, file), path.join(distDir, "images", "words", "animal", file));
+/* 分类单词插画：animal / food / action 分别复制到对应子目录 */
+for (const group of ["animal", "food", "action"]) {
+  const srcDir = path.join(wordImgDir, group);
+  if (!fs.existsSync(srcDir)) continue;
+  const outDir = path.join(distDir, "images", "words", group);
+  fs.mkdirSync(outDir, { recursive: true });
+  for (const file of fs.readdirSync(srcDir).filter((f) => /\.(png|webp)$/i.test(f))) {
+    fs.copyFileSync(path.join(srcDir, file), path.join(outDir, file));
   }
 }
 /* 字体资源：app/font/ 下的 ttf/otf 统一复制到 dist/font/ */

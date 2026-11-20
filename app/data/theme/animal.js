@@ -1,7 +1,7 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    陆地动物园：10 个主题馆 × 5 关 = 50 关，共用一张连续路线图
-   题库共 105 词（仅陆地动物园）：核心动物名词 35 + 动作动词 30 + 身体部位 20 + 特征形容词 20
+   题库共 109 词（仅陆地动物园）：核心动物名词 39 + 动作动词 30 + 身体部位 20 + 特征形容词 20
    每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
@@ -65,14 +65,14 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（105 词，仅陆地动物园）
-   1. 核心动物名词 35 个：看图选词 / 听音识图 / 词汇拼图
+   动物乐园题库（109 词，仅陆地动物园）
+   1. 核心动物名词 39 个：看图选词 / 听音识图 / 词汇拼图
    2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 20 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
 const ANIMAL_ZOO_WORDS = [
-  /* ---------------- 1. 核心动物名词 35 个 ---------------- */
+  /* ---------------- 1. 核心动物名词 39 个 ---------------- */
   { word: "lion",       zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion is the king of the zoo.",        emoji: "🦁", category: "noun", animal: true },
   { word: "tiger",      zh: "老虎",   phon: "/ˈtaɪɡə(r)/",    example: "The tiger has orange fur.",               emoji: "🐯", category: "noun", animal: true },
   { word: "monkey",     zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey climbs the tree.",             emoji: "🐒", category: "noun", animal: true },
@@ -108,6 +108,10 @@ const ANIMAL_ZOO_WORDS = [
   { word: "pig",        zh: "猪",     phon: "/pɪɡ/",          example: "The pig is rolling in the mud.",          emoji: "🐷", category: "noun", animal: true },
   { word: "chicken",    zh: "鸡",     phon: "/ˈtʃɪkɪn/",      example: "The chicken lays eggs on the farm.",      emoji: "🐔", category: "noun", animal: true },
   { word: "bird",       zh: "小鸟",   phon: "/bɜːd/",         example: "A bird is singing in the tree.",          emoji: "🐦", category: "noun", animal: true },
+  { word: "owl",        zh: "猫头鹰", phon: "/aʊl/",          example: "The owl hunts at night.",                 emoji: "🦉", category: "noun", animal: true },
+  { word: "eagle",      zh: "老鹰",   phon: "/ˈiːɡl/",        example: "The eagle flies high in the sky.",        emoji: "🦅", category: "noun", animal: true },
+  { word: "crow",       zh: "乌鸦",   phon: "/krəʊ/",         example: "The crow is black and clever.",           emoji: "🐦‍⬛", category: "noun", animal: true },
+  { word: "baboon",     zh: "狒狒",   phon: "/bəˈbuːn/",      example: "The baboon lives in the forest.",         emoji: "🐒", category: "noun", animal: true },
 
   /* ---------------- 2. 动作动词 30 个 ---------------- */
   { word: "eat",        zh: "吃",     phon: "/iːt/",          example: "The panda likes to eat bamboo.",          emoji: "🍽️", category: "verb", actor: "🐼", motion: "eat" },
@@ -216,15 +220,77 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   long: "snake-rabbit",
   fast: "cheetah-turtle",    slow: "cheetah-turtle",
   fat: "pig-monkey",         thin: "pig-monkey",
-  strong: "gorilla-mouse",   light: "gorilla-mouse",
+  strong: "gorilla-mouse",
   quiet: "rabbit-lion",      noisy: "rabbit-lion",
   cute: "cat-pig",           clean: "cat-pig",
   heavy: "elephant-feather", light: "elephant-feather",
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
 };
+/* ============================================================
+   素材挂载：食物、宿主动物、图片与对话线索
+   - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
+   - 食物图放在 images/words/food/，动作图放在 images/words/action/
+   ============================================================ */
+const ANIMAL_FOODS = {
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/worm.webp" },
+};
+
+/* 39 种动物各自爱吃的食物 */
+const ANIMAL_FEED_MAP = {
+  lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
+  cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
+  zebra: "grass", giraffe: "grass", cow: "grass", sheep: "grass", goat: "grass",
+  deer: "grass", kangaroo: "grass", hippo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  chicken: "worm", bird: "worm", peacock: "worm", crow: "worm",
+  monkey: "banana", gorilla: "banana", baboon: "banana",
+  rabbit: "carrot", horse: "carrot", donkey: "carrot",
+  bear: "fish", cat: "fish", duck: "fish",
+  squirrel: "nut", parrot: "nut",
+  elephant: "apple", pig: "apple",
+  panda: "bamboo",
+  dog: "bone",
+};
+
+/* 20 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
+const PART_OWNER_WORD_MAP = {
+  tail: "monkey", ear: "rabbit", trunk: "elephant", mane: "lion", wing: "duck",
+  paw: "bear", stripe: "zebra", fur: "panda", horn: "rhino", tusk: "elephant",
+  claw: "tiger", feather: "peacock", whisker: "cat", beak: "parrot", hoof: "horse",
+  neck: "giraffe", tooth: "crocodile", tongue: "snake", leg: "zebra", belly: "cat",
+};
+
 ANIMAL_ZOO_WORDS.forEach((w) => {
-  w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
+  if (w.category === "verb") {
+    /* 动作题统一用 action-{word} 素材键，已有自定义键保持不变 */
+    if (!w.assetKey || w.assetKey.indexOf("action-") !== 0) w.assetKey = `action-${w.word}`;
+    w.img = w.img || `images/words/action/${w.assetKey}.webp`;
+  } else if (w.category === "part") {
+    w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
+    w.assetKey = w.assetKey || w.ownerWord;
+    w.img = w.img || `images/words/animal/${w.ownerWord}.webp`;
+  } else if (w.category === "adj") {
+    w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
+  } else {
+    w.assetKey = w.assetKey || w.word;
+    w.img = w.img || `images/words/animal/${w.word}.webp`;
+    const foodId = ANIMAL_FEED_MAP[w.word] || "apple";
+    w.foodId = foodId;
+    w.food = ANIMAL_FOODS[foodId];
+    w.eats = foodId;
+    w.dialogueClue = w.example
+      ? w.example.replace(new RegExp(`\\b${w.word}\\b`, "i"), "___")
+      : "";
+  }
 });
 
 const ANIMAL_ZOO_VENUES = [
@@ -305,7 +371,7 @@ const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_VENUES.flatMap((venue, vi) =>
   })
 );
 
-/* 全场景词池：50 关共用同一套 105 词题库（仅陆地动物园） */
+/* 全场景词池：50 关共用同一套 109 词题库（仅陆地动物园） */
 
 const ANIMAL_SCENES = [
   {

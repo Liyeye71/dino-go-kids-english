@@ -19,26 +19,27 @@
   /* 四维词库标签 */
   const CATEGORIES = ["noun", "verb", "part", "adj"];
 
-  /* 普通关固定配比：1 名词 + 1 动词 + 1 部位/形容词
-     保证每关既有基础认知题，又有互动进阶题 */
+  /* 普通关固定配比：1 名词 + 1 动词 + 1 形容词
+     名词题型覆盖看图/听音/拼图/连线/喂食；情景对话仅 BOSS 关开放 */
   const NORMAL_MIX = [
     { role: "noun",      count: 1 },
     { role: "verb",      count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
 
-  /* BOSS 关固定配比：5 题全部为进阶题型，不含看图/听音这类简单题
-     词汇拼图(名词) + 动作猜猜(动词) + 局部特写(部位) + 对比观察(形容词) + 进阶混抽 */
+  /* BOSS 关固定配比：5 题全部为进阶题型
+     词汇拼图/连线/喂食 + 情景对话 + 动作猜猜 + 对比观察 */
   const BOSS_MIX = [
     { role: "noun",      count: 1 },
+    { role: "dialog",    count: 1 },
     { role: "verb",      count: 1 },
-    { role: "part",      count: 1 },
     { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
-  const BOSS_TYPE_BY_ROLE = { noun: "word_puzzle", verb: "action", part: "body_zoom", adj: "compare" };
+  const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
+  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "compare" };
   /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
-  const BOSS_TYPES = ["word_puzzle", "action", "body_zoom", "compare"];
+  const BOSS_TYPES = ["word_puzzle", "action", "compare", "match", "feed_animal", "dialog"];
 
 
   /* 题型规则
@@ -48,6 +49,9 @@
     { key: "pic",         label: "看图选词", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "listen",      label: "听音识图", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "word_puzzle", label: "词汇拼图", group: "basic",    cats: ["noun"], recordWrong: true, maxLetters: 8 },
+    { key: "feed_animal", label: "动物喂食", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "dialog",      label: "情景对话", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "match",       label: "单词连线", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "action",      label: "动作猜猜", group: "advanced", cats: ["verb"], recordWrong: true },
     { key: "body_zoom",   label: "局部特写", group: "advanced", cats: ["part"], recordWrong: true },
     { key: "compare",     label: "对比观察", group: "advanced", cats: ["adj"],  recordWrong: true },
@@ -57,16 +61,18 @@
     return map;
   }, {});
 
-  /* 名词题型按阶段递进：前两关只有看图/听音，第 3 关起加入词汇拼图 */
+  /* 名词题型按阶段递进，情景对话不进入普通关：
+     第 1 关看图/听音/喂食，第 2 关加入连线，
+     第 3 关起加入拼图，所有普通关题型逐步开放 */
   function nounTypesForStep(step) {
-    return step >= 3 ? ["pic", "listen", "word_puzzle"] : ["pic", "listen"];
+    if (step <= 1) return ["pic", "listen", "feed_animal"];
+    if (step === 2) return ["pic", "listen", "feed_animal", "match"];
+    return ["pic", "listen", "word_puzzle", "feed_animal", "match"];
   }
 
-  /* 第 5 题在「身体部位」和「形容词」之间按权重抽取：
-     前两关偏局部观察，第 3 关起逐步提高形容词对比题的权重 */
-  function pickPartOrAdjType(step) {
-    const adjWeight = step <= 2 ? 0.3 : 0.5;
-    return Math.random() < adjWeight ? "compare" : "body_zoom";
+  /* 部位特写题型暂时关闭，形容词对比题常驻 */
+  function pickPartOrAdjType() {
+    return "compare";
   }
 
   function wordId(sceneId, word) {
@@ -80,6 +86,8 @@
     if (rule.key === "action" && !w.actor) return false;
     if (rule.key === "body_zoom" && !w.owner) return false;
     if (rule.key === "compare" && !w.compare) return false;
+    if (rule.key === "feed_animal" && !w.food) return false;
+    if (rule.key === "dialog" && !w.dialogueClue) return false;
     return true;
   }
 
@@ -118,7 +126,10 @@
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
         if (isBoss) {
-          type = slot.role === "partOrAdj" ? pickPartOrAdjType(step) : BOSS_TYPE_BY_ROLE[slot.role];
+          if (slot.role === "noun") type = pickType(BOSS_NOUN_TYPES, usedTypes);
+          else if (slot.role === "dialog") type = "dialog";
+          else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
+          else type = BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
@@ -143,13 +154,20 @@
       /* 素材键：题目与图片解耦；成对形容词共用同一个 assetKey */
       assetKey: w.assetKey || w.word,
       animal: !!w.animal,
+      /* 图片与食物：数据层挂载，缺图时渲染层回退 emoji */
+      img: w.img || "",
+      food: w.food || null,
+      foodId: w.foodId || "",
+      eats: w.eats || "",
+      ownerWord: w.ownerWord || "",
+      dialogueClue: w.dialogueClue || "",
       /* 进阶题型专用数据 */
       actor: w.actor || "",
       motion: w.motion || "",
       owner: w.owner || "",
       focus: w.focus || null,
       compare: w.compare || null,
-      dlgQ: dlg.q,
+      dlgQ: question.gameType === "dialog" && w.dialogueClue ? w.dialogueClue : dlg.q,
       dlgA: dlg.a,
       recordWrong: question.recordWrong,
       wrongWordId: wordId(sceneId, w.word),
@@ -159,8 +177,9 @@
     return task;
   }
 
-  /* 兜底补题：只使用本次改造后的 6 个题型，避免抽到待建设题型 */
-  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "action", "body_zoom", "compare"];
+  /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
+  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action", "compare"];
+  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action", "compare"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
@@ -202,7 +221,7 @@
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : null).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -230,9 +249,9 @@
       4: ["listen", "pic", "match", "word_puzzle", "pic"],
       5: ["pic", "match", "word_puzzle", "listen", "pic"],
       6: ["listen", "feed_animal", "match", "pic", "listen"],
-      7: ["pic", "match", "word_puzzle", "dialog", "listen"],
-      8: ["listen", "dialog", "match", "feed_animal", "pic"],
-      9: ["dialog", "match", "listen", "dialog", "word_puzzle"],
+      7: ["pic", "match", "word_puzzle", "feed_animal", "listen"],
+      8: ["listen", "word_puzzle", "match", "feed_animal", "pic"],
+      9: ["feed_animal", "match", "listen", "pic", "word_puzzle"],
       10: ["dialog", "listen", "word_puzzle", "match", "feed_animal"],
     };
   }
@@ -259,19 +278,31 @@
     task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
   }
 
-  /* 单词主图：优先 images/words/animal/{word}.webp，其次 images/words/{word}.png，缺图时回退 emoji */
+  /* 单词主图：优先使用数据层的 img，缺图时同目录 .png，再缺则回退 emoji */
+  function wordImageSrc(w) {
+    if (!w) return "";
+    return w.img || `images/words/animal/${w.word}.webp`;
+  }
   window.wordArtFallback = function (img) {
     if (!img.dataset.fallback) {
       img.dataset.fallback = "png";
-      img.src = img.src.replace("/animal/", "/").replace(/\.webp$/, ".png");
+      img.src = img.src.replace(/\.webp$/i, ".png");
       return;
     }
     img.style.display = "none";
-    img.nextElementSibling.style.display = "grid";
+    if (img.nextElementSibling) img.nextElementSibling.style.display = "grid";
   };
+  /* 带图片回退的通用插图：图片缺失时显示 emoji/SVG 兜底 */
+  function artWithImage(src, cls, fallback) {
+    if (!src) return fallback;
+    return `<img class="${cls}" src="${src}" alt="" loading="eager" decoding="async"
+      style="width:100%;height:100%;object-fit:contain"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+      <span class="art-fallback" style="display:none;width:100%;height:100%;place-items:center">${fallback}</span>`;
+  }
   function wordHeroArt(w) {
     const emoji = w.emoji || wordGlyph(w.word);
-    return `<img class="pic-img" src="images/words/animal/${w.word}.webp" alt="" loading="eager" decoding="async"
+    return `<img class="pic-img" src="${wordImageSrc(w)}" alt="" loading="eager" decoding="async"
       onerror="wordArtFallback(this)">
       <span class="pic-emoji" style="display:none">${emoji}</span>`;
   }
@@ -343,10 +374,12 @@
         label: "单词连线",
         title: "把单词和图片连起来",
         build(task, pool) {
-          const trio = shuffle(pool).slice(0, 3);
-          task.pairs = trio.map((x) => ({ word: x.word, art: x.art }));
+          /* 只连同类词，避免连线题里混进动词/形容词 */
+          const trioPool = pool.filter((x) => !task.category || x.category === task.category);
+          const trio = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
+          task.pairs = trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" }));
           task.words = shuffle(trio.map((x) => x.word));
-          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art })));
+          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" })));
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
@@ -355,7 +388,7 @@
             const isDone = solved.has(p.word);
             const isSel = selected === p.word && !isDone;
             return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <div class="ref-match-art-card">${p.art()}</div>
+              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
               <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
             </div>`;
           }).join("");
@@ -437,7 +470,7 @@
           return {
             body: `<div class="ref-dialog-card">
                 <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${q.art()}</span></div></div>
+                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span></div></div>
                 <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
@@ -452,18 +485,73 @@
         label: "词汇拼图",
         title: "拖动字母块，拼出单词！",
         build(task) {
-          /* 打乱字母顺序（至少位移 2 个以上） */
+          /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
+             字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
           const letters = task.word.toUpperCase().split("");
+          const maxHints = Math.max(0, Math.min(2, letters.length - 3));
+          const hintCount = Math.floor(Math.random() * (maxHints + 1));
+          const hinted = new Set(
+            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, hintCount)
+          );
+          const missing = letters.map((ch, i) => ({ ch, i })).filter((m) => !hinted.has(m.i));
+
+          /* 连续缺失字母分段，段内相邻字母才能合并成一块（提示字母把词隔断） */
+          const runs = [];
+          for (const m of missing) {
+            const last = runs[runs.length - 1];
+            if (last && last[last.length - 1].i + 1 === m.i) last.push(m);
+            else runs.push([m]);
+          }
+          const blocks = runs.map((run) => run.map((m) => ({ ch: m.ch, positions: [m.i] })));
+          let slotCount = blocks.reduce((n, run) => n + run.length, 0);
+          while (slotCount > 5) {
+            const pairs = [];
+            blocks.forEach((run) => {
+              for (let i = 0; i < run.length - 1; i++) pairs.push([run, i]);
+            });
+            if (!pairs.length) break;
+            const [run, i] = pairs[Math.floor(Math.random() * pairs.length)];
+            run[i] = { ch: run[i].ch + run[i + 1].ch, positions: run[i].positions.concat(run[i + 1].positions) };
+            run.splice(i + 1, 1);
+            slotCount -= 1;
+          }
+
+          const posToSlot = new Map();
+          const chunks = [];
+          let slotId = 0;
+          blocks.forEach((run) => {
+            run.forEach((b) => {
+              b.positions.forEach((p) => posToSlot.set(p, slotId));
+              chunks.push({ ch: b.ch, id: slotId });
+              slotId += 1;
+            });
+          });
+          /* 展示行：提示字母单独成格，合并拼块只占一格 */
+          const cells = [];
+          letters.forEach((ch, i) => {
+            if (hinted.has(i)) {
+              cells.push({ hint: ch });
+              return;
+            }
+            const id = posToSlot.get(i);
+            const prev = cells[cells.length - 1];
+            if (!prev || prev.slot !== id) cells.push({ slot: id });
+          });
+          task.puzzleCells = cells;
           let shuffled;
-          do { shuffled = [...letters].sort(() => Math.random() - 0.5); }
-          while (shuffled.join("") === letters.join("") && letters.length > 1);
-          task.puzzleLetters = shuffled.map((ch, i) => ({ ch, id: i, placed: false }));
-          task.puzzleSlots = letters.map((ch, i) => ({ id: i, filled: null }));
+          do { shuffled = [...chunks].sort(() => Math.random() - 0.5); }
+          while (shuffled.map((c) => c.ch).join("") === chunks.map((c) => c.ch).join("") && chunks.length > 1);
+          task.puzzleLetters = shuffled.map((c) => ({ ch: c.ch, id: c.id, placed: false }));
+          task.puzzleSlots = chunks.map((c) => ({ id: c.id, filled: null }));
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
-          const slotsHtml = q.puzzleSlots.map((s) => {
-            const letter = s.filled !== null ? q.puzzleLetters.find((l) => l.id === s.filled) : null;
+          const lettersById = new Map(q.puzzleLetters.map((l) => [l.id, l]));
+          const slotsById = new Map(q.puzzleSlots.map((s) => [s.id, s]));
+          const slotsHtml = q.puzzleCells.map((cell) => {
+            if (cell.hint) return `<div class="pz-slot hint">${cell.hint}</div>`;
+            const s = slotsById.get(cell.slot);
+            const letter = s.filled !== null ? lettersById.get(s.filled) : null;
             return `<div class="pz-slot ${letter ? "filled" : ""}" data-slot="${s.id}">${letter ? letter.ch : ""}</div>`;
           }).join("");
           const lettersHtml = q.puzzleLetters.map((l) => {
@@ -474,10 +562,9 @@
           const body = `
             <div class="pz-wrap ref-puzzle-wrap">
               <div class="pz-hint ref-puzzle-hint">
-                <div class="pz-art">${artOf(q.word)()}</div>
-                <small>${q.zh}</small>
+                <div class="pz-art">${wordHeroArt(q)}</div>
               </div>
-              <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
+              <div class="pz-slots">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
               ${!revealed
                 ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>`
@@ -491,7 +578,23 @@
         label: "动物喂食",
         title: "给动物喂它爱吃的食物！",
         build(task, pool) {
-          /* 从 pool 里找 3 种不同的食物 emoji 作为选项 */
+          /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
+          const unique = [];
+          const seenFood = new Set();
+          pool.forEach((w) => {
+            if (!w.food || seenFood.has(w.food.id)) return;
+            seenFood.add(w.food.id);
+            unique.push(w.food);
+          });
+          if (task.food && unique.length >= 3) {
+            const correct = task.food;
+            const rest = shuffle(unique.filter((f) => f.id !== correct.id)).slice(0, 2);
+            task.foods = shuffle([correct, ...rest]);
+            task.correctFood = correct.id;
+            task.correctZh = correct.zh || "";
+            return;
+          }
+          /* 其他主题沿用原有 emoji 食物池 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
           const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
           if (foods.length < 3) {
@@ -521,14 +624,16 @@
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
-          const foods = q.foods.map((f) =>
-            `<button type="button" class="fd-food ${revealed && f.word === q.correctFood ? "correct" : ""} ${quiz.selected === f.word ? "selected" : ""}"
-              data-action="fd-pick" data-drag="food" data-food="${f.word}"><span class="ref-food-art">${artOf(f.word)()}</span><small>${f.word}</small></button>`
-          ).join("");
+          const foods = q.foods.map((f) => {
+            const id = f.id || f.word;
+            const art = f.img ? artWithImage(f.img, "ref-food-img", f.emoji || "🍎") : (f.emoji || artOf(id)());
+            return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
+              data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span><small>${id}</small></button>`;
+          }).join("");
           const body = `
             <div class="fd-wrap ref-feed-wrap">
               <div class="fd-animal ref-feed-animal" data-feed-drop>
-                <div class="fd-art">${artOf(q.word)()}</div>
+                <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 <div class="fd-name">${q.word.toUpperCase()}</div>
                 <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
@@ -546,8 +651,9 @@
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
           const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
-            ? `<img class="ref-action-img" src="images/words/${q.assetKey}.png" alt=""
-                 onload="this.parentElement.classList.add('has-art')" onerror="this.remove()">`
+            ? `<img class="ref-action-img" src="${q.img || `images/words/action/${q.assetKey}.webp`}" alt=""
+                 onload="this.parentElement.classList.add('has-art')"
+                 onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">`
             : "";
           return advancedLayout({
             wrap: "ref-action-wrap",
@@ -575,10 +681,17 @@
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const f = q.focus || { x: "0%", y: "0%", scale: 2 };
+          const src = q.img || (q.ownerWord ? `images/words/animal/${q.ownerWord}.webp` : "");
+          const zoomArt = src
+            ? `<img class="ref-zoom-art ref-zoom-photo" src="${src}" alt="" loading="eager" decoding="async"
+                 style="--fx:${f.x};--fy:${f.y};--fs:${f.scale};width:100%;height:100%;object-fit:cover"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+               <span class="ref-zoom-art ref-zoom-emoji" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale};display:none">${q.owner || q.emoji || "🐾"}</span>`
+            : `<span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>`;
           return advancedLayout({
             wrap: "ref-zoom-wrap",
             stage: `<div class="ref-zoom-lens" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
-                  <span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>
+                  ${zoomArt}
                   <span class="ref-zoom-spot"></span>
                 </div>
                 <span class="ref-zoom-handle" aria-hidden="true"></span>`,

@@ -251,7 +251,7 @@ window.QuizView = {
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
       if (drag.kind === "puzzle") {
-        const slot = hit && hit.closest(".pz-slot");
+        const slot = hit && hit.closest(".pz-slot[data-slot]");
         if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
       } else {
         const target = hit && hit.closest("[data-feed-drop]");

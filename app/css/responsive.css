@@ -562,34 +562,32 @@
 }
 
 /* ============================================================
-   词汇拼图：放大上方图片，插槽/字母块整体下移，
-   收紧三块之间的空白，检查按钮保持原位
+   词汇拼图：提示框保持固定方形尺寸，图片只能显示在框体内
    ============================================================ */
 .quiz-ref-page .ref-puzzle-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap {
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 0 !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .ref-puzzle-hint {
-  flex: 1 1 auto;
-  min-height: 0;
-  justify-content: flex-end;
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  flex: 0 0 auto;
+  justify-content: center;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-art {
-  flex: 1 1 0;
-  min-height: 0;
-  width: auto;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  max-height: clamp(6.5rem, 34cqh, 13.5rem);
+  flex: 0 0 auto;
+  width: clamp(6.5rem, 18cqh, 9.5rem);
+  height: clamp(6.5rem, 18cqh, 9.5rem);
+  max-height: none;
+  aspect-ratio: auto;
+  overflow: hidden;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-slots {
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-letters {
   margin-top: 0 !important;
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-check,
 .quiz-ref-page .ref-puzzle-wrap .pz-check-spacer {

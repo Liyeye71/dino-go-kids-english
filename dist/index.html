@@ -929,7 +929,7 @@ h1,h2,h3,h4,p{margin:0}
    ============================================================ */
 .pz-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
 .pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
-.pz-art{font-size:2.5rem;line-height:1}
+.pz-art{position:relative;font-size:2.5rem;line-height:1}
 .pz-slots{display:flex;gap:0.25rem;margin:0.25rem 0}
 .pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:var(--sticker-ink);transition:background .15s}
 .pz-slot.filled{background:#FFE477;border-style:solid}
@@ -975,7 +975,7 @@ h1,h2,h3,h4,p{margin:0}
   transform-origin:50% 88%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
 .ref-action-emoji{display:block;line-height:1}
 .ref-action-img{position:absolute;left:50%;top:50%;width:clamp(7rem,26vh,10.5rem);height:auto;
-  transform:translate(-50%,-50%);object-fit:contain;pointer-events:none;border-radius:50%;
+  transform:translate(-50%,-50%);object-fit:cover;pointer-events:none;
   filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
 .ref-action-animal.has-art .ref-action-emoji{display:none}
 .ref-action-spark{position:absolute;color:#FFF0B8;font-size:1.125rem;z-index:1;animation:actSpark 1.4s ease-in-out infinite}
@@ -1131,9 +1131,8 @@ h1,h2,h3,h4,p{margin:0}
 .pic-page .quiz-prompt .chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff}
 .pic-page .quiz-prompt h2{font-size:clamp(1.125rem,3vw,1.375rem);color:#2C4A32}
 
-.pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:50%;
-  border:0.25rem solid #fff;background:#FFF9E9;
-  box-shadow:0 0.5rem 0 rgba(70,60,25,.16),0 0.75rem 1.125rem rgba(70,60,25,.18)}
+.pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;
+  filter:drop-shadow(0 0.375rem 0.5rem rgba(50,45,20,.18))}
 .pic-emoji{font-size:clamp(3.25rem,16vh,7rem);line-height:1;
   filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.16))}
 .pic-page .listen{position:absolute;right:0.875rem;bottom:0.875rem;background:#fff;color:#8A6415;
@@ -1226,9 +1225,8 @@ h1,h2,h3,h4,p{margin:0}
 .ref-picture-frame{position:relative;flex:1;min-height:10rem;max-height:24rem;width:min(100%,28rem);margin:0 auto;display:grid;place-items:center;
   overflow:hidden;border:0.25rem solid var(--sticker-ink);border-radius:2rem;background:linear-gradient(180deg,#DDF3F5 0%,#F6F4D9 62%,#C9DFA1 62%,#B5D18C 100%);
   box-shadow:0 0.375rem 0 #D3B984,0 0.75rem 1.5rem rgba(92,65,29,.14)}
-.ref-picture-art{position:relative;width:clamp(8rem,25vh,14rem);height:clamp(8rem,25vh,14rem);display:grid;place-items:center}
-.ref-picture-art .pic-img{border:0.25rem solid #FFFDF6;box-shadow:0 0.375rem 0 rgba(92,65,29,.18)}
-.ref-picture-art .pic-emoji{font-size:clamp(4rem,15vh,7rem)}
+.ref-picture-art{position:absolute;inset:0;display:grid;place-items:center;padding:0.5rem}
+.ref-picture-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:3.75rem}
@@ -1309,14 +1307,16 @@ h1,h2,h3,h4,p{margin:0}
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
 .ref-puzzle-hint{padding:0.5rem 1rem;border:0.09375rem solid var(--sticker-line);border-radius:1.25rem;background:rgba(255,253,247,.88)}
-.ref-puzzle-hint .pz-art{width:6.5rem;height:6.5rem;display:grid;place-items:center}
-.ref-puzzle-hint small{color:#806039;font-weight:var(--w-bold)}
-.quiz-ref-page .pz-slots{display:grid;grid-template-columns:repeat(var(--slot-count),minmax(0,2.75rem));justify-content:center;gap:0.375rem;width:100%;margin:0}
-.quiz-ref-page .pz-slot{width:auto;height:clamp(2.75rem,8vw,3.5rem);min-width:0;border:0.125rem dashed #A78C61;border-radius:0.75rem;background:#F2E4C8;
+.ref-puzzle-hint .pz-art{width:6.5rem;height:6.5rem;display:grid;place-items:center;position:relative;overflow:hidden}
+.ref-puzzle-hint .pic-img{filter:none}
+.ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(2.5rem,10vh,4.5rem)}
+.quiz-ref-page .pz-slots{display:flex;justify-content:center;flex-wrap:nowrap;gap:0.375rem;width:100%;margin:0}
+.quiz-ref-page .pz-slot{width:auto;min-width:clamp(2.5rem,9vw,3.25rem);padding:0 0.375rem;height:clamp(2.75rem,8vw,3.5rem);border:0.125rem dashed #A78C61;border-radius:0.75rem;background:#F2E4C8;
   color:var(--sticker-ink);font-size:clamp(0.875rem,4vw,1.5rem);box-shadow:inset 0 0.1875rem 0.375rem rgba(92,65,29,.1)}
 .quiz-ref-page .pz-slot.filled{border-style:solid;border-color:var(--sticker-ink);background:#FFE49A;box-shadow:0 0.1875rem 0 #D1AE62}
+.quiz-ref-page .pz-slot.hint{border-style:solid;border-color:#C6AF86;background:#FFF6DE;color:#8A6B3E;box-shadow:none}
 .quiz-ref-page .pz-letters{gap:0.5rem;margin-top:0.25rem}
-.quiz-ref-page .pz-letter{width:2.75rem;height:3rem;border:0.125rem solid var(--sticker-ink);border-radius:0.75rem;background:#68BE83;color:#203B29;
+.quiz-ref-page .pz-letter{width:auto;min-width:2.75rem;padding:0 0.5rem;height:3rem;border:0.125rem solid var(--sticker-ink);border-radius:0.75rem;background:#68BE83;color:#203B29;
   box-shadow:0 0.25rem 0 #3F8155;font-size:1.25rem;touch-action:none;user-select:none}
 .quiz-ref-page .pz-letter.used{opacity:.25;pointer-events:none}
 .ref-puzzle-wrap .pz-check{width:min(100%,20rem);border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155}
@@ -1348,7 +1348,7 @@ h1,h2,h3,h4,p{margin:0}
   .ref-stage-head{margin-top:0.5rem;margin-bottom:0.375rem}
   .ref-stage-badge{width:2.5rem;height:2.5rem}
   .ref-stage-head h2{font-size:1.0625rem}
-  .ref-picture-art{width:7.5rem;height:7.5rem}
+  .ref-picture-art{padding:0.25rem}
   .ref-listen-speaker{height:6rem}
   .ref-dialog-person{width:3.5rem;height:4.5rem}
   .ref-dialog-bubble{min-height:3.25rem;padding:0.5rem}
@@ -2238,34 +2238,32 @@ h1,h2,h3,h4,p{margin:0}
 }
 
 /* ============================================================
-   词汇拼图：放大上方图片，插槽/字母块整体下移，
-   收紧三块之间的空白，检查按钮保持原位
+   词汇拼图：提示框保持固定方形尺寸，图片只能显示在框体内
    ============================================================ */
 .quiz-ref-page .ref-puzzle-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap {
-  justify-content: flex-start !important;
+  justify-content: center !important;
   gap: 0 !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .ref-puzzle-hint {
-  flex: 1 1 auto;
-  min-height: 0;
-  justify-content: flex-end;
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  flex: 0 0 auto;
+  justify-content: center;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-art {
-  flex: 1 1 0;
-  min-height: 0;
-  width: auto;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  max-height: clamp(6.5rem, 34cqh, 13.5rem);
+  flex: 0 0 auto;
+  width: clamp(6.5rem, 18cqh, 9.5rem);
+  height: clamp(6.5rem, 18cqh, 9.5rem);
+  max-height: none;
+  aspect-ratio: auto;
+  overflow: hidden;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-slots {
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-letters {
   margin-top: 0 !important;
-  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-check,
 .quiz-ref-page .ref-puzzle-wrap .pz-check-spacer {
@@ -3954,26 +3952,27 @@ window.DINO_WORD_RULES.push({
   /* 四维词库标签 */
   const CATEGORIES = ["noun", "verb", "part", "adj"];
 
-  /* 普通关固定配比：1 名词 + 1 动词 + 1 部位/形容词
-     保证每关既有基础认知题，又有互动进阶题 */
+  /* 普通关固定配比：1 名词 + 1 动词 + 1 形容词
+     名词题型覆盖看图/听音/拼图/连线/喂食；情景对话仅 BOSS 关开放 */
   const NORMAL_MIX = [
     { role: "noun",      count: 1 },
     { role: "verb",      count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
 
-  /* BOSS 关固定配比：5 题全部为进阶题型，不含看图/听音这类简单题
-     词汇拼图(名词) + 动作猜猜(动词) + 局部特写(部位) + 对比观察(形容词) + 进阶混抽 */
+  /* BOSS 关固定配比：5 题全部为进阶题型
+     词汇拼图/连线/喂食 + 情景对话 + 动作猜猜 + 对比观察 */
   const BOSS_MIX = [
     { role: "noun",      count: 1 },
+    { role: "dialog",    count: 1 },
     { role: "verb",      count: 1 },
-    { role: "part",      count: 1 },
     { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
-  const BOSS_TYPE_BY_ROLE = { noun: "word_puzzle", verb: "action", part: "body_zoom", adj: "compare" };
+  const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
+  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "compare" };
   /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
-  const BOSS_TYPES = ["word_puzzle", "action", "body_zoom", "compare"];
+  const BOSS_TYPES = ["word_puzzle", "action", "compare", "match", "feed_animal", "dialog"];
 
 
   /* 题型规则
@@ -3983,6 +3982,9 @@ window.DINO_WORD_RULES.push({
     { key: "pic",         label: "看图选词", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "listen",      label: "听音识图", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "word_puzzle", label: "词汇拼图", group: "basic",    cats: ["noun"], recordWrong: true, maxLetters: 8 },
+    { key: "feed_animal", label: "动物喂食", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "dialog",      label: "情景对话", group: "basic",    cats: ["noun"], recordWrong: true },
+    { key: "match",       label: "单词连线", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "action",      label: "动作猜猜", group: "advanced", cats: ["verb"], recordWrong: true },
     { key: "body_zoom",   label: "局部特写", group: "advanced", cats: ["part"], recordWrong: true },
     { key: "compare",     label: "对比观察", group: "advanced", cats: ["adj"],  recordWrong: true },
@@ -3992,16 +3994,18 @@ window.DINO_WORD_RULES.push({
     return map;
   }, {});
 
-  /* 名词题型按阶段递进：前两关只有看图/听音，第 3 关起加入词汇拼图 */
+  /* 名词题型按阶段递进，情景对话不进入普通关：
+     第 1 关看图/听音/喂食，第 2 关加入连线，
+     第 3 关起加入拼图，所有普通关题型逐步开放 */
   function nounTypesForStep(step) {
-    return step >= 3 ? ["pic", "listen", "word_puzzle"] : ["pic", "listen"];
+    if (step <= 1) return ["pic", "listen", "feed_animal"];
+    if (step === 2) return ["pic", "listen", "feed_animal", "match"];
+    return ["pic", "listen", "word_puzzle", "feed_animal", "match"];
   }
 
-  /* 第 5 题在「身体部位」和「形容词」之间按权重抽取：
-     前两关偏局部观察，第 3 关起逐步提高形容词对比题的权重 */
-  function pickPartOrAdjType(step) {
-    const adjWeight = step <= 2 ? 0.3 : 0.5;
-    return Math.random() < adjWeight ? "compare" : "body_zoom";
+  /* 部位特写题型暂时关闭，形容词对比题常驻 */
+  function pickPartOrAdjType() {
+    return "compare";
   }
 
   function wordId(sceneId, word) {
@@ -4015,6 +4019,8 @@ window.DINO_WORD_RULES.push({
     if (rule.key === "action" && !w.actor) return false;
     if (rule.key === "body_zoom" && !w.owner) return false;
     if (rule.key === "compare" && !w.compare) return false;
+    if (rule.key === "feed_animal" && !w.food) return false;
+    if (rule.key === "dialog" && !w.dialogueClue) return false;
     return true;
   }
 
@@ -4053,7 +4059,10 @@ window.DINO_WORD_RULES.push({
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
         if (isBoss) {
-          type = slot.role === "partOrAdj" ? pickPartOrAdjType(step) : BOSS_TYPE_BY_ROLE[slot.role];
+          if (slot.role === "noun") type = pickType(BOSS_NOUN_TYPES, usedTypes);
+          else if (slot.role === "dialog") type = "dialog";
+          else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
+          else type = BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
@@ -4078,13 +4087,20 @@ window.DINO_WORD_RULES.push({
       /* 素材键：题目与图片解耦；成对形容词共用同一个 assetKey */
       assetKey: w.assetKey || w.word,
       animal: !!w.animal,
+      /* 图片与食物：数据层挂载，缺图时渲染层回退 emoji */
+      img: w.img || "",
+      food: w.food || null,
+      foodId: w.foodId || "",
+      eats: w.eats || "",
+      ownerWord: w.ownerWord || "",
+      dialogueClue: w.dialogueClue || "",
       /* 进阶题型专用数据 */
       actor: w.actor || "",
       motion: w.motion || "",
       owner: w.owner || "",
       focus: w.focus || null,
       compare: w.compare || null,
-      dlgQ: dlg.q,
+      dlgQ: question.gameType === "dialog" && w.dialogueClue ? w.dialogueClue : dlg.q,
       dlgA: dlg.a,
       recordWrong: question.recordWrong,
       wrongWordId: wordId(sceneId, w.word),
@@ -4094,8 +4110,9 @@ window.DINO_WORD_RULES.push({
     return task;
   }
 
-  /* 兜底补题：只使用本次改造后的 6 个题型，避免抽到待建设题型 */
-  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "action", "body_zoom", "compare"];
+  /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
+  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action", "compare"];
+  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action", "compare"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
@@ -4137,7 +4154,7 @@ window.DINO_WORD_RULES.push({
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : null).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -4165,9 +4182,9 @@ window.DINO_WORD_RULES.push({
       4: ["listen", "pic", "match", "word_puzzle", "pic"],
       5: ["pic", "match", "word_puzzle", "listen", "pic"],
       6: ["listen", "feed_animal", "match", "pic", "listen"],
-      7: ["pic", "match", "word_puzzle", "dialog", "listen"],
-      8: ["listen", "dialog", "match", "feed_animal", "pic"],
-      9: ["dialog", "match", "listen", "dialog", "word_puzzle"],
+      7: ["pic", "match", "word_puzzle", "feed_animal", "listen"],
+      8: ["listen", "word_puzzle", "match", "feed_animal", "pic"],
+      9: ["feed_animal", "match", "listen", "pic", "word_puzzle"],
       10: ["dialog", "listen", "word_puzzle", "match", "feed_animal"],
     };
   }
@@ -4194,19 +4211,31 @@ window.DINO_WORD_RULES.push({
     task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
   }
 
-  /* 单词主图：优先 images/words/animal/{word}.webp，其次 images/words/{word}.png，缺图时回退 emoji */
+  /* 单词主图：优先使用数据层的 img，缺图时同目录 .png，再缺则回退 emoji */
+  function wordImageSrc(w) {
+    if (!w) return "";
+    return w.img || `images/words/animal/${w.word}.webp`;
+  }
   window.wordArtFallback = function (img) {
     if (!img.dataset.fallback) {
       img.dataset.fallback = "png";
-      img.src = img.src.replace("/animal/", "/").replace(/\.webp$/, ".png");
+      img.src = img.src.replace(/\.webp$/i, ".png");
       return;
     }
     img.style.display = "none";
-    img.nextElementSibling.style.display = "grid";
+    if (img.nextElementSibling) img.nextElementSibling.style.display = "grid";
   };
+  /* 带图片回退的通用插图：图片缺失时显示 emoji/SVG 兜底 */
+  function artWithImage(src, cls, fallback) {
+    if (!src) return fallback;
+    return `<img class="${cls}" src="${src}" alt="" loading="eager" decoding="async"
+      style="width:100%;height:100%;object-fit:contain"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+      <span class="art-fallback" style="display:none;width:100%;height:100%;place-items:center">${fallback}</span>`;
+  }
   function wordHeroArt(w) {
     const emoji = w.emoji || wordGlyph(w.word);
-    return `<img class="pic-img" src="images/words/animal/${w.word}.webp" alt="" loading="eager" decoding="async"
+    return `<img class="pic-img" src="${wordImageSrc(w)}" alt="" loading="eager" decoding="async"
       onerror="wordArtFallback(this)">
       <span class="pic-emoji" style="display:none">${emoji}</span>`;
   }
@@ -4278,10 +4307,12 @@ window.DINO_WORD_RULES.push({
         label: "单词连线",
         title: "把单词和图片连起来",
         build(task, pool) {
-          const trio = shuffle(pool).slice(0, 3);
-          task.pairs = trio.map((x) => ({ word: x.word, art: x.art }));
+          /* 只连同类词，避免连线题里混进动词/形容词 */
+          const trioPool = pool.filter((x) => !task.category || x.category === task.category);
+          const trio = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
+          task.pairs = trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" }));
           task.words = shuffle(trio.map((x) => x.word));
-          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art })));
+          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" })));
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
@@ -4290,7 +4321,7 @@ window.DINO_WORD_RULES.push({
             const isDone = solved.has(p.word);
             const isSel = selected === p.word && !isDone;
             return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <div class="ref-match-art-card">${p.art()}</div>
+              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
               <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
             </div>`;
           }).join("");
@@ -4372,7 +4403,7 @@ window.DINO_WORD_RULES.push({
           return {
             body: `<div class="ref-dialog-card">
                 <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${q.art()}</span></div></div>
+                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span></div></div>
                 <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
@@ -4387,18 +4418,73 @@ window.DINO_WORD_RULES.push({
         label: "词汇拼图",
         title: "拖动字母块，拼出单词！",
         build(task) {
-          /* 打乱字母顺序（至少位移 2 个以上） */
+          /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
+             字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
           const letters = task.word.toUpperCase().split("");
+          const maxHints = Math.max(0, Math.min(2, letters.length - 3));
+          const hintCount = Math.floor(Math.random() * (maxHints + 1));
+          const hinted = new Set(
+            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, hintCount)
+          );
+          const missing = letters.map((ch, i) => ({ ch, i })).filter((m) => !hinted.has(m.i));
+
+          /* 连续缺失字母分段，段内相邻字母才能合并成一块（提示字母把词隔断） */
+          const runs = [];
+          for (const m of missing) {
+            const last = runs[runs.length - 1];
+            if (last && last[last.length - 1].i + 1 === m.i) last.push(m);
+            else runs.push([m]);
+          }
+          const blocks = runs.map((run) => run.map((m) => ({ ch: m.ch, positions: [m.i] })));
+          let slotCount = blocks.reduce((n, run) => n + run.length, 0);
+          while (slotCount > 5) {
+            const pairs = [];
+            blocks.forEach((run) => {
+              for (let i = 0; i < run.length - 1; i++) pairs.push([run, i]);
+            });
+            if (!pairs.length) break;
+            const [run, i] = pairs[Math.floor(Math.random() * pairs.length)];
+            run[i] = { ch: run[i].ch + run[i + 1].ch, positions: run[i].positions.concat(run[i + 1].positions) };
+            run.splice(i + 1, 1);
+            slotCount -= 1;
+          }
+
+          const posToSlot = new Map();
+          const chunks = [];
+          let slotId = 0;
+          blocks.forEach((run) => {
+            run.forEach((b) => {
+              b.positions.forEach((p) => posToSlot.set(p, slotId));
+              chunks.push({ ch: b.ch, id: slotId });
+              slotId += 1;
+            });
+          });
+          /* 展示行：提示字母单独成格，合并拼块只占一格 */
+          const cells = [];
+          letters.forEach((ch, i) => {
+            if (hinted.has(i)) {
+              cells.push({ hint: ch });
+              return;
+            }
+            const id = posToSlot.get(i);
+            const prev = cells[cells.length - 1];
+            if (!prev || prev.slot !== id) cells.push({ slot: id });
+          });
+          task.puzzleCells = cells;
           let shuffled;
-          do { shuffled = [...letters].sort(() => Math.random() - 0.5); }
-          while (shuffled.join("") === letters.join("") && letters.length > 1);
-          task.puzzleLetters = shuffled.map((ch, i) => ({ ch, id: i, placed: false }));
-          task.puzzleSlots = letters.map((ch, i) => ({ id: i, filled: null }));
+          do { shuffled = [...chunks].sort(() => Math.random() - 0.5); }
+          while (shuffled.map((c) => c.ch).join("") === chunks.map((c) => c.ch).join("") && chunks.length > 1);
+          task.puzzleLetters = shuffled.map((c) => ({ ch: c.ch, id: c.id, placed: false }));
+          task.puzzleSlots = chunks.map((c) => ({ id: c.id, filled: null }));
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
-          const slotsHtml = q.puzzleSlots.map((s) => {
-            const letter = s.filled !== null ? q.puzzleLetters.find((l) => l.id === s.filled) : null;
+          const lettersById = new Map(q.puzzleLetters.map((l) => [l.id, l]));
+          const slotsById = new Map(q.puzzleSlots.map((s) => [s.id, s]));
+          const slotsHtml = q.puzzleCells.map((cell) => {
+            if (cell.hint) return `<div class="pz-slot hint">${cell.hint}</div>`;
+            const s = slotsById.get(cell.slot);
+            const letter = s.filled !== null ? lettersById.get(s.filled) : null;
             return `<div class="pz-slot ${letter ? "filled" : ""}" data-slot="${s.id}">${letter ? letter.ch : ""}</div>`;
           }).join("");
           const lettersHtml = q.puzzleLetters.map((l) => {
@@ -4409,10 +4495,9 @@ window.DINO_WORD_RULES.push({
           const body = `
             <div class="pz-wrap ref-puzzle-wrap">
               <div class="pz-hint ref-puzzle-hint">
-                <div class="pz-art">${artOf(q.word)()}</div>
-                <small>${q.zh}</small>
+                <div class="pz-art">${wordHeroArt(q)}</div>
               </div>
-              <div class="pz-slots" style="--slot-count:${q.puzzleSlots.length}">${slotsHtml}</div>
+              <div class="pz-slots">${slotsHtml}</div>
               <div class="pz-letters">${lettersHtml}</div>
               ${!revealed
                 ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>`
@@ -4426,7 +4511,23 @@ window.DINO_WORD_RULES.push({
         label: "动物喂食",
         title: "给动物喂它爱吃的食物！",
         build(task, pool) {
-          /* 从 pool 里找 3 种不同的食物 emoji 作为选项 */
+          /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
+          const unique = [];
+          const seenFood = new Set();
+          pool.forEach((w) => {
+            if (!w.food || seenFood.has(w.food.id)) return;
+            seenFood.add(w.food.id);
+            unique.push(w.food);
+          });
+          if (task.food && unique.length >= 3) {
+            const correct = task.food;
+            const rest = shuffle(unique.filter((f) => f.id !== correct.id)).slice(0, 2);
+            task.foods = shuffle([correct, ...rest]);
+            task.correctFood = correct.id;
+            task.correctZh = correct.zh || "";
+            return;
+          }
+          /* 其他主题沿用原有 emoji 食物池 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
           const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
           if (foods.length < 3) {
@@ -4456,14 +4557,16 @@ window.DINO_WORD_RULES.push({
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
-          const foods = q.foods.map((f) =>
-            `<button type="button" class="fd-food ${revealed && f.word === q.correctFood ? "correct" : ""} ${quiz.selected === f.word ? "selected" : ""}"
-              data-action="fd-pick" data-drag="food" data-food="${f.word}"><span class="ref-food-art">${artOf(f.word)()}</span><small>${f.word}</small></button>`
-          ).join("");
+          const foods = q.foods.map((f) => {
+            const id = f.id || f.word;
+            const art = f.img ? artWithImage(f.img, "ref-food-img", f.emoji || "🍎") : (f.emoji || artOf(id)());
+            return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
+              data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span><small>${id}</small></button>`;
+          }).join("");
           const body = `
             <div class="fd-wrap ref-feed-wrap">
               <div class="fd-animal ref-feed-animal" data-feed-drop>
-                <div class="fd-art">${artOf(q.word)()}</div>
+                <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 <div class="fd-name">${q.word.toUpperCase()}</div>
                 <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
@@ -4481,8 +4584,9 @@ window.DINO_WORD_RULES.push({
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
           const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
-            ? `<img class="ref-action-img" src="images/words/${q.assetKey}.png" alt=""
-                 onload="this.parentElement.classList.add('has-art')" onerror="this.remove()">`
+            ? `<img class="ref-action-img" src="${q.img || `images/words/action/${q.assetKey}.webp`}" alt=""
+                 onload="this.parentElement.classList.add('has-art')"
+                 onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">`
             : "";
           return advancedLayout({
             wrap: "ref-action-wrap",
@@ -4510,10 +4614,17 @@ window.DINO_WORD_RULES.push({
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const f = q.focus || { x: "0%", y: "0%", scale: 2 };
+          const src = q.img || (q.ownerWord ? `images/words/animal/${q.ownerWord}.webp` : "");
+          const zoomArt = src
+            ? `<img class="ref-zoom-art ref-zoom-photo" src="${src}" alt="" loading="eager" decoding="async"
+                 style="--fx:${f.x};--fy:${f.y};--fs:${f.scale};width:100%;height:100%;object-fit:cover"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+               <span class="ref-zoom-art ref-zoom-emoji" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale};display:none">${q.owner || q.emoji || "🐾"}</span>`
+            : `<span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>`;
           return advancedLayout({
             wrap: "ref-zoom-wrap",
             stage: `<div class="ref-zoom-lens" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
-                  <span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>
+                  ${zoomArt}
                   <span class="ref-zoom-spot"></span>
                 </div>
                 <span class="ref-zoom-handle" aria-hidden="true"></span>`,
@@ -4600,7 +4711,7 @@ definePlaceholderTheme({
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    陆地动物园：10 个主题馆 × 5 关 = 50 关，共用一张连续路线图
-   题库共 105 词（仅陆地动物园）：核心动物名词 35 + 动作动词 30 + 身体部位 20 + 特征形容词 20
+   题库共 109 词（仅陆地动物园）：核心动物名词 39 + 动作动词 30 + 身体部位 20 + 特征形容词 20
    每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
@@ -4664,14 +4775,14 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（105 词，仅陆地动物园）
-   1. 核心动物名词 35 个：看图选词 / 听音识图 / 词汇拼图
+   动物乐园题库（109 词，仅陆地动物园）
+   1. 核心动物名词 39 个：看图选词 / 听音识图 / 词汇拼图
    2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 20 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
 const ANIMAL_ZOO_WORDS = [
-  /* ---------------- 1. 核心动物名词 35 个 ---------------- */
+  /* ---------------- 1. 核心动物名词 39 个 ---------------- */
   { word: "lion",       zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion is the king of the zoo.",        emoji: "🦁", category: "noun", animal: true },
   { word: "tiger",      zh: "老虎",   phon: "/ˈtaɪɡə(r)/",    example: "The tiger has orange fur.",               emoji: "🐯", category: "noun", animal: true },
   { word: "monkey",     zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey climbs the tree.",             emoji: "🐒", category: "noun", animal: true },
@@ -4707,6 +4818,10 @@ const ANIMAL_ZOO_WORDS = [
   { word: "pig",        zh: "猪",     phon: "/pɪɡ/",          example: "The pig is rolling in the mud.",          emoji: "🐷", category: "noun", animal: true },
   { word: "chicken",    zh: "鸡",     phon: "/ˈtʃɪkɪn/",      example: "The chicken lays eggs on the farm.",      emoji: "🐔", category: "noun", animal: true },
   { word: "bird",       zh: "小鸟",   phon: "/bɜːd/",         example: "A bird is singing in the tree.",          emoji: "🐦", category: "noun", animal: true },
+  { word: "owl",        zh: "猫头鹰", phon: "/aʊl/",          example: "The owl hunts at night.",                 emoji: "🦉", category: "noun", animal: true },
+  { word: "eagle",      zh: "老鹰",   phon: "/ˈiːɡl/",        example: "The eagle flies high in the sky.",        emoji: "🦅", category: "noun", animal: true },
+  { word: "crow",       zh: "乌鸦",   phon: "/krəʊ/",         example: "The crow is black and clever.",           emoji: "🐦‍⬛", category: "noun", animal: true },
+  { word: "baboon",     zh: "狒狒",   phon: "/bəˈbuːn/",      example: "The baboon lives in the forest.",         emoji: "🐒", category: "noun", animal: true },
 
   /* ---------------- 2. 动作动词 30 个 ---------------- */
   { word: "eat",        zh: "吃",     phon: "/iːt/",          example: "The panda likes to eat bamboo.",          emoji: "🍽️", category: "verb", actor: "🐼", motion: "eat" },
@@ -4815,15 +4930,77 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   long: "snake-rabbit",
   fast: "cheetah-turtle",    slow: "cheetah-turtle",
   fat: "pig-monkey",         thin: "pig-monkey",
-  strong: "gorilla-mouse",   light: "gorilla-mouse",
+  strong: "gorilla-mouse",
   quiet: "rabbit-lion",      noisy: "rabbit-lion",
   cute: "cat-pig",           clean: "cat-pig",
   heavy: "elephant-feather", light: "elephant-feather",
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
 };
+/* ============================================================
+   素材挂载：食物、宿主动物、图片与对话线索
+   - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
+   - 食物图放在 images/words/food/，动作图放在 images/words/action/
+   ============================================================ */
+const ANIMAL_FOODS = {
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/worm.webp" },
+};
+
+/* 39 种动物各自爱吃的食物 */
+const ANIMAL_FEED_MAP = {
+  lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
+  cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
+  zebra: "grass", giraffe: "grass", cow: "grass", sheep: "grass", goat: "grass",
+  deer: "grass", kangaroo: "grass", hippo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  chicken: "worm", bird: "worm", peacock: "worm", crow: "worm",
+  monkey: "banana", gorilla: "banana", baboon: "banana",
+  rabbit: "carrot", horse: "carrot", donkey: "carrot",
+  bear: "fish", cat: "fish", duck: "fish",
+  squirrel: "nut", parrot: "nut",
+  elephant: "apple", pig: "apple",
+  panda: "bamboo",
+  dog: "bone",
+};
+
+/* 20 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
+const PART_OWNER_WORD_MAP = {
+  tail: "monkey", ear: "rabbit", trunk: "elephant", mane: "lion", wing: "duck",
+  paw: "bear", stripe: "zebra", fur: "panda", horn: "rhino", tusk: "elephant",
+  claw: "tiger", feather: "peacock", whisker: "cat", beak: "parrot", hoof: "horse",
+  neck: "giraffe", tooth: "crocodile", tongue: "snake", leg: "zebra", belly: "cat",
+};
+
 ANIMAL_ZOO_WORDS.forEach((w) => {
-  w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
+  if (w.category === "verb") {
+    /* 动作题统一用 action-{word} 素材键，已有自定义键保持不变 */
+    if (!w.assetKey || w.assetKey.indexOf("action-") !== 0) w.assetKey = `action-${w.word}`;
+    w.img = w.img || `images/words/action/${w.assetKey}.webp`;
+  } else if (w.category === "part") {
+    w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
+    w.assetKey = w.assetKey || w.ownerWord;
+    w.img = w.img || `images/words/animal/${w.ownerWord}.webp`;
+  } else if (w.category === "adj") {
+    w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
+  } else {
+    w.assetKey = w.assetKey || w.word;
+    w.img = w.img || `images/words/animal/${w.word}.webp`;
+    const foodId = ANIMAL_FEED_MAP[w.word] || "apple";
+    w.foodId = foodId;
+    w.food = ANIMAL_FOODS[foodId];
+    w.eats = foodId;
+    w.dialogueClue = w.example
+      ? w.example.replace(new RegExp(`\\b${w.word}\\b`, "i"), "___")
+      : "";
+  }
 });
 
 const ANIMAL_ZOO_VENUES = [
@@ -4904,7 +5081,7 @@ const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_VENUES.flatMap((venue, vi) =>
   })
 );
 
-/* 全场景词池：50 关共用同一套 105 词题库（仅陆地动物园） */
+/* 全场景词池：50 关共用同一套 109 词题库（仅陆地动物园） */
 
 const ANIMAL_SCENES = [
   {
@@ -6135,8 +6312,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "pz-check") {
     if (!quiz || quiz.revealed) return;
     const q = quiz.order[quiz.index];
-    const got = q.puzzleSlots.map((s) => {
-      const l = q.puzzleLetters.find((x) => x.id === s.filled);
+    const got = q.puzzleCells.map((c) => {
+      if (c.hint) return c.hint;
+      const s = q.puzzleSlots.find((x) => x.id === c.slot);
+      const l = s && s.filled !== null ? q.puzzleLetters.find((x) => x.id === s.filled) : null;
       return l ? l.ch : "_";
     }).join("").toLowerCase();
     const target = q.word.toUpperCase().toLowerCase();
@@ -7392,7 +7571,7 @@ window.QuizView = {
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
       if (drag.kind === "puzzle") {
-        const slot = hit && hit.closest(".pz-slot");
+        const slot = hit && hit.closest(".pz-slot[data-slot]");
         if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
       } else {
         const target = hit && hit.closest("[data-feed-drop]");

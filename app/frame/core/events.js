@@ -161,8 +161,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "pz-check") {
     if (!quiz || quiz.revealed) return;
     const q = quiz.order[quiz.index];
-    const got = q.puzzleSlots.map((s) => {
-      const l = q.puzzleLetters.find((x) => x.id === s.filled);
+    const got = q.puzzleCells.map((c) => {
+      if (c.hint) return c.hint;
+      const s = q.puzzleSlots.find((x) => x.id === c.slot);
+      const l = s && s.filled !== null ? q.puzzleLetters.find((x) => x.id === s.filled) : null;
       return l ? l.ch : "_";
     }).join("").toLowerCase();
     const target = q.word.toUpperCase().toLowerCase();
