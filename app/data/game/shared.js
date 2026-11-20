@@ -30,26 +30,18 @@
   window.isAnimalBossLevel = isAnimalBossLevel;
   window.isAnimalFinalBoss = isAnimalFinalBoss;
 
-  /* 阶段门槛：每 5 关为一阶段，阶段内第 5 关需前 4 关累计 ≥8 星 */
+  /* 阶段划分：每 5 关为一组，第 5/10/15… 关为考核关（5 题，按答对题数发 1~3 星） */
   const STAGE_SIZE = 5;
-  const STAGE_GATE_STARS = 8;
-  function stageStarsBefore(level) {
-    const L = Number(level) || 1;
-    const start = Math.floor((L - 1) / STAGE_SIZE) * STAGE_SIZE + 1;
-    const stars = themeProgress().stars || {};
-    let sum = 0;
-    for (let i = start; i < L; i++) sum += Number(stars[i]) || 0;
-    return sum;
+  function isAssessmentLevel(level) {
+    const L = Number(level) || 0;
+    return L > 0 && L % STAGE_SIZE === 0;
   }
-  function canEnterLevel(level) {
-    const L = Number(level) || 1;
-    if (!isZooScene()) return true;
-    if (L % STAGE_SIZE !== 0) return true;
-    return stageStarsBefore(L) >= STAGE_GATE_STARS;
+  /* 前 4 关为基础练习（0 星）；考核关只做顺序解锁，不再设星数门槛 */
+  function canEnterLevel() {
+    return true;
   }
   window.STAGE_SIZE = STAGE_SIZE;
-  window.STAGE_GATE_STARS = STAGE_GATE_STARS;
-  window.stageStarsBefore = stageStarsBefore;
+  window.isAssessmentLevel = isAssessmentLevel;
   window.canEnterLevel = canEnterLevel;
 
   /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */

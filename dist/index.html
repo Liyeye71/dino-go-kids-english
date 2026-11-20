@@ -684,15 +684,17 @@ h1,h2,h3,h4,p{margin:0}
 .fx-confetti{position:absolute;inset:0}
 .fx-confetti i{position:absolute;top:-8%;display:block;animation:fxFall linear both}
 
-/* 答后结果卡：森林奶油风，固定从屏幕正中心弹出 */
-.zoo-feedback-card{position:fixed;left:50%;top:50%;z-index:40;
-  width:min(92vw,27rem);max-height:82dvh;overflow:visible;
+/* 答后结果卡：森林奶油风，位于答题框正中 */
+.zoo-feedback-card{position:absolute;left:50%;top:50%;z-index:40;
+  width:75%;max-height:86dvh;overflow:visible;
   display:flex;flex-direction:column;gap:0.625rem;padding:1rem 1rem 1.0625rem;border-radius:1.25rem;
   background:#FFF8E6;border:0.15625rem solid #6B4A24;
   box-shadow:0 0.3125rem 0 rgba(107,74,36,.32),inset 0 0.125rem 0 rgba(255,255,255,.75);
   animation:qrpIn .42s cubic-bezier(.2,1.45,.4,1) both}
 .zoo-feedback-card.is-correct{background:#FDFBEB}
 .zoo-feedback-card.is-wrong{background:#FFF6EC}
+/* 进阶题型有「纸面安全框」：弹框宽度取纸面宽度的 75%，而不是整屏的 75% */
+.quiz-ref-page .zoo-feedback-card{width:calc((var(--stage-max-w) - 0.75rem) * 0.75)}
 .zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem}
 .zoo-status-badge{width:1.75rem;height:1.75rem;border-radius:50%;flex:none;display:grid;place-items:center;
   background:#4FAE55;border:0.125rem solid #1E6B3B;box-shadow:0 0.125rem 0 rgba(30,107,59,.35)}
@@ -700,14 +702,39 @@ h1,h2,h3,h4,p{margin:0}
   box-shadow:0 0.125rem 0 rgba(143,45,31,.35)}
 .zoo-status-badge svg{width:1.0625rem;height:1.0625rem;display:block}
 .zoo-feedback-title{margin:0;font-size:1.1875rem;line-height:1.2;letter-spacing:-0.0125rem;
-  font-weight:var(--w-black);color:#2E7A4C}
+  font-weight:var(--w-black);color:#2E7A4C;overflow-wrap:anywhere}
 .zoo-feedback-card.is-wrong .zoo-feedback-title{color:#B5452F}
 .zoo-feedback-body{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem}
-.zoo-answer-box{flex:1;min-width:0;display:flex;align-items:center;gap:0.3125rem;overflow:hidden}
-.zoo-answer-label{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#8A6B45}
-.zoo-answer-word{flex:none;font-size:1.0625rem;font-weight:var(--w-black);color:#4B3626}
-.zoo-answer-phon{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#957047}
-.zoo-meaning-text{flex:none;font-size:0.8125rem;font-weight:var(--w-bold);color:#8A6431}
+/* 答案条：英文 + 喇叭 + 音标 + 中文同排，空间不足时只有中文换到下一行 */
+.zoo-answer-box{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.3125rem}
+.zoo-answer-label{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#8A6B45;white-space:nowrap}
+.zoo-answer-word{flex:none;font-size:1.0625rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;white-space:nowrap}
+.zoo-answer-box .zoo-audio-btn{flex:none}
+.zoo-answer-meta{display:contents}
+.zoo-answer-phon{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#957047;white-space:nowrap}
+.zoo-meaning-text{flex:0 1 auto;min-width:0;font-size:0.8125rem;font-weight:var(--w-bold);color:#8A6431;
+  white-space:normal;overflow-wrap:anywhere}
+/* 连线题答后：完整的配对答案清单（图 + 单词 + 喇叭 + 音标 + 中文，最右对错标记） */
+.zoo-feedback-body.is-match{flex-direction:column;align-items:stretch;gap:0.5rem}
+.zoo-feedback-body.is-match .zoo-action-btn{align-self:flex-end}
+.zoo-match-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:0.375rem;
+  max-height:52dvh;overflow-y:auto}
+.zoo-match-row{display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.75rem;
+  background:#FFFDF5;border:0.09375rem solid #EADFC6}
+.zoo-match-row.is-wrong{background:#FFF1EC;border-color:#F2B5A6}
+.zoo-match-thumb{flex:none;width:2.375rem;height:2.375rem;border-radius:0.5rem;background:#fff;
+  border:0.09375rem solid #E7DCC4;display:grid;place-items:center;overflow:hidden}
+.zoo-match-thumb-img{width:100%;height:100%;object-fit:contain}
+.zoo-match-thumb-emoji{font-size:1.5rem;line-height:1;display:grid;place-items:center}
+.zoo-match-main{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.25rem 0.375rem}
+.zoo-match-word{font-size:1rem;font-weight:var(--w-black);color:#4B3626;line-height:1.25;overflow-wrap:anywhere}
+.zoo-match-phon{font-size:0.6875rem;font-weight:var(--w-bold);color:#957047;overflow-wrap:anywhere}
+.zoo-match-zh{font-size:0.75rem;font-weight:var(--w-bold);color:#8A6431;overflow-wrap:anywhere}
+.zoo-match-picked{flex-basis:100%;font-size:0.6875rem;font-weight:var(--w-bold);color:#C0492F;overflow-wrap:anywhere}
+.zoo-match-picked b{font-weight:var(--w-black)}
+.zoo-match-flag{flex:none;width:1.125rem;height:1.125rem;border-radius:50%;display:grid;place-items:center;
+  font-size:0.75rem;font-weight:var(--w-black);color:#fff;background:#4FAE55;border:0.09375rem solid #1E6B3B}
+.zoo-match-row.is-wrong .zoo-match-flag{background:#E8604A;border-color:#8F2D1F}
 .zoo-action-btn{position:relative;flex:none;display:inline-flex;align-items:center;gap:0.25rem;
   min-height:2.25rem;padding:0 0.8125rem;border-radius:0.75rem;border:0.125rem solid #6B4A24;
   background:#FFD166;color:#5A3A12;font-size:0.875rem;font-weight:var(--w-black);white-space:nowrap;
@@ -781,6 +808,36 @@ h1,h2,h3,h4,p{margin:0}
 .result-stars svg:nth-child(2){animation-delay:.22s}
 .result-stars svg:nth-child(3){transform:rotate(14deg) translateY(0.25rem);animation-delay:.34s}
 .result-sub{text-align:center;font-size:0.84375rem;font-weight:var(--w-mid);color:#96876A;margin-top:0.5rem}
+/* 基础练习关（无星星）：奶油贴纸风对错标记替代标题与三颗星 */
+.base-marks{display:flex;align-items:center;justify-content:center;gap:0.75rem;min-height:5.875rem;margin-top:0.5rem}
+.base-marks .mark{position:relative;width:3.5rem;height:3.5rem;display:flex;align-items:center;justify-content:center;
+  font-size:1.875rem;font-weight:900;line-height:1;
+  background:#FFF6E2;border:0.25rem solid #F0D9AE;
+  border-radius:47% 53% 51% 49% / 52% 48% 54% 46%;
+  box-shadow:0 0.3125rem 0 rgba(160,124,66,.22), inset 0 0.1875rem 0 #FFFDF7}
+.base-marks .mark::after{content:"";position:absolute;top:0.375rem;right:0.5rem;width:0.375rem;height:0.375rem;
+  border-radius:50%;background:#fff;opacity:.9}
+.base-marks .mark:nth-child(1){transform:rotate(-8deg)}
+.base-marks .mark:nth-child(2){transform:rotate(3deg)}
+.base-marks .mark:nth-child(3){transform:rotate(8deg)}
+.base-marks .mark.ok{color:#5E9F52}
+.base-marks .mark.no{color:#E2765C}
+.base-marks .mark svg{width:2rem;height:2rem;fill:none;stroke:currentColor;stroke-width:5.5;
+  stroke-linecap:round;stroke-linejoin:round}
+/* 逐枚弹入：用独立的 scale 属性，避免覆盖每枚圆标原有的旋转角度 */
+@media (prefers-reduced-motion: no-preference){
+  .base-marks .mark{animation:mark-pop .44s cubic-bezier(.34,1.56,.64,1) both}
+  .base-marks .mark:nth-child(1){animation-delay:.12s}
+  .base-marks .mark:nth-child(2){animation-delay:.28s}
+  .base-marks .mark:nth-child(3){animation-delay:.44s}
+}
+@keyframes mark-pop{
+  0%{scale:.3;opacity:0}
+  62%{scale:1.14;opacity:1}
+  100%{scale:1;opacity:1}
+}
+.result-sub .remain{color:#E84F3D;font-size:1rem;font-weight:var(--w-black);margin:0 0.125rem}
+.rc-stars.base-none{background:#F1F5EC;color:#6E8A5E;font-size:0.75rem;font-weight:var(--w-bold)}
 
 .result-card{margin-top:0;border-radius:1.75rem;background:#fff;border:0.09375rem solid var(--line);
   box-shadow:0 0.875rem 1.875rem rgba(94,70,30,.1);padding:1.375rem 1.25rem 1.25rem}
@@ -1239,7 +1296,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* 听音选图 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
-.ref-listen-speaker{align-self:center;position:relative;display:flex;align-items:center;justify-content:center;flex:none;width:10rem;height:clamp(6.5rem,19vh,9rem);
+.ref-listen-speaker{align-self:center;position:relative;display:flex;align-items:center;justify-content:center;flex:none;width:12rem;height:clamp(7.5rem,22vh,10.5rem);
   padding:0;background:transparent;border:0;transition:transform .15s ease;cursor:pointer}
 .ref-listen-speaker:active{transform:scale(.94)}
 .ref-listen-speaker .ref-toast-art{width:100%;height:100%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.15))}
@@ -1272,6 +1329,8 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-row{display:flex;align-items:center;gap:0.625rem;transition:opacity .18s ease}
 .ref-match-row.done{opacity:.55}
 .ref-match-row.wrong{opacity:.8}
+/* 单词框可复用，连过之后仍保持可点观感，不做灰化 */
+.ref-match-col-right .ref-match-row.marked{opacity:1}
 .ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
 .ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
 .ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
@@ -1307,6 +1366,9 @@ h1,h2,h3,h4,p{margin:0}
 .ref-dialog-row.reply .ref-dialog-bubble{border-radius:1.25rem 1.25rem 0.25rem 1.25rem;background:#FFF0F3}
 .ref-dialog-bubble p{font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
 .ref-dialog-bubble .blank{color:#6B8D46;border-bottom:0.125rem dashed #9DB97B;padding:0 0.125rem}
+/* 对话中的动物/食物单词：暖棕色 + 虚线底，帮助小朋友认读 */
+.ref-dialog-word{color:#B5651D;font-weight:var(--w-black);
+  text-decoration:underline dashed #E0A458;text-underline-offset:0.22em;text-decoration-thickness:0.09em}
 .ref-dialog-name{display:grid;place-items:center;align-self:flex-start;flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:#FFE49A;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-black)}
 .ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center}
 .ref-dialog-pic svg{width:100%;height:100%}
@@ -1322,8 +1384,9 @@ h1,h2,h3,h4,p{margin:0}
 .ref-dialog-image-grid .ref-listen-card{min-height:clamp(4.5rem,15cqh,6.5rem);padding:0.5rem}
 .ref-dialog-reply.pending{color:#9C8666;letter-spacing:0.08em}
 /* 结算卡：整句正确答案换行展示 */
-.zoo-answer-box.is-sentence{flex-wrap:wrap;overflow:visible;align-items:flex-start}
-.zoo-answer-box.is-sentence .zoo-answer-word{flex:1 1 auto;font-size:clamp(0.875rem,3.2vw,1.0625rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.zoo-answer-box.is-sentence{align-items:flex-start}
+.zoo-answer-box.is-sentence .zoo-answer-label{padding-top:0.1875rem}
+.zoo-answer-box.is-sentence .zoo-answer-word{flex:1 1 auto;min-width:0;font-size:clamp(0.875rem,3.2vw,1.0625rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
@@ -1370,7 +1433,7 @@ h1,h2,h3,h4,p{margin:0}
   .ref-stage-badge{width:2.5rem;height:2.5rem}
   .ref-stage-head h2{font-size:1.0625rem}
   .ref-picture-art{padding:0.25rem}
-  .ref-listen-speaker{height:6rem}
+  .ref-listen-speaker{height:7rem}
   .ref-dialog-person{width:3.5rem;height:4.5rem}
   .ref-dialog-bubble{min-height:3.25rem;padding:0.5rem}
   .ref-puzzle-hint .pz-art{width:4.5rem;height:4.5rem}
@@ -1623,14 +1686,8 @@ h1,h2,h3,h4,p{margin:0}
 .chest-rarity.rarity-5{color:#FFB64D}
 .chest-meta h2{font-size:1.25rem;font-weight:var(--w-black);color:#3D5A3D;margin:0.25rem 0}
 .chest-meta h2 b{color:#FF8C3D}
-.chest-phase{font-size:0.6875rem;color:#8C6B3D;font-weight:var(--w-bold);margin:0}
 .chest-desc{font-size:0.75rem;color:#70624D;line-height:1.6;margin:0.25rem 0.5rem}
-.chest-progress{width:100%;max-width:20rem;display:flex;flex-direction:column;gap:0.25rem;margin-top:0.5rem;padding:0.5rem 0.75rem;
-  border-radius:0.75rem;background:rgba(255,255,255,.7);font-size:0.6875rem;color:#8C6B3D}
-.chest-progress span{font-weight:var(--w-bold)}
-.chest-progress b{float:right;font-weight:var(--w-black);color:#3D5A3D}
-.chest-progress .bar{height:0.25rem;border-radius:0.125rem;background:rgba(92,65,29,.15);overflow:hidden}
-.chest-progress .bar i{display:block;height:100%;background:#FFB64D;border-radius:0.125rem;transition:width .5s}
+.chest-meta h2.chest-reward{font-size:1.375rem;line-height:1.45;margin:0.375rem 0}
 .chest-actions{display:flex;flex-direction:column;gap:0.375rem;width:100%;max-width:20rem;margin-top:0.75rem}
 .chest-actions .btn{background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);border:0.09375rem solid rgba(255,255,255,.7);box-shadow:0 0.1875rem 0 #D89732;min-height:2.75rem}
 .chest-actions .btn.ghost{background:#FFFFFF;color:#70624D;box-shadow:none;border-color:#E7DAC3}
@@ -1832,8 +1889,8 @@ h1,h2,h3,h4,p{margin:0}
   flex-direction: column;
   overflow: hidden !important;
 
-  /* 纯白纸面视觉 */
-  background: #FFFFFF;
+  /* 奶油纸面视觉（适配 zoo 贴纸风） */
+  background: rgba(255, 252, 242, 0.94);
   border: 0.1875rem solid #D7BA89;
   border-radius: 1.5rem;
   box-shadow: 0 0.375rem 0 rgba(149, 98, 32, 0.18), 0 0.75rem 1.5rem rgba(92, 65, 29, 0.12);
@@ -1917,7 +1974,7 @@ h1,h2,h3,h4,p{margin:0}
 /* 听音选图：喇叭区固定比例，图片选项网格统一贴底且高度稳定 */
 .quiz-ref-page .ref-listen-speaker {
   flex: none !important;
-  height: clamp(5.5rem, 18cqh, 8.5rem) !important;
+  height: clamp(6.5rem, 21cqh, 9.75rem) !important;
   margin: auto 0 !important;
 }
 .quiz-ref-page .ref-listen-grid {
@@ -2114,7 +2171,9 @@ h1,h2,h3,h4,p{margin:0}
   flex-direction: column;
   overflow: hidden !important;
 
-  background: #FFFFFF !important;
+  background: linear-gradient(180deg, rgba(255,253,248,0.72) 0%, rgba(255,249,236,0.62) 100%) !important;
+  backdrop-filter: blur(0.1875rem) saturate(1.08);
+  -webkit-backdrop-filter: blur(0.1875rem) saturate(1.08);
   border: 0.3125rem solid rgba(216,176,122,0.82) !important;
   border-radius: 1.5rem !important;
   box-shadow:
@@ -2195,7 +2254,7 @@ h1,h2,h3,h4,p{margin:0}
 }
 .quiz-ref-page[data-scene="zoo"] .ref-listen-speaker {
   flex: none !important;
-  height: clamp(5rem, 16cqh, 8rem) !important;
+  height: clamp(6rem, 19.5cqh, 9.5rem) !important;
   margin: auto 0 !important;
 }
 .quiz-ref-page[data-scene="zoo"] .ref-listen-grid {
@@ -2207,7 +2266,7 @@ h1,h2,h3,h4,p{margin:0}
   margin: 0 auto !important;
 }
 
-/* 10. 底部选项栏：统一贴底、等高三列 */
+/* 10. 底部选项栏：统一靠近底部、等高三列 */
 .quiz-ref-page[data-scene="zoo"] .ref-pic-options,
 .quiz-ref-page[data-scene="zoo"] .ref-action-options,
 .quiz-ref-page[data-scene="zoo"] .ref-zoom-options,
@@ -2215,10 +2274,13 @@ h1,h2,h3,h4,p{margin:0}
   flex: none !important;
   width: 100% !important;
   max-width: 34rem !important;
-  margin: 0 auto !important;
+  margin: 0 auto clamp(0.5rem, 1.5cqh, 0.75rem) !important;
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: clamp(0.375rem, 1.5cqw, 0.75rem) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .fd-foods {
+  margin-bottom: clamp(0.5rem, 1.5cqh, 0.75rem) !important;
 }
 .quiz-ref-page[data-scene="zoo"] .ref-pic-options .option,
 .quiz-ref-page[data-scene="zoo"] .ref-action-options .option,
@@ -2235,6 +2297,15 @@ h1,h2,h3,h4,p{margin:0}
   margin: 0 !important;
   color: #8C663D;
   font-size: clamp(0.75rem, 2cqw, 0.9375rem);
+}
+
+/* 图片选项：仅等比放大素材，不改变选项卡片、主图框及布局尺寸 */
+.quiz-ref-page .ref-listen-grid .ref-listen-card-art,
+.quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art,
+.quiz-ref-page .fd-foods .ref-food-art,
+.quiz-ref-page .ref-match-art-card > * {
+  transform: scale(1.1);
+  transform-origin: center;
 }
 
 /* 11. 手机窄屏微调：收紧边框，弱化两侧装饰 */
@@ -3895,26 +3966,18 @@ window.DINO_WORD_RULES.push({
   window.isAnimalBossLevel = isAnimalBossLevel;
   window.isAnimalFinalBoss = isAnimalFinalBoss;
 
-  /* 阶段门槛：每 5 关为一阶段，阶段内第 5 关需前 4 关累计 ≥8 星 */
+  /* 阶段划分：每 5 关为一组，第 5/10/15… 关为考核关（5 题，按答对题数发 1~3 星） */
   const STAGE_SIZE = 5;
-  const STAGE_GATE_STARS = 8;
-  function stageStarsBefore(level) {
-    const L = Number(level) || 1;
-    const start = Math.floor((L - 1) / STAGE_SIZE) * STAGE_SIZE + 1;
-    const stars = themeProgress().stars || {};
-    let sum = 0;
-    for (let i = start; i < L; i++) sum += Number(stars[i]) || 0;
-    return sum;
+  function isAssessmentLevel(level) {
+    const L = Number(level) || 0;
+    return L > 0 && L % STAGE_SIZE === 0;
   }
-  function canEnterLevel(level) {
-    const L = Number(level) || 1;
-    if (!isZooScene()) return true;
-    if (L % STAGE_SIZE !== 0) return true;
-    return stageStarsBefore(L) >= STAGE_GATE_STARS;
+  /* 前 4 关为基础练习（0 星）；考核关只做顺序解锁，不再设星数门槛 */
+  function canEnterLevel() {
+    return true;
   }
   window.STAGE_SIZE = STAGE_SIZE;
-  window.STAGE_GATE_STARS = STAGE_GATE_STARS;
-  window.stageStarsBefore = stageStarsBefore;
+  window.isAssessmentLevel = isAssessmentLevel;
   window.canEnterLevel = canEnterLevel;
 
   /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
@@ -4363,7 +4426,7 @@ window.DINO_WORD_RULES.push({
       const sceneId = state.scene || "zoo";
       const scene = zooScene();
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-      const boss = isAnimalBossLevel(level);
+      const boss = window.isAssessmentLevel ? isAssessmentLevel(level) : isAnimalBossLevel(level);
       const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
       const questions = buildSession(level, allSceneWords, sceneId);
@@ -4465,6 +4528,39 @@ window.DINO_WORD_RULES.push({
     };
   }
 
+  /* 情景对话：只给 A 问句加一处关键词提示；已有动物图片时提示动作词，不再重复提示动物名称 */
+  function markDialogWords(dlg, task, pool) {
+    const ask = String(dlg.ask || "");
+    if (!ask) return;
+    const wrap = (match) => `<span class="ref-dialog-word">${match}</span>`;
+    const tryPattern = (re) => {
+      if (!re.test(ask)) return false;
+      dlg.ask = ask.replace(re, wrap);
+      return true;
+    };
+    const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    /* 1. 已有动物图片：提示 like、eat、look、see 等动作词 */
+    if (dlg.askImg) {
+      tryPattern(/\b(eat|eats|eating|ate|like|likes|look|see|know|tell)\b/gi);
+      return;
+    }
+    /* 2. 无动物图片：提示句中的动物单词 */
+    const animals = new Set();
+    (pool || []).forEach((x) => { if (x && x.animal && x.word && x.word.length >= 2) animals.add(x.word); });
+    if (task.word && task.animal) animals.add(task.word);
+    if (animals.size) {
+      const re = new RegExp(`\\b(${[...animals].sort((a, b) => b.length - a.length).map(escapeRe).join("|")})\\b`, "gi");
+      if (tryPattern(re)) return;
+    }
+    /* 3. 按食物选动物时，提示句中的食物单词 */
+    const food = task.food && task.food.en;
+    if (food && food.length >= 2) {
+      if (tryPattern(new RegExp(`\\b${escapeRe(food)}\\b`, "gi"))) return;
+    }
+    /* 4. 通用问句：提示 animal */
+    tryPattern(/\banimals?\b/gi);
+  }
+
   function defaultGames() {
     return {
       pic: {
@@ -4537,11 +4633,12 @@ window.DINO_WORD_RULES.push({
             const f = a.food;
             if (!f || !f.en || seen.has(f.en) || picked.some((x) => x.word === f.en)) return;
             seen.add(f.en);
-            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "" });
+            const meta = pool.find((x) => x.word === f.en) || {};
+            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "", zh: f.zh || "", phon: f.phon || meta.phon || "" });
           });
           const foodCount = Math.min(foods.length, picked.length - 1, Math.random() < 0.35 ? 2 : 1);
           const pairs = picked.slice(0, picked.length - foodCount)
-            .map((x) => ({ word: x.word, art: x.art, img: x.img || "" }))
+            .map((x) => ({ word: x.word, art: x.art, img: x.img || "", zh: x.zh || "", phon: x.phon || "" }))
             .concat(shuffle(foods).slice(0, foodCount));
 
           task.pairs = pairs;
@@ -4566,8 +4663,9 @@ window.DINO_WORD_RULES.push({
           const rightCol = q.words.map((w) => {
             const isDone = solved.has(w);
             const isWrong = wrongWords.has(w);
-            const isSel = selected === w && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
+            /* 单词框可复用：连过后仍可继续选，不锁定 */
+            const isSel = selected === w;
+            return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
               <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
             </div>`;
@@ -4585,9 +4683,7 @@ window.DINO_WORD_RULES.push({
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
-          /* 已连过的单词不可再选 */
-          if (quiz.matched.includes(word)) return;
-          if ((quiz.wrongPairs || []).some((p) => p.word === word)) return;
+          /* 一个单词框可连多张图，不做锁定 */
           quiz.pickWord = word;
           quiz.pickWordSide = "word";
           sfx("tap");
@@ -4597,7 +4693,7 @@ window.DINO_WORD_RULES.push({
           if (!quiz || quiz.revealed || !quiz.pickWord) return;
           const q = quiz.order[quiz.index];
           const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
-          /* 一张图/一个单词只能连一次，连过即锁定 */
+          /* 一张图只能连一次，连过即锁定；单词可以重复使用 */
           if (quiz.matched.includes(word) || wrongPairs.some((p) => p.art === word)) {
             quiz.pickWord = null;
             quiz.pickWordSide = null;
@@ -4605,12 +4701,6 @@ window.DINO_WORD_RULES.push({
             return;
           }
           const pickedWord = quiz.pickWord;
-          if (quiz.matched.includes(pickedWord) || wrongPairs.some((p) => p.word === pickedWord)) {
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
-            render();
-            return;
-          }
           /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
           const _sceneId = (state && state.scene) || "";
           const _makeWid = (w) => window.WrongBank ? WrongBank.makeId(_sceneId, w) : null;
@@ -4652,6 +4742,7 @@ window.DINO_WORD_RULES.push({
           /* 模板库：自动组合缺词、整句、图片三类情景问答 */
           const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
           if (dlg) {
+            markDialogWords(dlg, task, pool);
             task.dialog = dlg;
             task.answerValue = dlg.answerValue;
             task.answerText = dlg.answerText;
@@ -4715,7 +4806,6 @@ window.DINO_WORD_RULES.push({
                 : `<span class="listen-card-emoji" style="display:grid">${artOf(o.value)()}</span>`;
               return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${escAttr(o.value)}" aria-label="选择 ${o.value}">
                 <span class="ref-listen-card-art">${art}</span>
-                ${revealed ? `<span class="ref-listen-card-word">${o.label}</span>` : ""}
                 ${revealed && o.value === d.answerValue ? `<i class="ref-listen-mark">✓</i>` : ""}
                 ${revealed && o.value === selected && o.value !== d.answerValue ? `<i class="ref-listen-mark bad">✕</i>` : ""}
               </button>`;
@@ -4848,18 +4938,19 @@ window.DINO_WORD_RULES.push({
             task.foods = shuffle([correct, ...rest]);
             task.correctFood = correct.id;
             task.correctZh = correct.zh || "";
+            task.correctPhon = correct.phon || "";
             return;
           }
           /* 其他主题沿用原有 emoji 食物池 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
-          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
+          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "", phon: w.phon || "" }));
           if (foods.length < 3) {
             /* 兜底：用不重复的基础食物补足到 3 种 */
             const seen = new Set(foods.map((f) => f.word));
             const fallback = [
-              { word: "meat", emoji: "🥩", zh: "肉" },
-              { word: "banana", emoji: "🍌", zh: "香蕉" },
-              { word: "bamboo", emoji: "🎋", zh: "竹子" },
+              { word: "meat", emoji: "🥩", zh: "肉", phon: "/miːt/" },
+              { word: "banana", emoji: "🍌", zh: "香蕉", phon: "/bəˈnɑːnə/" },
+              { word: "bamboo", emoji: "🎋", zh: "竹子", phon: "/bæmˈbuː/" },
             ];
             for (const f of fallback) {
               if (foods.length >= 3) break;
@@ -4877,6 +4968,7 @@ window.DINO_WORD_RULES.push({
             : task.foods[0].word;
           /* 答错提示用：正确食物的中文翻译 */
           task.correctZh = (task.foods.find((f) => f.word === task.correctFood) || {}).zh || "";
+          task.correctPhon = (task.foods.find((f) => f.word === task.correctFood) || {}).phon || "";
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;
@@ -5258,21 +5350,21 @@ const ANIMAL_ADJ_ASSET_KEYS = {
    - 食物图统一命名为 food-xx.webp 放在 images/words/food/，动作图放在 images/words/action/
    ============================================================ */
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/food-meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/food-banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/food-carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/food-grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/food-fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/food-nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/food-bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/food-apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/food-worm.webp" },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   emoji: "🍃", img: "images/words/food/food-leaves.webp" },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   emoji: "🌽", img: "images/words/food/food-corn.webp" },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   emoji: "🥛", img: "images/words/food/food-milk.webp" },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   emoji: "🍯", img: "images/words/food/food-honey.webp" },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/food-meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/food-banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/food-carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/food-grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/food-fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/food-nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/food-bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/food-apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/food-worm.webp" },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/food-leaves.webp" },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/food-corn.webp" },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/food-milk.webp" },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/food-honey.webp" },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
 };
 
 /* 39 种动物各自爱吃的食物 */
@@ -5482,11 +5574,9 @@ function renderZooRouteSheet(scene, prog) {
   const total = scene.levelCount || scene.levels.length;
   const level = Math.min(total, Math.max(1, prog.level || 1));
   const stars = Object.values(prog.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+  const starMax = Math.floor(total / LEVELS_PER_VENUE) * 3;
   const current = scene.levels[level - 1];
   const venue = current ? current.venue : scene.venues[scene.venues.length - 1];
-  const gateNeed = level % LEVELS_PER_VENUE === 0 && !canEnterLevel(level)
-    ? STAGE_GATE_STARS - stageStarsBefore(level)
-    : 0;
 
   const nodes = scene.levels.map((s) => {
     const locked = s.level > level || !canEnterLevel(s.level);
@@ -5512,7 +5602,7 @@ function renderZooRouteSheet(scene, prog) {
       <div class="zoo-route-head">
         <div class="zoo-route-title">
           <strong>🦁 陆地动物园</strong>
-          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${total * 3}${gateNeed ? ` · 还差 ${gateNeed} ★ 解锁` : ""}</small>
+          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${starMax}</small>
         </div>
         <button type="button" class="zoo-route-close" data-action="close-overlay" aria-label="关闭路线图">×</button>
       </div>
@@ -6069,8 +6159,8 @@ const STAGES = [
 
 const BACKGROUNDS = [
   { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
-  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 40,  cls: "night" },
+  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 10,  cls: "sunset" },
+  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 18,  cls: "night" },
 ];
 
 /* 超级霸王龙（究极体）的四种机甲形态：解锁 ultra 后可在图鉴里自由切换 */
@@ -6082,7 +6172,7 @@ const ULTRA_SKINS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 5,
+  v: 8,
   name: "毛肚",
   stars: 0,
   growth: 0,
@@ -6143,9 +6233,8 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
     words: themeWordList(set.words),
     scenes: (set.scenes || []).map((scene) => ({ ...scene, words: themeWordList(scene.words) })),
   }));
-/* 普通主题 10 关，动物乐园按场景各 50 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
+/* 普通主题 10 关，动物乐园按场景各 50 关；普通关 3 题、BOSS 关 5 题；只有每 5 关的考核关产出 1~3 星 */
 const LEVELS_PER_THEME = 10;
-const PASS_STARS = 1;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
 const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
 function currentTheme() {
@@ -6171,7 +6260,7 @@ function levelsPerTheme(id) {
   const scene = sceneOf(theme, state && state.scene);
   return (scene && scene.levelCount) || (theme && theme.levelCount) || LEVELS_PER_THEME;
 }
-/* 多场景主题（如动物乐园）：每个场景拥有独立 10 关进度，存档键为「主题:场景」 */
+/* 多场景主题（如动物乐园）：每个场景拥有独立的关卡进度，存档键为「主题:场景」 */
 function sceneProgress(themeId, sceneId) {
   if (!state.progress) state.progress = {};
   const key = `${themeId}:${sceneId}`;
@@ -6196,7 +6285,7 @@ function themeProgress(id) {
   return state.progress[key];
 }
 function themeStars(p) {
-  return Object.values(p.stars).reduce((a, b) => a + b, 0);
+  return Object.values(p.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
 }
 function totalLevelsDone() {
   return Object.values(state.progress || {}).reduce(
@@ -6248,7 +6337,37 @@ function loadState() {
       if (parsed.chests && parsed.chests.claimed) delete parsed.chests.claimed["animal:zoo"];
       parsed.allCleared = false;
     }
-    return {
+    /* v5 → v6：宝箱改为 20%~100% 五档里程碑并更换奖励池，清空旧的领取记录 */
+    if (prevVersion < 6 && parsed.chests && parsed.chests.claimed) {
+      parsed.chests.claimed = {};
+    }
+    /* v6 → v7：星星只由每 5 关的考核关产出，旧存档清算：清空全部关卡星级、星星余额与宝箱领取记录 */
+    if (prevVersion < 7) {
+      Object.keys(progress).forEach((key) => {
+        if (progress[key] && progress[key].stars) progress[key].stars = {};
+      });
+      parsed.stars = 0;
+      if (parsed.chests) parsed.chests.claimed = {};
+    }
+    /* v7 → v8：校验星星数据，只保留考核关（第 5/10/15… 关）的 1~3 星，清理旧门槛版遗留的异常值 */
+    if (prevVersion < 8) {
+      let earned = 0;
+      Object.keys(progress).forEach((key) => {
+        const p = progress[key];
+        if (!p || !p.stars) return;
+        const clean = {};
+        Object.keys(p.stars).forEach((lv) => {
+          const levelNo = Number(lv);
+          const n = Math.max(0, Math.min(3, Math.floor(Number(p.stars[lv]) || 0)));
+          if (levelNo > 0 && levelNo % 5 === 0 && n > 0) clean[lv] = n;
+        });
+        p.stars = clean;
+        earned += Object.values(clean).reduce((a, b) => a + b, 0);
+      });
+      /* 余额不能超过关卡累计星数，避免旧存档虚高 */
+      parsed.stars = Math.min(Number(parsed.stars) || 0, earned);
+    }
+    const next = {
       ...initialState(),
       ...parsed,
       v: DEFAULT_STATE.v,
@@ -6261,6 +6380,11 @@ function loadState() {
       ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
     };
+    /* 迁移后的数据立即落盘，避免旧存档每次启动都重复迁移 */
+    if (prevVersion > 0 && prevVersion < DEFAULT_STATE.v) {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch (e2) { /* 忽略写入失败 */ }
+    }
+    return next;
   } catch (e) {
     return initialState();
   }
@@ -6277,14 +6401,9 @@ function resetState() {
 }
 
 /* ------------------------------------------------ stars */
-/* 已获得的星星 = 所有关卡历史最高星级之和（多场景主题按场景分别累计） */
-function earnedStars() {
-  let total = 0;
-  Object.values(state.progress || {}).forEach((p) => {
-    if (!p || !p.stars) return;
-    Object.values(p.stars).forEach((n) => { total += Number(n) || 0; });
-  });
-  return total;
+/* 可消费的星星余额：闯关考核获得，购买背景时扣减 */
+function starBalance() {
+  return Math.max(0, Math.floor(Number(state.stars) || 0));
 }
 
 /* ------------------------------------------------ study log */
@@ -6354,7 +6473,7 @@ function tabbar(active) {
     </button>`).join("")}</nav>`;
 }
 function starPill() {
-  return `<div class="star-pill">${star(22)}<span class="num">${fmt(earnedStars())}</span></div>`;
+  return `<div class="star-pill">${star(22)}<span class="num">${fmt(starBalance())}</span></div>`;
 }
 function stageChip() {
   const st = stageMeta(state.stage);
@@ -6604,20 +6723,20 @@ document.addEventListener("click", (e) => {
     }
     if (res.status === "done") return;
     sfx("win");
-    openOverlay(buildChestOverlay(res.dino));
+    openOverlay(buildChestOverlay(res.reward));
     render();
   } else if (action === "chest-open") {
     sfx("win");
-    const dino = ChestManager.openOne();
-    const overlay = buildChestOverlay(dino);
+    const reward = ChestManager.openOne();
+    const overlay = buildChestOverlay(reward);
     openOverlay(overlay);
     render(); /* 更新地图上的宝箱计数 */
   } else if (action === "chest-again") {
     /* 继续开下一个（如果还有） */
     if (ChestManager.available() > 0) {
       sfx("win");
-      const dino = ChestManager.openOne();
-      const overlay = buildChestOverlay(dino);
+      const reward = ChestManager.openOne();
+      const overlay = buildChestOverlay(reward);
       openOverlay(overlay);
       render();
     } else {
@@ -6702,39 +6821,19 @@ document.addEventListener("gesturestart", (e) => e.preventDefault());
 /* ============================================================
    神秘宝箱开箱 overlay
    ============================================================ */
-function buildChestOverlay(stage) {
-  const left = !stage;
+function buildChestOverlay(reward) {
   const nextAvailable = ChestManager.available();
-  const pct = Math.round((state.dex.length / STAGES.length) * 100);
-
-  if (left) {
-    /* 图鉴已经收齐了（理论上不会走到这里，因为 ChestManager.pickRandomDino 会返回 null） */
-    return `<div class="overlay"><section class="sheet chest-sheet" role="dialog" aria-modal="true">
-      <div class="chest-open">
-        <div class="chest-emoji">🏆</div>
-        <h2>图鉴全部收集！</h2>
-        <p>你已经发现了所有 ${STAGES.length} 种恐龙形态</p>
-        <button class="btn" data-action="chest-close">太棒了</button>
-      </div>
-    </section></div>`;
-  }
 
   return `<div class="overlay"><section class="sheet chest-sheet" role="dialog" aria-modal="true">
     <div class="chest-reveal">
       <div class="chest-sparkle">✨✨✨</div>
       <div class="chest-found">
-        <div class="cf-stage">${dino(stage.key, { size: "lg" })}</div>
+        <div class="cf-stage"><div class="chest-emoji">🎁</div></div>
       </div>
       <div class="chest-meta">
-        <div class="chest-rarity rarity-${stage.rarity}">${"★".repeat(stage.rarity)}</div>
-        <h2>发现了 <b>${stage.name}</b>！</h2>
-        <p class="chest-phase">${stage.phase} · ${stage.skill}</p>
-        <p class="chest-desc">${stage.desc}</p>
-      </div>
-      <div class="chest-progress">
-        <span>图鉴进度</span>
-        <b>${state.dex.length} / ${STAGES.length}</b>
-        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="chest-rarity">🎉 恭喜获得</div>
+        <h2 class="chest-reward">${reward || "神秘奖励"}</h2>
+        <p class="chest-desc">把这张宝箱券给爸爸妈妈看，就可以兑换啦</p>
       </div>
       <div class="chest-actions">
         ${nextAvailable > 0
@@ -6943,22 +7042,38 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   <script>
 /* ============================================================
    ChestManager · 神秘宝箱
-   - 旅程里程碑：按当前主题星数上限三等分（10 关主题 10/20/30，50 关主题 50/100/150）
-   - 领取：随机给一个恐龙形态（state.dex 里还没有的 STAGES key）
+   - 旅程里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100%，各 1 个宝箱
+   - 奖励：从家庭奖励池随机抽一条（看动画片、买玩具等），不再发放恐龙图鉴
    - 存档：state.chests = { total: 已开数, unlocked: 额外待开数, claimed: { 进度键: [里程碑星数] } }
    - 结算与进化见 result.js
    ============================================================ */
 (function () {
   "use strict";
 
-  /* 宝箱里程碑：按当前主题星数上限三等分
-     10 关主题 → 10 / 20 / 30；50 关主题 → 50 / 100 / 150 */
+  /* 家庭奖励池：开箱随机抽一条，由家长兑现 */
+  const REWARD_POOL = [
+    "看动画片 30 分钟",
+    "给毛肚买一个新玩具",
+    "睡前多讲一个故事",
+    "周末去动物园玩一次",
+    "挑一个喜欢的零食",
+    "和爸爸妈妈一起玩 20 分钟游戏",
+    "周末去公园骑滑板车",
+    "挑选一本新绘本",
+    "全家一起吃一次冰淇淋",
+    "获得一次「晚睡 30 分钟」特权",
+  ];
+
+  /* 里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100% */
+  const MILESTONE_PCTS = [0.2, 0.4, 0.6, 0.8, 1];
   function milestonesFor(starMax) {
     const total = Number(starMax) || 30;
-    return [1, 2, 3].map((n) => Math.round((total * n) / 3));
+    const list = MILESTONE_PCTS.map((p) => Math.max(1, Math.round(total * p)));
+    return list.filter((v, i) => list.indexOf(v) === i);
   }
   function currentStarMax() {
-    return levelsPerTheme() * 3;
+    /* 只有考核关（第 5/10/15… 关）产出星星，每关最多 3 星 */
+    return Math.max(1, Math.floor(levelsPerTheme() / 5)) * 3;
   }
 
   /* 安全获取 state（可能从模块内或 window） */
@@ -6973,25 +7088,12 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     if (!s.chests.claimed || typeof s.chests.claimed !== "object") s.chests.claimed = {};
   }
 
-  /* 从 STAGES 里挑一个 state.dex 里还没有的（未发现的恐龙） */
-  function pickRandomDino() {
-    const s = _state();
-    const found = new Set(s.dex || []);
-    const pool = STAGES.filter((st) => !found.has(st.key));
-    if (pool.length === 0) return null; /* 图鉴收齐了 */
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    return pick;
+  /* 随机抽一条家庭奖励 */
+  function pickReward() {
+    return REWARD_POOL[Math.floor(Math.random() * REWARD_POOL.length)];
   }
 
-  /* 把恐龙收进图鉴 */
-  function addDex(dino) {
-    const s = _state();
-    if (!dino) return;
-    if (!s.dex) s.dex = [];
-    if (s.dex.indexOf(dino.key) < 0) s.dex.push(dino.key);
-  }
-
-  /* 某个进度键下，三个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
+  /* 某个进度键下，五个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
   function milestoneStatus(key, starTotal, starMax) {
     ensureChests();
     const claimed = _state().chests.claimed[key] || [];
@@ -7006,48 +7108,46 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     renderJourneyChests(key, starTotal, starMax) {
       const total = starMax || currentStarMax();
       return milestoneStatus(key, starTotal, total).map((m) => {
-        const pct = total ? (m.stars / total) * 100 : 0;
+        const pct = total ? Math.round((m.stars / total) * 100) : 0;
         const cls = m.done ? "done" : m.ready ? "ready" : "locked";
         const tip = m.done ? "已领取" : m.ready ? "点击开启" : `再获得 ${m.stars - starTotal} ★ 解锁`;
         return `<button type="button" class="j-chest ${cls}" style="left:${pct}%"
           data-action="chest-claim" data-threshold="${m.stars}"
-          aria-label="${m.stars} 星宝箱，${tip}" title="${m.stars} ★ 宝箱 · ${tip}"
+          aria-label="${pct}% 宝箱，${tip}" title="${pct}% 宝箱 · ${tip}"
           ${m.ready ? "" : "disabled"}>${m.done ? "✓" : "🎁"}</button>`;
       }).join("");
     },
 
-    /* 领取旅程里程碑宝箱：返回 { status: ok|locked|done, dino, need } */
+    /* 领取旅程里程碑宝箱：返回 { status: ok|locked|done, reward, need } */
     claimJourney(threshold) {
       const s = _state();
       ensureChests();
       const starMax = currentStarMax();
-      /* 只接受当前主题配置里的三个里程碑，防止无效入口 */
-      if (milestonesFor(starMax).indexOf(threshold) < 0) return { status: "done", dino: null, need: 0 };
+      /* 只接受当前主题配置里的里程碑，防止无效入口 */
+      if (milestonesFor(starMax).indexOf(threshold) < 0) return { status: "done", reward: null, need: 0 };
       const key = activeProgressKey();
       const starTotal = themeStars(themeProgress());
       const claimed = s.chests.claimed[key] || (s.chests.claimed[key] = []);
-      if (claimed.indexOf(threshold) >= 0) return { status: "done", dino: null, need: 0 };
-      if (starTotal < threshold) return { status: "locked", dino: null, need: threshold - starTotal };
+      if (claimed.indexOf(threshold) >= 0) return { status: "done", reward: null, need: 0 };
+      if (starTotal < threshold) return { status: "locked", reward: null, need: threshold - starTotal };
 
       claimed.push(threshold);
       s.chests.total += 1;
-      const dino = pickRandomDino();
-      addDex(dino);
+      const reward = pickReward();
       save();
-      return { status: "ok", dino, need: 0 };
+      return { status: "ok", reward, need: 0 };
     },
 
-    /* 手动开一个额外宝箱（BOSS 奖励）：返回抽到的恐龙 STAGES 对象，null 表示没有宝箱了 */
+    /* 手动开一个额外宝箱（BOSS 奖励）：返回抽到的奖励文案，null 表示没有宝箱了 */
     openOne() {
       const s = _state();
       ensureChests();
       if (s.chests.unlocked <= 0) return null;
-      const dino = pickRandomDino();
-      addDex(dino);
+      const reward = pickReward();
       s.chests.unlocked -= 1;
       s.chests.total += 1;
       save();
-      return dino;
+      return reward;
     },
 
     /* 只读：当前有多少个额外宝箱待开 */
@@ -7088,29 +7188,32 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
      ============================================================ */
   function finishQuiz() {
     if (!quiz) return;
-    /* 普通关 3 题：答对 3/2/1 题 → 3/2/1 星，≥1 星过关
-       BOSS 关 5 题：答对 5/4/3 题 → 3/2/1 星，≥4 题过关 */
-    const isBoss = isAnimalBossLevel(quiz.level);
-    const total = isBoss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+    /* 每 5 关一个循环：
+       前 4 关基础练习：3 题，0 星，答对 ≥1 题过关
+       第 5/10/15… 关考核关：5 题，答对 3/4/5 → 1/2/3 星，答对 ≥4 题（2 星）过关 */
+    const assessment = window.isAssessmentLevel
+      ? isAssessmentLevel(quiz.level)
+      : Number(quiz.level) % 5 === 0;
+    const total = assessment ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
     const correct = Math.min(quiz.correct, total);
     const accuracy = correct / total;
-    const stars = isBoss
+    const stars = assessment
       ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
-      : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
-    const passed = isBoss ? correct >= 4 : correct >= 1;
+      : 0;
+    const passed = assessment ? correct >= 4 : correct >= 1;
     const growthGain = quiz.correct * 24;
     const prog = themeProgress();
     const completedLevel = quiz.level;
     const prevBest = prog.stars[completedLevel] || 0;
-    const best = Math.max(prevBest, stars);
-    /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
-    const starGain = Math.max(0, best - prevBest);
+    const best = assessment ? Math.max(prevBest, stars) : 0;
+    /* 基础关不产出星星；考核关按最高星结算，复习只补发刷新纪录的差额 */
+    const starGain = assessment ? Math.max(0, best - prevBest) : 0;
     const isReplay = completedLevel < prog.level;
     const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
     state.growth += growthGain;
     state.stars += starGain;
-    prog.stars[completedLevel] = best;
-    /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
+    if (assessment) prog.stars[completedLevel] = best;
+    /* 只有挑战当前关卡且达到过关线才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     state.words += quiz.correct;
     state.threeStars += stars === 3 ? 1 : 0;
@@ -7125,7 +7228,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       best,
       correct: quiz.correct,
       total,
-      isBoss,
+      assessment,
       accuracy: Math.round(accuracy * 100),
       stars,
       passed,
@@ -7165,11 +7268,15 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
     const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
     const ss = String(r.seconds % 60).padStart(2, "0");
-    /* 下一关若被阶段门槛挡住（每 5 关需前 4 关累计 8 星），引导回刷本阶段 */
+    /* 顺序解锁：通过后前往下一关，未通过留在本关重试 */
     const nextLevel = Math.min(themeProgress().level, r.level + 1);
-    const gateBlocked = r.passed && !canEnterLevel(nextLevel);
-    const stageStart = Math.max(1, Math.floor((nextLevel - 1) / STAGE_SIZE) * STAGE_SIZE + 1);
-    const nextBtnLevel = r.passed ? (gateBlocked ? stageStart : nextLevel) : r.level;
+    const nextBtnLevel = r.passed ? nextLevel : r.level;
+    const isBase = !r.assessment;
+    /* 手绘风对勾 / 叉号：粗圆头描边，比字体图标更有贴纸感 */
+    const markOk = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8.5 21.2c3.1 3.5 5.4 6.4 7.2 8.8 4.7-8.4 9.8-14.3 15.8-18.6"/></svg>`;
+    const markNo = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 11.2c5.1 4.6 10.3 9.5 15.4 15.1"/><path d="M26.1 11.5c-5.1 5.1-10.1 10.1-14.9 14.8"/></svg>`;
+    const baseMarks = Array.from({ length: r.total }, (_, i) =>
+      i < r.correct ? `<span class="mark ok">${markOk}</span>` : `<span class="mark no">${markNo}</span>`).join("");
     const starRow = [0, 1, 2].map((i) => star(i === 1 ? 80 : 62, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
     const confettiPieces = Array.from({ length: 26 }, (_, i) => {
       const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
@@ -7182,11 +7289,15 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     <div class="result-scroll">
       <div class="result-head">
         ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
-        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
-        <h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
+        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : isBase ? "基础练习 · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
+        ${isBase
+          ? `<div class="base-marks">${baseMarks}</div>`
+          : `<h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>`}
         ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
-        <div class="result-stars">${starRow}</div>
-        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.isBoss ? `BOSS 关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 继续加油" : r.best === 1 ? "一星通关 · 继续挑战可以拿更多星星" : "还差一点点，重新挑战这一关吧"}</div>
+        ${isBase ? "" : `<div class="result-stars">${starRow}</div>`}
+        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : isBase
+          ? `继续努力哦 · 还剩 <b class="remain">${5 - (r.level % 5)}</b> 关考核通过有星星奖励`
+          : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : `考核关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}`}</div>
       </div>
 
       <div class="result-card">
@@ -7195,7 +7306,9 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
             <div class="g-ic">${I.leaf(28)}</div>
             <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
           </div>
-          <div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>
+          ${isBase
+            ? `<div class="rc-stars base-none">基础关 · 无星星</div>`
+            : `<div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>`}
         </div>
         <div class="rc-div"></div>
         <div class="rc-stats">
@@ -7227,7 +7340,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     </div>
 
     <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${gateBlocked ? "回刷补星" : r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
     </div>
   </section>`;
   }
@@ -7308,7 +7421,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
             </div>
             <div style="color:#FFD25A">${I.chevron(12)}</div>
           </div>
-          <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
+          <div class="u-skill">${spark(12, "#FFD25A")} 成长奖励：复习刷新更高星级时，星星差额自动补发</div>
           ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
           <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
         </div>
@@ -7345,11 +7458,6 @@ function artOf(word) {
 
 function startQuiz(level) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
-  /* 阶段门槛：每阶段第 5 关需前 4 关累计 8 星 */
-  if (window.canEnterLevel && !canEnterLevel(lvl)) {
-    toast(`还差 ${STAGE_GATE_STARS - stageStarsBefore(lvl)} 颗星才能进入第 ${lvl} 关`);
-    return;
-  }
   quiz = {
     level: lvl,
     index: 0,
@@ -7446,27 +7554,60 @@ function screenQuiz() {
         : (isDialog && q.dialog ? q.dialog.answerValue
           : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
   const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
-  const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
+  const answerPhon = isFeed
+    ? (q.correctPhon || "")
+    : (answerWord && answerWord === q.word ? (q.phon || "") : "");
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
-  const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
+  const statusTitle = ok
+    ? (isMatch ? "三组全连对啦！" : "答对了，你真棒！")
+    : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
+  const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
+            <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
+            <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
+            <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
+          </svg>`;
+  /* 连线题答后展示完整配对表：图片 + 单词 + 喇叭 + 音标 + 中文，最右为对错标记 */
+  const wrongByArt = new Map((quiz.wrongPairs || []).map((p) => [p.art, p.word]));
+  const matchAnswerBox = isMatch && revealed
+    ? `<div class="zoo-match-list">
+        ${q.pairs.map((p) => {
+          const picked = wrongByArt.get(p.word);
+          const thumb = p.img
+            ? `<img class="zoo-match-thumb-img" src="${p.img}" alt="" loading="lazy" decoding="async" onerror="wordArtFallback(this)">
+               <span class="zoo-match-thumb-emoji" style="display:none">${p.art()}</span>`
+            : `<span class="zoo-match-thumb-emoji">${p.art()}</span>`;
+          return `<div class="zoo-match-row${picked ? " is-wrong" : ""}">
+            <span class="zoo-match-thumb">${thumb}</span>
+            <span class="zoo-match-main">
+              <span class="zoo-match-word">${p.word}</span>
+              <button class="zoo-audio-btn" type="button" data-action="speak-word" data-word="${p.word}" aria-label="播放 ${p.word} 读音">${audioIcon}</button>
+              ${p.phon ? `<span class="zoo-match-phon">${p.phon}，</span>` : ""}
+              ${p.zh ? `<span class="zoo-match-zh">${p.zh}</span>` : ""}
+              ${picked ? `<span class="zoo-match-picked">你连成了 <b>${picked}</b></span>` : ""}
+            </span>
+            <span class="zoo-match-flag">${picked ? "✕" : "✓"}</span>
+          </div>`;
+        }).join("")}
+      </div>`
+    : "";
+  const answerHasMeta = !!(answerPhon || answerZh);
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
         <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
-          <svg viewBox="0 0 48 48" fill="none">
-            <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
-            <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
-            <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
-          </svg>
+          ${audioIcon}
         </button>
-        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
-        ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
+        ${answerHasMeta ? `<span class="zoo-answer-meta">
+          ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
+          ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
+        </span>` : ""}
       </div>`
-    : "";
+    : matchAnswerBox;
+
   const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
   const actionArea = `<button class="zoo-action-btn" data-action="next">
         ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
@@ -7504,7 +7645,7 @@ function screenQuiz() {
         </span>
         <h2 class="zoo-feedback-title">${statusTitle}</h2>
       </div>
-      <div class="zoo-feedback-body">
+      <div class="zoo-feedback-body${isMatch ? " is-match" : ""}">
         ${answerBox}
         ${actionArea}
       </div>
@@ -7757,11 +7898,11 @@ window.QuizView = {
     });
   },
 
-  /* 该图/单词是否已连过（正确或错误都算锁定） */
+  /* 图片是否已连过（一张图只能连一次）；单词框可复用，始终返回 false */
   isUsed(word, side) {
-    if (!quiz) return true;
+    if (!quiz || side === "word") return false;
     if ((quiz.matched || []).includes(word)) return true;
-    return (quiz.wrongPairs || []).some((p) => p[side] === word);
+    return (quiz.wrongPairs || []).some((p) => p.art === word);
   },
 
   /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */
@@ -8171,7 +8312,7 @@ function screenHome() {
           <span class="check">${t.done ? I.check(11) : ""}</span>
         </div>`).join("")}
       </section>
-      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 再闯 ${Math.max(0, 2 - lv)} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
+      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 今日任务已完成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
   </section>`;
@@ -8214,7 +8355,7 @@ function screenProfile() {
       </div>
 
       <div class="stat-row">
-        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(starBalance())}</span></div><div class="k">我的星星</div></div>
         <div class="stat-card"><div class="v num">${wordsCount}</div><div class="k">已学单词</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>
@@ -8293,7 +8434,7 @@ function screenMap() {
   const cfg = mapTheme();
   const level = prog.level;
   const starTotal = themeStars(prog);
-  const starMax = levelsPerTheme() * 3;
+  const starMax = Math.floor(levelsPerTheme() / 5) * 3;
   const head = cfg.title.slice(0, -2);
   const tail = cfg.title.slice(-2);
 
@@ -8306,7 +8447,7 @@ function screenMap() {
     <span class="map-tag">${theme.emoji} ${theme.name}</span>
     <div class="caption">
       <b>第 ${level} 关 · ${theme.name}</b>
-      <span>${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</span>
+      <span>${QUIZ_SIZE} 道题 · 第 5 关考核得星星</span>
     </div>
   </section>`;
   /* 占位主题（playable: false + 空词表）不显示"开始闯关"按钮 */
@@ -8315,7 +8456,7 @@ function screenMap() {
     <div class="nc-l">
       <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
       <h3>${theme.name}</h3>
-      <div class="nc-meta">${themeWords().length} 个词 · ${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</div>
+      <div class="nc-meta">${themeWords().length} 个词 · ${QUIZ_SIZE} 道题 · 第 5 关考核得星星</div>
     </div>
     <button class="nc-btn" data-action="start-quiz">开始闯关${I.arrow(14)}</button>
   </section>`;

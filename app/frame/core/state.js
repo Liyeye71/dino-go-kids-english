@@ -39,7 +39,37 @@ function loadState() {
       if (parsed.chests && parsed.chests.claimed) delete parsed.chests.claimed["animal:zoo"];
       parsed.allCleared = false;
     }
-    return {
+    /* v5 → v6：宝箱改为 20%~100% 五档里程碑并更换奖励池，清空旧的领取记录 */
+    if (prevVersion < 6 && parsed.chests && parsed.chests.claimed) {
+      parsed.chests.claimed = {};
+    }
+    /* v6 → v7：星星只由每 5 关的考核关产出，旧存档清算：清空全部关卡星级、星星余额与宝箱领取记录 */
+    if (prevVersion < 7) {
+      Object.keys(progress).forEach((key) => {
+        if (progress[key] && progress[key].stars) progress[key].stars = {};
+      });
+      parsed.stars = 0;
+      if (parsed.chests) parsed.chests.claimed = {};
+    }
+    /* v7 → v8：校验星星数据，只保留考核关（第 5/10/15… 关）的 1~3 星，清理旧门槛版遗留的异常值 */
+    if (prevVersion < 8) {
+      let earned = 0;
+      Object.keys(progress).forEach((key) => {
+        const p = progress[key];
+        if (!p || !p.stars) return;
+        const clean = {};
+        Object.keys(p.stars).forEach((lv) => {
+          const levelNo = Number(lv);
+          const n = Math.max(0, Math.min(3, Math.floor(Number(p.stars[lv]) || 0)));
+          if (levelNo > 0 && levelNo % 5 === 0 && n > 0) clean[lv] = n;
+        });
+        p.stars = clean;
+        earned += Object.values(clean).reduce((a, b) => a + b, 0);
+      });
+      /* 余额不能超过关卡累计星数，避免旧存档虚高 */
+      parsed.stars = Math.min(Number(parsed.stars) || 0, earned);
+    }
+    const next = {
       ...initialState(),
       ...parsed,
       v: DEFAULT_STATE.v,
@@ -52,6 +82,11 @@ function loadState() {
       ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
     };
+    /* 迁移后的数据立即落盘，避免旧存档每次启动都重复迁移 */
+    if (prevVersion > 0 && prevVersion < DEFAULT_STATE.v) {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch (e2) { /* 忽略写入失败 */ }
+    }
+    return next;
   } catch (e) {
     return initialState();
   }
@@ -68,14 +103,9 @@ function resetState() {
 }
 
 /* ------------------------------------------------ stars */
-/* 已获得的星星 = 所有关卡历史最高星级之和（多场景主题按场景分别累计） */
-function earnedStars() {
-  let total = 0;
-  Object.values(state.progress || {}).forEach((p) => {
-    if (!p || !p.stars) return;
-    Object.values(p.stars).forEach((n) => { total += Number(n) || 0; });
-  });
-  return total;
+/* 可消费的星星余额：闯关考核获得，购买背景时扣减 */
+function starBalance() {
+  return Math.max(0, Math.floor(Number(state.stars) || 0));
 }
 
 /* ------------------------------------------------ study log */

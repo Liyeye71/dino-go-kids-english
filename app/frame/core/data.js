@@ -13,8 +13,8 @@ const STAGES = [
 
 const BACKGROUNDS = [
   { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
-  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 24,  cls: "sunset" },
-  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 40,  cls: "night" },
+  { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 10,  cls: "sunset" },
+  { id: "night",  name: "珊瑚海湾", sub: "背景 · 史诗",   price: 18,  cls: "night" },
 ];
 
 /* 超级霸王龙（究极体）的四种机甲形态：解锁 ultra 后可在图鉴里自由切换 */
@@ -26,7 +26,7 @@ const ULTRA_SKINS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 5,
+  v: 8,
   name: "毛肚",
   stars: 0,
   growth: 0,

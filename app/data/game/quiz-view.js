@@ -108,11 +108,11 @@ window.QuizView = {
     });
   },
 
-  /* 该图/单词是否已连过（正确或错误都算锁定） */
+  /* 图片是否已连过（一张图只能连一次）；单词框可复用，始终返回 false */
   isUsed(word, side) {
-    if (!quiz) return true;
+    if (!quiz || side === "word") return false;
     if ((quiz.matched || []).includes(word)) return true;
-    return (quiz.wrongPairs || []).some((p) => p[side] === word);
+    return (quiz.wrongPairs || []).some((p) => p.art === word);
   },
 
   /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */

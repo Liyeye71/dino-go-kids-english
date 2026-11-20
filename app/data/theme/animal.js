@@ -227,21 +227,21 @@ const ANIMAL_ADJ_ASSET_KEYS = {
    - 食物图统一命名为 food-xx.webp 放在 images/words/food/，动作图放在 images/words/action/
    ============================================================ */
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/food-meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/food-banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/food-carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/food-grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/food-fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/food-nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/food-bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/food-apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/food-worm.webp" },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   emoji: "🍃", img: "images/words/food/food-leaves.webp" },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   emoji: "🌽", img: "images/words/food/food-corn.webp" },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   emoji: "🥛", img: "images/words/food/food-milk.webp" },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   emoji: "🍯", img: "images/words/food/food-honey.webp" },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/food-meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/food-banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/food-carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/food-grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/food-fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/food-nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/food-bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/food-apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/food-worm.webp" },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/food-leaves.webp" },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/food-corn.webp" },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/food-milk.webp" },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/food-honey.webp" },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
 };
 
 /* 39 种动物各自爱吃的食物 */
@@ -451,11 +451,9 @@ function renderZooRouteSheet(scene, prog) {
   const total = scene.levelCount || scene.levels.length;
   const level = Math.min(total, Math.max(1, prog.level || 1));
   const stars = Object.values(prog.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+  const starMax = Math.floor(total / LEVELS_PER_VENUE) * 3;
   const current = scene.levels[level - 1];
   const venue = current ? current.venue : scene.venues[scene.venues.length - 1];
-  const gateNeed = level % LEVELS_PER_VENUE === 0 && !canEnterLevel(level)
-    ? STAGE_GATE_STARS - stageStarsBefore(level)
-    : 0;
 
   const nodes = scene.levels.map((s) => {
     const locked = s.level > level || !canEnterLevel(s.level);
@@ -481,7 +479,7 @@ function renderZooRouteSheet(scene, prog) {
       <div class="zoo-route-head">
         <div class="zoo-route-title">
           <strong>🦁 陆地动物园</strong>
-          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${total * 3}${gateNeed ? ` · 还差 ${gateNeed} ★ 解锁` : ""}</small>
+          <small>第 ${level} 关 · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${starMax}</small>
         </div>
         <button type="button" class="zoo-route-close" data-action="close-overlay" aria-label="关闭路线图">×</button>
       </div>

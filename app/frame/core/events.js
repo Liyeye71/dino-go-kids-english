@@ -132,20 +132,20 @@ document.addEventListener("click", (e) => {
     }
     if (res.status === "done") return;
     sfx("win");
-    openOverlay(buildChestOverlay(res.dino));
+    openOverlay(buildChestOverlay(res.reward));
     render();
   } else if (action === "chest-open") {
     sfx("win");
-    const dino = ChestManager.openOne();
-    const overlay = buildChestOverlay(dino);
+    const reward = ChestManager.openOne();
+    const overlay = buildChestOverlay(reward);
     openOverlay(overlay);
     render(); /* 更新地图上的宝箱计数 */
   } else if (action === "chest-again") {
     /* 继续开下一个（如果还有） */
     if (ChestManager.available() > 0) {
       sfx("win");
-      const dino = ChestManager.openOne();
-      const overlay = buildChestOverlay(dino);
+      const reward = ChestManager.openOne();
+      const overlay = buildChestOverlay(reward);
       openOverlay(overlay);
       render();
     } else {
@@ -230,39 +230,19 @@ document.addEventListener("gesturestart", (e) => e.preventDefault());
 /* ============================================================
    神秘宝箱开箱 overlay
    ============================================================ */
-function buildChestOverlay(stage) {
-  const left = !stage;
+function buildChestOverlay(reward) {
   const nextAvailable = ChestManager.available();
-  const pct = Math.round((state.dex.length / STAGES.length) * 100);
-
-  if (left) {
-    /* 图鉴已经收齐了（理论上不会走到这里，因为 ChestManager.pickRandomDino 会返回 null） */
-    return `<div class="overlay"><section class="sheet chest-sheet" role="dialog" aria-modal="true">
-      <div class="chest-open">
-        <div class="chest-emoji">🏆</div>
-        <h2>图鉴全部收集！</h2>
-        <p>你已经发现了所有 ${STAGES.length} 种恐龙形态</p>
-        <button class="btn" data-action="chest-close">太棒了</button>
-      </div>
-    </section></div>`;
-  }
 
   return `<div class="overlay"><section class="sheet chest-sheet" role="dialog" aria-modal="true">
     <div class="chest-reveal">
       <div class="chest-sparkle">✨✨✨</div>
       <div class="chest-found">
-        <div class="cf-stage">${dino(stage.key, { size: "lg" })}</div>
+        <div class="cf-stage"><div class="chest-emoji">🎁</div></div>
       </div>
       <div class="chest-meta">
-        <div class="chest-rarity rarity-${stage.rarity}">${"★".repeat(stage.rarity)}</div>
-        <h2>发现了 <b>${stage.name}</b>！</h2>
-        <p class="chest-phase">${stage.phase} · ${stage.skill}</p>
-        <p class="chest-desc">${stage.desc}</p>
-      </div>
-      <div class="chest-progress">
-        <span>图鉴进度</span>
-        <b>${state.dex.length} / ${STAGES.length}</b>
-        <div class="bar"><i style="width:${pct}%"></i></div>
+        <div class="chest-rarity">🎉 恭喜获得</div>
+        <h2 class="chest-reward">${reward || "神秘奖励"}</h2>
+        <p class="chest-desc">把这张宝箱券给爸爸妈妈看，就可以兑换啦</p>
       </div>
       <div class="chest-actions">
         ${nextAvailable > 0

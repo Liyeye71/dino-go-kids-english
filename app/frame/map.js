@@ -16,7 +16,7 @@ function screenMap() {
   const cfg = mapTheme();
   const level = prog.level;
   const starTotal = themeStars(prog);
-  const starMax = levelsPerTheme() * 3;
+  const starMax = Math.floor(levelsPerTheme() / 5) * 3;
   const head = cfg.title.slice(0, -2);
   const tail = cfg.title.slice(-2);
 
@@ -29,7 +29,7 @@ function screenMap() {
     <span class="map-tag">${theme.emoji} ${theme.name}</span>
     <div class="caption">
       <b>第 ${level} 关 · ${theme.name}</b>
-      <span>${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</span>
+      <span>${QUIZ_SIZE} 道题 · 第 5 关考核得星星</span>
     </div>
   </section>`;
   /* 占位主题（playable: false + 空词表）不显示"开始闯关"按钮 */
@@ -38,7 +38,7 @@ function screenMap() {
     <div class="nc-l">
       <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${level} 关</div>
       <h3>${theme.name}</h3>
-      <div class="nc-meta">${themeWords().length} 个词 · ${QUIZ_SIZE} 道题 · ★×${PASS_STARS} 解锁下一关</div>
+      <div class="nc-meta">${themeWords().length} 个词 · ${QUIZ_SIZE} 道题 · 第 5 关考核得星星</div>
     </div>
     <button class="nc-btn" data-action="start-quiz">开始闯关${I.arrow(14)}</button>
   </section>`;

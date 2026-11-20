@@ -213,7 +213,7 @@
       const sceneId = state.scene || "zoo";
       const scene = zooScene();
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-      const boss = isAnimalBossLevel(level);
+      const boss = window.isAssessmentLevel ? isAssessmentLevel(level) : isAnimalBossLevel(level);
       const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
       const questions = buildSession(level, allSceneWords, sceneId);
@@ -315,6 +315,39 @@
     };
   }
 
+  /* 情景对话：只给 A 问句加一处关键词提示；已有动物图片时提示动作词，不再重复提示动物名称 */
+  function markDialogWords(dlg, task, pool) {
+    const ask = String(dlg.ask || "");
+    if (!ask) return;
+    const wrap = (match) => `<span class="ref-dialog-word">${match}</span>`;
+    const tryPattern = (re) => {
+      if (!re.test(ask)) return false;
+      dlg.ask = ask.replace(re, wrap);
+      return true;
+    };
+    const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    /* 1. 已有动物图片：提示 like、eat、look、see 等动作词 */
+    if (dlg.askImg) {
+      tryPattern(/\b(eat|eats|eating|ate|like|likes|look|see|know|tell)\b/gi);
+      return;
+    }
+    /* 2. 无动物图片：提示句中的动物单词 */
+    const animals = new Set();
+    (pool || []).forEach((x) => { if (x && x.animal && x.word && x.word.length >= 2) animals.add(x.word); });
+    if (task.word && task.animal) animals.add(task.word);
+    if (animals.size) {
+      const re = new RegExp(`\\b(${[...animals].sort((a, b) => b.length - a.length).map(escapeRe).join("|")})\\b`, "gi");
+      if (tryPattern(re)) return;
+    }
+    /* 3. 按食物选动物时，提示句中的食物单词 */
+    const food = task.food && task.food.en;
+    if (food && food.length >= 2) {
+      if (tryPattern(new RegExp(`\\b${escapeRe(food)}\\b`, "gi"))) return;
+    }
+    /* 4. 通用问句：提示 animal */
+    tryPattern(/\banimals?\b/gi);
+  }
+
   function defaultGames() {
     return {
       pic: {
@@ -387,11 +420,12 @@
             const f = a.food;
             if (!f || !f.en || seen.has(f.en) || picked.some((x) => x.word === f.en)) return;
             seen.add(f.en);
-            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "" });
+            const meta = pool.find((x) => x.word === f.en) || {};
+            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "", zh: f.zh || "", phon: f.phon || meta.phon || "" });
           });
           const foodCount = Math.min(foods.length, picked.length - 1, Math.random() < 0.35 ? 2 : 1);
           const pairs = picked.slice(0, picked.length - foodCount)
-            .map((x) => ({ word: x.word, art: x.art, img: x.img || "" }))
+            .map((x) => ({ word: x.word, art: x.art, img: x.img || "", zh: x.zh || "", phon: x.phon || "" }))
             .concat(shuffle(foods).slice(0, foodCount));
 
           task.pairs = pairs;
@@ -416,8 +450,9 @@
           const rightCol = q.words.map((w) => {
             const isDone = solved.has(w);
             const isWrong = wrongWords.has(w);
-            const isSel = selected === w && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
+            /* 单词框可复用：连过后仍可继续选，不锁定 */
+            const isSel = selected === w;
+            return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
               <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
             </div>`;
@@ -435,9 +470,7 @@
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
-          /* 已连过的单词不可再选 */
-          if (quiz.matched.includes(word)) return;
-          if ((quiz.wrongPairs || []).some((p) => p.word === word)) return;
+          /* 一个单词框可连多张图，不做锁定 */
           quiz.pickWord = word;
           quiz.pickWordSide = "word";
           sfx("tap");
@@ -447,7 +480,7 @@
           if (!quiz || quiz.revealed || !quiz.pickWord) return;
           const q = quiz.order[quiz.index];
           const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
-          /* 一张图/一个单词只能连一次，连过即锁定 */
+          /* 一张图只能连一次，连过即锁定；单词可以重复使用 */
           if (quiz.matched.includes(word) || wrongPairs.some((p) => p.art === word)) {
             quiz.pickWord = null;
             quiz.pickWordSide = null;
@@ -455,12 +488,6 @@
             return;
           }
           const pickedWord = quiz.pickWord;
-          if (quiz.matched.includes(pickedWord) || wrongPairs.some((p) => p.word === pickedWord)) {
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
-            render();
-            return;
-          }
           /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
           const _sceneId = (state && state.scene) || "";
           const _makeWid = (w) => window.WrongBank ? WrongBank.makeId(_sceneId, w) : null;
@@ -502,6 +529,7 @@
           /* 模板库：自动组合缺词、整句、图片三类情景问答 */
           const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
           if (dlg) {
+            markDialogWords(dlg, task, pool);
             task.dialog = dlg;
             task.answerValue = dlg.answerValue;
             task.answerText = dlg.answerText;
@@ -565,7 +593,6 @@
                 : `<span class="listen-card-emoji" style="display:grid">${artOf(o.value)()}</span>`;
               return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${escAttr(o.value)}" aria-label="选择 ${o.value}">
                 <span class="ref-listen-card-art">${art}</span>
-                ${revealed ? `<span class="ref-listen-card-word">${o.label}</span>` : ""}
                 ${revealed && o.value === d.answerValue ? `<i class="ref-listen-mark">✓</i>` : ""}
                 ${revealed && o.value === selected && o.value !== d.answerValue ? `<i class="ref-listen-mark bad">✕</i>` : ""}
               </button>`;
@@ -698,18 +725,19 @@
             task.foods = shuffle([correct, ...rest]);
             task.correctFood = correct.id;
             task.correctZh = correct.zh || "";
+            task.correctPhon = correct.phon || "";
             return;
           }
           /* 其他主题沿用原有 emoji 食物池 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
-          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "" }));
+          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "", phon: w.phon || "" }));
           if (foods.length < 3) {
             /* 兜底：用不重复的基础食物补足到 3 种 */
             const seen = new Set(foods.map((f) => f.word));
             const fallback = [
-              { word: "meat", emoji: "🥩", zh: "肉" },
-              { word: "banana", emoji: "🍌", zh: "香蕉" },
-              { word: "bamboo", emoji: "🎋", zh: "竹子" },
+              { word: "meat", emoji: "🥩", zh: "肉", phon: "/miːt/" },
+              { word: "banana", emoji: "🍌", zh: "香蕉", phon: "/bəˈnɑːnə/" },
+              { word: "bamboo", emoji: "🎋", zh: "竹子", phon: "/bæmˈbuː/" },
             ];
             for (const f of fallback) {
               if (foods.length >= 3) break;
@@ -727,6 +755,7 @@
             : task.foods[0].word;
           /* 答错提示用：正确食物的中文翻译 */
           task.correctZh = (task.foods.find((f) => f.word === task.correctFood) || {}).zh || "";
+          task.correctPhon = (task.foods.find((f) => f.word === task.correctFood) || {}).phon || "";
         },
         render({ q, quiz, artOf }) {
           const revealed = quiz.revealed;

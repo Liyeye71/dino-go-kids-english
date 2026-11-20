@@ -1,21 +1,37 @@
 /* ============================================================
    ChestManager · 神秘宝箱
-   - 旅程里程碑：按当前主题星数上限三等分（10 关主题 10/20/30，50 关主题 50/100/150）
-   - 领取：随机给一个恐龙形态（state.dex 里还没有的 STAGES key）
+   - 旅程里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100%，各 1 个宝箱
+   - 奖励：从家庭奖励池随机抽一条（看动画片、买玩具等），不再发放恐龙图鉴
    - 存档：state.chests = { total: 已开数, unlocked: 额外待开数, claimed: { 进度键: [里程碑星数] } }
    - 结算与进化见 result.js
    ============================================================ */
 (function () {
   "use strict";
 
-  /* 宝箱里程碑：按当前主题星数上限三等分
-     10 关主题 → 10 / 20 / 30；50 关主题 → 50 / 100 / 150 */
+  /* 家庭奖励池：开箱随机抽一条，由家长兑现 */
+  const REWARD_POOL = [
+    "看动画片 30 分钟",
+    "给毛肚买一个新玩具",
+    "睡前多讲一个故事",
+    "周末去动物园玩一次",
+    "挑一个喜欢的零食",
+    "和爸爸妈妈一起玩 20 分钟游戏",
+    "周末去公园骑滑板车",
+    "挑选一本新绘本",
+    "全家一起吃一次冰淇淋",
+    "获得一次「晚睡 30 分钟」特权",
+  ];
+
+  /* 里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100% */
+  const MILESTONE_PCTS = [0.2, 0.4, 0.6, 0.8, 1];
   function milestonesFor(starMax) {
     const total = Number(starMax) || 30;
-    return [1, 2, 3].map((n) => Math.round((total * n) / 3));
+    const list = MILESTONE_PCTS.map((p) => Math.max(1, Math.round(total * p)));
+    return list.filter((v, i) => list.indexOf(v) === i);
   }
   function currentStarMax() {
-    return levelsPerTheme() * 3;
+    /* 只有考核关（第 5/10/15… 关）产出星星，每关最多 3 星 */
+    return Math.max(1, Math.floor(levelsPerTheme() / 5)) * 3;
   }
 
   /* 安全获取 state（可能从模块内或 window） */
@@ -30,25 +46,12 @@
     if (!s.chests.claimed || typeof s.chests.claimed !== "object") s.chests.claimed = {};
   }
 
-  /* 从 STAGES 里挑一个 state.dex 里还没有的（未发现的恐龙） */
-  function pickRandomDino() {
-    const s = _state();
-    const found = new Set(s.dex || []);
-    const pool = STAGES.filter((st) => !found.has(st.key));
-    if (pool.length === 0) return null; /* 图鉴收齐了 */
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    return pick;
+  /* 随机抽一条家庭奖励 */
+  function pickReward() {
+    return REWARD_POOL[Math.floor(Math.random() * REWARD_POOL.length)];
   }
 
-  /* 把恐龙收进图鉴 */
-  function addDex(dino) {
-    const s = _state();
-    if (!dino) return;
-    if (!s.dex) s.dex = [];
-    if (s.dex.indexOf(dino.key) < 0) s.dex.push(dino.key);
-  }
-
-  /* 某个进度键下，三个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
+  /* 某个进度键下，五个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
   function milestoneStatus(key, starTotal, starMax) {
     ensureChests();
     const claimed = _state().chests.claimed[key] || [];
@@ -63,48 +66,46 @@
     renderJourneyChests(key, starTotal, starMax) {
       const total = starMax || currentStarMax();
       return milestoneStatus(key, starTotal, total).map((m) => {
-        const pct = total ? (m.stars / total) * 100 : 0;
+        const pct = total ? Math.round((m.stars / total) * 100) : 0;
         const cls = m.done ? "done" : m.ready ? "ready" : "locked";
         const tip = m.done ? "已领取" : m.ready ? "点击开启" : `再获得 ${m.stars - starTotal} ★ 解锁`;
         return `<button type="button" class="j-chest ${cls}" style="left:${pct}%"
           data-action="chest-claim" data-threshold="${m.stars}"
-          aria-label="${m.stars} 星宝箱，${tip}" title="${m.stars} ★ 宝箱 · ${tip}"
+          aria-label="${pct}% 宝箱，${tip}" title="${pct}% 宝箱 · ${tip}"
           ${m.ready ? "" : "disabled"}>${m.done ? "✓" : "🎁"}</button>`;
       }).join("");
     },
 
-    /* 领取旅程里程碑宝箱：返回 { status: ok|locked|done, dino, need } */
+    /* 领取旅程里程碑宝箱：返回 { status: ok|locked|done, reward, need } */
     claimJourney(threshold) {
       const s = _state();
       ensureChests();
       const starMax = currentStarMax();
-      /* 只接受当前主题配置里的三个里程碑，防止无效入口 */
-      if (milestonesFor(starMax).indexOf(threshold) < 0) return { status: "done", dino: null, need: 0 };
+      /* 只接受当前主题配置里的里程碑，防止无效入口 */
+      if (milestonesFor(starMax).indexOf(threshold) < 0) return { status: "done", reward: null, need: 0 };
       const key = activeProgressKey();
       const starTotal = themeStars(themeProgress());
       const claimed = s.chests.claimed[key] || (s.chests.claimed[key] = []);
-      if (claimed.indexOf(threshold) >= 0) return { status: "done", dino: null, need: 0 };
-      if (starTotal < threshold) return { status: "locked", dino: null, need: threshold - starTotal };
+      if (claimed.indexOf(threshold) >= 0) return { status: "done", reward: null, need: 0 };
+      if (starTotal < threshold) return { status: "locked", reward: null, need: threshold - starTotal };
 
       claimed.push(threshold);
       s.chests.total += 1;
-      const dino = pickRandomDino();
-      addDex(dino);
+      const reward = pickReward();
       save();
-      return { status: "ok", dino, need: 0 };
+      return { status: "ok", reward, need: 0 };
     },
 
-    /* 手动开一个额外宝箱（BOSS 奖励）：返回抽到的恐龙 STAGES 对象，null 表示没有宝箱了 */
+    /* 手动开一个额外宝箱（BOSS 奖励）：返回抽到的奖励文案，null 表示没有宝箱了 */
     openOne() {
       const s = _state();
       ensureChests();
       if (s.chests.unlocked <= 0) return null;
-      const dino = pickRandomDino();
-      addDex(dino);
+      const reward = pickReward();
       s.chests.unlocked -= 1;
       s.chests.total += 1;
       save();
-      return dino;
+      return reward;
     },
 
     /* 只读：当前有多少个额外宝箱待开 */

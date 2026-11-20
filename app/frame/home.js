@@ -221,7 +221,7 @@ function screenHome() {
           <span class="check">${t.done ? I.check(11) : ""}</span>
         </div>`).join("")}
       </section>
-      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 再闯 ${Math.max(0, 2 - lv)} 关可以满星加成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
+      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 今日任务已完成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
   </section>`;
@@ -264,7 +264,7 @@ function screenProfile() {
       </div>
 
       <div class="stat-row">
-        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(earnedStars())}</span></div><div class="k">我的星星</div></div>
+        <div class="stat-card"><div class="v">${star(13)}<span class="num">${fmt(starBalance())}</span></div><div class="k">我的星星</div></div>
         <div class="stat-card"><div class="v num">${wordsCount}</div><div class="k">已学单词</div></div>
         <div class="stat-card"><div class="v num">${state.dex.length}</div><div class="k">已收集恐龙</div></div>
       </div>

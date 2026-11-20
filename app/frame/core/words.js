@@ -37,9 +37,8 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
     words: themeWordList(set.words),
     scenes: (set.scenes || []).map((scene) => ({ ...scene, words: themeWordList(scene.words) })),
   }));
-/* 普通主题 10 关，动物乐园按场景各 50 关；普通关 3 题、BOSS 关 5 题；动物园每阶段第 5 关需前 4 关累计 8 星 */
+/* 普通主题 10 关，动物乐园按场景各 50 关；普通关 3 题、BOSS 关 5 题；只有每 5 关的考核关产出 1~3 星 */
 const LEVELS_PER_THEME = 10;
-const PASS_STARS = 1;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
 const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
 function currentTheme() {
@@ -65,7 +64,7 @@ function levelsPerTheme(id) {
   const scene = sceneOf(theme, state && state.scene);
   return (scene && scene.levelCount) || (theme && theme.levelCount) || LEVELS_PER_THEME;
 }
-/* 多场景主题（如动物乐园）：每个场景拥有独立 10 关进度，存档键为「主题:场景」 */
+/* 多场景主题（如动物乐园）：每个场景拥有独立的关卡进度，存档键为「主题:场景」 */
 function sceneProgress(themeId, sceneId) {
   if (!state.progress) state.progress = {};
   const key = `${themeId}:${sceneId}`;
@@ -90,7 +89,7 @@ function themeProgress(id) {
   return state.progress[key];
 }
 function themeStars(p) {
-  return Object.values(p.stars).reduce((a, b) => a + b, 0);
+  return Object.values(p.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
 }
 function totalLevelsDone() {
   return Object.values(state.progress || {}).reduce(

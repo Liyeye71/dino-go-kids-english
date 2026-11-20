@@ -10,29 +10,32 @@
      ============================================================ */
   function finishQuiz() {
     if (!quiz) return;
-    /* 普通关 3 题：答对 3/2/1 题 → 3/2/1 星，≥1 星过关
-       BOSS 关 5 题：答对 5/4/3 题 → 3/2/1 星，≥4 题过关 */
-    const isBoss = isAnimalBossLevel(quiz.level);
-    const total = isBoss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+    /* 每 5 关一个循环：
+       前 4 关基础练习：3 题，0 星，答对 ≥1 题过关
+       第 5/10/15… 关考核关：5 题，答对 3/4/5 → 1/2/3 星，答对 ≥4 题（2 星）过关 */
+    const assessment = window.isAssessmentLevel
+      ? isAssessmentLevel(quiz.level)
+      : Number(quiz.level) % 5 === 0;
+    const total = assessment ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
     const correct = Math.min(quiz.correct, total);
     const accuracy = correct / total;
-    const stars = isBoss
+    const stars = assessment
       ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
-      : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
-    const passed = isBoss ? correct >= 4 : correct >= 1;
+      : 0;
+    const passed = assessment ? correct >= 4 : correct >= 1;
     const growthGain = quiz.correct * 24;
     const prog = themeProgress();
     const completedLevel = quiz.level;
     const prevBest = prog.stars[completedLevel] || 0;
-    const best = Math.max(prevBest, stars);
-    /* 按最高星结算：重复复习只补发「刷新纪录」的差额星星 */
-    const starGain = Math.max(0, best - prevBest);
+    const best = assessment ? Math.max(prevBest, stars) : 0;
+    /* 基础关不产出星星；考核关按最高星结算，复习只补发刷新纪录的差额 */
+    const starGain = assessment ? Math.max(0, best - prevBest) : 0;
     const isReplay = completedLevel < prog.level;
     const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
     state.growth += growthGain;
     state.stars += starGain;
-    prog.stars[completedLevel] = best;
-    /* 只有挑战当前关卡且达到 2 星才推进进度，复习旧关卡不影响进度 */
+    if (assessment) prog.stars[completedLevel] = best;
+    /* 只有挑战当前关卡且达到过关线才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     state.words += quiz.correct;
     state.threeStars += stars === 3 ? 1 : 0;
@@ -47,7 +50,7 @@
       best,
       correct: quiz.correct,
       total,
-      isBoss,
+      assessment,
       accuracy: Math.round(accuracy * 100),
       stars,
       passed,
@@ -87,11 +90,15 @@
     const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
     const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
     const ss = String(r.seconds % 60).padStart(2, "0");
-    /* 下一关若被阶段门槛挡住（每 5 关需前 4 关累计 8 星），引导回刷本阶段 */
+    /* 顺序解锁：通过后前往下一关，未通过留在本关重试 */
     const nextLevel = Math.min(themeProgress().level, r.level + 1);
-    const gateBlocked = r.passed && !canEnterLevel(nextLevel);
-    const stageStart = Math.max(1, Math.floor((nextLevel - 1) / STAGE_SIZE) * STAGE_SIZE + 1);
-    const nextBtnLevel = r.passed ? (gateBlocked ? stageStart : nextLevel) : r.level;
+    const nextBtnLevel = r.passed ? nextLevel : r.level;
+    const isBase = !r.assessment;
+    /* 手绘风对勾 / 叉号：粗圆头描边，比字体图标更有贴纸感 */
+    const markOk = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8.5 21.2c3.1 3.5 5.4 6.4 7.2 8.8 4.7-8.4 9.8-14.3 15.8-18.6"/></svg>`;
+    const markNo = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 11.2c5.1 4.6 10.3 9.5 15.4 15.1"/><path d="M26.1 11.5c-5.1 5.1-10.1 10.1-14.9 14.8"/></svg>`;
+    const baseMarks = Array.from({ length: r.total }, (_, i) =>
+      i < r.correct ? `<span class="mark ok">${markOk}</span>` : `<span class="mark no">${markNo}</span>`).join("");
     const starRow = [0, 1, 2].map((i) => star(i === 1 ? 80 : 62, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
     const confettiPieces = Array.from({ length: 26 }, (_, i) => {
       const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
@@ -104,11 +111,15 @@
     <div class="result-scroll">
       <div class="result-head">
         ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
-        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
-        <h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>
+        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : isBase ? "基础练习 · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REVIEW" : r.passed ? "COMPLETE" : "RETRY"}</div>
+        ${isBase
+          ? `<div class="base-marks">${baseMarks}</div>`
+          : `<h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "复习完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>`}
         ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
-        <div class="result-stars">${starRow}</div>
-        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : r.isBoss ? `BOSS 关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}` : r.best === 3 ? "三星通关 · 今天的你超厉害" : r.best === 2 ? "两星通关 · 继续加油" : r.best === 1 ? "一星通关 · 继续挑战可以拿更多星星" : "还差一点点，重新挑战这一关吧"}</div>
+        ${isBase ? "" : `<div class="result-stars">${starRow}</div>`}
+        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : isBase
+          ? `继续努力哦 · 还剩 <b class="remain">${5 - (r.level % 5)}</b> 关考核通过有星星奖励`
+          : r.replay && r.stars < r.prevBest ? `本次 ${r.stars} 星 · 保留最高 ${r.prevBest} 星成绩` : `考核关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}`}</div>
       </div>
 
       <div class="result-card">
@@ -117,7 +128,9 @@
             <div class="g-ic">${I.leaf(28)}</div>
             <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
           </div>
-          <div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>
+          ${isBase
+            ? `<div class="rc-stars base-none">基础关 · 无星星</div>`
+            : `<div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>`}
         </div>
         <div class="rc-div"></div>
         <div class="rc-stats">
@@ -149,7 +162,7 @@
     </div>
 
     <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${gateBlocked ? "回刷补星" : r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
     </div>
   </section>`;
   }
@@ -230,7 +243,7 @@
             </div>
             <div style="color:#FFD25A">${I.chevron(12)}</div>
           </div>
-          <div class="u-skill">${spark(12, "#FFD25A")} 解锁被动技能：闯关获得的星星 <b>+10%</b></div>
+          <div class="u-skill">${spark(12, "#FFD25A")} 成长奖励：复习刷新更高星级时，星星差额自动补发</div>
           ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
           <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
         </div>

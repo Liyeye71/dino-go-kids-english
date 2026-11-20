@@ -14,6 +14,36 @@
 .result-stars svg:nth-child(2){animation-delay:.22s}
 .result-stars svg:nth-child(3){transform:rotate(14deg) translateY(0.25rem);animation-delay:.34s}
 .result-sub{text-align:center;font-size:0.84375rem;font-weight:var(--w-mid);color:#96876A;margin-top:0.5rem}
+/* 基础练习关（无星星）：奶油贴纸风对错标记替代标题与三颗星 */
+.base-marks{display:flex;align-items:center;justify-content:center;gap:0.75rem;min-height:5.875rem;margin-top:0.5rem}
+.base-marks .mark{position:relative;width:3.5rem;height:3.5rem;display:flex;align-items:center;justify-content:center;
+  font-size:1.875rem;font-weight:900;line-height:1;
+  background:#FFF6E2;border:0.25rem solid #F0D9AE;
+  border-radius:47% 53% 51% 49% / 52% 48% 54% 46%;
+  box-shadow:0 0.3125rem 0 rgba(160,124,66,.22), inset 0 0.1875rem 0 #FFFDF7}
+.base-marks .mark::after{content:"";position:absolute;top:0.375rem;right:0.5rem;width:0.375rem;height:0.375rem;
+  border-radius:50%;background:#fff;opacity:.9}
+.base-marks .mark:nth-child(1){transform:rotate(-8deg)}
+.base-marks .mark:nth-child(2){transform:rotate(3deg)}
+.base-marks .mark:nth-child(3){transform:rotate(8deg)}
+.base-marks .mark.ok{color:#5E9F52}
+.base-marks .mark.no{color:#E2765C}
+.base-marks .mark svg{width:2rem;height:2rem;fill:none;stroke:currentColor;stroke-width:5.5;
+  stroke-linecap:round;stroke-linejoin:round}
+/* 逐枚弹入：用独立的 scale 属性，避免覆盖每枚圆标原有的旋转角度 */
+@media (prefers-reduced-motion: no-preference){
+  .base-marks .mark{animation:mark-pop .44s cubic-bezier(.34,1.56,.64,1) both}
+  .base-marks .mark:nth-child(1){animation-delay:.12s}
+  .base-marks .mark:nth-child(2){animation-delay:.28s}
+  .base-marks .mark:nth-child(3){animation-delay:.44s}
+}
+@keyframes mark-pop{
+  0%{scale:.3;opacity:0}
+  62%{scale:1.14;opacity:1}
+  100%{scale:1;opacity:1}
+}
+.result-sub .remain{color:#E84F3D;font-size:1rem;font-weight:var(--w-black);margin:0 0.125rem}
+.rc-stars.base-none{background:#F1F5EC;color:#6E8A5E;font-size:0.75rem;font-weight:var(--w-bold)}
 
 .result-card{margin-top:0;border-radius:1.75rem;background:#fff;border:0.09375rem solid var(--line);
   box-shadow:0 0.875rem 1.875rem rgba(94,70,30,.1);padding:1.375rem 1.25rem 1.25rem}

@@ -17,11 +17,6 @@ function artOf(word) {
 
 function startQuiz(level) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
-  /* 阶段门槛：每阶段第 5 关需前 4 关累计 8 星 */
-  if (window.canEnterLevel && !canEnterLevel(lvl)) {
-    toast(`还差 ${STAGE_GATE_STARS - stageStarsBefore(lvl)} 颗星才能进入第 ${lvl} 关`);
-    return;
-  }
   quiz = {
     level: lvl,
     index: 0,
@@ -118,27 +113,60 @@ function screenQuiz() {
         : (isDialog && q.dialog ? q.dialog.answerValue
           : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
   const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
-  const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
+  const answerPhon = isFeed
+    ? (q.correctPhon || "")
+    : (answerWord && answerWord === q.word ? (q.phon || "") : "");
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
-  const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
+  const statusTitle = ok
+    ? (isMatch ? "三组全连对啦！" : "答对了，你真棒！")
+    : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
+  const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
+            <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
+            <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
+            <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
+          </svg>`;
+  /* 连线题答后展示完整配对表：图片 + 单词 + 喇叭 + 音标 + 中文，最右为对错标记 */
+  const wrongByArt = new Map((quiz.wrongPairs || []).map((p) => [p.art, p.word]));
+  const matchAnswerBox = isMatch && revealed
+    ? `<div class="zoo-match-list">
+        ${q.pairs.map((p) => {
+          const picked = wrongByArt.get(p.word);
+          const thumb = p.img
+            ? `<img class="zoo-match-thumb-img" src="${p.img}" alt="" loading="lazy" decoding="async" onerror="wordArtFallback(this)">
+               <span class="zoo-match-thumb-emoji" style="display:none">${p.art()}</span>`
+            : `<span class="zoo-match-thumb-emoji">${p.art()}</span>`;
+          return `<div class="zoo-match-row${picked ? " is-wrong" : ""}">
+            <span class="zoo-match-thumb">${thumb}</span>
+            <span class="zoo-match-main">
+              <span class="zoo-match-word">${p.word}</span>
+              <button class="zoo-audio-btn" type="button" data-action="speak-word" data-word="${p.word}" aria-label="播放 ${p.word} 读音">${audioIcon}</button>
+              ${p.phon ? `<span class="zoo-match-phon">${p.phon}，</span>` : ""}
+              ${p.zh ? `<span class="zoo-match-zh">${p.zh}</span>` : ""}
+              ${picked ? `<span class="zoo-match-picked">你连成了 <b>${picked}</b></span>` : ""}
+            </span>
+            <span class="zoo-match-flag">${picked ? "✕" : "✓"}</span>
+          </div>`;
+        }).join("")}
+      </div>`
+    : "";
+  const answerHasMeta = !!(answerPhon || answerZh);
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
         <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
-          <svg viewBox="0 0 48 48" fill="none">
-            <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
-            <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
-            <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
-          </svg>
+          ${audioIcon}
         </button>
-        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
-        ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
+        ${answerHasMeta ? `<span class="zoo-answer-meta">
+          ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
+          ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
+        </span>` : ""}
       </div>`
-    : "";
+    : matchAnswerBox;
+
   const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
   const actionArea = `<button class="zoo-action-btn" data-action="next">
         ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
@@ -176,7 +204,7 @@ function screenQuiz() {
         </span>
         <h2 class="zoo-feedback-title">${statusTitle}</h2>
       </div>
-      <div class="zoo-feedback-body">
+      <div class="zoo-feedback-body${isMatch ? " is-match" : ""}">
         ${answerBox}
         ${actionArea}
       </div>
