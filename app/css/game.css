@@ -137,6 +137,8 @@
 .ref-listen-card.ok{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-listen-card.wrong{border-color:#D87B68;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
 .ref-listen-card-art{width:clamp(3rem,10vw,4.25rem);height:clamp(3rem,10vw,4.25rem);display:grid;place-items:center}
+.ref-listen-card-art .listen-card-img{width:100%;height:100%;object-fit:contain;display:block}
+.ref-listen-card-art .listen-card-emoji{width:100%;height:100%;place-items:center}
 .ref-listen-card-word{font-size:clamp(0.75rem,2.8vw,0.9375rem);font-weight:var(--w-black);color:#7A5A35;margin-top:0.125rem}
 .ref-listen-card-word.correct{color:#39754A}
 .ref-listen-card-word.wrong{color:#A74F3D}

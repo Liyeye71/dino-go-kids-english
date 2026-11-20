@@ -322,8 +322,8 @@
               .concat(isSel ? ["sel"] : [])
               .join(" ");
             return `<button class="${cls}" data-action="select" data-word="${opt}" aria-label="选择 ${opt}">
-              <span class="ref-listen-card-art">${artOf(opt)()}</span>
-              ${revealed ? `<span class="ref-listen-card-word${isCorrect ? " correct" : ""}${isWrong ? " wrong" : ""}">${opt}</span>` : ""}
+              <span class="ref-listen-card-art"><img class="listen-card-img" src="images/words/animal/${opt}.webp" alt="" loading="eager" decoding="async"
+                onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${artOf(opt)()}</span></span>
               ${isCorrect ? `<i class="ref-listen-mark">✓</i>` : ""}
               ${isWrong ? `<i class="ref-listen-mark bad">✕</i>` : ""}
             </button>`;

@@ -560,3 +560,38 @@
   width: 100%;
   height: auto;
 }
+
+/* ============================================================
+   词汇拼图：放大上方图片，插槽/字母块整体下移，
+   收紧三块之间的空白，检查按钮保持原位
+   ============================================================ */
+.quiz-ref-page .ref-puzzle-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap {
+  justify-content: flex-start !important;
+  gap: 0 !important;
+}
+.quiz-ref-page .ref-puzzle-wrap .ref-puzzle-hint {
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: flex-end;
+  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+}
+.quiz-ref-page .ref-puzzle-wrap .pz-art {
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-height: clamp(6.5rem, 34cqh, 13.5rem);
+}
+.quiz-ref-page .ref-puzzle-wrap .pz-slots {
+  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+}
+.quiz-ref-page .ref-puzzle-wrap .pz-letters {
+  margin-top: 0 !important;
+  margin-bottom: clamp(2.75rem, 8vw, 3.5rem) !important;
+}
+.quiz-ref-page .ref-puzzle-wrap .pz-check,
+.quiz-ref-page .ref-puzzle-wrap .pz-check-spacer {
+  margin-top: 0 !important;
+}

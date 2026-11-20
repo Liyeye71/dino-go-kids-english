@@ -1,7 +1,7 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    陆地动物园：10 个主题馆 × 5 关 = 50 关，共用一张连续路线图
-   题库共 100 词（仅陆地动物园）：核心动物名词 30 + 动作动词 30 + 身体部位 20 + 特征形容词 20
+   题库共 105 词（仅陆地动物园）：核心动物名词 35 + 动作动词 30 + 身体部位 20 + 特征形容词 20
    每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
@@ -65,14 +65,14 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（100 词，仅陆地动物园）
-   1. 核心动物名词 30 个：看图选词 / 听音识图 / 词汇拼图
+   动物乐园题库（105 词，仅陆地动物园）
+   1. 核心动物名词 35 个：看图选词 / 听音识图 / 词汇拼图
    2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 20 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
 const ANIMAL_ZOO_WORDS = [
-  /* ---------------- 1. 核心动物名词 30 个 ---------------- */
+  /* ---------------- 1. 核心动物名词 35 个 ---------------- */
   { word: "lion",       zh: "狮子",   phon: "/ˈlaɪən/",       example: "The lion is the king of the zoo.",        emoji: "🦁", category: "noun", animal: true },
   { word: "tiger",      zh: "老虎",   phon: "/ˈtaɪɡə(r)/",    example: "The tiger has orange fur.",               emoji: "🐯", category: "noun", animal: true },
   { word: "monkey",     zh: "猴子",   phon: "/ˈmʌŋki/",       example: "The monkey climbs the tree.",             emoji: "🐒", category: "noun", animal: true },
@@ -103,6 +103,11 @@ const ANIMAL_ZOO_WORDS = [
   { word: "rhino",      zh: "犀牛",   phon: "/ˈraɪnəʊ/",      example: "The rhino has a big horn.",               emoji: "🦏", category: "noun", animal: true },
   { word: "cheetah",    zh: "猎豹",   phon: "/ˈtʃiːtə/",      example: "The cheetah runs very fast.",             emoji: "🐆", category: "noun", animal: true },
   { word: "horse",      zh: "马",     phon: "/hɔːs/",         example: "The horse runs very fast.",               emoji: "🐴", category: "noun", animal: true },
+  { word: "cat",        zh: "猫",     phon: "/kæt/",          example: "The cat is sleeping on the sofa.",        emoji: "🐱", category: "noun", animal: true },
+  { word: "dog",        zh: "狗",     phon: "/dɒɡ/",          example: "The dog likes to play in the yard.",      emoji: "🐶", category: "noun", animal: true },
+  { word: "pig",        zh: "猪",     phon: "/pɪɡ/",          example: "The pig is rolling in the mud.",          emoji: "🐷", category: "noun", animal: true },
+  { word: "chicken",    zh: "鸡",     phon: "/ˈtʃɪkɪn/",      example: "The chicken lays eggs on the farm.",      emoji: "🐔", category: "noun", animal: true },
+  { word: "bird",       zh: "小鸟",   phon: "/bɜːd/",         example: "A bird is singing in the tree.",          emoji: "🐦", category: "noun", animal: true },
 
   /* ---------------- 2. 动作动词 30 个 ---------------- */
   { word: "eat",        zh: "吃",     phon: "/iːt/",          example: "The panda likes to eat bamboo.",          emoji: "🍽️", category: "verb", actor: "🐼", motion: "eat" },
@@ -300,7 +305,7 @@ const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_VENUES.flatMap((venue, vi) =>
   })
 );
 
-/* 全场景词池：50 关共用同一套 100 词题库（仅陆地动物园） */
+/* 全场景词池：50 关共用同一套 105 词题库（仅陆地动物园） */
 
 const ANIMAL_SCENES = [
   {
