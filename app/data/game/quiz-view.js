@@ -56,6 +56,13 @@ window.QuizView = {
     svg.innerHTML = "";
     const dots = [...area.querySelectorAll("[data-match-dot]")];
     const findDot = (side, word) => dots.find((d) => d.dataset.matchSide === side && d.dataset.word === word);
+    /* 错误配对先画红线，再叠加正确的绿线 */
+    (quiz.wrongPairs || []).forEach(({ art, word }) => {
+      const left = findDot("art", art);
+      const right = findDot("word", word);
+      if (!left || !right) return;
+      svg.appendChild(this.makeCurvedPath(this.point(area, left, rect), this.point(area, right, rect), "ref-match-path wrong"));
+    });
     (quiz.matched || []).forEach((word) => {
       const left = findDot("art", word);
       const right = findDot("word", word);
@@ -69,11 +76,6 @@ window.QuizView = {
     const midX = (p1.x + p2.x) / 2;
     const d = `M ${p1.x} ${p1.y} C ${midX} ${p1.y}, ${midX} ${p2.y}, ${p2.x} ${p2.y}`;
     path.setAttribute("d", d);
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", "#8A76A8");
-    path.setAttribute("stroke-width", "0.375rem");
-    path.setAttribute("stroke-dasharray", "0.625rem 0.5rem");
-    path.setAttribute("stroke-linecap", "round");
     path.setAttribute("class", cls);
     return path;
   },
@@ -90,6 +92,27 @@ window.QuizView = {
     area.querySelectorAll("[data-match-dot]").forEach((dot) => {
       dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
     });
+    /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
+    area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
+      row.addEventListener("click", (e) => {
+        if (e.target.closest("[data-match-dot]")) return;
+        if (!quiz || quiz.revealed) return;
+        const card = row.querySelector(".ref-match-word-card");
+        speak(row.dataset.word);
+        if (card) {
+          card.classList.remove("is-shaking");
+          void card.offsetWidth;
+          card.classList.add("is-shaking");
+        }
+      }, options);
+    });
+  },
+
+  /* 该图/单词是否已连过（正确或错误都算锁定） */
+  isUsed(word, side) {
+    if (!quiz) return true;
+    if ((quiz.matched || []).includes(word)) return true;
+    return (quiz.wrongPairs || []).some((p) => p[side] === word);
   },
 
   /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */
@@ -98,7 +121,7 @@ window.QuizView = {
     const word = dot.dataset.word;
     const side = dot.dataset.matchSide;
     const area = dot.closest("[data-match-area]");
-    if (!area || quiz.matched.includes(word)) return;
+    if (!area || this.isUsed(word, side)) return;
     e.preventDefault();
     e.stopPropagation();
 
@@ -160,6 +183,7 @@ window.QuizView = {
     if (!quiz || quiz.revealed) return;
     const word = dot.dataset.word;
     const side = dot.dataset.matchSide;
+    if (this.isUsed(word, side)) return;
 
     /* 如果 quiz.pickWord 已有值，表示另一侧已选中 */
     if (quiz.pickWord && quiz.pickWordSide && quiz.pickWordSide !== side) {
@@ -189,6 +213,7 @@ window.QuizView = {
     const a = { word: dotA.dataset.word, side: dotA.dataset.matchSide };
     const b = { word: dotB.dataset.word, side: dotB.dataset.matchSide };
     if (a.side === b.side) return;
+    if (this.isUsed(a.word, a.side) || this.isUsed(b.word, b.side)) return;
 
     quiz.pickWordSide = a.side;
     quiz.pickWord = a.word;
@@ -255,10 +280,7 @@ window.QuizView = {
         if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
       } else {
         const target = hit && hit.closest("[data-feed-drop]");
-        if (target) {
-          feedPick(drag.value, false);
-          feedCheck();
-        }
+        if (target) feedPick(drag.value);
       }
     };
     const up = (ev) => finish(ev, false);

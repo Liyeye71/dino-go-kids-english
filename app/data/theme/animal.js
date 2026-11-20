@@ -65,10 +65,10 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（109 词，仅陆地动物园）
+   动物乐园题库（106 词，仅陆地动物园）
    1. 核心动物名词 39 个：看图选词 / 听音识图 / 词汇拼图
-   2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
-   3. 身体部位 20 个：局部特写（放大镜高亮局部）
+   2. 动作动词 28 个：动作猜猜（中央动态动物 + 纯文字选项）
+   3. 身体部位 19 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
 const ANIMAL_ZOO_WORDS = [
@@ -126,15 +126,14 @@ const ANIMAL_ZOO_WORDS = [
   { word: "lick",       zh: "舔",     phon: "/lɪk/",          example: "The cat licks its fur.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "sniff",  assetKey: "action-lick" },
   { word: "hunt",       zh: "捕猎",   phon: "/hʌnt/",         example: "The tiger hunts at night.",               emoji: "🏹", category: "verb", actor: "🐯", motion: "pounce" },
   { word: "bite",       zh: "咬",     phon: "/baɪt/",         example: "The crocodile can bite hard.",            emoji: "🦷", category: "verb", actor: "🐊", motion: "pounce" },
-  { word: "trot",       zh: "小跑",   phon: "/trɒt/",         example: "The horse trots across the field.",       emoji: "🐴", category: "verb", actor: "🐴", motion: "walk",   assetKey: "action-trot" },
-  { word: "purr",       zh: "呼噜",   phon: "/pɜː(r)/",       example: "The cat purrs happily.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "stand",  assetKey: "action-purr" },
-  { word: "preen",      zh: "理毛",   phon: "/priːn/",        example: "The parrot preens its feathers.",         emoji: "🦜", category: "verb", actor: "🦜", motion: "sniff",  assetKey: "action-preen" },
-  { word: "wag",        zh: "摇尾巴", phon: "/wæɡ/",          example: "The dog wags its tail.",                  emoji: "🐕", category: "verb", actor: "🐕", motion: "sniff",  assetKey: "action-wag" },
-  { word: "graze",      zh: "吃草",   phon: "/ɡreɪz/",        example: "The sheep grazes on the grass.",          emoji: "🐑", category: "verb", actor: "🐑", motion: "drink",  assetKey: "action-graze" },
+  { word: "dance",      zh: "跳舞",   phon: "/dɑːns/",        example: "The peacock dances in the sun.",          emoji: "💃", category: "verb", actor: "🦚", motion: "dance" },
+  { word: "sing",       zh: "唱歌",   phon: "/sɪŋ/",          example: "The bird sings in the tree.",             emoji: "🎵", category: "verb", actor: "🐦", motion: "dance" },
+  { word: "splash",     zh: "戏水",   phon: "/splæʃ/",        example: "The hippo splashes in the water.",        emoji: "💦", category: "verb", actor: "🦛", motion: "swim" },
+  { word: "dig",        zh: "挖洞",   phon: "/dɪɡ/",          example: "The rabbit digs a hole.",                 emoji: "🕳️", category: "verb", actor: "🐰", motion: "sniff" },
+  { word: "stretch",    zh: "伸懒腰", phon: "/stretʃ/",       example: "The dog stretches after a nap.",          emoji: "🐕", category: "verb", actor: "🐕", motion: "stand" },
   { word: "chase",      zh: "追逐",   phon: "/tʃeɪs/",        example: "The wolf chases the deer.",               emoji: "🏃", category: "verb", actor: "🐺", motion: "run" },
   { word: "catch",      zh: "抓住",   phon: "/kætʃ/",         example: "The fox catches a rabbit.",               emoji: "🎯", category: "verb", actor: "🦊", motion: "pounce" },
   { word: "walk",       zh: "走",     phon: "/wɔːk/",         example: "The turtle walks slowly.",                emoji: "🚶", category: "verb", actor: "🐢", motion: "walk" },
-  { word: "snort",      zh: "喷鼻息", phon: "/snɔːt/",        example: "The horse snorts loudly.",                emoji: "🐴", category: "verb", actor: "🐴", motion: "roar",   assetKey: "action-snort" },
   { word: "drink",      zh: "喝",     phon: "/drɪŋk/",        example: "The hippo drinks water.",                 emoji: "🥤", category: "verb", actor: "🦛", motion: "drink",   assetKey: "action-drink" },
   { word: "play",       zh: "玩",     phon: "/pleɪ/",         example: "The monkey likes to play.",               emoji: "🎾", category: "verb", actor: "🐒", motion: "dance",   assetKey: "action-play" },
   { word: "sit",        zh: "坐",     phon: "/sɪt/",          example: "The panda sits on the grass.",            emoji: "🪑", category: "verb", actor: "🐼", motion: "sit",     assetKey: "action-sit" },
@@ -143,24 +142,22 @@ const ANIMAL_ZOO_WORDS = [
   { word: "hide",       zh: "躲藏",   phon: "/haɪd/",         example: "The fox hides in the bushes.",            emoji: "🙈", category: "verb", actor: "🦊", motion: "hide",    assetKey: "action-hide" },
   { word: "nap",        zh: "打盹",   phon: "/næp/",          example: "The cat takes a nap in the sun.",         emoji: "😸", category: "verb", actor: "🐱", motion: "sit",     assetKey: "action-nap" },
   { word: "sniff",      zh: "闻",     phon: "/snɪf/",         example: "The wolf sniffs the ground.",             emoji: "👃", category: "verb", actor: "🐺", motion: "sniff",   assetKey: "action-sniff" },
-  { word: "bleat",      zh: "咩咩叫", phon: "/bliːt/",        example: "The sheep bleats on the grassland.",      emoji: "🐑", category: "verb", actor: "🐑", motion: "roar",    assetKey: "action-bleat" },
 
-  /* ---------------- 3. 身体部位 20 个 ---------------- */
+  /* ---------------- 3. 身体部位 19 个 ---------------- */
+  { word: "head",       zh: "头",     phon: "/hed/",          example: "The lion has a big head.",                emoji: "🦁", category: "part", owner: "🦁", focus: { x: "0%", y: "-14%", scale: 2.2 } },
+  { word: "eye",        zh: "眼睛",   phon: "/aɪ/",           example: "The owl has big eyes.",                   emoji: "👁️", category: "part", owner: "🦉", focus: { x: "0%", y: "-8%", scale: 2.6 } },
+  { word: "nose",       zh: "鼻子",   phon: "/nəʊz/",         example: "The dog has a good nose.",                emoji: "👃", category: "part", owner: "🐶", focus: { x: "0%", y: "2%", scale: 2.8 } },
+  { word: "mouth",      zh: "嘴巴",   phon: "/maʊθ/",         example: "The hippo has a big mouth.",              emoji: "👄", category: "part", owner: "🦛", focus: { x: "0%", y: "10%", scale: 2.6 } },
   { word: "tail",       zh: "尾巴",   phon: "/teɪl/",         example: "The monkey has a long tail.",             emoji: "🐒", category: "part", owner: "🐒", focus: { x: "20%", y: "10%", scale: 2.6 } },
   { word: "ear",        zh: "耳朵",   phon: "/ɪə(r)/",        example: "The rabbit has long ears.",               emoji: "👂", category: "part", owner: "🐰", focus: { x: "0%", y: "14%", scale: 2.8 } },
   { word: "trunk",      zh: "象鼻",   phon: "/trʌŋk/",        example: "The elephant uses its trunk.",            emoji: "🐘", category: "part", owner: "🐘", focus: { x: "8%", y: "-4%", scale: 2.2 } },
-  { word: "mane",       zh: "鬃毛",   phon: "/meɪn/",         example: "The lion has a big mane.",                emoji: "👑", category: "part", owner: "🦁", focus: { x: "-2%", y: "-16%", scale: 2.4 } },
   { word: "wing",       zh: "翅膀",   phon: "/wɪŋ/",          example: "The duck has two wings.",                 emoji: "🦆", category: "part", owner: "🦆", focus: { x: "-14%", y: "2%", scale: 2.4 } },
   { word: "paw",        zh: "脚掌",   phon: "/pɔː/",          example: "The bear has a big paw.",                 emoji: "🐾", category: "part", owner: "🐻", focus: { x: "6%", y: "22%", scale: 2.8 } },
-  { word: "stripe",     zh: "条纹",   phon: "/straɪp/",       example: "The zebra has black and white stripes.",  emoji: "🦓", category: "part", owner: "🦓", focus: { x: "0%", y: "0%", scale: 2.2 } },
   { word: "fur",        zh: "皮毛",   phon: "/fɜː(r)/",       example: "The panda has soft fur.",                 emoji: "🐼", category: "part", owner: "🐼", focus: { x: "0%", y: "0%", scale: 2.4 } },
   { word: "horn",       zh: "角",     phon: "/hɔːn/",         example: "The rhino has a sharp horn.",             emoji: "🦏", category: "part", owner: "🦏", focus: { x: "10%", y: "-16%", scale: 2.6 } },
-  { word: "tusk",       zh: "象牙",   phon: "/tʌsk/",         example: "The elephant has two long tusks.",        emoji: "🦷", category: "part", owner: "🐘", focus: { x: "-8%", y: "8%", scale: 2.8 } },
   { word: "claw",       zh: "利爪",   phon: "/klɔː/",         example: "The tiger has sharp claws.",              emoji: "🐾", category: "part", owner: "🐯", focus: { x: "-4%", y: "22%", scale: 2.8 } },
   { word: "feather",    zh: "羽毛",   phon: "/ˈfeðə(r)/",     example: "The peacock has colorful feathers.",      emoji: "🪶", category: "part", owner: "🦚", focus: { x: "0%", y: "-6%", scale: 2.2 } },
-  { word: "whisker",    zh: "胡须",   phon: "/ˈwɪskə(r)/",    example: "The cat has long whiskers.",              emoji: "🐱", category: "part", owner: "🐱", focus: { x: "0%", y: "6%", scale: 2.8 } },
   { word: "beak",       zh: "喙",     phon: "/biːk/",         example: "The parrot has a strong beak.",           emoji: "🦜", category: "part", owner: "🦜", focus: { x: "0%", y: "8%", scale: 2.4 } },
-  { word: "hoof",       zh: "蹄",     phon: "/huːf/",         example: "The horse has strong hooves.",            emoji: "🐴", category: "part", owner: "🐴", focus: { x: "0%", y: "22%", scale: 2.8 } },
   { word: "neck",       zh: "脖子",   phon: "/nek/",          example: "The giraffe has a long neck.",            emoji: "🦒", category: "part", owner: "🦒", focus: { x: "6%", y: "-20%", scale: 2.2 } },
   { word: "tooth",      zh: "牙齿",   phon: "/tuːθ/",         example: "The crocodile has sharp teeth.",          emoji: "🦷", category: "part", owner: "🐊", focus: { x: "0%", y: "18%", scale: 2.6 } },
   { word: "tongue",     zh: "舌头",   phon: "/tʌŋ/",          example: "The snake shows its tongue.",             emoji: "👅", category: "part", owner: "🐍", focus: { x: "0%", y: "8%", scale: 2.8 } },
@@ -187,15 +184,13 @@ const ANIMAL_ZOO_WORDS = [
   { word: "thin",       zh: "瘦的",   phon: "/θɪn/",           example: "The monkey is thin.",                     emoji: "🐒", category: "adj",
     compare: { pair: "fat", mode: "size", target: "b", a: { emoji: "🐷", scale: 1.2 }, b: { emoji: "🐒", scale: 0.9 } } },
   { word: "strong",     zh: "强壮的", phon: "/strɒŋ/",         example: "The gorilla is strong.",                  emoji: "🦍", category: "adj",
-    compare: { pair: "light", mode: "size", target: "a", a: { emoji: "🦍", scale: 1.2 }, b: { emoji: "🐭", scale: 0.7 } } },
+    compare: { pair: "small", mode: "size", target: "a", a: { emoji: "🦍", scale: 1.2 }, b: { emoji: "🐭", scale: 0.7 } } },
   { word: "quiet",      zh: "安静的", phon: "/ˈkwaɪət/",       example: "The rabbit is quiet.",                    emoji: "🐰", category: "adj",
     compare: { pair: "noisy", mode: "sound", target: "a", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
   { word: "noisy",      zh: "吵闹的", phon: "/ˈnɔɪzi/",        example: "The lion is noisy.",                      emoji: "🦁", category: "adj",
     compare: { pair: "quiet", mode: "sound", target: "b", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
-  { word: "cute",       zh: "可爱的", phon: "/kjuːt/",         example: "The rabbit is very cute.",                emoji: "🐰", category: "adj",
-    compare: { pair: "clean", mode: "look", target: "a", a: { emoji: "🐰", scale: 1 }, b: { emoji: "🐷", scale: 0.95 } } },
-  { word: "clean",      zh: "干净的", phon: "/kliːn/",         example: "The cat is very clean.",                  emoji: "🐱", category: "adj",
-    compare: { pair: "cute", mode: "look", target: "a", a: { emoji: "🐱", scale: 1, badge: "✨" }, b: { emoji: "🐷", scale: 0.95, badge: "💧" } } },
+  { word: "cute",       zh: "可爱的", phon: "/kjuːt/",         example: "The rabbit is very cute.",                emoji: "🐰", category: "adj" },
+  { word: "clean",      zh: "干净的", phon: "/kliːn/",         example: "The cat is very clean.",                  emoji: "🐱", category: "adj" },
   { word: "heavy",      zh: "重的",   phon: "/ˈhevi/",         example: "The elephant is heavy.",                  emoji: "🐘", category: "adj",
     compare: { pair: "light", mode: "weight", target: "a", a: { emoji: "🐘", scale: 1.15 }, b: { emoji: "🪶", scale: 0.9 } } },
   { word: "light",      zh: "轻的",   phon: "/laɪt/",          example: "The feather is light.",                   emoji: "🪶", category: "adj",
@@ -222,7 +217,6 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   fat: "pig-monkey",         thin: "pig-monkey",
   strong: "gorilla-mouse",
   quiet: "rabbit-lion",      noisy: "rabbit-lion",
-  cute: "cat-pig",           clean: "cat-pig",
   heavy: "elephant-feather", light: "elephant-feather",
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
@@ -230,42 +224,48 @@ const ANIMAL_ADJ_ASSET_KEYS = {
 /* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
-   - 食物图放在 images/words/food/，动作图放在 images/words/action/
+   - 食物图统一命名为 food-xx.webp 放在 images/words/food/，动作图放在 images/words/action/
    ============================================================ */
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/worm.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/food-meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/food-banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/food-carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/food-grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/food-fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/food-nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/food-bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/food-apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/food-worm.webp" },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   emoji: "🍃", img: "images/words/food/food-leaves.webp" },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   emoji: "🌽", img: "images/words/food/food-corn.webp" },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   emoji: "🥛", img: "images/words/food/food-milk.webp" },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   emoji: "🍯", img: "images/words/food/food-honey.webp" },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
 };
 
 /* 39 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
-  zebra: "grass", giraffe: "grass", cow: "grass", sheep: "grass", goat: "grass",
-  deer: "grass", kangaroo: "grass", hippo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
-  chicken: "worm", bird: "worm", peacock: "worm", crow: "worm",
+  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  giraffe: "leaves", elephant: "leaves", hippo: "watermelon",
+  chicken: "corn", bird: "worm", peacock: "worm", crow: "worm",
   monkey: "banana", gorilla: "banana", baboon: "banana",
   rabbit: "carrot", horse: "carrot", donkey: "carrot",
-  bear: "fish", cat: "fish", duck: "fish",
+  bear: "honey", cat: "milk", duck: "fish",
   squirrel: "nut", parrot: "nut",
-  elephant: "apple", pig: "apple",
+  pig: "apple",
   panda: "bamboo",
   dog: "bone",
 };
 
-/* 20 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
+/* 19 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
 const PART_OWNER_WORD_MAP = {
-  tail: "monkey", ear: "rabbit", trunk: "elephant", mane: "lion", wing: "duck",
-  paw: "bear", stripe: "zebra", fur: "panda", horn: "rhino", tusk: "elephant",
-  claw: "tiger", feather: "peacock", whisker: "cat", beak: "parrot", hoof: "horse",
+  head: "lion", eye: "owl", nose: "dog", mouth: "hippo",
+  tail: "monkey", ear: "rabbit", trunk: "elephant", wing: "duck",
+  paw: "bear", fur: "panda", horn: "rhino",
+  claw: "tiger", feather: "peacock", beak: "parrot",
   neck: "giraffe", tooth: "crocodile", tongue: "snake", leg: "zebra", belly: "cat",
 };
 

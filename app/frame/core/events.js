@@ -184,8 +184,6 @@ document.addEventListener("click", (e) => {
   /* 🍎 动物喂食 Feed Animal */
   } else if (action === "fd-pick") {
     feedPick(el.dataset.food);
-  } else if (action === "fd-check") {
-    feedCheck();
 
   } else if (action === "settings") {
     openSettings();

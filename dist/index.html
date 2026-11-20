@@ -974,10 +974,15 @@ h1,h2,h3,h4,p{margin:0}
 .ref-action-animal{position:relative;z-index:2;font-size:clamp(4.5rem,18vh,8rem);line-height:1;
   transform-origin:50% 88%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
 .ref-action-emoji{display:block;line-height:1}
-.ref-action-img{position:absolute;left:50%;top:50%;width:clamp(7rem,26vh,10.5rem);height:auto;
-  transform:translate(-50%,-50%);object-fit:cover;pointer-events:none;
-  filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.18))}
-.ref-action-animal.has-art .ref-action-emoji{display:none}
+.ref-action-img{position:absolute;inset:0;z-index:3;width:100%;height:100%;object-fit:contain;
+  padding:0.375rem;border-radius:inherit;pointer-events:none}
+.ref-action-stage.has-art > .ref-action-sun,
+.ref-action-stage.has-art > .ref-action-cloud,
+.ref-action-stage.has-art > .ref-action-ground,
+.ref-action-stage.has-art > .ref-action-animal,
+.ref-action-stage.has-art > .ref-action-spark{opacity:0}
+.ref-action-stage.has-art::before{opacity:0}
+.ref-action-stage.has-art{background:#FFFFFF}
 .ref-action-spark{position:absolute;color:#FFF0B8;font-size:1.125rem;z-index:1;animation:actSpark 1.4s ease-in-out infinite}
 .ref-action-spark.s1{left:22%;bottom:30%}
 .ref-action-spark.s2{right:20%;top:30%;animation-delay:.5s}
@@ -1266,6 +1271,9 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-col{display:flex;flex-direction:column;gap:1rem;z-index:1}
 .ref-match-row{display:flex;align-items:center;gap:0.625rem;transition:opacity .18s ease}
 .ref-match-row.done{opacity:.55}
+.ref-match-row.wrong{opacity:.8}
+.ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
+.ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
 .ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
 /* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
 .ref-match-col-left .ref-match-row{flex-direction:row}
@@ -1275,7 +1283,8 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
 .ref-match-word-card{min-width:clamp(4.5rem,15vw,6rem);padding:0.625rem 1rem;flex:none;text-align:center;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
-  color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black)}
+  color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black);cursor:pointer}
+.ref-match-word-card.is-shaking{animation:shake .32s ease}
 .ref-match-dot{position:relative;display:grid;place-items:center;width:1.5rem;height:1.5rem;flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 var(--sticker-ink);
   cursor:pointer;touch-action:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
@@ -1283,7 +1292,8 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-dot:active{transform:scale(.95)}
 .ref-match-row.done .ref-match-dot{background:#9BE382;border-color:#3F8155;box-shadow:0 0.1875rem 0 #3F8155}
 .ref-match-dot .ok-check{font-size:0.75rem;font-style:normal;color:#243F2B;font-weight:var(--w-black)}
-.ref-match-path{fill:none;stroke:#8A76A8;stroke-width:0.375rem;stroke-linecap:round;stroke-dasharray:0.625rem 0.5rem}
+.ref-match-path{fill:none;stroke:#4FA96B;stroke-width:0.375rem;stroke-linecap:round;stroke-dasharray:0.625rem 0.5rem}
+.ref-match-path.wrong{stroke:#E4573F}
 .ref-match-path.temp{stroke:#E4A14B;stroke-dasharray:none;opacity:.85}
 .quiz-ref-page .listen-row .listen{border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 
@@ -1303,6 +1313,17 @@ h1,h2,h3,h4,p{margin:0}
 .ref-dialog-listen{margin-top:0.25rem}
 .quiz-ref-page .ref-dialog-options{flex:1;min-height:9rem}
 .quiz-ref-page .ref-dialog-options .option{min-height:3.25rem}
+/* 情景对话：整句选项（英文整句，允许换行） */
+.quiz-ref-page .ref-dialog-sentences{min-height:0;gap:clamp(0.375rem,1.4cqh,0.625rem)}
+.quiz-ref-page .ref-dialog-sentences .option{justify-content:flex-start;text-align:left;padding:0.625rem 0.875rem}
+.quiz-ref-page .ref-dialog-sentences .option .dlg-sentence{font-size:clamp(0.8125rem,3vw,1rem);line-height:1.35;font-weight:var(--w-bold);white-space:normal;overflow-wrap:anywhere}
+/* 情景对话：图片选项（复用听音选图卡片样式） */
+.ref-dialog-image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:100%;flex:1;min-height:0;align-content:center}
+.ref-dialog-image-grid .ref-listen-card{min-height:clamp(4.5rem,15cqh,6.5rem);padding:0.5rem}
+.ref-dialog-reply.pending{color:#9C8666;letter-spacing:0.08em}
+/* 结算卡：整句正确答案换行展示 */
+.zoo-answer-box.is-sentence{flex-wrap:wrap;overflow:visible;align-items:flex-start}
+.zoo-answer-box.is-sentence .zoo-answer-word{flex:1 1 auto;font-size:clamp(0.875rem,3.2vw,1.0625rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
@@ -1330,7 +1351,7 @@ h1,h2,h3,h4,p{margin:0}
 .ref-feed-animal.drop-ready{background:#FFF0C9;transform:scale(1.03)}
 .ref-feed-animal .fd-art{width:8.5rem;height:8.5rem;display:grid;place-items:center}
 .ref-feed-animal .fd-name{color:var(--sticker-ink);font-size:1.375rem}
-.ref-feed-animal small{color:#806039;text-align:center;line-height:1.4}
+.ref-hint{flex:none;margin:0;color:#806039;text-align:center;line-height:1.4;font-size:clamp(0.8125rem,2.8vw,0.9375rem)}
 .quiz-ref-page .fd-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin-top:0}
 .quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:6rem;padding:0.375rem;
   border:0.125rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);touch-action:none;user-select:none}
@@ -1811,8 +1832,8 @@ h1,h2,h3,h4,p{margin:0}
   flex-direction: column;
   overflow: hidden !important;
 
-  /* 奶油纸面视觉（适配 zoo 贴纸风） */
-  background: rgba(255, 252, 242, 0.94);
+  /* 纯白纸面视觉 */
+  background: #FFFFFF;
   border: 0.1875rem solid #D7BA89;
   border-radius: 1.5rem;
   box-shadow: 0 0.375rem 0 rgba(149, 98, 32, 0.18), 0 0.75rem 1.5rem rgba(92, 65, 29, 0.12);
@@ -1835,6 +1856,7 @@ h1,h2,h3,h4,p{margin:0}
 /* 6. 收编所有题型包裹层：统一占满纸面剩余高度，内部采用“上展示 + 下选项” */
 .quiz-ref-page .ref-pic-wrap,
 .quiz-ref-page .ref-listen-wrap,
+.quiz-ref-page .ref-match-wrap,
 .quiz-ref-page .ref-action-wrap,
 .quiz-ref-page .ref-zoom-wrap,
 .quiz-ref-page .ref-cmp-wrap,
@@ -1848,6 +1870,27 @@ h1,h2,h3,h4,p{margin:0}
   justify-content: space-between !important;
   align-items: center !important;
   gap: clamp(0.5rem, 1.6cqh, 0.875rem) !important;
+}
+
+/* 单词连线：六项内容居中，图片列贴左、英文列贴右，两侧仅留少量空白 */
+.quiz-ref-page .ref-match-wrap .ref-match-area,
+.quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-area {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 0.75rem !important;
+  align-items: center;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  --match-card: clamp(4.5rem, 15vw, 6rem);
+}
+.quiz-ref-page .ref-match-wrap .ref-match-word-card,
+.quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-word-card {
+  min-width: clamp(4.75rem, 16vw, 6.5rem);
+  padding: 0.75rem 1.125rem;
+  font-size: clamp(1rem, 3.7vw, 1.25rem);
 }
 
 /* 7. 统一所有题型的“视觉展示区”高度（占中间弹性区，不撑破、不塌陷） */
@@ -2071,9 +2114,7 @@ h1,h2,h3,h4,p{margin:0}
   flex-direction: column;
   overflow: hidden !important;
 
-  background: linear-gradient(180deg, rgba(255,253,248,0.72) 0%, rgba(255,249,236,0.62) 100%) !important;
-  backdrop-filter: blur(0.1875rem) saturate(1.08);
-  -webkit-backdrop-filter: blur(0.1875rem) saturate(1.08);
+  background: #FFFFFF !important;
   border: 0.3125rem solid rgba(216,176,122,0.82) !important;
   border-radius: 1.5rem !important;
   box-shadow:
@@ -2114,6 +2155,7 @@ h1,h2,h3,h4,p{margin:0}
 /* 8. 收编所有题型包裹层：统一“上区居中展示 + 下区贴底选项” */
 .quiz-ref-page[data-scene="zoo"] .ref-pic-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-listen-wrap,
+.quiz-ref-page[data-scene="zoo"] .ref-match-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-action-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-zoom-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-cmp-wrap,
@@ -3932,6 +3974,181 @@ window.DINO_WORD_RULES.push({
 </script>
   <script>
 /* ============================================================
+   DinoGo · 恐龙英语 — 情景对话模板库
+   用现有单词数据组合短句问答，支持三种作答形式：
+   word   缺词补全（单词选项）
+   sentence 整句应答（整句英文选项）
+   image  图片选择（图片选项）
+   ============================================================ */
+(function () {
+  const shuffle = (list) => {
+    const arr = [...list];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+  const pick = (list) => list[Math.floor(Math.random() * list.length)];
+  const foodEn = (food) => (food && (food.en || food.word)) || "";
+
+  /* 同一类题型的多组句式，避免每次都是同一句话 */
+  const ASKS = {
+    word: [
+      "Look at the picture. What animal is this?",
+      "Can you tell me what this is?",
+      "What do you see in the picture?",
+      "Do you know this animal? What is it?",
+    ],
+    wordGeneric: [
+      "Look at the picture. What is this?",
+      "Can you tell me what this is?",
+      "What do you see in the picture?",
+      "Do you know this word? What is it?",
+    ],
+    eat: [
+      "What does the {word} eat?",
+      "What food does the {word} like?",
+      "Tell me, what does a {word} eat?",
+      "What is the {word}'s favourite food?",
+    ],
+    yesno: [
+      "Is this a {wrong}?",
+      "Look carefully. Is this a {wrong}?",
+      "Excuse me, is this a {wrong}?",
+    ],
+    image: [
+      "Which one is the {word}?",
+      "Can you find the {word}?",
+      "Point to the {word}, please.",
+      "Where is the {word}?",
+    ],
+    foodImage: [
+      "Which animal eats {food}?",
+      "Who likes to eat {food}?",
+      "Which animal would like some {food}?",
+    ],
+  };
+
+  function animalOption(w) {
+    return {
+      value: w.word,
+      label: w.word,
+      img: w.img || (w.animal ? `images/words/animal/${w.word}.webp` : ""),
+    };
+  }
+
+  function build(task, pool) {
+    const w = task;
+    if (!w || !w.word) return null;
+    const others = (pool || []).filter(
+      (x) => x && x.word && x.word !== w.word && x.category === w.category
+    );
+    if (others.length < 2) return null;
+
+    const two = shuffle(others).slice(0, 2);
+    const food = foodEn(w.food);
+    const modes = ["word"];
+    if (w.animal && food && others.some((x) => foodEn(x.food) && foodEn(x.food) !== food)) {
+      modes.push("eat", "foodImage");
+    }
+    if (w.animal && others.every((x) => x.img || x.animal)) modes.push("image");
+    if (w.animal) modes.push("yesno");
+
+    let mode = pick(modes);
+
+    if (mode === "eat") {
+      const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
+      if (altFoods.length < 2) {
+        mode = "word";
+      } else {
+        const [f1, f2] = shuffle(altFoods).slice(0, 2);
+        const correct = `It eats ${food}.`;
+        return {
+          mode: "sentence",
+          replyMode: "sentence",
+          askImg: true,
+          ask: pick(ASKS.eat).replace("{word}", w.word),
+          options: shuffle([
+            { value: correct, label: correct },
+            { value: `It eats ${f1}.`, label: `It eats ${f1}.` },
+            { value: `It eats ${f2}.`, label: `It eats ${f2}.` },
+          ]),
+          answerValue: correct,
+          answerText: correct,
+        };
+      }
+    }
+
+    if (mode === "yesno") {
+      const wrong = two[0].word;
+      const third = two[1].word;
+      const correct = `No, it isn't. It is a ${w.word}.`;
+      return {
+        mode: "sentence",
+        replyMode: "sentence",
+        askImg: true,
+        ask: pick(ASKS.yesno).replace("{wrong}", wrong),
+        options: shuffle([
+          { value: correct, label: correct },
+          { value: "Yes, it is.", label: "Yes, it is." },
+          { value: `No, it isn't. It is a ${third}.`, label: `No, it isn't. It is a ${third}.` },
+        ]),
+        answerValue: correct,
+        answerText: correct,
+      };
+    }
+
+    if (mode === "image") {
+      return {
+        mode: "image",
+        replyMode: "blank",
+        askImg: false,
+        ask: pick(ASKS.image).replace("{word}", w.word),
+        reply: "It's the ___.",
+        options: shuffle([w, ...two].map(animalOption)),
+        answerValue: w.word,
+        answerText: `It is the ${w.word}.`,
+        answerWords: null,
+      };
+    }
+
+    if (mode === "foodImage") {
+      const poolFood = others.filter((x) => foodEn(x.food) && foodEn(x.food) !== food);
+      if (poolFood.length < 2) mode = "word";
+      else {
+        return {
+          mode: "image",
+          replyMode: "blank",
+          askImg: false,
+          ask: pick(ASKS.foodImage).replace("{food}", food),
+          reply: "It's the ___.",
+          options: shuffle([w, ...shuffle(poolFood).slice(0, 2)].map(animalOption)),
+          answerValue: w.word,
+          answerText: `The ${w.word} eats ${food}.`,
+        };
+      }
+    }
+
+    const words = shuffle([w, ...two].map((x) => x.word));
+    return {
+      mode: "word",
+      replyMode: "blank",
+      askImg: true,
+      ask: pick(w.animal ? ASKS.word : ASKS.wordGeneric),
+      reply: "It's a ___.",
+      options: words.map((value) => ({ value, label: value })),
+      answerValue: w.word,
+      answerText: `It's a ${w.word}.`,
+    };
+  }
+
+  window.DialogTemplates = { build, ASKS };
+})();
+
+</script>
+  <script>
+/* ============================================================
    DynamicEngine · 动物乐园题库引擎 + 全主题题型实现
    - 本文件是题型的唯一实现来源：新增 / 调整题型只改这里
    - 词库四类：核心动物名词 30 / 动作动词 30 / 身体部位 20 / 特征形容词 20
@@ -3970,9 +4187,9 @@ window.DINO_WORD_RULES.push({
     { role: "partOrAdj", count: 1 },
   ];
   const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
-  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "compare" };
-  /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
-  const BOSS_TYPES = ["word_puzzle", "action", "compare", "match", "feed_animal", "dialog"];
+  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "action" };
+  /* BOSS 关允许的题型：补题时也不会回落到简单题型（对比观察暂时关闭） */
+  const BOSS_TYPES = ["word_puzzle", "action", "match", "feed_animal", "dialog"];
 
 
   /* 题型规则
@@ -4003,9 +4220,9 @@ window.DINO_WORD_RULES.push({
     return ["pic", "listen", "word_puzzle", "feed_animal", "match"];
   }
 
-  /* 部位特写题型暂时关闭，形容词对比题常驻 */
+  /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
   function pickPartOrAdjType() {
-    return "compare";
+    return "feed_animal";
   }
 
   function wordId(sceneId, word) {
@@ -4111,8 +4328,8 @@ window.DINO_WORD_RULES.push({
   }
 
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
-  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action", "compare"];
-  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action", "compare"];
+  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
+  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
@@ -4262,6 +4479,7 @@ window.DINO_WORD_RULES.push({
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
                   ${listenPill()}
                 </div>
+                <p class="ref-hint">猜猜这是什么动物</p>
                 <div class="options ref-pic-options">${options(q.options)}</div>
               </div>`,
             btn: choiceButton("选一个答案"),
@@ -4309,42 +4527,67 @@ window.DINO_WORD_RULES.push({
         build(task, pool) {
           /* 只连同类词，避免连线题里混进动词/形容词 */
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
-          const trio = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
-          task.pairs = trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" }));
-          task.words = shuffle(trio.map((x) => x.word));
-          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" })));
+          const picked = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
+
+          /* 英文单词既可以是动物名词，也可以是动物爱吃的水果/食物：
+             保证至少 1 只动物，最多混入 2 个食物（食物取自动物自身的 food 数据） */
+          const foods = [];
+          const seen = new Set();
+          picked.forEach((a) => {
+            const f = a.food;
+            if (!f || !f.en || seen.has(f.en) || picked.some((x) => x.word === f.en)) return;
+            seen.add(f.en);
+            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "" });
+          });
+          const foodCount = Math.min(foods.length, picked.length - 1, Math.random() < 0.35 ? 2 : 1);
+          const pairs = picked.slice(0, picked.length - foodCount)
+            .map((x) => ({ word: x.word, art: x.art, img: x.img || "" }))
+            .concat(shuffle(foods).slice(0, foodCount));
+
+          task.pairs = pairs;
+          task.words = shuffle(pairs.map((p) => p.word));
+          task.arts = shuffle(pairs.map((p) => ({ word: p.word, art: p.art, img: p.img || "" })));
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
+          const wrongPairs = quiz.wrongPairs || [];
+          const wrongArts = new Set(wrongPairs.map((p) => p.art));
+          const wrongWords = new Set(wrongPairs.map((p) => p.word));
           const selected = quiz.pickWord;
           const leftCol = q.arts.map((p) => {
             const isDone = solved.has(p.word);
-            const isSel = selected === p.word && !isDone;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
+            const isWrong = wrongArts.has(p.word);
+            const isSel = selected === p.word && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
               <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
             </div>`;
           }).join("");
           const rightCol = q.words.map((w) => {
             const isDone = solved.has(w);
-            const isSel = selected === w && !isDone;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+            const isWrong = wrongWords.has(w);
+            const isSel = selected === w && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
+              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
             </div>`;
           }).join("");
           return {
-            body: `<div class="ref-match-area" data-match-area>
-                <svg class="ref-match-svg" aria-hidden="true"></svg>
-                <div class="ref-match-col ref-match-col-left">${leftCol}</div>
-                <div class="ref-match-col ref-match-col-right">${rightCol}</div>
-              </div>
-              <div class="listen-row">${listenPill()}</div>`,
-            btn: quiz.revealed ? quizNextButton() : `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`,
+            body: `<div class="ref-match-wrap">
+                <div class="ref-match-area" data-match-area>
+                  <svg class="ref-match-svg" aria-hidden="true"></svg>
+                  <div class="ref-match-col ref-match-col-left">${leftCol}</div>
+                  <div class="ref-match-col ref-match-col-right">${rightCol}</div>
+                </div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
           };
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
+          /* 已连过的单词不可再选 */
+          if (quiz.matched.includes(word)) return;
+          if ((quiz.wrongPairs || []).some((p) => p.word === word)) return;
           quiz.pickWord = word;
           quiz.pickWordSide = "word";
           sfx("tap");
@@ -4353,63 +4596,143 @@ window.DINO_WORD_RULES.push({
         onPickArt(word) {
           if (!quiz || quiz.revealed || !quiz.pickWord) return;
           const q = quiz.order[quiz.index];
+          const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
+          /* 一张图/一个单词只能连一次，连过即锁定 */
+          if (quiz.matched.includes(word) || wrongPairs.some((p) => p.art === word)) {
+            quiz.pickWord = null;
+            quiz.pickWordSide = null;
+            render();
+            return;
+          }
+          const pickedWord = quiz.pickWord;
+          if (quiz.matched.includes(pickedWord) || wrongPairs.some((p) => p.word === pickedWord)) {
+            quiz.pickWord = null;
+            quiz.pickWordSide = null;
+            render();
+            return;
+          }
           /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
           const _sceneId = (state && state.scene) || "";
           const _makeWid = (w) => window.WrongBank ? WrongBank.makeId(_sceneId, w) : null;
-          if (word === quiz.pickWord) {
+          if (word === pickedWord) {
             quiz.matched.push(word);
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
             sfx("correct");
             /* 🦁 动物园：配对成功 → 尝试清除错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(word)) WrongBank.recordCorrect(_makeWid(word));
-            if (quiz.matched.length >= q.pairs.length) {
-              quiz.revealed = true;
-              quiz.choiceCorrect = quiz.matchWrong === 0;
-              if (quiz.choiceCorrect) {
-                quiz.correct++;
-                q.pairs.forEach((p) => quiz.words.push(p.word));
-                sfx("excellent");
-              }
-              render();
-              return;
-            }
           } else {
             quiz.matchWrong++;
-            const wrongPair = quiz.pickWord; /* 被选错的那个单词 */
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
-            quiz.hearts = Math.max(0, quiz.hearts - 1);
+            /* 错误连线保留红线，不会被后续配对覆盖或清除 */
+            wrongPairs.push({ art: word, word: pickedWord });
             sfx("wrong");
             /* 🦁 动物园：配对失败 → 自动收录错题库 */
-            if (window.isZooScene && isZooScene() && _makeWid(wrongPair)) WrongBank.recordWrong(_makeWid(wrongPair));
-            if (quiz.hearts <= 0) {
-              quiz.revealed = true;
-              quiz.choiceCorrect = false;
-              render();
-              return;
+            if (window.isZooScene && isZooScene() && _makeWid(pickedWord)) WrongBank.recordWrong(_makeWid(pickedWord));
+          }
+          quiz.pickWord = null;
+          quiz.pickWordSide = null;
+
+          /* 三组全部连完后统一判题 */
+          if (quiz.matched.length + wrongPairs.length >= q.pairs.length) {
+            quiz.revealed = true;
+            quiz.choiceCorrect = wrongPairs.length === 0;
+            if (quiz.choiceCorrect) {
+              quiz.correct++;
+              q.pairs.forEach((p) => quiz.words.push(p.word));
+              sfx("excellent");
             }
-            toast("答错了，继续努力");
+            render();
+            return;
           }
           render();
         },
       },
       dialog: {
         label: "情景对话",
-        title: "读对话，选出正确的单词",
-        build: threeChoiceBuild,
-        render({ q, quiz, choiceButton, options }) {
+        title: "读对话，选出正确的答案",
+        build(task, pool) {
+          /* 模板库：自动组合缺词、整句、图片三类情景问答 */
+          const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
+          if (dlg) {
+            task.dialog = dlg;
+            task.answerValue = dlg.answerValue;
+            task.answerText = dlg.answerText;
+            if (dlg.mode === "word") task.options = dlg.options.map((o) => o.value);
+            return;
+          }
+          /* 兜底：沿用旧版单句问答 */
+          threeChoiceBuild(task, pool);
+        },
+        render({ q, quiz, choiceButton, options, artOf }) {
           const revealed = quiz.revealed;
+          const selected = quiz.selected;
+          const d = q.dialog;
+          const escAttr = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+          /* 答后勾叉 */
+          const optionState = (value) => {
+            const ok = value === d.answerValue;
+            if (revealed) return ok ? "correct" : (value === selected ? "wrong" : "dim");
+            return value === selected ? "sel" : "";
+          };
+          const markOf = (value) => {
+            if (!revealed) {
+              return value === selected ? `<span class="mark radio"><i></i></span>` : "";
+            }
+            if (value === d.answerValue) return `<span class="mark">${I.check(11)}</span>`;
+            if (value === selected) return `<span class="mark bad">${I.close(12, "#fff")}</span>`;
+            return "";
+          };
+          const askPic = d && d.askImg
+            ? `<span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span>`
+            : "";
+          let askText = q.dlgQ;
+          let replyHtml = "";
+          if (d) {
+            askText = d.ask;
+            if (d.replyMode === "sentence") {
+              const reply = revealed ? d.answerText : (selected || "＿＿＿");
+              replyHtml = `<p class="ref-dialog-reply${revealed ? "" : " pending"}">${reply}</p>`;
+            } else {
+              replyHtml = `<p>${d.reply.replace("___", `<b class="blank">${revealed ? d.answerValue : "＿＿"}</b>`)}</p>`;
+            }
+          } else {
+            replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
+          }
+          let optionHtml;
+          if (!d) {
+            optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
+          } else if (d.mode === "sentence") {
+            optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
+              const state = optionState(o.value);
+              return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
+                <span class="dlg-sentence">${o.label}</span>${markOf(o.value)}
+              </button>`;
+            }).join("")}</div>`;
+          } else if (d.mode === "image") {
+            optionHtml = `<div class="ref-dialog-image-grid">${d.options.map((o) => {
+              const state = optionState(o.value);
+              const cardState = state === "correct" ? "ok" : (state === "wrong" ? "wrong" : (state === "sel" ? "sel" : ""));
+              const art = o.img
+                ? `<img class="listen-card-img" src="${o.img}" alt="" loading="eager" decoding="async" onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${artOf(o.value)()}</span>`
+                : `<span class="listen-card-emoji" style="display:grid">${artOf(o.value)()}</span>`;
+              return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${escAttr(o.value)}" aria-label="选择 ${o.value}">
+                <span class="ref-listen-card-art">${art}</span>
+                ${revealed ? `<span class="ref-listen-card-word">${o.label}</span>` : ""}
+                ${revealed && o.value === d.answerValue ? `<i class="ref-listen-mark">✓</i>` : ""}
+                ${revealed && o.value === selected && o.value !== d.answerValue ? `<i class="ref-listen-mark bad">✕</i>` : ""}
+              </button>`;
+            }).join("")}</div>`;
+          } else {
+            optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
+          }
           return {
             body: `<div class="ref-dialog-card">
                 <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span></div></div>
-                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
+                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${askText}</p>${askPic}</div></div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
               <div class="listen-row ref-dialog-listen">${listenPill()}</div>
-              <div class="options one-col ref-dialog-options">${options(q.options)}</div>`,
-            btn: choiceButton("选一个单词"),
+              ${optionHtml}`,
+            btn: choiceButton("选一个答案"),
           };
         },
       },
@@ -4568,12 +4891,11 @@ window.DINO_WORD_RULES.push({
               <div class="fd-animal ref-feed-animal" data-feed-drop>
                 <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 <div class="fd-name">${q.word.toUpperCase()}</div>
-                <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
+              <p class="ref-hint">${q.zh} 爱吃什么？拖到嘴边或点选食物</p>
               <div class="fd-foods">${foods}</div>
             </div>`;
-          const btn = revealed ? quizNextButton() : `<button type="button" class="btn" data-action="fd-check" ${quiz.selected ? "" : "disabled"}>喂给它 ${I.arrow(16)}</button>`;
-          return { body, btn };
+          return { body, btn: revealed ? quizNextButton() : "" };
         },
       },
       /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
@@ -4583,11 +4905,7 @@ window.DINO_WORD_RULES.push({
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
-          const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
-            ? `<img class="ref-action-img" src="${q.img || `images/words/action/${q.assetKey}.webp`}" alt=""
-                 onload="this.parentElement.classList.add('has-art')"
-                 onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">`
-            : "";
+          const actionSrc = q.img || `images/words/action/${q.assetKey && q.assetKey.indexOf("action-") === 0 ? q.assetKey : `action-${q.word}`}.webp`;
           return advancedLayout({
             wrap: "ref-action-wrap",
             stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
@@ -4595,7 +4913,10 @@ window.DINO_WORD_RULES.push({
                   <span class="ref-action-cloud c1"></span>
                   <span class="ref-action-cloud c2"></span>
                   <span class="ref-action-ground"></span>
-                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span>${actionArt}</span>
+                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
+                  <img class="ref-action-img" src="${actionSrc}" alt=""
+                    onload="this.parentElement.classList.add('has-art')"
+                    onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">
                   <span class="ref-action-spark s1">✦</span>
                   <span class="ref-action-spark s2">✦</span>
                 </div>`,
@@ -4775,10 +5096,10 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（109 词，仅陆地动物园）
+   动物乐园题库（106 词，仅陆地动物园）
    1. 核心动物名词 39 个：看图选词 / 听音识图 / 词汇拼图
-   2. 动作动词 30 个：动作猜猜（中央动态动物 + 纯文字选项）
-   3. 身体部位 20 个：局部特写（放大镜高亮局部）
+   2. 动作动词 28 个：动作猜猜（中央动态动物 + 纯文字选项）
+   3. 身体部位 19 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
 const ANIMAL_ZOO_WORDS = [
@@ -4836,15 +5157,14 @@ const ANIMAL_ZOO_WORDS = [
   { word: "lick",       zh: "舔",     phon: "/lɪk/",          example: "The cat licks its fur.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "sniff",  assetKey: "action-lick" },
   { word: "hunt",       zh: "捕猎",   phon: "/hʌnt/",         example: "The tiger hunts at night.",               emoji: "🏹", category: "verb", actor: "🐯", motion: "pounce" },
   { word: "bite",       zh: "咬",     phon: "/baɪt/",         example: "The crocodile can bite hard.",            emoji: "🦷", category: "verb", actor: "🐊", motion: "pounce" },
-  { word: "trot",       zh: "小跑",   phon: "/trɒt/",         example: "The horse trots across the field.",       emoji: "🐴", category: "verb", actor: "🐴", motion: "walk",   assetKey: "action-trot" },
-  { word: "purr",       zh: "呼噜",   phon: "/pɜː(r)/",       example: "The cat purrs happily.",                  emoji: "🐱", category: "verb", actor: "🐱", motion: "stand",  assetKey: "action-purr" },
-  { word: "preen",      zh: "理毛",   phon: "/priːn/",        example: "The parrot preens its feathers.",         emoji: "🦜", category: "verb", actor: "🦜", motion: "sniff",  assetKey: "action-preen" },
-  { word: "wag",        zh: "摇尾巴", phon: "/wæɡ/",          example: "The dog wags its tail.",                  emoji: "🐕", category: "verb", actor: "🐕", motion: "sniff",  assetKey: "action-wag" },
-  { word: "graze",      zh: "吃草",   phon: "/ɡreɪz/",        example: "The sheep grazes on the grass.",          emoji: "🐑", category: "verb", actor: "🐑", motion: "drink",  assetKey: "action-graze" },
+  { word: "dance",      zh: "跳舞",   phon: "/dɑːns/",        example: "The peacock dances in the sun.",          emoji: "💃", category: "verb", actor: "🦚", motion: "dance" },
+  { word: "sing",       zh: "唱歌",   phon: "/sɪŋ/",          example: "The bird sings in the tree.",             emoji: "🎵", category: "verb", actor: "🐦", motion: "dance" },
+  { word: "splash",     zh: "戏水",   phon: "/splæʃ/",        example: "The hippo splashes in the water.",        emoji: "💦", category: "verb", actor: "🦛", motion: "swim" },
+  { word: "dig",        zh: "挖洞",   phon: "/dɪɡ/",          example: "The rabbit digs a hole.",                 emoji: "🕳️", category: "verb", actor: "🐰", motion: "sniff" },
+  { word: "stretch",    zh: "伸懒腰", phon: "/stretʃ/",       example: "The dog stretches after a nap.",          emoji: "🐕", category: "verb", actor: "🐕", motion: "stand" },
   { word: "chase",      zh: "追逐",   phon: "/tʃeɪs/",        example: "The wolf chases the deer.",               emoji: "🏃", category: "verb", actor: "🐺", motion: "run" },
   { word: "catch",      zh: "抓住",   phon: "/kætʃ/",         example: "The fox catches a rabbit.",               emoji: "🎯", category: "verb", actor: "🦊", motion: "pounce" },
   { word: "walk",       zh: "走",     phon: "/wɔːk/",         example: "The turtle walks slowly.",                emoji: "🚶", category: "verb", actor: "🐢", motion: "walk" },
-  { word: "snort",      zh: "喷鼻息", phon: "/snɔːt/",        example: "The horse snorts loudly.",                emoji: "🐴", category: "verb", actor: "🐴", motion: "roar",   assetKey: "action-snort" },
   { word: "drink",      zh: "喝",     phon: "/drɪŋk/",        example: "The hippo drinks water.",                 emoji: "🥤", category: "verb", actor: "🦛", motion: "drink",   assetKey: "action-drink" },
   { word: "play",       zh: "玩",     phon: "/pleɪ/",         example: "The monkey likes to play.",               emoji: "🎾", category: "verb", actor: "🐒", motion: "dance",   assetKey: "action-play" },
   { word: "sit",        zh: "坐",     phon: "/sɪt/",          example: "The panda sits on the grass.",            emoji: "🪑", category: "verb", actor: "🐼", motion: "sit",     assetKey: "action-sit" },
@@ -4853,24 +5173,22 @@ const ANIMAL_ZOO_WORDS = [
   { word: "hide",       zh: "躲藏",   phon: "/haɪd/",         example: "The fox hides in the bushes.",            emoji: "🙈", category: "verb", actor: "🦊", motion: "hide",    assetKey: "action-hide" },
   { word: "nap",        zh: "打盹",   phon: "/næp/",          example: "The cat takes a nap in the sun.",         emoji: "😸", category: "verb", actor: "🐱", motion: "sit",     assetKey: "action-nap" },
   { word: "sniff",      zh: "闻",     phon: "/snɪf/",         example: "The wolf sniffs the ground.",             emoji: "👃", category: "verb", actor: "🐺", motion: "sniff",   assetKey: "action-sniff" },
-  { word: "bleat",      zh: "咩咩叫", phon: "/bliːt/",        example: "The sheep bleats on the grassland.",      emoji: "🐑", category: "verb", actor: "🐑", motion: "roar",    assetKey: "action-bleat" },
 
-  /* ---------------- 3. 身体部位 20 个 ---------------- */
+  /* ---------------- 3. 身体部位 19 个 ---------------- */
+  { word: "head",       zh: "头",     phon: "/hed/",          example: "The lion has a big head.",                emoji: "🦁", category: "part", owner: "🦁", focus: { x: "0%", y: "-14%", scale: 2.2 } },
+  { word: "eye",        zh: "眼睛",   phon: "/aɪ/",           example: "The owl has big eyes.",                   emoji: "👁️", category: "part", owner: "🦉", focus: { x: "0%", y: "-8%", scale: 2.6 } },
+  { word: "nose",       zh: "鼻子",   phon: "/nəʊz/",         example: "The dog has a good nose.",                emoji: "👃", category: "part", owner: "🐶", focus: { x: "0%", y: "2%", scale: 2.8 } },
+  { word: "mouth",      zh: "嘴巴",   phon: "/maʊθ/",         example: "The hippo has a big mouth.",              emoji: "👄", category: "part", owner: "🦛", focus: { x: "0%", y: "10%", scale: 2.6 } },
   { word: "tail",       zh: "尾巴",   phon: "/teɪl/",         example: "The monkey has a long tail.",             emoji: "🐒", category: "part", owner: "🐒", focus: { x: "20%", y: "10%", scale: 2.6 } },
   { word: "ear",        zh: "耳朵",   phon: "/ɪə(r)/",        example: "The rabbit has long ears.",               emoji: "👂", category: "part", owner: "🐰", focus: { x: "0%", y: "14%", scale: 2.8 } },
   { word: "trunk",      zh: "象鼻",   phon: "/trʌŋk/",        example: "The elephant uses its trunk.",            emoji: "🐘", category: "part", owner: "🐘", focus: { x: "8%", y: "-4%", scale: 2.2 } },
-  { word: "mane",       zh: "鬃毛",   phon: "/meɪn/",         example: "The lion has a big mane.",                emoji: "👑", category: "part", owner: "🦁", focus: { x: "-2%", y: "-16%", scale: 2.4 } },
   { word: "wing",       zh: "翅膀",   phon: "/wɪŋ/",          example: "The duck has two wings.",                 emoji: "🦆", category: "part", owner: "🦆", focus: { x: "-14%", y: "2%", scale: 2.4 } },
   { word: "paw",        zh: "脚掌",   phon: "/pɔː/",          example: "The bear has a big paw.",                 emoji: "🐾", category: "part", owner: "🐻", focus: { x: "6%", y: "22%", scale: 2.8 } },
-  { word: "stripe",     zh: "条纹",   phon: "/straɪp/",       example: "The zebra has black and white stripes.",  emoji: "🦓", category: "part", owner: "🦓", focus: { x: "0%", y: "0%", scale: 2.2 } },
   { word: "fur",        zh: "皮毛",   phon: "/fɜː(r)/",       example: "The panda has soft fur.",                 emoji: "🐼", category: "part", owner: "🐼", focus: { x: "0%", y: "0%", scale: 2.4 } },
   { word: "horn",       zh: "角",     phon: "/hɔːn/",         example: "The rhino has a sharp horn.",             emoji: "🦏", category: "part", owner: "🦏", focus: { x: "10%", y: "-16%", scale: 2.6 } },
-  { word: "tusk",       zh: "象牙",   phon: "/tʌsk/",         example: "The elephant has two long tusks.",        emoji: "🦷", category: "part", owner: "🐘", focus: { x: "-8%", y: "8%", scale: 2.8 } },
   { word: "claw",       zh: "利爪",   phon: "/klɔː/",         example: "The tiger has sharp claws.",              emoji: "🐾", category: "part", owner: "🐯", focus: { x: "-4%", y: "22%", scale: 2.8 } },
   { word: "feather",    zh: "羽毛",   phon: "/ˈfeðə(r)/",     example: "The peacock has colorful feathers.",      emoji: "🪶", category: "part", owner: "🦚", focus: { x: "0%", y: "-6%", scale: 2.2 } },
-  { word: "whisker",    zh: "胡须",   phon: "/ˈwɪskə(r)/",    example: "The cat has long whiskers.",              emoji: "🐱", category: "part", owner: "🐱", focus: { x: "0%", y: "6%", scale: 2.8 } },
   { word: "beak",       zh: "喙",     phon: "/biːk/",         example: "The parrot has a strong beak.",           emoji: "🦜", category: "part", owner: "🦜", focus: { x: "0%", y: "8%", scale: 2.4 } },
-  { word: "hoof",       zh: "蹄",     phon: "/huːf/",         example: "The horse has strong hooves.",            emoji: "🐴", category: "part", owner: "🐴", focus: { x: "0%", y: "22%", scale: 2.8 } },
   { word: "neck",       zh: "脖子",   phon: "/nek/",          example: "The giraffe has a long neck.",            emoji: "🦒", category: "part", owner: "🦒", focus: { x: "6%", y: "-20%", scale: 2.2 } },
   { word: "tooth",      zh: "牙齿",   phon: "/tuːθ/",         example: "The crocodile has sharp teeth.",          emoji: "🦷", category: "part", owner: "🐊", focus: { x: "0%", y: "18%", scale: 2.6 } },
   { word: "tongue",     zh: "舌头",   phon: "/tʌŋ/",          example: "The snake shows its tongue.",             emoji: "👅", category: "part", owner: "🐍", focus: { x: "0%", y: "8%", scale: 2.8 } },
@@ -4897,15 +5215,13 @@ const ANIMAL_ZOO_WORDS = [
   { word: "thin",       zh: "瘦的",   phon: "/θɪn/",           example: "The monkey is thin.",                     emoji: "🐒", category: "adj",
     compare: { pair: "fat", mode: "size", target: "b", a: { emoji: "🐷", scale: 1.2 }, b: { emoji: "🐒", scale: 0.9 } } },
   { word: "strong",     zh: "强壮的", phon: "/strɒŋ/",         example: "The gorilla is strong.",                  emoji: "🦍", category: "adj",
-    compare: { pair: "light", mode: "size", target: "a", a: { emoji: "🦍", scale: 1.2 }, b: { emoji: "🐭", scale: 0.7 } } },
+    compare: { pair: "small", mode: "size", target: "a", a: { emoji: "🦍", scale: 1.2 }, b: { emoji: "🐭", scale: 0.7 } } },
   { word: "quiet",      zh: "安静的", phon: "/ˈkwaɪət/",       example: "The rabbit is quiet.",                    emoji: "🐰", category: "adj",
     compare: { pair: "noisy", mode: "sound", target: "a", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
   { word: "noisy",      zh: "吵闹的", phon: "/ˈnɔɪzi/",        example: "The lion is noisy.",                      emoji: "🦁", category: "adj",
     compare: { pair: "quiet", mode: "sound", target: "b", a: { emoji: "🐰", scale: 1, badge: "🤫" }, b: { emoji: "🦁", scale: 1, badge: "🔊" } } },
-  { word: "cute",       zh: "可爱的", phon: "/kjuːt/",         example: "The rabbit is very cute.",                emoji: "🐰", category: "adj",
-    compare: { pair: "clean", mode: "look", target: "a", a: { emoji: "🐰", scale: 1 }, b: { emoji: "🐷", scale: 0.95 } } },
-  { word: "clean",      zh: "干净的", phon: "/kliːn/",         example: "The cat is very clean.",                  emoji: "🐱", category: "adj",
-    compare: { pair: "cute", mode: "look", target: "a", a: { emoji: "🐱", scale: 1, badge: "✨" }, b: { emoji: "🐷", scale: 0.95, badge: "💧" } } },
+  { word: "cute",       zh: "可爱的", phon: "/kjuːt/",         example: "The rabbit is very cute.",                emoji: "🐰", category: "adj" },
+  { word: "clean",      zh: "干净的", phon: "/kliːn/",         example: "The cat is very clean.",                  emoji: "🐱", category: "adj" },
   { word: "heavy",      zh: "重的",   phon: "/ˈhevi/",         example: "The elephant is heavy.",                  emoji: "🐘", category: "adj",
     compare: { pair: "light", mode: "weight", target: "a", a: { emoji: "🐘", scale: 1.15 }, b: { emoji: "🪶", scale: 0.9 } } },
   { word: "light",      zh: "轻的",   phon: "/laɪt/",          example: "The feather is light.",                   emoji: "🪶", category: "adj",
@@ -4932,7 +5248,6 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   fat: "pig-monkey",         thin: "pig-monkey",
   strong: "gorilla-mouse",
   quiet: "rabbit-lion",      noisy: "rabbit-lion",
-  cute: "cat-pig",           clean: "cat-pig",
   heavy: "elephant-feather", light: "elephant-feather",
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
@@ -4940,42 +5255,48 @@ const ANIMAL_ADJ_ASSET_KEYS = {
 /* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
-   - 食物图放在 images/words/food/，动作图放在 images/words/action/
+   - 食物图统一命名为 food-xx.webp 放在 images/words/food/，动作图放在 images/words/action/
    ============================================================ */
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/worm.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     emoji: "🥩", img: "images/words/food/food-meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   emoji: "🍌", img: "images/words/food/food-banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", emoji: "🥕", img: "images/words/food/food-carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   emoji: "🌿", img: "images/words/food/food-grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     emoji: "🐟", img: "images/words/food/food-fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   emoji: "🌰", img: "images/words/food/food-nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   emoji: "🦴", img: "images/words/food/food-bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   emoji: "🍎", img: "images/words/food/food-apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   emoji: "🪱", img: "images/words/food/food-worm.webp" },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   emoji: "🍃", img: "images/words/food/food-leaves.webp" },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   emoji: "🌽", img: "images/words/food/food-corn.webp" },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   emoji: "🥛", img: "images/words/food/food-milk.webp" },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   emoji: "🍯", img: "images/words/food/food-honey.webp" },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
 };
 
 /* 39 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
-  zebra: "grass", giraffe: "grass", cow: "grass", sheep: "grass", goat: "grass",
-  deer: "grass", kangaroo: "grass", hippo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
-  chicken: "worm", bird: "worm", peacock: "worm", crow: "worm",
+  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  giraffe: "leaves", elephant: "leaves", hippo: "watermelon",
+  chicken: "corn", bird: "worm", peacock: "worm", crow: "worm",
   monkey: "banana", gorilla: "banana", baboon: "banana",
   rabbit: "carrot", horse: "carrot", donkey: "carrot",
-  bear: "fish", cat: "fish", duck: "fish",
+  bear: "honey", cat: "milk", duck: "fish",
   squirrel: "nut", parrot: "nut",
-  elephant: "apple", pig: "apple",
+  pig: "apple",
   panda: "bamboo",
   dog: "bone",
 };
 
-/* 20 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
+/* 19 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
 const PART_OWNER_WORD_MAP = {
-  tail: "monkey", ear: "rabbit", trunk: "elephant", mane: "lion", wing: "duck",
-  paw: "bear", stripe: "zebra", fur: "panda", horn: "rhino", tusk: "elephant",
-  claw: "tiger", feather: "peacock", whisker: "cat", beak: "parrot", hoof: "horse",
+  head: "lion", eye: "owl", nose: "dog", mouth: "hippo",
+  tail: "monkey", ear: "rabbit", trunk: "elephant", wing: "duck",
+  paw: "bear", fur: "panda", horn: "rhino",
+  claw: "tiger", feather: "peacock", beak: "parrot",
   neck: "giraffe", tooth: "crocodile", tongue: "snake", leg: "zebra", belly: "cat",
 };
 
@@ -6335,8 +6656,6 @@ document.addEventListener("click", (e) => {
   /* 🍎 动物喂食 Feed Animal */
   } else if (action === "fd-pick") {
     feedPick(el.dataset.food);
-  } else if (action === "fd-check") {
-    feedCheck();
 
   } else if (action === "settings") {
     openSettings();
@@ -7040,6 +7359,7 @@ function startQuiz(level) {
     revealed: false,
     choiceCorrect: null,
     matched: [],
+    wrongPairs: [],
     pickWord: null,
     pickWordSide: null,
     matchWrong: 0,
@@ -7116,11 +7436,16 @@ function screenQuiz() {
   const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare"].includes(q.type);
   const isMatch = q.type === "match";
   const isFeed = q.type === "feed_animal";
+  const isDialog = q.type === "dialog";
+  /* 情景对话整句选项展示正确句子，其余对话题展示目标单词 */
+  const dialogSentence = isDialog && q.dialog && q.dialog.mode === "sentence";
   /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
-  const answerWord = isMatch ? null
-    : (isFeed ? q.correctFood
-      : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null));
-  const answerZh = isFeed ? q.correctZh : q.zh;
+  const answerWord = dialogSentence ? q.answerText
+    : isMatch ? null
+      : (isFeed ? q.correctFood
+        : (isDialog && q.dialog ? q.dialog.answerValue
+          : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
+  const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
   const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
@@ -7128,7 +7453,7 @@ function screenQuiz() {
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
   const answerBox = answerWord
-    ? `<div class="zoo-answer-box">
+    ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
         <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
@@ -7258,11 +7583,12 @@ function puzzlePlace(letterId, slotId = null) {
   sfx("tap");
   render();
 }
-function feedPick(food, shouldRender = true) {
+function feedPick(food) {
   if (!quiz || quiz.revealed) return;
   quiz.selected = food;
   sfx("tap");
-  if (shouldRender) render();
+  /* 点选食物后立即判题，不再需要底部确认按钮 */
+  feedCheck();
 }
 function feedCheck() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
@@ -7282,7 +7608,9 @@ function feedCheck() {
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
-  const ok = quiz.selected === q.word;
+  /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
+  const correctValue = q.answerValue != null ? q.answerValue : q.word;
+  const ok = quiz.selected === correctValue;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
   if (ok) {
@@ -7309,6 +7637,7 @@ function nextQuestion() {
   quiz.revealed = false;
   quiz.choiceCorrect = null;
   quiz.matched = [];
+  quiz.wrongPairs = [];
   quiz.pickWord = null;
   quiz.pickWordSide = null;
   quiz.matchWrong = 0;
@@ -7376,6 +7705,13 @@ window.QuizView = {
     svg.innerHTML = "";
     const dots = [...area.querySelectorAll("[data-match-dot]")];
     const findDot = (side, word) => dots.find((d) => d.dataset.matchSide === side && d.dataset.word === word);
+    /* 错误配对先画红线，再叠加正确的绿线 */
+    (quiz.wrongPairs || []).forEach(({ art, word }) => {
+      const left = findDot("art", art);
+      const right = findDot("word", word);
+      if (!left || !right) return;
+      svg.appendChild(this.makeCurvedPath(this.point(area, left, rect), this.point(area, right, rect), "ref-match-path wrong"));
+    });
     (quiz.matched || []).forEach((word) => {
       const left = findDot("art", word);
       const right = findDot("word", word);
@@ -7389,11 +7725,6 @@ window.QuizView = {
     const midX = (p1.x + p2.x) / 2;
     const d = `M ${p1.x} ${p1.y} C ${midX} ${p1.y}, ${midX} ${p2.y}, ${p2.x} ${p2.y}`;
     path.setAttribute("d", d);
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", "#8A76A8");
-    path.setAttribute("stroke-width", "0.375rem");
-    path.setAttribute("stroke-dasharray", "0.625rem 0.5rem");
-    path.setAttribute("stroke-linecap", "round");
     path.setAttribute("class", cls);
     return path;
   },
@@ -7410,6 +7741,27 @@ window.QuizView = {
     area.querySelectorAll("[data-match-dot]").forEach((dot) => {
       dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
     });
+    /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
+    area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
+      row.addEventListener("click", (e) => {
+        if (e.target.closest("[data-match-dot]")) return;
+        if (!quiz || quiz.revealed) return;
+        const card = row.querySelector(".ref-match-word-card");
+        speak(row.dataset.word);
+        if (card) {
+          card.classList.remove("is-shaking");
+          void card.offsetWidth;
+          card.classList.add("is-shaking");
+        }
+      }, options);
+    });
+  },
+
+  /* 该图/单词是否已连过（正确或错误都算锁定） */
+  isUsed(word, side) {
+    if (!quiz) return true;
+    if ((quiz.matched || []).includes(word)) return true;
+    return (quiz.wrongPairs || []).some((p) => p[side] === word);
   },
 
   /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */
@@ -7418,7 +7770,7 @@ window.QuizView = {
     const word = dot.dataset.word;
     const side = dot.dataset.matchSide;
     const area = dot.closest("[data-match-area]");
-    if (!area || quiz.matched.includes(word)) return;
+    if (!area || this.isUsed(word, side)) return;
     e.preventDefault();
     e.stopPropagation();
 
@@ -7480,6 +7832,7 @@ window.QuizView = {
     if (!quiz || quiz.revealed) return;
     const word = dot.dataset.word;
     const side = dot.dataset.matchSide;
+    if (this.isUsed(word, side)) return;
 
     /* 如果 quiz.pickWord 已有值，表示另一侧已选中 */
     if (quiz.pickWord && quiz.pickWordSide && quiz.pickWordSide !== side) {
@@ -7509,6 +7862,7 @@ window.QuizView = {
     const a = { word: dotA.dataset.word, side: dotA.dataset.matchSide };
     const b = { word: dotB.dataset.word, side: dotB.dataset.matchSide };
     if (a.side === b.side) return;
+    if (this.isUsed(a.word, a.side) || this.isUsed(b.word, b.side)) return;
 
     quiz.pickWordSide = a.side;
     quiz.pickWord = a.word;
@@ -7575,10 +7929,7 @@ window.QuizView = {
         if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
       } else {
         const target = hit && hit.closest("[data-feed-drop]");
-        if (target) {
-          feedPick(drag.value, false);
-          feedCheck();
-        }
+        if (target) feedPick(drag.value);
       }
     };
     const up = (ev) => finish(ev, false);

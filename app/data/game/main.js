@@ -31,6 +31,7 @@ function startQuiz(level) {
     revealed: false,
     choiceCorrect: null,
     matched: [],
+    wrongPairs: [],
     pickWord: null,
     pickWordSide: null,
     matchWrong: 0,
@@ -107,11 +108,16 @@ function screenQuiz() {
   const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare"].includes(q.type);
   const isMatch = q.type === "match";
   const isFeed = q.type === "feed_animal";
+  const isDialog = q.type === "dialog";
+  /* 情景对话整句选项展示正确句子，其余对话题展示目标单词 */
+  const dialogSentence = isDialog && q.dialog && q.dialog.mode === "sentence";
   /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
-  const answerWord = isMatch ? null
-    : (isFeed ? q.correctFood
-      : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null));
-  const answerZh = isFeed ? q.correctZh : q.zh;
+  const answerWord = dialogSentence ? q.answerText
+    : isMatch ? null
+      : (isFeed ? q.correctFood
+        : (isDialog && q.dialog ? q.dialog.answerValue
+          : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
+  const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
   const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
@@ -119,7 +125,7 @@ function screenQuiz() {
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
   const answerBox = answerWord
-    ? `<div class="zoo-answer-box">
+    ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
         <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
@@ -249,11 +255,12 @@ function puzzlePlace(letterId, slotId = null) {
   sfx("tap");
   render();
 }
-function feedPick(food, shouldRender = true) {
+function feedPick(food) {
   if (!quiz || quiz.revealed) return;
   quiz.selected = food;
   sfx("tap");
-  if (shouldRender) render();
+  /* 点选食物后立即判题，不再需要底部确认按钮 */
+  feedCheck();
 }
 function feedCheck() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
@@ -273,7 +280,9 @@ function feedCheck() {
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
-  const ok = quiz.selected === q.word;
+  /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
+  const correctValue = q.answerValue != null ? q.answerValue : q.word;
+  const ok = quiz.selected === correctValue;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
   if (ok) {
@@ -300,6 +309,7 @@ function nextQuestion() {
   quiz.revealed = false;
   quiz.choiceCorrect = null;
   quiz.matched = [];
+  quiz.wrongPairs = [];
   quiz.pickWord = null;
   quiz.pickWordSide = null;
   quiz.matchWrong = 0;

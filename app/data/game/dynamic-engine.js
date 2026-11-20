@@ -37,9 +37,9 @@
     { role: "partOrAdj", count: 1 },
   ];
   const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
-  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "compare" };
-  /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
-  const BOSS_TYPES = ["word_puzzle", "action", "compare", "match", "feed_animal", "dialog"];
+  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "action" };
+  /* BOSS 关允许的题型：补题时也不会回落到简单题型（对比观察暂时关闭） */
+  const BOSS_TYPES = ["word_puzzle", "action", "match", "feed_animal", "dialog"];
 
 
   /* 题型规则
@@ -70,9 +70,9 @@
     return ["pic", "listen", "word_puzzle", "feed_animal", "match"];
   }
 
-  /* 部位特写题型暂时关闭，形容词对比题常驻 */
+  /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
   function pickPartOrAdjType() {
-    return "compare";
+    return "feed_animal";
   }
 
   function wordId(sceneId, word) {
@@ -178,8 +178,8 @@
   }
 
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
-  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action", "compare"];
-  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action", "compare"];
+  const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
+  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
@@ -329,6 +329,7 @@
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
                   ${listenPill()}
                 </div>
+                <p class="ref-hint">猜猜这是什么动物</p>
                 <div class="options ref-pic-options">${options(q.options)}</div>
               </div>`,
             btn: choiceButton("选一个答案"),
@@ -376,42 +377,67 @@
         build(task, pool) {
           /* 只连同类词，避免连线题里混进动词/形容词 */
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
-          const trio = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
-          task.pairs = trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" }));
-          task.words = shuffle(trio.map((x) => x.word));
-          task.arts = shuffle(trio.map((x) => ({ word: x.word, art: x.art, img: x.img || "" })));
+          const picked = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
+
+          /* 英文单词既可以是动物名词，也可以是动物爱吃的水果/食物：
+             保证至少 1 只动物，最多混入 2 个食物（食物取自动物自身的 food 数据） */
+          const foods = [];
+          const seen = new Set();
+          picked.forEach((a) => {
+            const f = a.food;
+            if (!f || !f.en || seen.has(f.en) || picked.some((x) => x.word === f.en)) return;
+            seen.add(f.en);
+            foods.push({ word: f.en, art: () => f.emoji, img: f.img || "" });
+          });
+          const foodCount = Math.min(foods.length, picked.length - 1, Math.random() < 0.35 ? 2 : 1);
+          const pairs = picked.slice(0, picked.length - foodCount)
+            .map((x) => ({ word: x.word, art: x.art, img: x.img || "" }))
+            .concat(shuffle(foods).slice(0, foodCount));
+
+          task.pairs = pairs;
+          task.words = shuffle(pairs.map((p) => p.word));
+          task.arts = shuffle(pairs.map((p) => ({ word: p.word, art: p.art, img: p.img || "" })));
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
+          const wrongPairs = quiz.wrongPairs || [];
+          const wrongArts = new Set(wrongPairs.map((p) => p.art));
+          const wrongWords = new Set(wrongPairs.map((p) => p.word));
           const selected = quiz.pickWord;
           const leftCol = q.arts.map((p) => {
             const isDone = solved.has(p.word);
-            const isSel = selected === p.word && !isDone;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
+            const isWrong = wrongArts.has(p.word);
+            const isSel = selected === p.word && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
               <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
             </div>`;
           }).join("");
           const rightCol = q.words.map((w) => {
             const isDone = solved.has(w);
-            const isSel = selected === w && !isDone;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : ""}</button>
+            const isWrong = wrongWords.has(w);
+            const isSel = selected === w && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
+              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
             </div>`;
           }).join("");
           return {
-            body: `<div class="ref-match-area" data-match-area>
-                <svg class="ref-match-svg" aria-hidden="true"></svg>
-                <div class="ref-match-col ref-match-col-left">${leftCol}</div>
-                <div class="ref-match-col ref-match-col-right">${rightCol}</div>
-              </div>
-              <div class="listen-row">${listenPill()}</div>`,
-            btn: quiz.revealed ? quizNextButton() : `<button class="btn" disabled>连对 3 组即可过关 ${I.arrow(18)}</button>`,
+            body: `<div class="ref-match-wrap">
+                <div class="ref-match-area" data-match-area>
+                  <svg class="ref-match-svg" aria-hidden="true"></svg>
+                  <div class="ref-match-col ref-match-col-left">${leftCol}</div>
+                  <div class="ref-match-col ref-match-col-right">${rightCol}</div>
+                </div>
+              </div>`,
+            btn: quiz.revealed ? quizNextButton() : "",
           };
         },
         onPickWord(word) {
           if (!quiz || quiz.revealed) return;
+          /* 已连过的单词不可再选 */
+          if (quiz.matched.includes(word)) return;
+          if ((quiz.wrongPairs || []).some((p) => p.word === word)) return;
           quiz.pickWord = word;
           quiz.pickWordSide = "word";
           sfx("tap");
@@ -420,63 +446,143 @@
         onPickArt(word) {
           if (!quiz || quiz.revealed || !quiz.pickWord) return;
           const q = quiz.order[quiz.index];
+          const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
+          /* 一张图/一个单词只能连一次，连过即锁定 */
+          if (quiz.matched.includes(word) || wrongPairs.some((p) => p.art === word)) {
+            quiz.pickWord = null;
+            quiz.pickWordSide = null;
+            render();
+            return;
+          }
+          const pickedWord = quiz.pickWord;
+          if (quiz.matched.includes(pickedWord) || wrongPairs.some((p) => p.word === pickedWord)) {
+            quiz.pickWord = null;
+            quiz.pickWordSide = null;
+            render();
+            return;
+          }
           /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
           const _sceneId = (state && state.scene) || "";
           const _makeWid = (w) => window.WrongBank ? WrongBank.makeId(_sceneId, w) : null;
-          if (word === quiz.pickWord) {
+          if (word === pickedWord) {
             quiz.matched.push(word);
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
             sfx("correct");
             /* 🦁 动物园：配对成功 → 尝试清除错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(word)) WrongBank.recordCorrect(_makeWid(word));
-            if (quiz.matched.length >= q.pairs.length) {
-              quiz.revealed = true;
-              quiz.choiceCorrect = quiz.matchWrong === 0;
-              if (quiz.choiceCorrect) {
-                quiz.correct++;
-                q.pairs.forEach((p) => quiz.words.push(p.word));
-                sfx("excellent");
-              }
-              render();
-              return;
-            }
           } else {
             quiz.matchWrong++;
-            const wrongPair = quiz.pickWord; /* 被选错的那个单词 */
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
-            quiz.hearts = Math.max(0, quiz.hearts - 1);
+            /* 错误连线保留红线，不会被后续配对覆盖或清除 */
+            wrongPairs.push({ art: word, word: pickedWord });
             sfx("wrong");
             /* 🦁 动物园：配对失败 → 自动收录错题库 */
-            if (window.isZooScene && isZooScene() && _makeWid(wrongPair)) WrongBank.recordWrong(_makeWid(wrongPair));
-            if (quiz.hearts <= 0) {
-              quiz.revealed = true;
-              quiz.choiceCorrect = false;
-              render();
-              return;
+            if (window.isZooScene && isZooScene() && _makeWid(pickedWord)) WrongBank.recordWrong(_makeWid(pickedWord));
+          }
+          quiz.pickWord = null;
+          quiz.pickWordSide = null;
+
+          /* 三组全部连完后统一判题 */
+          if (quiz.matched.length + wrongPairs.length >= q.pairs.length) {
+            quiz.revealed = true;
+            quiz.choiceCorrect = wrongPairs.length === 0;
+            if (quiz.choiceCorrect) {
+              quiz.correct++;
+              q.pairs.forEach((p) => quiz.words.push(p.word));
+              sfx("excellent");
             }
-            toast("答错了，继续努力");
+            render();
+            return;
           }
           render();
         },
       },
       dialog: {
         label: "情景对话",
-        title: "读对话，选出正确的单词",
-        build: threeChoiceBuild,
-        render({ q, quiz, choiceButton, options }) {
+        title: "读对话，选出正确的答案",
+        build(task, pool) {
+          /* 模板库：自动组合缺词、整句、图片三类情景问答 */
+          const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
+          if (dlg) {
+            task.dialog = dlg;
+            task.answerValue = dlg.answerValue;
+            task.answerText = dlg.answerText;
+            if (dlg.mode === "word") task.options = dlg.options.map((o) => o.value);
+            return;
+          }
+          /* 兜底：沿用旧版单句问答 */
+          threeChoiceBuild(task, pool);
+        },
+        render({ q, quiz, choiceButton, options, artOf }) {
           const revealed = quiz.revealed;
+          const selected = quiz.selected;
+          const d = q.dialog;
+          const escAttr = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+          /* 答后勾叉 */
+          const optionState = (value) => {
+            const ok = value === d.answerValue;
+            if (revealed) return ok ? "correct" : (value === selected ? "wrong" : "dim");
+            return value === selected ? "sel" : "";
+          };
+          const markOf = (value) => {
+            if (!revealed) {
+              return value === selected ? `<span class="mark radio"><i></i></span>` : "";
+            }
+            if (value === d.answerValue) return `<span class="mark">${I.check(11)}</span>`;
+            if (value === selected) return `<span class="mark bad">${I.close(12, "#fff")}</span>`;
+            return "";
+          };
+          const askPic = d && d.askImg
+            ? `<span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span>`
+            : "";
+          let askText = q.dlgQ;
+          let replyHtml = "";
+          if (d) {
+            askText = d.ask;
+            if (d.replyMode === "sentence") {
+              const reply = revealed ? d.answerText : (selected || "＿＿＿");
+              replyHtml = `<p class="ref-dialog-reply${revealed ? "" : " pending"}">${reply}</p>`;
+            } else {
+              replyHtml = `<p>${d.reply.replace("___", `<b class="blank">${revealed ? d.answerValue : "＿＿"}</b>`)}</p>`;
+            }
+          } else {
+            replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
+          }
+          let optionHtml;
+          if (!d) {
+            optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
+          } else if (d.mode === "sentence") {
+            optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
+              const state = optionState(o.value);
+              return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
+                <span class="dlg-sentence">${o.label}</span>${markOf(o.value)}
+              </button>`;
+            }).join("")}</div>`;
+          } else if (d.mode === "image") {
+            optionHtml = `<div class="ref-dialog-image-grid">${d.options.map((o) => {
+              const state = optionState(o.value);
+              const cardState = state === "correct" ? "ok" : (state === "wrong" ? "wrong" : (state === "sel" ? "sel" : ""));
+              const art = o.img
+                ? `<img class="listen-card-img" src="${o.img}" alt="" loading="eager" decoding="async" onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${artOf(o.value)()}</span>`
+                : `<span class="listen-card-emoji" style="display:grid">${artOf(o.value)()}</span>`;
+              return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${escAttr(o.value)}" aria-label="选择 ${o.value}">
+                <span class="ref-listen-card-art">${art}</span>
+                ${revealed ? `<span class="ref-listen-card-word">${o.label}</span>` : ""}
+                ${revealed && o.value === d.answerValue ? `<i class="ref-listen-mark">✓</i>` : ""}
+                ${revealed && o.value === selected && o.value !== d.answerValue ? `<i class="ref-listen-mark bad">✕</i>` : ""}
+              </button>`;
+            }).join("")}</div>`;
+          } else {
+            optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
+          }
           return {
             body: `<div class="ref-dialog-card">
                 <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${q.dlgQ}</p><span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span></div></div>
-                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span><p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p></div>
+                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${askText}</p>${askPic}</div></div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
               <div class="listen-row ref-dialog-listen">${listenPill()}</div>
-              <div class="options one-col ref-dialog-options">${options(q.options)}</div>`,
-            btn: choiceButton("选一个单词"),
+              ${optionHtml}`,
+            btn: choiceButton("选一个答案"),
           };
         },
       },
@@ -635,12 +741,11 @@
               <div class="fd-animal ref-feed-animal" data-feed-drop>
                 <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 <div class="fd-name">${q.word.toUpperCase()}</div>
-                <small>${q.zh} 爱吃什么？拖到嘴边或点选食物</small>
               </div>
+              <p class="ref-hint">${q.zh} 爱吃什么？拖到嘴边或点选食物</p>
               <div class="fd-foods">${foods}</div>
             </div>`;
-          const btn = revealed ? quizNextButton() : `<button type="button" class="btn" data-action="fd-check" ${quiz.selected ? "" : "disabled"}>喂给它 ${I.arrow(16)}</button>`;
-          return { body, btn };
+          return { body, btn: revealed ? quizNextButton() : "" };
         },
       },
       /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
@@ -650,11 +755,7 @@
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
-          const actionArt = q.assetKey && q.assetKey.indexOf("action-") === 0
-            ? `<img class="ref-action-img" src="${q.img || `images/words/action/${q.assetKey}.webp`}" alt=""
-                 onload="this.parentElement.classList.add('has-art')"
-                 onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">`
-            : "";
+          const actionSrc = q.img || `images/words/action/${q.assetKey && q.assetKey.indexOf("action-") === 0 ? q.assetKey : `action-${q.word}`}.webp`;
           return advancedLayout({
             wrap: "ref-action-wrap",
             stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
@@ -662,7 +763,10 @@
                   <span class="ref-action-cloud c1"></span>
                   <span class="ref-action-cloud c2"></span>
                   <span class="ref-action-ground"></span>
-                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span>${actionArt}</span>
+                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
+                  <img class="ref-action-img" src="${actionSrc}" alt=""
+                    onload="this.parentElement.classList.add('has-art')"
+                    onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">
                   <span class="ref-action-spark s1">✦</span>
                   <span class="ref-action-spark s2">✦</span>
                 </div>`,
