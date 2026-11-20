@@ -645,17 +645,21 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:0.3125rem;height:1.375rem;padding:0 0.5rem;border-radius:0.4375rem;
   background:#E8F5D8;color:var(--green-d);font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.0625rem}
 .quiz-prompt h2{font-size:clamp(1.1875rem,3.2vw,1.4375rem);font-weight:var(--w-black);letter-spacing:-0.025rem}
-.listen{height:2.125rem;padding:0 0.75rem;border-radius:6.1875rem;background:#fff;
-  display:inline-flex;align-items:center;gap:0.3125rem;font-size:0.71875rem;font-weight:var(--w-bold);color:#9B7620;
-  box-shadow:0 0.3125rem 0.75rem rgba(155,118,32,.16)}
+.listen{width:2.125rem;height:2.125rem;padding:0;border-radius:50%;background:#fff;
+  display:inline-flex;align-items:center;justify-content:center;color:#9B7620;border:0.09375rem solid #fff;
+  box-shadow:0 0.3125rem 0.75rem rgba(155,118,32,.16);cursor:pointer}
+.listen svg{display:block}
 .listen-row{display:flex;justify-content:flex-end;margin-top:0.5rem;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex:none;margin-top:0.875rem}
-.option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;gap:0.5625rem;
-  padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}
+.option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;justify-content:center;gap:0.5625rem;
+  padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:center;transition:all .15s ease}
 .option .key{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:#F3EFE4;display:grid;place-items:center;
   font-size:0.75rem;font-weight:var(--w-black);color:#A6987B;flex:none;transition:all .15s ease}
-.option .word{font-size:1.125rem;font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2}
-.option .mark{margin-left:auto;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2;min-width:0;white-space:nowrap}
+/* 答后勾叉：绝对定位到边框右上角，不参与文本排版 → 文本位置零位移 */
+.option .mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;border-radius:50%;background:#4FA55E;color:#fff;
+  display:grid;place-items:center;z-index:2;box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2)}
+.option .mark.bad{background:#E8604A}
 .option .mark.radio{background:#fff;border:0.125rem solid #3AA56B}
 .option .mark.radio i{display:block;width:0.625rem;height:0.625rem;border-radius:50%;background:#3AA56B}
 .option.sel{border-color:#3AA56B;background:#F4FBEC;box-shadow:0 0.25rem 0 #D7EBC4,0 0.5rem 1rem rgba(58,165,107,.12)}
@@ -704,9 +708,6 @@ h1,h2,h3,h4,p{margin:0}
 .zoo-answer-word{flex:none;font-size:1.0625rem;font-weight:var(--w-black);color:#4B3626}
 .zoo-answer-phon{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#957047}
 .zoo-meaning-text{flex:none;font-size:0.8125rem;font-weight:var(--w-bold);color:#8A6431}
-.zoo-audio-btn{flex:none;width:1.85rem;height:1.85rem;padding:0;border:0;background:none;
-  display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.zoo-audio-btn svg{width:100%;height:100%;display:block}
 .zoo-action-btn{position:relative;flex:none;display:inline-flex;align-items:center;gap:0.25rem;
   min-height:2.25rem;padding:0 0.8125rem;border-radius:0.75rem;border:0.125rem solid #6B4A24;
   background:#FFD166;color:#5A3A12;font-size:0.875rem;font-weight:var(--w-black);white-space:nowrap;
@@ -715,8 +716,6 @@ h1,h2,h3,h4,p{margin:0}
 .zoo-btn-star{position:absolute;width:0.625rem;height:0.625rem}
 .zoo-btn-star.star-top{top:-0.3rem;right:-0.3rem}
 .zoo-btn-star.star-bottom{bottom:-0.3rem;left:-0.3rem}
-.zoo-feedback-card .bonus-choose{flex:1}
-.zoo-feedback-card.is-stack .zoo-feedback-body{flex-direction:column;align-items:stretch}
 /* 角上的草叶 / 藤蔓 / 落叶装饰 */
 .zoo-decor-grass,.zoo-decor-vine,.zoo-decor-leaf{position:absolute;pointer-events:none;z-index:1}
 .zoo-decor-grass{left:0.75rem;top:-0.65rem;width:3.5rem;height:auto}
@@ -739,9 +738,32 @@ h1,h2,h3,h4,p{margin:0}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}
 }
 
-/* BOSS 关隐藏题：直接结算 / 挑战隐藏题 二选一 */
-.bonus-choose{display:flex;align-items:center;gap:0.5rem;width:100%}
-.bonus-choose .btn{flex:1 1 0;padding-left:0.5rem;padding-right:0.5rem;font-size:0.875rem}
+/* ============================================================
+   🔊 喇叭按钮：圆形底色 + 点击抖动特效
+   ============================================================ */
+.zoo-audio-btn{flex:none;width:1.85rem;height:1.85rem;padding:0;border-radius:50%;
+  background:#FFF8E7;border:0.125rem solid #EFE1C8;
+  display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 0.25rem 0.5rem rgba(155,118,32,.14);transition:transform .12s}
+.zoo-audio-btn:active{transform:scale(.9)}
+.zoo-audio-btn svg{width:60%;height:60%;display:block}
+
+/* 抖动特效：播放发音时的按钮反馈 */
+@keyframes shakeAudio{
+  0%   {transform:rotate(0deg) scale(1)}
+  15%  {transform:rotate(-12deg) scale(1.08)}
+  30%  {transform:rotate(10deg) scale(1.06)}
+  45%  {transform:rotate(-6deg) scale(1.04)}
+  60%  {transform:rotate(4deg) scale(1.02)}
+  75%  {transform:rotate(-2deg) scale(1)}
+  100% {transform:rotate(0deg) scale(1)}
+}
+.listen.is-shaking,
+.zoo-audio-btn.is-shaking,
+.ref-listen-speaker.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
+.listen.is-shaking svg,
+.zoo-audio-btn.is-shaking svg,
+.ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
 
 /* ============================================================
    DinoGo · 恐龙英语 — 闯关结算与恐龙进化
@@ -1109,13 +1131,13 @@ h1,h2,h3,h4,p{margin:0}
 .pic-page .quiz-prompt .chip.boss-chip{background:linear-gradient(135deg,#FF6B35,#FF3D00);color:#fff}
 .pic-page .quiz-prompt h2{font-size:clamp(1.125rem,3vw,1.375rem);color:#2C4A32}
 
-.pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;
+.pic-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:50%;
   border:0.25rem solid #fff;background:#FFF9E9;
   box-shadow:0 0.5rem 0 rgba(70,60,25,.16),0 0.75rem 1.125rem rgba(70,60,25,.18)}
 .pic-emoji{font-size:clamp(3.25rem,16vh,7rem);line-height:1;
   filter:drop-shadow(0 0.375rem 0 rgba(70,60,25,.16))}
 .pic-page .listen{position:absolute;right:0.875rem;bottom:0.875rem;background:#fff;color:#8A6415;
-  border:0.09375rem solid #fff;font-weight:900;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
+  border:0.09375rem solid #fff;box-shadow:0 0.25rem 0 rgba(140,95,25,.18)}
 
 /* 选项：贴纸卡片 */
 .pic-page .option{min-height:3.75rem;border-radius:1.125rem;background:#fff;border:0.1875rem solid #fff;
@@ -1123,8 +1145,9 @@ h1,h2,h3,h4,p{margin:0}
   transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
 .pic-page .option:active{transform:translateY(0.125rem);box-shadow:0 0.1875rem 0 rgba(150,100,20,.22)}
 .pic-page .option .key{width:1.75rem;height:1.75rem;border-radius:50%;background:#FBE7A6;color:#8A6415;font-size:0.75rem}
-.pic-page .option .word{font-size:1.1875rem;font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem}
-.pic-page .option .mark{width:1.5rem;height:1.5rem;background:#4FA55E}
+.pic-page .option .word{font-size:clamp(0.8125rem,3.9vw,1.1875rem);font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem;min-width:0;white-space:nowrap}
+.pic-page .option .mark{width:1.375rem;height:1.375rem;background:#4FA55E}
+.pic-page .option .mark.bad{background:#E8604A}
 .pic-page .option .mark.radio{border-color:#4FA55E}
 .pic-page .option .mark.radio i{background:#4FA55E}
 .pic-page .option.sel{border-color:#4FA55E;background:#F4FBEA;
@@ -1209,7 +1232,7 @@ h1,h2,h3,h4,p{margin:0}
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:3.75rem}
-.quiz-ref-page .ref-pic-options .option .word{font-size:1.125rem;color:#4B3626}
+.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);color:#4B3626}
 
 /* 听音选图 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -1232,8 +1255,9 @@ h1,h2,h3,h4,p{margin:0}
 .ref-listen-card-word.correct{color:#39754A}
 .ref-listen-card-word.wrong{color:#A74F3D}
 .ref-listen-mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;display:grid;place-items:center;
-  border:0.125rem solid var(--sticker-ink);border-radius:50%;background:#68BE83;color:#203B29;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1}
-.ref-listen-mark.bad{background:#F49385;color:#5C2B23}
+  border-radius:50%;background:#4FA55E;color:#fff;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1;
+  box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2);z-index:2}
+.ref-listen-mark.bad{background:#E8604A;color:#fff}
 
 /* 单词连线 */
 .ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(2rem,9vw,4rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;
@@ -1621,7 +1645,6 @@ h1,h2,h3,h4,p{margin:0}
     padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
   }
 }
-.quiz-ref-page[data-scene="zoo"] .ref-scene-svg{display:none}
 .quiz-ref-page[data-scene="zoo"] .option:active{
   transform:translateY(0.125rem);
   box-shadow:inset 0 0 0 var(--opt-rim-w) var(--opt-rim),0 0.125rem 0 var(--opt-base);
@@ -3874,12 +3897,18 @@ window.DINO_WORD_RULES.push({
     { role: "partOrAdj", count: 1 },
   ];
 
-  /* BOSS 关固定配比：3 名词 + 1 动词 + 1 部位/形容词 */
+  /* BOSS 关固定配比：5 题全部为进阶题型，不含看图/听音这类简单题
+     词汇拼图(名词) + 动作猜猜(动词) + 局部特写(部位) + 对比观察(形容词) + 进阶混抽 */
   const BOSS_MIX = [
-    { role: "noun",      count: 3 },
+    { role: "noun",      count: 1 },
     { role: "verb",      count: 1 },
+    { role: "part",      count: 1 },
+    { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
+  const BOSS_TYPE_BY_ROLE = { noun: "word_puzzle", verb: "action", part: "body_zoom", adj: "compare" };
+  /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
+  const BOSS_TYPES = ["word_puzzle", "action", "body_zoom", "compare"];
 
 
   /* 题型规则
@@ -3949,7 +3978,8 @@ window.DINO_WORD_RULES.push({
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
   function buildSession(level, pool, sceneId) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
-    const mix = step === LEVELS_PER_VENUE ? BOSS_MIX : NORMAL_MIX;
+    const isBoss = step === LEVELS_PER_VENUE;
+    const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
     const usedWords = new Set();
     const usedTypes = new Set();
     const questions = [];
@@ -3957,7 +3987,9 @@ window.DINO_WORD_RULES.push({
     for (const slot of mix) {
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
-        if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        if (isBoss) {
+          type = slot.role === "partOrAdj" ? pickPartOrAdjType(step) : BOSS_TYPE_BY_ROLE[slot.role];
+        } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
         if (question) questions.push(question);
@@ -3999,11 +4031,12 @@ window.DINO_WORD_RULES.push({
 
   /* 兜底补题：只使用本次改造后的 6 个题型，避免抽到待建设题型 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "action", "body_zoom", "compare"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
+    const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
     let guard = 0;
     while (tasks.length < size && guard++ < 20) {
-      const type = IMPLEMENTED_TYPES[Math.floor(Math.random() * IMPLEMENTED_TYPES.length)];
+      const type = types[Math.floor(Math.random() * types.length)];
       const rule = RULE_BY_KEY[type];
       let candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
@@ -4031,14 +4064,15 @@ window.DINO_WORD_RULES.push({
       const sceneId = state.scene || "zoo";
       const scene = zooScene();
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-      const size = isAnimalBossLevel(level) ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+      const boss = isAnimalBossLevel(level);
+      const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
       const questions = buildSession(level, allSceneWords, sceneId);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : null).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -4472,32 +4506,6 @@ window.DINO_WORD_RULES.push({
     generateSession(sceneWords, stopWords, sceneId, level) {
       const pool = sceneWords && sceneWords.length ? sceneWords : (stopWords || themeWords());
       return buildSession(level, pool, sceneId || state.scene || "zoo");
-    },
-
-    /* 隐藏题（BOSS 占位关第 6 题）：固定看图选词，答对奖励宝箱，不计入星级 */
-    buildBonusTask() {
-      const scene = zooScene();
-      const words = ((scene && scene.words && scene.words.length) ? scene.words : themeWords())
-        .filter((w) => w.category === "noun");
-      const sceneId = state.scene || "zoo";
-      const game = currentTheme().games.pic && currentTheme().games.pic.render ? currentTheme().games.pic : null;
-      if (!game || !words.length) return null;
-      const target = WrongBank.pickWithBias(words, (w) => wordId(sceneId, w.word));
-      if (!target) return null;
-      const task = {
-        type: "pic",
-        word: target.word,
-        zh: target.zh || "",
-        emoji: target.emoji || "",
-        art: target.art || (() => UNKNOWN_ART(target.word)),
-        phon: target.phon || "",
-        category: target.category || "",
-        recordWrong: false,
-        wrongWordId: wordId(sceneId, target.word),
-        isBonus: true,
-      };
-      if (game.build) game.build(task, words);
-      return task;
     },
   };
 })();
@@ -5231,22 +5239,22 @@ const QuizUiArt = {
           <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
             <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
           </filter>
-          <!-- DinoGo 焦糖棕渐变 -->
+          <!-- DinoGo 焦糖棕渐变（参考稿配色） -->
           <linearGradient id="dinogo-grad-en" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F0C9A5"/>
-            <stop offset="28%" stop-color="#C89468"/>
-            <stop offset="100%" stop-color="#9E6B40"/>
+            <stop offset="0%" stop-color="#E4B58F"/>
+            <stop offset="45%" stop-color="#D0956B"/>
+            <stop offset="100%" stop-color="#B87C50"/>
           </linearGradient>
-          <!-- 恐龙英语 蜂蜜橙渐变 -->
+          <!-- 恐龙英语 蜂蜜橙渐变（参考稿配色） -->
           <linearGradient id="dinogo-grad-zh" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FDEFCE"/>
-            <stop offset="28%" stop-color="#F7CE8A"/>
-            <stop offset="100%" stop-color="#E69E59"/>
+            <stop offset="0%" stop-color="#FDCF97"/>
+            <stop offset="45%" stop-color="#F9BE7B"/>
+            <stop offset="100%" stop-color="#EDA45C"/>
           </linearGradient>
-          <!-- 小恐龙奶油绿渐变 -->
+          <!-- 小恐龙鼠尾草绿渐变（参考稿配色） -->
           <linearGradient id="dinogo-grad-dino" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#B8E196"/>
-            <stop offset="100%" stop-color="#97C975"/>
+            <stop offset="0%" stop-color="#C3DCA0"/>
+            <stop offset="100%" stop-color="#A9C882"/>
           </linearGradient>
 
           <!-- 小恐龙外轮廓 -->
@@ -5343,58 +5351,58 @@ const QuizUiArt = {
         <circle cx="246" cy="472" r="4" fill="#F4A58C"/>
         <circle cx="655" cy="466" r="4" fill="#F4A58C"/>
 
-        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（位于答题框与屏幕底边之间的呼吸区，居中锚定） -->
-        <svg x="220" y="548" width="360" height="62" viewBox="0 0 700 125" overflow="visible">
-          <!-- 第 1 层：白色模切贴纸外描边 -->
-          <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
-            <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
-            <use href="#dinogo-text-en"/>
-            <use href="#dinogo-text-zh"/>
-          </g>
+        <!-- 最下层单行贴纸艺术字：DinoGo 恐龙英语（贴近答题框底边） -->
+        <svg x="240" y="540" width="320" height="57" viewBox="0 0 700 125" overflow="visible">
+        <!-- 第 1 层：白色模切贴纸外描边（26px 白边作为安全边距） -->
+        <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+          <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
+          <use href="#dinogo-text-en"/>
+          <use href="#dinogo-text-zh"/>
+        </g>
 
-          <!-- 第 2 层：右侧卡通小绿恐龙 -->
-          <g transform="translate(375 4) scale(0.84)" stroke="#6A401D" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
-            <g fill="#F8C284">
-              <path d="M337 31 Q346 19 354 32 Z"/>
-              <path d="M352 44 Q366 37 364 52 Z"/>
-              <path d="M360 62 Q374 58 369 73 Z"/>
-              <path d="M363 81 Q376 80 369 94 Z"/>
-              <path d="M370 98 Q382 95 379 109 Z"/>
-            </g>
-            <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"
-              fill="url(#dinogo-grad-dino)"/>
-            <path d="M312 85 C323 86 334 94 335 112 C335 122 330 128 320 127 C309 124 305 108 308 92 Z"
-              fill="#FEF2C4" stroke="none"/>
-            <path d="M312 85 C323 86 334 94 335 112 C335 121 331 127 323 128"
-              fill="none" stroke="#6A401D" stroke-width="3.2"/>
-            <path d="M308 88 Q295 89 294 94 Q296 99 308 97" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
-            <path d="M337 93 Q324 95 324 100 Q326 105 338 102" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
-            <circle cx="314" cy="54" r="3.4" fill="#5D3718" stroke="none"/>
-            <circle cx="334" cy="59" r="3.4" fill="#5D3718" stroke="none"/>
-            <path d="M316 64 Q321 69 327 65" fill="none" stroke="#5D3718" stroke-width="3"/>
-            <ellipse cx="306" cy="59" rx="4.5" ry="2.8" fill="#F3A697" stroke="none" opacity="0.85"/>
-            <ellipse cx="340" cy="66" rx="4.8" ry="3" fill="#F3A697" stroke="none" opacity="0.85"/>
+        <!-- 第 2 层：右侧卡通小绿恐龙（奶油风描边） -->
+        <g transform="translate(375 4) scale(0.84)" stroke="#6A5028" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+          <g fill="#F8C284">
+            <path d="M337 31 Q346 19 354 32 Z"/>
+            <path d="M352 44 Q366 37 364 52 Z"/>
+            <path d="M360 62 Q374 58 369 73 Z"/>
+            <path d="M363 81 Q376 80 369 94 Z"/>
+            <path d="M370 98 Q382 95 379 109 Z"/>
           </g>
+          <path d="M306 76 C295 66 297 46 310 35 C323 24 345 25 356 41 C364 53 366 72 365 88 C373 95 384 99 389 107 C393 114 381 127 366 129 C349 132 327 132 316 124 C305 116 304 98 308 86 C304 82 303 79 306 76 Z"
+            fill="url(#dinogo-grad-dino)"/>
+          <path d="M312 85 C323 86 334 94 335 112 C335 122 330 128 320 127 C309 124 305 108 308 92 Z"
+            fill="#FBF1C8" stroke="none"/>
+          <path d="M312 85 C323 86 334 94 335 112 C335 121 331 127 323 128"
+            fill="none" stroke="#6A5028" stroke-width="3.2"/>
+          <path d="M308 88 Q295 89 294 94 Q296 99 308 97" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+          <path d="M337 93 Q324 95 324 100 Q326 105 338 102" fill="url(#dinogo-grad-dino)" stroke-width="3.5"/>
+          <circle cx="314" cy="54" r="3.4" fill="#7C5632" stroke="none"/>
+          <circle cx="334" cy="59" r="3.4" fill="#7C5632" stroke="none"/>
+          <path d="M316 64 Q321 69 327 65" fill="none" stroke="#7C5632" stroke-width="3"/>
+          <ellipse cx="306" cy="59" rx="4.5" ry="2.8" fill="#F3A697" stroke="none" opacity="0.85"/>
+          <ellipse cx="340" cy="66" rx="4.8" ry="3" fill="#F3A697" stroke="none" opacity="0.85"/>
+        </g>
 
-          <!-- 第 3 层：3D 巧克力棕立体底厚 -->
-          <g transform="translate(0 5)" fill="#7A4E2A" stroke="#7A4E2A" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
-            <use href="#dinogo-text-en"/>
-            <use href="#dinogo-text-zh"/>
-          </g>
+        <!-- 第 3 层：立体底厚（深巧克力棕） -->
+        <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+          <use href="#dinogo-text-en"/>
+          <use href="#dinogo-text-zh"/>
+        </g>
 
-          <!-- 第 4 层：双色渐变主字 + 圆角棕描边 -->
-          <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
-          <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#7A4E2A" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+        <!-- 第 4 层：渐变主字 + 深棕描边 -->
+        <use href="#dinogo-text-en" fill="url(#dinogo-grad-en)" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+        <use href="#dinogo-text-zh" fill="url(#dinogo-grad-zh)" stroke="#6E3A15" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
 
-          <!-- 第 5 层：糖果高光点与童趣小星星 -->
-          <g fill="#FFFFFF" opacity="0.82">
-            <ellipse cx="44" cy="48" rx="6" ry="3" transform="rotate(-24 44 48)"/>
-            <ellipse cx="222" cy="48" rx="7" ry="3" transform="rotate(-22 222 48)"/>
-            <ellipse cx="344" cy="46" rx="6" ry="3" transform="rotate(-20 344 46)"/>
-            <ellipse cx="478" cy="46" rx="6" ry="3" transform="rotate(-18 478 46)"/>
-          </g>
-          <path d="M18 38 L21 45 L28 47 L21 50 L18 57 L15 50 L8 47 L15 45 Z" fill="#FFD36E" stroke="#7A4E2A" stroke-width="2" stroke-linejoin="round"/>
-          <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#7A4E2A" stroke-width="2"/>
+        <!-- 第 5 层：糖果高光点与童趣小星星 -->
+        <g fill="#FFFFFF" opacity="0.82">
+          <ellipse cx="44" cy="48" rx="6" ry="3" transform="rotate(-24 44 48)"/>
+          <ellipse cx="222" cy="48" rx="7" ry="3" transform="rotate(-22 222 48)"/>
+          <ellipse cx="344" cy="46" rx="6" ry="3" transform="rotate(-20 344 46)"/>
+          <ellipse cx="478" cy="46" rx="6" ry="3" transform="rotate(-18 478 46)"/>
+        </g>
+        <path d="M18 38 L21 45 L28 47 L21 50 L18 57 L15 50 L8 47 L15 45 Z" fill="#FFD36E" stroke="#764422" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#764422" stroke-width="2"/>
         </svg>
       </svg>
 
@@ -5909,6 +5917,15 @@ function renderAndResetScroll() {
   const sc = $(".scroll");
   if (sc) sc.scrollTop = 0;
 }
+/* 喇叭按钮点击抖动反馈 */
+function shakeBtn(el) {
+  if (!el) return;
+  el.classList.remove("is-shaking");
+  /* 强制 reflow 让动画可重放 */
+  void el.offsetWidth;
+  el.classList.add("is-shaking");
+  setTimeout(() => el.classList.remove("is-shaking"), 560);
+}
 
 document.addEventListener("click", (e) => {
   if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
@@ -5932,15 +5949,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "select") {
     selectOption(el.dataset.word);
   } else if (action === "listen-selected") {
+    shakeBtn(el);
     listenSelected();
   } else if (action === "next") {
     nextQuestion();
-  } else if (action === "bonus-start") {
-    bonusStart();
-  } else if (action === "bonus-skip") {
-    bonusSkip();
-  } else if (action === "open-bonus-chest") {
-    openBonusChest();
   } else if (action === "close-quiz") {
     quiz = null;
     const prevTheme = state.theme;
@@ -5959,6 +5971,7 @@ document.addEventListener("click", (e) => {
     }
   } else if (action === "speak-answer") {
     /* 结果条喇叭：朗读正确答案 */
+    shakeBtn(el);
     const q = quiz && quiz.order[quiz.index];
     if (q) speak(q.word || q.correctFood || "");
   } else if (action === "evolve") {
@@ -6102,6 +6115,7 @@ document.addEventListener("click", (e) => {
     resetVoice();
     closeOverlay();
   } else if (action === "speak-word") {
+    shakeBtn(el);
     speak(el.dataset.word);
   } else if (action === "open-review") {
     openReview();
@@ -6473,15 +6487,6 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       return dino;
     },
 
-    /* 隐藏题答对：额外发放 1 个宝箱（BOSS 关第 6 题奖励） */
-    grantBonus() {
-      const s = _state();
-      ensureChests();
-      s.chests.unlocked += 1;
-      save();
-      return 1;
-    },
-
     /* 只读：当前有多少个额外宝箱待开 */
     available() {
       ensureChests();
@@ -6558,7 +6563,6 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       correct: quiz.correct,
       total,
       isBoss,
-      bonus: quiz.bonus,
       accuracy: Math.round(accuracy * 100),
       stars,
       passed,
@@ -6660,7 +6664,6 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     </div>
 
     <div class="result-foot">
-      ${r.bonus && r.bonus.correct ? `<button class="btn ghost" data-action="open-bonus-chest">🎁 打开隐藏宝箱</button>` : ""}
       ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${gateBlocked ? "回刷补星" : r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
     </div>
   </section>`;
@@ -6790,7 +6793,6 @@ function startQuiz(level) {
     correct: 0,
     hearts: 3,
     selected: null,
-    bonus: null,
     revealed: false,
     choiceCorrect: null,
     matched: [],
@@ -6826,13 +6828,6 @@ function correctFx() {
 /* 答完题后统一的手动“下一题”按钮 */
 function quizNextButton() {
   if (!quiz) return "";
-  /* BOSS 关 5 题打完：可选是否挑战隐藏第 6 题 */
-  if (quiz.bonus && quiz.bonus.state === "ask") {
-    return `<div class="bonus-choose">
-      <button class="btn ghost" data-action="bonus-skip">直接结算</button>
-      <button class="btn" data-action="bonus-start">挑战隐藏题 🎁</button>
-    </div>`;
-  }
   const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "See results" : "Next";
   return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
@@ -6862,8 +6857,13 @@ function screenQuiz() {
   const choiceButton = () => (revealed ? quizNextButton() : "");
   const options = (list) => list.map((opt, i) => {
     const cls = optionClass(opt);
-    const mark = revealed && opt === q.word ? `<span class="mark">${I.check(11)}</span>`
-      : !revealed && opt === selected ? `<span class="mark radio"><i></i></span>` : "";
+    let mark = "";
+    if (revealed) {
+      if (opt === q.word) mark = `<span class="mark">${I.check(11)}</span>`;
+      else if (opt === selected) mark = `<span class="mark bad">${I.close(12, "#fff")}</span>`;
+    } else if (opt === selected) {
+      mark = `<span class="mark radio"><i></i></span>`;
+    }
     return `<button class="${cls}" data-action="select" data-word="${opt}">
       <span class="word">${opt}</span>${mark}
     </button>`;
@@ -6880,10 +6880,7 @@ function screenQuiz() {
   const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
-  const bonusAsk = quiz.bonus && quiz.bonus.state === "ask";
-  const statusTitle = q.isBonus
-    ? (ok ? "隐藏题通关！宝箱 +1 🎁" : "隐藏题未通过，继续努力")
-    : (ok ? "答对了，你真棒！" : "回答错误，继续努力");
+  const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
   const answerBox = answerWord
@@ -6902,8 +6899,7 @@ function screenQuiz() {
       </div>`
     : "";
   const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
-  const actionArea = bonusAsk ? view.btn
-    : `<button class="zoo-action-btn" data-action="next">
+  const actionArea = `<button class="zoo-action-btn" data-action="next">
         ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
       </button>`;
   const decor = ok
@@ -6929,7 +6925,7 @@ function screenQuiz() {
         <path d="M36 16 C30 2, 54 2, 52 17 Z" fill="#f7a052" stroke="#8f2d1f" stroke-width="2.5"/>
         <path d="M68 18 C72 34, 92 30, 86 15 Z" fill="#f27d52" stroke="#8f2d1f" stroke-width="2.5"/>
       </svg>`;
-  const resultPop = revealed ? `<div class="zoo-feedback-card ${ok ? "is-correct" : "is-wrong"}${bonusAsk ? " is-stack" : ""}" role="status" aria-live="polite">
+  const resultPop = revealed ? `<div class="zoo-feedback-card ${ok ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
       ${decor}
       <div class="zoo-feedback-header">
         <span class="zoo-status-badge" aria-hidden="true">
@@ -6984,9 +6980,9 @@ function selectOption(word) {
   sfx("tap");
   checkAnswer();
 }
-/* 听发音按钮：沿用原「答完听发音」的位置 */
+/* 听发音按钮：纯喇叭图标 + 圆形底色 */
 function listenPill() {
-  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(14)} 听发音</button>`;
+  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(16)}</button>`;
 }
 /* 听发音：需先点击选项，答题后朗读正确答案 */
 function listenSelected() {
@@ -7044,19 +7040,6 @@ function checkAnswer() {
   const ok = quiz.selected === q.word;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
-  /* BOSS 关隐藏题：不计入星级、不扣生命，答对奖励一个宝箱 */
-  if (q.isBonus) {
-    quiz.bonus = { state: "playing", correct: ok };
-    WrongBank.applyResult(q, ok);
-    if (ok) {
-      if (window.ChestManager) ChestManager.grantBonus();
-      sfx("excellent");
-    } else {
-      sfx("wrong");
-    }
-    render();
-    return;
-  }
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
@@ -7075,12 +7058,6 @@ function nextQuestion() {
   if (!quiz) return;
   clearTimers();
   const atEnd = quiz.index >= quiz.order.length - 1;
-  /* BOSS 关 5 题打完且生命未耗尽：先让玩家选择是否挑战隐藏题 */
-  if (atEnd && isAnimalBossLevel(quiz.level) && !quiz.bonus && quiz.hearts > 0) {
-    quiz.bonus = { state: "ask", correct: null };
-    render();
-    return;
-  }
   if (atEnd || quiz.hearts <= 0) { finishQuiz(); return; }
   quiz.index++;
   quiz.selected = null;
@@ -7092,46 +7069,6 @@ function nextQuestion() {
   quiz.matchWrong = 0;
   render();
   speakTask();
-}
-
-/* BOSS 关第 6 题：挑战隐藏题（答对奖励宝箱，不计星级） */
-function bonusStart() {
-  if (!quiz || !quiz.bonus || quiz.bonus.state !== "ask") return;
-  const task = window.DynamicEngine ? DynamicEngine.buildBonusTask() : null;
-  if (!task) { bonusSkip(); return; }
-  quiz.order.push(task);
-  quiz.bonus.state = "playing";
-  quiz.index++;
-  quiz.selected = null;
-  quiz.revealed = false;
-  quiz.choiceCorrect = null;
-  quiz.matched = [];
-  quiz.pickWord = null;
-  quiz.pickWordSide = null;
-  quiz.matchWrong = 0;
-  sfx("tap");
-  render();
-  speakTask();
-}
-
-/* 跳过隐藏题，直接结算 */
-function bonusSkip() {
-  if (!quiz) return;
-  if (quiz.bonus) quiz.bonus.state = "skipped";
-  finishQuiz();
-}
-
-/* 打开隐藏挑战奖励的宝箱（额外奖励后续迭代，先走现有恐龙奖励） */
-function openBonusChest() {
-  if (window.ChestManager) {
-    const dino = ChestManager.openOne();
-    if (dino) {
-      toast(`宝箱开出 ${dino.zh || "新恐龙"}！额外奖励即将上线`);
-      render();
-      return;
-    }
-  }
-  toast("宝箱已经打开啦");
 }
 
 </script>

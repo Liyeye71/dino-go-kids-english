@@ -48,7 +48,6 @@
       correct: quiz.correct,
       total,
       isBoss,
-      bonus: quiz.bonus,
       accuracy: Math.round(accuracy * 100),
       stars,
       passed,
@@ -150,7 +149,6 @@
     </div>
 
     <div class="result-foot">
-      ${r.bonus && r.bonus.correct ? `<button class="btn ghost" data-action="open-bonus-chest">🎁 打开隐藏宝箱</button>` : ""}
       ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${gateBlocked ? "回刷补星" : r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>`}
     </div>
   </section>`;

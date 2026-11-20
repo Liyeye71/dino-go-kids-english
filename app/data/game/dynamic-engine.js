@@ -27,12 +27,18 @@
     { role: "partOrAdj", count: 1 },
   ];
 
-  /* BOSS 关固定配比：3 名词 + 1 动词 + 1 部位/形容词 */
+  /* BOSS 关固定配比：5 题全部为进阶题型，不含看图/听音这类简单题
+     词汇拼图(名词) + 动作猜猜(动词) + 局部特写(部位) + 对比观察(形容词) + 进阶混抽 */
   const BOSS_MIX = [
-    { role: "noun",      count: 3 },
+    { role: "noun",      count: 1 },
     { role: "verb",      count: 1 },
+    { role: "part",      count: 1 },
+    { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
+  const BOSS_TYPE_BY_ROLE = { noun: "word_puzzle", verb: "action", part: "body_zoom", adj: "compare" };
+  /* BOSS 关允许的题型：补题时也不会回落到简单题型 */
+  const BOSS_TYPES = ["word_puzzle", "action", "body_zoom", "compare"];
 
 
   /* 题型规则
@@ -102,7 +108,8 @@
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
   function buildSession(level, pool, sceneId) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
-    const mix = step === LEVELS_PER_VENUE ? BOSS_MIX : NORMAL_MIX;
+    const isBoss = step === LEVELS_PER_VENUE;
+    const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
     const usedWords = new Set();
     const usedTypes = new Set();
     const questions = [];
@@ -110,7 +117,9 @@
     for (const slot of mix) {
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
-        if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        if (isBoss) {
+          type = slot.role === "partOrAdj" ? pickPartOrAdjType(step) : BOSS_TYPE_BY_ROLE[slot.role];
+        } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
         if (question) questions.push(question);
@@ -152,11 +161,12 @@
 
   /* 兜底补题：只使用本次改造后的 6 个题型，避免抽到待建设题型 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "action", "body_zoom", "compare"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
+    const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
     let guard = 0;
     while (tasks.length < size && guard++ < 20) {
-      const type = IMPLEMENTED_TYPES[Math.floor(Math.random() * IMPLEMENTED_TYPES.length)];
+      const type = types[Math.floor(Math.random() * types.length)];
       const rule = RULE_BY_KEY[type];
       let candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
@@ -184,14 +194,15 @@
       const sceneId = state.scene || "zoo";
       const scene = zooScene();
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-      const size = isAnimalBossLevel(level) ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+      const boss = isAnimalBossLevel(level);
+      const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
       const questions = buildSession(level, allSceneWords, sceneId);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : null).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -625,32 +636,6 @@
     generateSession(sceneWords, stopWords, sceneId, level) {
       const pool = sceneWords && sceneWords.length ? sceneWords : (stopWords || themeWords());
       return buildSession(level, pool, sceneId || state.scene || "zoo");
-    },
-
-    /* 隐藏题（BOSS 占位关第 6 题）：固定看图选词，答对奖励宝箱，不计入星级 */
-    buildBonusTask() {
-      const scene = zooScene();
-      const words = ((scene && scene.words && scene.words.length) ? scene.words : themeWords())
-        .filter((w) => w.category === "noun");
-      const sceneId = state.scene || "zoo";
-      const game = currentTheme().games.pic && currentTheme().games.pic.render ? currentTheme().games.pic : null;
-      if (!game || !words.length) return null;
-      const target = WrongBank.pickWithBias(words, (w) => wordId(sceneId, w.word));
-      if (!target) return null;
-      const task = {
-        type: "pic",
-        word: target.word,
-        zh: target.zh || "",
-        emoji: target.emoji || "",
-        art: target.art || (() => UNKNOWN_ART(target.word)),
-        phon: target.phon || "",
-        category: target.category || "",
-        recordWrong: false,
-        wrongWordId: wordId(sceneId, target.word),
-        isBonus: true,
-      };
-      if (game.build) game.build(task, words);
-      return task;
     },
   };
 })();

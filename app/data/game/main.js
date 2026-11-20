@@ -28,7 +28,6 @@ function startQuiz(level) {
     correct: 0,
     hearts: 3,
     selected: null,
-    bonus: null,
     revealed: false,
     choiceCorrect: null,
     matched: [],
@@ -64,13 +63,6 @@ function correctFx() {
 /* 答完题后统一的手动“下一题”按钮 */
 function quizNextButton() {
   if (!quiz) return "";
-  /* BOSS 关 5 题打完：可选是否挑战隐藏第 6 题 */
-  if (quiz.bonus && quiz.bonus.state === "ask") {
-    return `<div class="bonus-choose">
-      <button class="btn ghost" data-action="bonus-skip">直接结算</button>
-      <button class="btn" data-action="bonus-start">挑战隐藏题 🎁</button>
-    </div>`;
-  }
   const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "See results" : "Next";
   return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
@@ -123,10 +115,7 @@ function screenQuiz() {
   const answerPhon = answerWord && answerWord === q.word ? (q.phon || "") : "";
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
-  const bonusAsk = quiz.bonus && quiz.bonus.state === "ask";
-  const statusTitle = q.isBonus
-    ? (ok ? "隐藏题通关！宝箱 +1 🎁" : "隐藏题未通过，继续努力")
-    : (ok ? "答对了，你真棒！" : "回答错误，继续努力");
+  const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
   const answerBox = answerWord
@@ -145,8 +134,7 @@ function screenQuiz() {
       </div>`
     : "";
   const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
-  const actionArea = bonusAsk ? view.btn
-    : `<button class="zoo-action-btn" data-action="next">
+  const actionArea = `<button class="zoo-action-btn" data-action="next">
         ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
       </button>`;
   const decor = ok
@@ -172,7 +160,7 @@ function screenQuiz() {
         <path d="M36 16 C30 2, 54 2, 52 17 Z" fill="#f7a052" stroke="#8f2d1f" stroke-width="2.5"/>
         <path d="M68 18 C72 34, 92 30, 86 15 Z" fill="#f27d52" stroke="#8f2d1f" stroke-width="2.5"/>
       </svg>`;
-  const resultPop = revealed ? `<div class="zoo-feedback-card ${ok ? "is-correct" : "is-wrong"}${bonusAsk ? " is-stack" : ""}" role="status" aria-live="polite">
+  const resultPop = revealed ? `<div class="zoo-feedback-card ${ok ? "is-correct" : "is-wrong"}" role="status" aria-live="polite">
       ${decor}
       <div class="zoo-feedback-header">
         <span class="zoo-status-badge" aria-hidden="true">
@@ -287,19 +275,6 @@ function checkAnswer() {
   const ok = quiz.selected === q.word;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
-  /* BOSS 关隐藏题：不计入星级、不扣生命，答对奖励一个宝箱 */
-  if (q.isBonus) {
-    quiz.bonus = { state: "playing", correct: ok };
-    WrongBank.applyResult(q, ok);
-    if (ok) {
-      if (window.ChestManager) ChestManager.grantBonus();
-      sfx("excellent");
-    } else {
-      sfx("wrong");
-    }
-    render();
-    return;
-  }
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
@@ -318,12 +293,6 @@ function nextQuestion() {
   if (!quiz) return;
   clearTimers();
   const atEnd = quiz.index >= quiz.order.length - 1;
-  /* BOSS 关 5 题打完且生命未耗尽：先让玩家选择是否挑战隐藏题 */
-  if (atEnd && isAnimalBossLevel(quiz.level) && !quiz.bonus && quiz.hearts > 0) {
-    quiz.bonus = { state: "ask", correct: null };
-    render();
-    return;
-  }
   if (atEnd || quiz.hearts <= 0) { finishQuiz(); return; }
   quiz.index++;
   quiz.selected = null;
@@ -335,44 +304,4 @@ function nextQuestion() {
   quiz.matchWrong = 0;
   render();
   speakTask();
-}
-
-/* BOSS 关第 6 题：挑战隐藏题（答对奖励宝箱，不计星级） */
-function bonusStart() {
-  if (!quiz || !quiz.bonus || quiz.bonus.state !== "ask") return;
-  const task = window.DynamicEngine ? DynamicEngine.buildBonusTask() : null;
-  if (!task) { bonusSkip(); return; }
-  quiz.order.push(task);
-  quiz.bonus.state = "playing";
-  quiz.index++;
-  quiz.selected = null;
-  quiz.revealed = false;
-  quiz.choiceCorrect = null;
-  quiz.matched = [];
-  quiz.pickWord = null;
-  quiz.pickWordSide = null;
-  quiz.matchWrong = 0;
-  sfx("tap");
-  render();
-  speakTask();
-}
-
-/* 跳过隐藏题，直接结算 */
-function bonusSkip() {
-  if (!quiz) return;
-  if (quiz.bonus) quiz.bonus.state = "skipped";
-  finishQuiz();
-}
-
-/* 打开隐藏挑战奖励的宝箱（额外奖励后续迭代，先走现有恐龙奖励） */
-function openBonusChest() {
-  if (window.ChestManager) {
-    const dino = ChestManager.openOne();
-    if (dino) {
-      toast(`宝箱开出 ${dino.zh || "新恐龙"}！额外奖励即将上线`);
-      render();
-      return;
-    }
-  }
-  toast("宝箱已经打开啦");
 }

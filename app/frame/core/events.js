@@ -44,12 +44,6 @@ document.addEventListener("click", (e) => {
     listenSelected();
   } else if (action === "next") {
     nextQuestion();
-  } else if (action === "bonus-start") {
-    bonusStart();
-  } else if (action === "bonus-skip") {
-    bonusSkip();
-  } else if (action === "open-bonus-chest") {
-    openBonusChest();
   } else if (action === "close-quiz") {
     quiz = null;
     const prevTheme = state.theme;

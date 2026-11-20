@@ -29,7 +29,6 @@
     padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
   }
 }
-.quiz-ref-page[data-scene="zoo"] .ref-scene-svg{display:none}
 .quiz-ref-page[data-scene="zoo"] .option:active{
   transform:translateY(0.125rem);
   box-shadow:inset 0 0 0 var(--opt-rim-w) var(--opt-rim),0 0.125rem 0 var(--opt-base);

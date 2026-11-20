@@ -31,8 +31,8 @@
   transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
 .pic-page .option:active{transform:translateY(0.125rem);box-shadow:0 0.1875rem 0 rgba(150,100,20,.22)}
 .pic-page .option .key{width:1.75rem;height:1.75rem;border-radius:50%;background:#FBE7A6;color:#8A6415;font-size:0.75rem}
-.pic-page .option .word{font-size:1.1875rem;font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem}
-.pic-page .option .mark{width:1.5rem;height:1.5rem;background:#4FA55E}
+.pic-page .option .word{font-size:clamp(0.8125rem,3.9vw,1.1875rem);font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem;min-width:0;white-space:nowrap}
+.pic-page .option .mark{width:1.375rem;height:1.375rem;background:#4FA55E}
 .pic-page .option .mark.bad{background:#E8604A}
 .pic-page .option .mark.radio{border-color:#4FA55E}
 .pic-page .option .mark.radio i{background:#4FA55E}
@@ -76,11 +76,6 @@
   background-position:var(--ref-frame-pos),0 0;
   background-repeat:no-repeat,repeat}
 .ref-scene-svg{position:absolute;inset:0;width:100%;height:100%}
-/* DinoGo Logo：独立于 ref-scene-svg，不受 slice 裁剪 → iPhone 等长屏自适应 */
-.dinogo-logo{position:absolute;left:0;right:0;bottom:0.35rem;z-index:0;
-  width:min(92%,32rem);aspect-ratio:700/125;margin:0 auto;pointer-events:none;
-  transform-origin:center bottom}
-.dinogo-logo-wrap{display:flex;justify-content:center}
 .quiz-ref-page .quiz-top,.quiz-ref-page .quiz-body,.quiz-ref-page .quiz-foot{position:relative;z-index:1}
 .quiz-ref-page .quiz-top{padding-top:0.5rem}
 .quiz-ref-page .qbar{background:rgba(255,255,255,.75);border:0.09375rem solid #E8D5AE}
@@ -123,7 +118,7 @@
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:3.75rem}
-.quiz-ref-page .ref-pic-options .option .word{font-size:1.125rem;color:#4B3626}
+.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);color:#4B3626}
 
 /* 听音选图 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -146,8 +141,9 @@
 .ref-listen-card-word.correct{color:#39754A}
 .ref-listen-card-word.wrong{color:#A74F3D}
 .ref-listen-mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;display:grid;place-items:center;
-  border:0.125rem solid var(--sticker-ink);border-radius:50%;background:#68BE83;color:#203B29;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1}
-.ref-listen-mark.bad{background:#F49385;color:#5C2B23}
+  border-radius:50%;background:#4FA55E;color:#fff;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1;
+  box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2);z-index:2}
+.ref-listen-mark.bad{background:#E8604A;color:#fff}
 
 /* 单词连线 */
 .ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(2rem,9vw,4rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;

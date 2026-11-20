@@ -19,12 +19,14 @@
 .listen svg{display:block}
 .listen-row{display:flex;justify-content:flex-end;margin-top:0.5rem;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex:none;margin-top:0.875rem}
-.option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;gap:0.5625rem;
-  padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:left;transition:all .15s ease}
+.option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;justify-content:center;gap:0.5625rem;
+  padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:center;transition:all .15s ease}
 .option .key{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:#F3EFE4;display:grid;place-items:center;
   font-size:0.75rem;font-weight:var(--w-black);color:#A6987B;flex:none;transition:all .15s ease}
-.option .word{font-size:1.125rem;font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2}
-.option .mark{margin-left:auto;width:1.375rem;height:1.375rem;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;flex:none}
+.option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2;min-width:0;white-space:nowrap}
+/* 答后勾叉：绝对定位到边框右上角，不参与文本排版 → 文本位置零位移 */
+.option .mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;border-radius:50%;background:#4FA55E;color:#fff;
+  display:grid;place-items:center;z-index:2;box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2)}
 .option .mark.bad{background:#E8604A}
 .option .mark.radio{background:#fff;border:0.125rem solid #3AA56B}
 .option .mark.radio i{display:block;width:0.625rem;height:0.625rem;border-radius:50%;background:#3AA56B}
@@ -82,8 +84,6 @@
 .zoo-btn-star{position:absolute;width:0.625rem;height:0.625rem}
 .zoo-btn-star.star-top{top:-0.3rem;right:-0.3rem}
 .zoo-btn-star.star-bottom{bottom:-0.3rem;left:-0.3rem}
-.zoo-feedback-card .bonus-choose{flex:1}
-.zoo-feedback-card.is-stack .zoo-feedback-body{flex-direction:column;align-items:stretch}
 /* 角上的草叶 / 藤蔓 / 落叶装饰 */
 .zoo-decor-grass,.zoo-decor-vine,.zoo-decor-leaf{position:absolute;pointer-events:none;z-index:1}
 .zoo-decor-grass{left:0.75rem;top:-0.65rem;width:3.5rem;height:auto}
@@ -105,10 +105,6 @@
   45%{opacity:1}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}
 }
-
-/* BOSS 关隐藏题：直接结算 / 挑战隐藏题 二选一 */
-.bonus-choose{display:flex;align-items:center;gap:0.5rem;width:100%}
-.bonus-choose .btn{flex:1 1 0;padding-left:0.5rem;padding-right:0.5rem;font-size:0.875rem}
 
 /* ============================================================
    🔊 喇叭按钮：圆形底色 + 点击抖动特效

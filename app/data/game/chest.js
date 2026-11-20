@@ -107,15 +107,6 @@
       return dino;
     },
 
-    /* 隐藏题答对：额外发放 1 个宝箱（BOSS 关第 6 题奖励） */
-    grantBonus() {
-      const s = _state();
-      ensureChests();
-      s.chests.unlocked += 1;
-      save();
-      return 1;
-    },
-
     /* 只读：当前有多少个额外宝箱待开 */
     available() {
       ensureChests();
