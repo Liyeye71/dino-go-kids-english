@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "0.78";
+const VERSION = "0.79";
 const ASSETS = [
   "./",
   "./index.html",
@@ -22,7 +22,23 @@ const ASSETS = [
   "./images/background/animal-zoo.webp",
   "./images/background/animal-zoo-cover.webp",
   "./images/background/animal-zoo-map.webp",
-  "./images/background/animal-ocean.webp"
+  "./images/background/animal-ocean.webp",
+  "./data/sounds/action/eat.wav",
+  "./data/sounds/action/sleep.wav",
+  "./data/sounds/action/jump.wav",
+  "./data/sounds/action/run.wav",
+  "./data/sounds/action/swim.wav",
+  "./data/sounds/action/roar.wav",
+  "./data/sounds/action/fly.wav",
+  "./data/sounds/action/bark.wav",
+  "./data/sounds/action/lick.wav",
+  "./data/sounds/action/bite.wav",
+  "./data/sounds/action/sing.wav",
+  "./data/sounds/action/splash.wav",
+  "./data/sounds/action/dig.wav",
+  "./data/sounds/action/walk.wav",
+  "./data/sounds/action/drink.wav",
+  "./data/sounds/action/sniff.wav"
 ];
 
 self.addEventListener("install", (event) => {

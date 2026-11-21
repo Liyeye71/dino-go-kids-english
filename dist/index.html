@@ -787,7 +787,8 @@ h1,h2,h3,h4,p{margin:0}
 }
 .listen.is-shaking,
 .zoo-audio-btn.is-shaking,
-.ref-listen-speaker.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
+.ref-listen-speaker.is-shaking,
+.ref-action-sound.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
 .listen.is-shaking svg,
 .zoo-audio-btn.is-shaking svg,
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
@@ -1040,6 +1041,16 @@ h1,h2,h3,h4,p{margin:0}
 .ref-action-stage.has-art > .ref-action-spark{opacity:0}
 .ref-action-stage.has-art::before{opacity:0}
 .ref-action-stage.has-art{background:#FFFFFF}
+.ref-action-sound{position:absolute;right:0.625rem;bottom:0.625rem;z-index:4;
+  display:inline-flex;align-items:center;gap:0.375rem;min-height:2.75rem;padding:0.25rem 0.25rem 0.25rem 0.625rem;
+  border:0.125rem solid #E7CFA9;border-radius:6.1875rem;background:rgba(255,255,255,.95);color:#806039;
+  box-shadow:0 0.1875rem 0.5rem rgba(92,65,29,.14);font-size:0.75rem;font-weight:var(--w-bold);line-height:1;white-space:nowrap;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s,background .15s}
+.ref-action-sound-icon{width:2rem;height:2rem;display:grid;place-items:center;flex:none;border-radius:50%;
+  background:#FFE477;color:#8C663D;transition:background .15s,color .15s}
+.ref-action-sound.is-playing{border-color:#E9A93C;background:#FFF8E7}
+.ref-action-sound.is-playing .ref-action-sound-icon{background:#FFC84D;color:#6F4B20}
+.ref-action-sound:active .ref-action-sound-icon{transform:scale(.92)}
 .ref-action-spark{position:absolute;color:#FFF0B8;font-size:1.125rem;z-index:1;animation:actSpark 1.4s ease-in-out infinite}
 .ref-action-spark.s1{left:22%;bottom:30%}
 .ref-action-spark.s2{right:20%;top:30%;animation-delay:.5s}
@@ -2344,7 +2355,7 @@ h1,h2,h3,h4,p{margin:0}
   position: relative;
   z-index: 1;
   flex: none;
-  width: min(calc(100% - 1.25rem), 26rem, 52cqh);
+  width: min(calc(100% - 2.5rem), 22rem, 44cqh);
   margin: 0.375rem auto calc(0.25rem + var(--safe-bottom));
   padding: 0;
   display: flex;
@@ -4384,6 +4395,7 @@ window.DINO_WORD_RULES.push({
       /* 进阶题型专用数据 */
       actor: w.actor || "",
       motion: w.motion || "",
+      actionSound: w.actionSound || "",
       owner: w.owner || "",
       focus: w.focus || null,
       compare: w.compare || null,
@@ -5007,17 +5019,21 @@ window.DINO_WORD_RULES.push({
           const actionSrc = q.img || `images/words/action/${q.assetKey && q.assetKey.indexOf("action-") === 0 ? q.assetKey : `action-${q.word}`}.webp`;
           return advancedLayout({
             wrap: "ref-action-wrap",
-            stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
-                  <span class="ref-action-sun"></span>
-                  <span class="ref-action-cloud c1"></span>
-                  <span class="ref-action-cloud c2"></span>
-                  <span class="ref-action-ground"></span>
-                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
+            stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}">
+                  <span class="ref-action-sun" aria-hidden="true"></span>
+                  <span class="ref-action-cloud c1" aria-hidden="true"></span>
+                  <span class="ref-action-cloud c2" aria-hidden="true"></span>
+                  <span class="ref-action-ground" aria-hidden="true"></span>
+                  <span class="ref-action-animal act-${motion}" aria-hidden="true"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
                   <img class="ref-action-img" src="${actionSrc}" alt=""
                     onload="this.parentElement.classList.add('has-art')"
                     onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">
-                  <span class="ref-action-spark s1">✦</span>
-                  <span class="ref-action-spark s2">✦</span>
+                  <span class="ref-action-spark s1" aria-hidden="true">✦</span>
+                  <span class="ref-action-spark s2" aria-hidden="true">✦</span>
+                  <button type="button" class="ref-action-sound" data-action="action-sound" data-sound="${q.actionSound || ""}"
+                    aria-label="${q.actionSound ? "听一听动作声音提示" : "该动作暂无声音提示"}" aria-pressed="false" ${q.actionSound ? "" : 'aria-disabled="true"'}>
+                    <span>听一听提示</span><span class="ref-action-sound-icon" aria-hidden="true">${I.speaker(19)}</span>
+                  </button>
                 </div>`,
             tipClass: "ref-action-tip",
             tip: "动物在干什么？",
@@ -5351,6 +5367,13 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
 };
+
+/* 仅为声音线索明确的动作配置本地拟声音效；其余动作点击喇叭不播放 */
+const ANIMAL_ACTION_SOUND_WORDS = new Set([
+  "eat", "sleep", "jump", "run", "swim", "roar", "fly", "bark",
+  "lick", "bite", "sing", "splash", "dig", "walk", "drink", "sniff",
+]);
+
 /* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
@@ -5404,6 +5427,7 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
     /* 动作题统一用 action-{word} 素材键，已有自定义键保持不变 */
     if (!w.assetKey || w.assetKey.indexOf("action-") !== 0) w.assetKey = `action-${w.word}`;
     w.img = w.img || `images/words/action/${w.assetKey}.webp`;
+    w.actionSound = ANIMAL_ACTION_SOUND_WORDS.has(w.word) ? w.word : "";
   } else if (w.category === "part") {
     w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
     w.assetKey = w.assetKey || w.ownerWord;
@@ -5761,6 +5785,54 @@ function speak(text) {
       say();
     }
   } catch (e) { /* ignore */ }
+}
+
+/* 动作猜猜：本地短拟声音效；未配置音效或全局静音时点击不处理 */
+let actionAudio = null;
+let actionAudioButton = null;
+
+function stopActionSound() {
+  const audio = actionAudio;
+  const btn = actionAudioButton;
+  actionAudio = null;
+  actionAudioButton = null;
+  if (audio) {
+    audio.pause();
+    try { audio.currentTime = 0; } catch (e) { /* audio not seekable yet */ }
+  }
+  if (btn) {
+    btn.classList.remove("is-playing");
+    btn.setAttribute("aria-pressed", "false");
+  }
+}
+
+function playActionSound(name, btn) {
+  stopActionSound();
+  if (!name || !state.sound || !btn) return false;
+  const audio = new Audio();
+  actionAudio = audio;
+  actionAudioButton = btn;
+  const cleanup = () => {
+    if (actionAudio !== audio) return;
+    actionAudio = null;
+    actionAudioButton = null;
+    btn.classList.remove("is-playing");
+    btn.setAttribute("aria-pressed", "false");
+  };
+  const fail = () => {
+    if (actionAudio !== audio) return;
+    cleanup();
+    if (typeof toast === "function") toast("声音提示加载失败，请再试一次");
+  };
+  audio.preload = "auto";
+  audio.src = `data/sounds/action/${encodeURIComponent(name)}.wav`;
+  audio.addEventListener("ended", cleanup, { once: true });
+  audio.addEventListener("error", fail, { once: true });
+  btn.classList.add("is-playing");
+  btn.setAttribute("aria-pressed", "true");
+  const playing = audio.play();
+  if (playing && typeof playing.catch === "function") playing.catch(fail);
+  return true;
 }
 
 /* 关卡提示音：进入某主题关卡时播放的短旋律 */
@@ -6429,7 +6501,11 @@ function setTimer(fn, ms) {
   timers.push(id);
   return id;
 }
-function clearTimers() { timers.forEach((t) => clearTimeout(t)); timers = []; }
+function clearTimers() {
+  timers.forEach((t) => clearTimeout(t));
+  timers = [];
+  stopActionSound();
+}
 
 /* 全新存档：零星星、零成长、零记录，所有主题从第 1 关开始 */
 function initialState() {
@@ -6640,6 +6716,8 @@ document.addEventListener("click", (e) => {
   } else if (action === "listen-selected") {
     shakeBtn(el);
     listenSelected();
+  } else if (action === "action-sound") {
+    if (playActionSound(el.dataset.sound, el)) shakeBtn(el);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "close-quiz") {
@@ -6789,6 +6867,7 @@ document.addEventListener("click", (e) => {
     state.sound = !state.sound;
     save();
     if (state.sound) { ensureAudio(); sfx("tap"); }
+    else stopActionSound();
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
   } else if (action === "install-guide") {
@@ -7755,6 +7834,7 @@ function feedCheck() {
 
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
+  stopActionSound();
   const q = quiz.order[quiz.index];
   /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
   const correctValue = q.answerValue != null ? q.answerValue : q.word;

@@ -63,6 +63,15 @@ for (const file of ["manifest.webmanifest", "sw.js"]) {
 for (const file of fs.readdirSync(iconsDir)) {
   fs.copyFileSync(path.join(iconsDir, file), path.join(distDir, "data", "icons", file));
 }
+/* 动作猜猜拟声音效：仅在点击喇叭时播放 */
+const actionSoundDir = path.join(appDir, "data", "sounds", "action");
+if (fs.existsSync(actionSoundDir)) {
+  const outDir = path.join(distDir, "data", "sounds", "action");
+  fs.mkdirSync(outDir, { recursive: true });
+  for (const file of fs.readdirSync(actionSoundDir).filter((f) => /\.wav$/i.test(f))) {
+    fs.copyFileSync(path.join(actionSoundDir, file), path.join(outDir, file));
+  }
+}
 /* 恐龙素材：源文件放在 app/data/images/material/dino/（.webp 供页面使用） */
 const dinoDir = path.join(appDir, "data", "images", "material", "dino");
 if (fs.existsSync(dinoDir)) {

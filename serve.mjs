@@ -18,6 +18,7 @@ const MIME = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".svg": "image/svg+xml",
+  ".wav": "audio/wav",
   ".ico": "image/x-icon",
   ".txt": "text/plain; charset=utf-8",
   ".md": "text/plain; charset=utf-8",

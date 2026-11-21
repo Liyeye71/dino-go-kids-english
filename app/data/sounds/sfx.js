@@ -79,6 +79,54 @@ function speak(text) {
   } catch (e) { /* ignore */ }
 }
 
+/* 动作猜猜：本地短拟声音效；未配置音效或全局静音时点击不处理 */
+let actionAudio = null;
+let actionAudioButton = null;
+
+function stopActionSound() {
+  const audio = actionAudio;
+  const btn = actionAudioButton;
+  actionAudio = null;
+  actionAudioButton = null;
+  if (audio) {
+    audio.pause();
+    try { audio.currentTime = 0; } catch (e) { /* audio not seekable yet */ }
+  }
+  if (btn) {
+    btn.classList.remove("is-playing");
+    btn.setAttribute("aria-pressed", "false");
+  }
+}
+
+function playActionSound(name, btn) {
+  stopActionSound();
+  if (!name || !state.sound || !btn) return false;
+  const audio = new Audio();
+  actionAudio = audio;
+  actionAudioButton = btn;
+  const cleanup = () => {
+    if (actionAudio !== audio) return;
+    actionAudio = null;
+    actionAudioButton = null;
+    btn.classList.remove("is-playing");
+    btn.setAttribute("aria-pressed", "false");
+  };
+  const fail = () => {
+    if (actionAudio !== audio) return;
+    cleanup();
+    if (typeof toast === "function") toast("声音提示加载失败，请再试一次");
+  };
+  audio.preload = "auto";
+  audio.src = `data/sounds/action/${encodeURIComponent(name)}.wav`;
+  audio.addEventListener("ended", cleanup, { once: true });
+  audio.addEventListener("error", fail, { once: true });
+  btn.classList.add("is-playing");
+  btn.setAttribute("aria-pressed", "true");
+  const playing = audio.play();
+  if (playing && typeof playing.catch === "function") playing.catch(fail);
+  return true;
+}
+
 /* 关卡提示音：进入某主题关卡时播放的短旋律 */
 const LEVEL_CUES = {
   animal: [

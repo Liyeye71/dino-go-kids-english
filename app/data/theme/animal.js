@@ -221,6 +221,13 @@ const ANIMAL_ADJ_ASSET_KEYS = {
   hungry: "wolf-meal",       full: "wolf-meal",
   angry: "monkey-mood",      scared: "monkey-mood",
 };
+
+/* 仅为声音线索明确的动作配置本地拟声音效；其余动作点击喇叭不播放 */
+const ANIMAL_ACTION_SOUND_WORDS = new Set([
+  "eat", "sleep", "jump", "run", "swim", "roar", "fly", "bark",
+  "lick", "bite", "sing", "splash", "dig", "walk", "drink", "sniff",
+]);
+
 /* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
@@ -274,6 +281,7 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
     /* 动作题统一用 action-{word} 素材键，已有自定义键保持不变 */
     if (!w.assetKey || w.assetKey.indexOf("action-") !== 0) w.assetKey = `action-${w.word}`;
     w.img = w.img || `images/words/action/${w.assetKey}.webp`;
+    w.actionSound = ANIMAL_ACTION_SOUND_WORDS.has(w.word) ? w.word : "";
   } else if (w.category === "part") {
     w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
     w.assetKey = w.assetKey || w.ownerWord;

@@ -307,6 +307,7 @@ function feedCheck() {
 
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
+  stopActionSound();
   const q = quiz.order[quiz.index];
   /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
   const correctValue = q.answerValue != null ? q.answerValue : q.word;

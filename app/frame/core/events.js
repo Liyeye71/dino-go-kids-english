@@ -42,6 +42,8 @@ document.addEventListener("click", (e) => {
   } else if (action === "listen-selected") {
     shakeBtn(el);
     listenSelected();
+  } else if (action === "action-sound") {
+    if (playActionSound(el.dataset.sound, el)) shakeBtn(el);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "close-quiz") {
@@ -191,6 +193,7 @@ document.addEventListener("click", (e) => {
     state.sound = !state.sound;
     save();
     if (state.sound) { ensureAudio(); sfx("tap"); }
+    else stopActionSound();
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
   } else if (action === "install-guide") {

@@ -164,6 +164,7 @@
       /* 进阶题型专用数据 */
       actor: w.actor || "",
       motion: w.motion || "",
+      actionSound: w.actionSound || "",
       owner: w.owner || "",
       focus: w.focus || null,
       compare: w.compare || null,
@@ -787,17 +788,21 @@
           const actionSrc = q.img || `images/words/action/${q.assetKey && q.assetKey.indexOf("action-") === 0 ? q.assetKey : `action-${q.word}`}.webp`;
           return advancedLayout({
             wrap: "ref-action-wrap",
-            stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
-                  <span class="ref-action-sun"></span>
-                  <span class="ref-action-cloud c1"></span>
-                  <span class="ref-action-cloud c2"></span>
-                  <span class="ref-action-ground"></span>
-                  <span class="ref-action-animal act-${motion}"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
+            stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}">
+                  <span class="ref-action-sun" aria-hidden="true"></span>
+                  <span class="ref-action-cloud c1" aria-hidden="true"></span>
+                  <span class="ref-action-cloud c2" aria-hidden="true"></span>
+                  <span class="ref-action-ground" aria-hidden="true"></span>
+                  <span class="ref-action-animal act-${motion}" aria-hidden="true"><span class="ref-action-emoji">${q.actor || q.emoji || "🐾"}</span></span>
                   <img class="ref-action-img" src="${actionSrc}" alt=""
                     onload="this.parentElement.classList.add('has-art')"
                     onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.remove()}">
-                  <span class="ref-action-spark s1">✦</span>
-                  <span class="ref-action-spark s2">✦</span>
+                  <span class="ref-action-spark s1" aria-hidden="true">✦</span>
+                  <span class="ref-action-spark s2" aria-hidden="true">✦</span>
+                  <button type="button" class="ref-action-sound" data-action="action-sound" data-sound="${q.actionSound || ""}"
+                    aria-label="${q.actionSound ? "听一听动作声音提示" : "该动作暂无声音提示"}" aria-pressed="false" ${q.actionSound ? "" : 'aria-disabled="true"'}>
+                    <span>听一听提示</span><span class="ref-action-sound-icon" aria-hidden="true">${I.speaker(19)}</span>
+                  </button>
                 </div>`,
             tipClass: "ref-action-tip",
             tip: "动物在干什么？",
