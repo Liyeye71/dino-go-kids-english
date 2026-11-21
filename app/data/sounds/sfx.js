@@ -97,6 +97,14 @@ function speak(text) {
   } catch (e) { /* ignore */ }
 }
 
+/* 立即停止当前朗读（关闭答题页时调用，避免返回页面后继续读题型提示） */
+function stopSpeak() {
+  speakToken += 1;
+  try {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  } catch (e) { /* ignore */ }
+}
+
 /* 动作猜猜：本地短拟声音效；未配置音效或全局静音时点击不处理 */
 let actionAudio = null;
 let actionAudioButton = null;

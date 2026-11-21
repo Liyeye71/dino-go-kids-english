@@ -49,6 +49,9 @@ document.addEventListener("click", (e) => {
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "close-quiz") {
+    /* 关闭答题页时立即中断题型提示 / 单词朗读与动作拟声音效 */
+    stopSpeak();
+    stopActionSound();
     quiz = null;
     const prevTheme = state.theme;
     const prevScene = state.scene;

@@ -145,7 +145,8 @@
    - 棋盘地图按 1505/1045 铺满，50 个节点落在图上 1~50 号圆点
    - 支持 100%~250% 缩放，当前关自动滚入视口中央
    ============================================================ */
-.sheet.zoo-route-sheet{max-width:min(36.5rem,calc(96vw - 1rem))}
+/* 抽屉宽度随屏幕自适应：大屏（iPad / 桌面）铺开到接近整屏，避免地图过窄 */
+.sheet.zoo-route-sheet{width:100%;max-width:min(64rem,calc(96vw - 1rem))}
 .zoo-route-head{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0 0.25rem 0.5rem}
 /* 主副标题同一行、底部对齐；窄屏时自动换行 */
 .zoo-route-title{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0.125rem 0.5rem;min-width:0}
