@@ -168,6 +168,8 @@
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
   color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black);cursor:pointer}
 .ref-match-word-card.is-shaking{animation:shake .32s ease}
+.pz-hint{cursor:pointer;touch-action:manipulation}
+.pz-hint.is-shaking{animation:shake .32s ease}
 .ref-match-dot{position:relative;display:grid;place-items:center;width:1.5rem;height:1.5rem;flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 var(--sticker-ink);
   cursor:pointer;touch-action:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}

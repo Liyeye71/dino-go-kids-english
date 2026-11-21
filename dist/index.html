@@ -1358,6 +1358,8 @@ h1,h2,h3,h4,p{margin:0}
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
   color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black);cursor:pointer}
 .ref-match-word-card.is-shaking{animation:shake .32s ease}
+.pz-hint{cursor:pointer;touch-action:manipulation}
+.pz-hint.is-shaking{animation:shake .32s ease}
 .ref-match-dot{position:relative;display:grid;place-items:center;width:1.5rem;height:1.5rem;flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 var(--sticker-ink);
   cursor:pointer;touch-action:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
@@ -4452,14 +4454,13 @@ window.DINO_WORD_SETS.push({
         title: "拖动字母块，拼出单词！",
         prompt: "Spell the word with the letters.",
         build(task) {
-          /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
-             字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
+          /* 每道题随机留 1~3 个空槽需要拖拽填充，其余字母直接作为提示显示 */
           const letters = task.word.toUpperCase().split("");
-          const maxHints = Math.max(0, Math.min(2, letters.length - 3));
-          const hintCount = Math.floor(Math.random() * (maxHints + 1));
-          const hinted = new Set(
-            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, hintCount)
+          const blankCount = Math.min(letters.length, 1 + Math.floor(Math.random() * 3));
+          const blankIdx = new Set(
+            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, blankCount)
           );
+          const hinted = new Set(letters.map((_, i) => i).filter((i) => !blankIdx.has(i)));
           const missing = letters.map((ch, i) => ({ ch, i })).filter((m) => !hinted.has(m.i));
 
           /* 连续缺失字母分段，段内相邻字母才能合并成一块（提示字母把词隔断） */
@@ -7674,6 +7675,8 @@ function feedCheck() {
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
     quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    /* 答对后弹框自动朗读正确的食物单词 */
+    setTimer(() => speak(q.correctFood), 600);
     unlockTaskWord(q);
     WrongBank.applyResult(q, true);
   } else {
@@ -7760,6 +7763,7 @@ window.QuizView = {
     const q = quiz.order[quiz.index];
     this.abort = new AbortController();
     if (q.type === "match") this.setupMatch(root);
+    if (q.type === "word_puzzle") this.setupPuzzle(root, q);
     if (q.type === "word_puzzle" || q.type === "feed_animal") this.setupDragging(root);
   },
 
@@ -7836,6 +7840,14 @@ window.QuizView = {
     area.querySelectorAll("[data-match-dot]").forEach((dot) => {
       dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
     });
+    /* 点击整行（图片框 / 单词框）也能发起连线：以该行圆点作为拖拽起点 */
+    area.querySelectorAll("[data-match-row]").forEach((row) => {
+      row.addEventListener("pointerdown", (e) => {
+        if (e.target.closest("[data-match-dot]")) return;
+        const dot = row.querySelector("[data-match-dot]");
+        if (dot) this.startMatchDrag(e, dot);
+      }, options);
+    });
     /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
     area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
       row.addEventListener("click", (e) => {
@@ -7850,6 +7862,19 @@ window.QuizView = {
         }
       }, options);
     });
+  },
+
+  /* 词汇拼图：点击提示图片朗读正确单词 */
+  setupPuzzle(root, q) {
+    const hint = root.querySelector(".pz-hint");
+    if (!hint) return;
+    hint.addEventListener("click", () => {
+      if (!quiz) return;
+      speak(q.word);
+      hint.classList.remove("is-shaking");
+      void hint.offsetWidth;
+      hint.classList.add("is-shaking");
+    }, { signal: this.abort.signal });
   },
 
   /* 图片是否已连过（一张图只能连一次）；单词框可复用，始终返回 false */
@@ -7904,9 +7929,11 @@ window.QuizView = {
       if (cancelled) return;
 
       if (drag.moved) {
-        /* 拖拽模式：找释放位置的另一个侧圆点 */
+        /* 拖拽模式：释放到另一侧圆点或整行（图片框 / 单词框）都视为连线目标 */
         const target = document.elementFromPoint(ev.clientX, ev.clientY);
-        const targetDot = target && target.closest("[data-match-dot]");
+        const targetRow = target && target.closest("[data-match-row]");
+        const targetDot = (target && target.closest("[data-match-dot]")) ||
+          (targetRow && targetRow.querySelector("[data-match-dot]"));
         if (targetDot && targetDot !== dot && targetDot.dataset.matchSide !== side) {
           this.tryConnect(dot, targetDot);
         }

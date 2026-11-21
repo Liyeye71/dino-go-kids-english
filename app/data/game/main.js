@@ -317,6 +317,8 @@ function feedCheck() {
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
     quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    /* 答对后弹框自动朗读正确的食物单词 */
+    setTimer(() => speak(q.correctFood), 600);
     unlockTaskWord(q);
     WrongBank.applyResult(q, true);
   } else {

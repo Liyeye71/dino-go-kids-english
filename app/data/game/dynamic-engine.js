@@ -710,14 +710,13 @@
         title: "拖动字母块，拼出单词！",
         prompt: "Spell the word with the letters.",
         build(task) {
-          /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
-             字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
+          /* 每道题随机留 1~3 个空槽需要拖拽填充，其余字母直接作为提示显示 */
           const letters = task.word.toUpperCase().split("");
-          const maxHints = Math.max(0, Math.min(2, letters.length - 3));
-          const hintCount = Math.floor(Math.random() * (maxHints + 1));
-          const hinted = new Set(
-            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, hintCount)
+          const blankCount = Math.min(letters.length, 1 + Math.floor(Math.random() * 3));
+          const blankIdx = new Set(
+            letters.map((_, i) => i).sort(() => Math.random() - 0.5).slice(0, blankCount)
           );
+          const hinted = new Set(letters.map((_, i) => i).filter((i) => !blankIdx.has(i)));
           const missing = letters.map((ch, i) => ({ ch, i })).filter((m) => !hinted.has(m.i));
 
           /* 连续缺失字母分段，段内相邻字母才能合并成一块（提示字母把词隔断） */

@@ -16,6 +16,7 @@ window.QuizView = {
     const q = quiz.order[quiz.index];
     this.abort = new AbortController();
     if (q.type === "match") this.setupMatch(root);
+    if (q.type === "word_puzzle") this.setupPuzzle(root, q);
     if (q.type === "word_puzzle" || q.type === "feed_animal") this.setupDragging(root);
   },
 
@@ -92,6 +93,14 @@ window.QuizView = {
     area.querySelectorAll("[data-match-dot]").forEach((dot) => {
       dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
     });
+    /* 点击整行（图片框 / 单词框）也能发起连线：以该行圆点作为拖拽起点 */
+    area.querySelectorAll("[data-match-row]").forEach((row) => {
+      row.addEventListener("pointerdown", (e) => {
+        if (e.target.closest("[data-match-dot]")) return;
+        const dot = row.querySelector("[data-match-dot]");
+        if (dot) this.startMatchDrag(e, dot);
+      }, options);
+    });
     /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
     area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
       row.addEventListener("click", (e) => {
@@ -106,6 +115,19 @@ window.QuizView = {
         }
       }, options);
     });
+  },
+
+  /* 词汇拼图：点击提示图片朗读正确单词 */
+  setupPuzzle(root, q) {
+    const hint = root.querySelector(".pz-hint");
+    if (!hint) return;
+    hint.addEventListener("click", () => {
+      if (!quiz) return;
+      speak(q.word);
+      hint.classList.remove("is-shaking");
+      void hint.offsetWidth;
+      hint.classList.add("is-shaking");
+    }, { signal: this.abort.signal });
   },
 
   /* 图片是否已连过（一张图只能连一次）；单词框可复用，始终返回 false */
@@ -160,9 +182,11 @@ window.QuizView = {
       if (cancelled) return;
 
       if (drag.moved) {
-        /* 拖拽模式：找释放位置的另一个侧圆点 */
+        /* 拖拽模式：释放到另一侧圆点或整行（图片框 / 单词框）都视为连线目标 */
         const target = document.elementFromPoint(ev.clientX, ev.clientY);
-        const targetDot = target && target.closest("[data-match-dot]");
+        const targetRow = target && target.closest("[data-match-row]");
+        const targetDot = (target && target.closest("[data-match-dot]")) ||
+          (targetRow && targetRow.querySelector("[data-match-dot]"));
         if (targetDot && targetDot !== dot && targetDot.dataset.matchSide !== side) {
           this.tryConnect(dot, targetDot);
         }
