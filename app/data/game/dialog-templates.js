@@ -144,6 +144,9 @@
 
     const two = shuffle(others).slice(0, 2);
     const food = foodEn(w.food);
+    /* 结果卡展示正确答案时使用的中文翻译素材 */
+    const foodZh = (w.food && w.food.zh) || food;
+    const animalZh = w.zh || w.word;
     /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
     const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
     const modes = ["word"];
@@ -172,6 +175,7 @@
           ]),
           answerValue: correct,
           answerText: correct,
+          answerZh: `它吃${foodZh}。`,
         };
       }
     }
@@ -198,6 +202,7 @@
           options: shuffle(options.map((v) => ({ value: v, label: v }))),
           answerValue: correct,
           answerText: correct,
+          answerZh: isRight ? "是的，它吃。" : `不，它不吃。它吃${foodZh}。`,
         };
       }
     }
@@ -218,6 +223,7 @@
         ]),
         answerValue: correct,
         answerText: correct,
+        answerZh: `不，它不是。它是${animalZh}。`,
       };
     }
 
@@ -265,5 +271,45 @@
     };
   }
 
-  window.DialogTemplates = { build, ASKS: DEFAULT_ASKS, SCOPES };
+  /* 情景对话出场角色：动物园场景下随机安排
+     动物×动物（两个动物朋友聊画面里的动物）、小朋友×小朋友、饲养员×小朋友。
+     动物头像只用 QuizUiArt 内置的纯 SVG 白名单，避免和题目配图混淆 */
+  const CAST_NAMES = { boy: "Ben", girl: "Mia", keeper: "Zookeeper" };
+  const cap = (word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : "");
+  function buildCast(task, pool, dlg) {
+    if (!task || !dlg) return null;
+    if (typeof window.isZooScene !== "function" || !window.isZooScene()) return null;
+    const avatarWords = typeof QuizUiArt !== "undefined" && Array.isArray(QuizUiArt.zooAnimalWords)
+      ? QuizUiArt.zooAnimalWords : [];
+    const others = (pool || []).filter((x) =>
+      x && x.animal && x.word && x.word !== task.word && avatarWords.indexOf(x.word) >= 0
+    );
+    const kinds = ["kids", "keeper"];
+    /* 图片选项题的画面在选项里，不使用动物角色，避免角色与题目混淆 */
+    if (others.length >= 2 && dlg.mode !== "image") kinds.push("animal");
+    const kind = pick(kinds);
+    if (kind === "animal") {
+      const [friendA, friendB] = shuffle(others).slice(0, 2);
+      return {
+        kind,
+        ask: { type: "animal", word: friendA.word, name: cap(friendA.word) },
+        reply: { type: "animal", word: friendB.word, name: cap(friendB.word) },
+      };
+    }
+    if (kind === "keeper") {
+      return {
+        kind,
+        ask: { type: "keeper", name: CAST_NAMES.keeper },
+        reply: { type: "child", gender: "girl", name: CAST_NAMES.girl },
+      };
+    }
+    const boyFirst = Math.random() < 0.5;
+    return {
+      kind: "kids",
+      ask: { type: "child", gender: boyFirst ? "boy" : "girl", name: CAST_NAMES[boyFirst ? "boy" : "girl"] },
+      reply: { type: "child", gender: boyFirst ? "girl" : "boy", name: CAST_NAMES[boyFirst ? "girl" : "boy"] },
+    };
+  }
+
+  window.DialogTemplates = { build, buildCast, ASKS: DEFAULT_ASKS, SCOPES };
 })();

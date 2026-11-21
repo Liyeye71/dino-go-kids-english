@@ -28,12 +28,11 @@
   ];
 
   /* BOSS 关固定配比：5 题全部为进阶题型
-     词汇拼图/连线/喂食 + 情景对话 + 动作猜猜 + 对比观察 */
+     词汇拼图/连线/喂食 + 2 道情景对话 + 动作猜猜 + 局部/对比观察 */
   const BOSS_MIX = [
     { role: "noun",      count: 1 },
-    { role: "dialog",    count: 1 },
+    { role: "dialog",    count: 2 },
     { role: "verb",      count: 1 },
-    { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
   const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
@@ -384,6 +383,7 @@
       pic: {
         label: "看图选词",
         title: "看图，选出正确的单词",
+        prompt: "What is this animal?",
         pageClass: "pic-page",
         build: threeChoiceBuild,
         render({ q, choiceButton, options }) {
@@ -403,6 +403,7 @@
       listen: {
         label: "听音选图",
         title: "听单词，选出正确的图片",
+        prompt: "Listen and choose the correct picture.",
         autoSpeak: true,
         build: threeChoiceBuild,
         render({ q, quiz, artOf }) {
@@ -438,6 +439,7 @@
       match: {
         label: "单词连线",
         title: "把单词和图片连起来",
+        prompt: "Match the words with the pictures.",
         build(task, pool) {
           /* 只连同类词，避免连线题里混进动词/形容词 */
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
@@ -566,10 +568,15 @@
             ? window.DialogTemplates.build(task, pool, { themeId: currentTheme().id, sceneId: state.scene })
             : null;
           if (dlg) {
+            /* 动物园场景：为 A / B 随机安排对话角色（动物、小朋友、饲养员） */
+            dlg.cast = window.DialogTemplates.buildCast
+              ? window.DialogTemplates.buildCast(task, pool, dlg)
+              : null;
             markDialogWords(dlg, task, pool);
             task.dialog = dlg;
             task.answerValue = dlg.answerValue;
             task.answerText = dlg.answerText;
+            task.answerZh = dlg.answerZh || "";
             if (dlg.mode === "word") task.options = dlg.options.map((o) => o.value);
             return;
           }
@@ -598,6 +605,50 @@
           const askPic = d && d.askImg
             ? `<span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span>`
             : "";
+          /* 出场角色：动物朋友 / 小朋友 / 饲养员，未配置时回退到 A、B 小朋友 */
+          const cast = d && d.cast;
+          const personArt = (p) => {
+            if (p && p.type === "animal") {
+              /* 角色头像用内置纯 SVG，不加载单词素材图片 */
+              return QuizUiArt.zooAnimal(p.word) || QuizUiArt.child("boy");
+            }
+            if (p && p.type === "keeper") return QuizUiArt.zookeeper();
+            const gender = p && p.gender === "girl" ? "girl" : "boy";
+            return QuizUiArt.child(gender);
+          };
+          const person = (p, fallbackGender) => {
+            const kind = p ? p.type : "child";
+            return `<div class="ref-dialog-person person--${kind}">${personArt(p || { type: "child", gender: fallbackGender })}</div>`;
+          };
+          const nameTag = (p, fallback) => `<span class="ref-dialog-name">${p ? p.name : fallback}</span>`;
+          const zooDeco = window.isZooScene && isZooScene()
+            ? `<div class="ref-dialog-zoo" aria-hidden="true">
+                <svg class="zd-vine" viewBox="0 0 120 92">
+                  <path d="M8 88Q34 46 112 10" fill="none" stroke="#3F7E4A" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M38 62C22 52 26 28 44 30C52 44 50 56 38 62Z" fill="#8FD07A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                  <path d="M64 42C70 22 92 20 98 34C90 48 76 50 64 42Z" fill="#B6E39A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                  <path d="M86 24C92 10 112 12 114 24C106 34 94 32 86 24Z" fill="#8FD07A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                </svg>
+                <svg class="zd-paws" viewBox="0 0 92 50">
+                  <g fill="#C79A54" opacity=".45">
+                    <g transform="translate(6 16) rotate(-14)">
+                      <ellipse cx="14" cy="20" rx="8" ry="7"/>
+                      <circle cx="5" cy="9" r="3.2"/><circle cx="12" cy="6" r="3.2"/><circle cx="19" cy="7" r="3.5"/><circle cx="25" cy="12" r="2.8"/>
+                    </g>
+                    <g transform="translate(48 2) rotate(12)">
+                      <ellipse cx="14" cy="20" rx="7" ry="6"/>
+                      <circle cx="6" cy="10" r="2.8"/><circle cx="12" cy="7.5" r="2.8"/><circle cx="18" cy="8" r="3"/><circle cx="23" cy="12" r="2.4"/>
+                    </g>
+                  </g>
+                </svg>
+                <svg class="zd-grass" viewBox="0 0 74 36">
+                  <g fill="none" stroke="#5FA05A" stroke-width="3" stroke-linecap="round">
+                    <path d="M10 34Q8 20 2 14"/><path d="M21 34Q21 16 21 7"/>
+                    <path d="M32 34Q34 18 42 12"/><path d="M43 34Q47 24 55 20"/>
+                  </g>
+                </svg>
+              </div>`
+            : "";
           let askText = q.dlgQ;
           let replyHtml = "";
           if (d) {
@@ -612,9 +663,8 @@
             askText = q.dlgQ.replace("{word}", q.word);
             replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
           }
-          /* 喇叭朗读 A 提问框里的整句英文（去掉高亮标签，避免读出 HTML） */
+          /* 点击 A 的对话气泡直接朗读提问句（去掉高亮标签，避免读出 HTML） */
           const askSoundText = askText.replace(/<[^>]*>/g, "");
-          const askSound = `<button class="listen" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="朗读 A 的句子">${I.speaker(16)}</button>`;
           let optionHtml;
           if (!d) {
             optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
@@ -643,12 +693,12 @@
           }
           return {
             body: `<div class="ref-dialog-card">
-                <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${askText}</p>${askPic}</div></div>
-                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
-                  <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
+                ${zooDeco}
+                <div class="ref-dialog-row">${person(cast && cast.ask, "boy")}
+                  <div class="ref-dialog-bubble ref-dialog-ask" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="点击朗读 A 的句子">${nameTag(cast && cast.ask, "A")}<p>${askText}</p>${askPic}</div></div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble">${nameTag(cast && cast.reply, "B")}${replyHtml}</div>
+                  ${person(cast && cast.reply, "girl")}</div>
               </div>
-              <div class="listen-row ref-dialog-listen">${askSound}</div>
               ${optionHtml}`,
             btn: choiceButton("选一个答案"),
           };
@@ -658,6 +708,7 @@
       word_puzzle: {
         label: "词汇拼图",
         title: "拖动字母块，拼出单词！",
+        prompt: "Spell the word with the letters.",
         build(task) {
           /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
              字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
@@ -751,6 +802,7 @@
       feed_animal: {
         label: "动物喂食",
         title: "给动物喂它爱吃的食物！",
+        prompt: "What does this animal like to eat?",
         build(task, pool) {
           /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
           const unique = [];
@@ -822,6 +874,7 @@
       action: {
         label: "动作猜猜",
         title: "看动作，选出正确的单词",
+        prompt: "What is the animal doing?",
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
@@ -856,6 +909,7 @@
       body_zoom: {
         label: "局部特写",
         title: "放大看看，这是哪个部位？",
+        prompt: "Which body part is this?",
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const f = q.focus || { x: "0%", y: "0%", scale: 2 };
@@ -885,6 +939,7 @@
       compare: {
         label: "对比观察",
         title: "对比看看，选出正确的单词",
+        prompt: "Which word describes the animal?",
         build: buildCompareOptions,
         render({ q, quiz, options }) {
           const c = q.compare || { a: { emoji: q.emoji || "🐾", scale: 1 }, b: { emoji: "🐾", scale: 1 }, target: "a" };

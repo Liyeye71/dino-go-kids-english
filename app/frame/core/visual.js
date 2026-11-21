@@ -36,6 +36,92 @@ const I = {
 
 /* ------------------------------------------------ quiz UI art */
 /* 答题页通用奶油卡通素材；题目单词图仍由 wordArt/artOf 提供 */
+/* 情景对话的动物角色头像：纯 SVG 绘制，不使用单词素材图片，避免与题目配图混淆 */
+const ZOO_AVATAR_ART = {
+  panda: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="31" cy="30" r="14" fill="#3E3A36" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="89" cy="30" r="14" fill="#3E3A36" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="66" r="41" fill="#FFFDF6" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="43" cy="62" rx="12" ry="15" fill="#3E3A36" transform="rotate(-18 43 62)"/>
+    <ellipse cx="77" cy="62" rx="12" ry="15" fill="#3E3A36" transform="rotate(18 77 62)"/>
+    <circle cx="45" cy="62" r="4" fill="#FFFDF6"/><circle cx="75" cy="62" r="4" fill="#FFFDF6"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#3E3A36"/>
+    <path d="M51 88q9 7 18 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  monkey: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="22" cy="52" r="15" fill="#C98A55" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="98" cy="52" r="15" fill="#C98A55" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="64" r="40" fill="#D89A63" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="78" rx="25" ry="20" fill="#F6D3A8" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="46" cy="57" r="4.5" fill="#4B3626"/><circle cx="74" cy="57" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="74" rx="5" ry="4" fill="#4B3626"/>
+    <path d="M51 85q9 7 18 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  rabbit: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="43" cy="28" rx="11" ry="25" fill="#F7F2E7" stroke="#5C411D" stroke-width="5" transform="rotate(-8 43 28)"/>
+    <ellipse cx="77" cy="28" rx="11" ry="25" fill="#F7F2E7" stroke="#5C411D" stroke-width="5" transform="rotate(8 77 28)"/>
+    <ellipse cx="43" cy="29" rx="4.5" ry="15" fill="#F2B7C4"/>
+    <ellipse cx="77" cy="29" rx="4.5" ry="15" fill="#F2B7C4"/>
+    <circle cx="60" cy="69" r="38" fill="#F7F2E7" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="46" cy="64" r="4.5" fill="#4B3626"/><circle cx="74" cy="64" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="77" rx="5.5" ry="4" fill="#E48A9E"/>
+    <path d="M60 81v6M52 88q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  duck: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="66" r="38" fill="#FFD75E" stroke="#5C411D" stroke-width="5"/>
+    <path d="M49 30q5-14 16-10" fill="none" stroke="#EFAF2F" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="46" cy="59" r="4.5" fill="#4B3626"/><circle cx="74" cy="59" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="80" rx="17" ry="10" fill="#F79B3E" stroke="#5C411D" stroke-width="4"/>
+    <path d="M44 80q16 6 32 0" fill="none" stroke="#D97B22" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+  lion: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <g fill="#E8A33D" stroke="#5C411D" stroke-width="4">
+      <circle cx="104" cy="64" r="10"/><circle cx="96" cy="90" r="10"/><circle cx="74" cy="106" r="10"/>
+      <circle cx="46" cy="106" r="10"/><circle cx="24" cy="90" r="10"/><circle cx="16" cy="64" r="10"/>
+      <circle cx="24" cy="38" r="10"/><circle cx="46" cy="22" r="10"/><circle cx="74" cy="22" r="10"/><circle cx="96" cy="38" r="10"/>
+    </g>
+    <circle cx="60" cy="64" r="44" fill="#E8A33D" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="66" r="31" fill="#FFD08A" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="80" rx="16" ry="11" fill="#FFE7BE"/>
+    <circle cx="48" cy="63" r="4.5" fill="#4B3626"/><circle cx="72" cy="63" r="4.5" fill="#4B3626"/>
+    <path d="M55 76h10l-5 6z" fill="#4B3626"/>
+    <path d="M52 87q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  elephant: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="24" cy="64" rx="20" ry="27" fill="#AEBAC6" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="96" cy="64" rx="20" ry="27" fill="#AEBAC6" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="62" r="37" fill="#BCC8D4" stroke="#5C411D" stroke-width="5"/>
+    <path d="M60 84q-2 19 5 27q7 7 13 1" fill="none" stroke="#5C411D" stroke-width="15" stroke-linecap="round"/>
+    <path d="M60 84q-2 19 5 27q7 7 13 1" fill="none" stroke="#BCC8D4" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="47" cy="58" r="4.5" fill="#4B3626"/><circle cx="73" cy="58" r="4.5" fill="#4B3626"/>
+    <path d="M44 80q-6 6-2 12M76 80q6 6 2 12" fill="none" stroke="#FFFDF6" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  giraffe: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M46 26V15M74 26V15" stroke="#5C411D" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="46" cy="12" r="6" fill="#C98A3E" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="74" cy="12" r="6" fill="#C98A3E" stroke="#5C411D" stroke-width="4"/>
+    <ellipse cx="32" cy="41" rx="12" ry="8" fill="#F3C766" stroke="#5C411D" stroke-width="4" transform="rotate(-24 32 41)"/>
+    <ellipse cx="88" cy="41" rx="12" ry="8" fill="#F3C766" stroke="#5C411D" stroke-width="4" transform="rotate(24 88 41)"/>
+    <ellipse cx="60" cy="70" rx="32" ry="40" fill="#F3C766" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="88" rx="22" ry="21" fill="#F7DD9E" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="48" cy="60" r="4.5" fill="#4B3626"/><circle cx="72" cy="60" r="4.5" fill="#4B3626"/>
+    <circle cx="37" cy="45" r="5" fill="#C98A3E"/><circle cx="83" cy="51" r="4.5" fill="#C98A3E"/><circle cx="40" cy="76" r="4" fill="#C98A3E"/>
+    <ellipse cx="53" cy="87" rx="3" ry="4" fill="#C98A3E"/><ellipse cx="67" cy="87" rx="3" ry="4" fill="#C98A3E"/>
+    <path d="M54 97q6 5 12 0" fill="none" stroke="#5C411D" stroke-width="3.5" stroke-linecap="round"/>
+  </svg>`,
+  tiger: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="28" cy="36" r="13" fill="#F0A03E" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="92" cy="36" r="13" fill="#F0A03E" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="68" r="40" fill="#F5A23F" stroke="#5C411D" stroke-width="5"/>
+    <path d="M46 30l4 14M60 26v14M74 30l-4 14" stroke="#4B3626" stroke-width="5" stroke-linecap="round"/>
+    <path d="M24 58l12 4M22 72l12 2M96 58l-12 4M98 72l-12 2" stroke="#4B3626" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="60" cy="82" rx="22" ry="17" fill="#FFF1D6"/>
+    <circle cx="47" cy="63" r="4.5" fill="#4B3626"/><circle cx="73" cy="63" r="4.5" fill="#4B3626"/>
+    <path d="M54 76h12l-6 6z" fill="#4B3626"/>
+    <path d="M52 88q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+};
+
 const QuizUiArt = {
   speaker() {
     return `<svg class="ref-toast-art" viewBox="0 0 180 150" aria-hidden="true">
@@ -62,6 +148,28 @@ const QuizUiArt = {
       <path class="ref-child-mouth" d="M50 80Q60 90 71 80" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
       <path d="M44 120L60 132L76 120" fill="none" stroke="#FFF8E7" stroke-width="5" stroke-linecap="round"/>
     </svg>`;
+  },
+  zookeeper() {
+    return `<svg class="ref-keeper-art" viewBox="0 0 120 150" aria-hidden="true">
+      <path d="M26 140Q27 104 60 103Q93 104 94 140Z" fill="#7FA85A" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M46 104L60 118L74 104" fill="none" stroke="#FFF8E7" stroke-width="5" stroke-linecap="round"/>
+      <rect x="52" y="118" width="16" height="13" rx="3" fill="#FFE08C" stroke="#5C411D" stroke-width="3"/>
+      <circle cx="60" cy="124.5" r="3" fill="#B5651D"/>
+      <ellipse cx="60" cy="70" rx="32" ry="30" fill="#FFD8B5" stroke="#5C411D" stroke-width="5"/>
+      <path d="M29 58Q22 34 58 32Q92 34 91 56Q76 52 62 42Q50 54 29 58Z" fill="#7A4A2B" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="48" cy="70" r="3.6" fill="#5C411D"/><circle cx="73" cy="70" r="3.6" fill="#5C411D"/>
+      <circle cx="38" cy="80" r="5.5" fill="#F5A2A0" opacity=".6"/><circle cx="83" cy="80" r="5.5" fill="#F5A2A0" opacity=".6"/>
+      <path class="ref-keeper-mouth" d="M51 84Q60 92 70 84" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+      <path d="M30 45Q31 22 60 20Q89 22 90 45Z" fill="#8FAF63" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M22 46Q60 38 98 46Q98 54 60 56Q22 54 22 46Z" fill="#A8C77C" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M60 23V43" stroke="#5C411D" stroke-width="3"/>
+    </svg>`;
+  },
+  /* 出场动物角色白名单：只使用下面这些纯 SVG 头像，保证名字和形象一致 */
+  zooAnimalWords: ["panda", "monkey", "rabbit", "duck", "lion", "elephant", "giraffe", "tiger"],
+  zooAnimal(word) {
+    const art = ZOO_AVATAR_ART[word];
+    return art ? art() : "";
   },
   scene() {
     return `
@@ -163,7 +271,8 @@ const QuizUiArt = {
 
   /* 独立 Logo：不再跟随背景切片，viewBox 完整包住艺术字，可放进任意容器安全缩放 */
   logo() {
-    return `<svg class="ref-logo-art" viewBox="0 0 720 160" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
+    /* viewBox 底部留白收紧：艺术字在容器内垂直居中，整体观感更靠下 */
+    return `<svg class="ref-logo-art" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
       <defs>
         <!-- 贴纸柔投影 -->
         <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">

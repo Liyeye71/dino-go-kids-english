@@ -47,6 +47,15 @@ function sfx(name) {
       tone(1568, 0.36, "sine", 0.035, 0.34);
     }
     else if (name === "wrong") { tone(190, 0.2, "sawtooth", 0.035); tone(150, 0.24, "sawtooth", 0.03, 0.12); }
+    /* 纯单词选项题型答后弹框：正确 / 错误各自的专属结果音效 */
+    else if (name === "answer-right") {
+      [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.18, "triangle", 0.05, i * 0.09));
+      tone(1976, 0.4, "sine", 0.028, 0.4);
+    }
+    else if (name === "answer-wrong") {
+      [392, 330, 262].forEach((f, i) => tone(f, 0.22, "triangle", 0.045, i * 0.12));
+      tone(196, 0.36, "sine", 0.03, 0.36);
+    }
     else if (name === "coin") { tone(988, 0.08, "triangle", 0.05); tone(1318, 0.14, "triangle", 0.045, 0.07); }
     else if (name === "star") { tone(740, 0.1, "sine", 0.05); tone(1108, 0.14, "sine", 0.04, 0.09); }
     else if (name === "evolve") { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.24, "triangle", 0.05, i * 0.13)); }
@@ -54,7 +63,8 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词朗读 */
+/* 英文单词 / 句子朗读；传入数组时按顺序连续朗读 */
+let speakToken = 0;
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -62,19 +72,27 @@ function speak(text) {
       return;
     }
     const synth = window.speechSynthesis;
-    const say = () => {
-      const u = new SpeechSynthesisUtterance(text);
+    const lines = (Array.isArray(text) ? text : [text])
+      .map((t) => String(t == null ? "" : t).trim())
+      .filter(Boolean);
+    if (!lines.length) return;
+    const token = ++speakToken;
+    const sayFrom = (i) => {
+      if (token !== speakToken || i >= lines.length) return;
+      const u = new SpeechSynthesisUtterance(lines[i]);
       u.lang = "en-US";
       u.rate = 0.82;
       u.pitch = 1.08;
+      /* 一句读完自动接下一句；被新的朗读打断后不再继续 */
+      u.onend = () => sayFrom(i + 1);
       synth.speak(u);
     };
     /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
     if (synth.speaking || synth.pending) {
       synth.cancel();
-      setTimeout(say, 60);
+      setTimeout(() => sayFrom(0), 60);
     } else {
-      say();
+      sayFrom(0);
     }
   } catch (e) { /* ignore */ }
 }

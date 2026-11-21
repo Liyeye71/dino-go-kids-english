@@ -687,7 +687,8 @@ h1,h2,h3,h4,p{margin:0}
 /* 答后结果卡：森林奶油风，位于答题框正中 */
 .zoo-feedback-card{position:absolute;left:50%;top:50%;z-index:40;
   width:75%;max-height:86dvh;overflow:visible;
-  display:flex;flex-direction:column;gap:0.625rem;padding:1rem 1rem 1.0625rem;border-radius:1.25rem;
+  display:flex;flex-direction:column;justify-content:center;gap:0.875rem;
+  min-height:clamp(9.5rem,26dvh,12rem);padding:1.375rem 1.375rem 1.5rem;border-radius:1.375rem;
   background:#FFF8E6;border:0.15625rem solid #6B4A24;
   box-shadow:0 0.3125rem 0 rgba(107,74,36,.32),inset 0 0.125rem 0 rgba(255,255,255,.75);
   animation:qrpIn .42s cubic-bezier(.2,1.45,.4,1) both}
@@ -695,54 +696,54 @@ h1,h2,h3,h4,p{margin:0}
 .zoo-feedback-card.is-wrong{background:#FFF6EC}
 /* 进阶题型有「纸面安全框」：弹框宽度取纸面宽度的 75%，而不是整屏的 75% */
 .quiz-ref-page .zoo-feedback-card{width:calc((var(--stage-max-w) - 0.75rem) * 0.75)}
-.zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem}
-.zoo-status-badge{width:1.75rem;height:1.75rem;border-radius:50%;flex:none;display:grid;place-items:center;
+.zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.625rem}
+.zoo-status-badge{width:2.125rem;height:2.125rem;border-radius:50%;flex:none;display:grid;place-items:center;
   background:#4FAE55;border:0.125rem solid #1E6B3B;box-shadow:0 0.125rem 0 rgba(30,107,59,.35)}
 .zoo-feedback-card.is-wrong .zoo-status-badge{background:#E8604A;border-color:#8F2D1F;
   box-shadow:0 0.125rem 0 rgba(143,45,31,.35)}
-.zoo-status-badge svg{width:1.0625rem;height:1.0625rem;display:block}
-.zoo-feedback-title{margin:0;font-size:1.1875rem;line-height:1.2;letter-spacing:-0.0125rem;
+.zoo-status-badge svg{width:1.3125rem;height:1.3125rem;display:block}
+.zoo-feedback-title{margin:0;font-size:1.4375rem;line-height:1.2;letter-spacing:-0.0125rem;
   font-weight:var(--w-black);color:#2E7A4C;overflow-wrap:anywhere}
 .zoo-feedback-card.is-wrong .zoo-feedback-title{color:#B5452F}
-.zoo-feedback-body{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem}
+.zoo-feedback-body{position:relative;z-index:2;display:flex;align-items:center;gap:0.625rem}
 /* 答案条：英文 + 喇叭 + 音标 + 中文同排，空间不足时只有中文换到下一行 */
-.zoo-answer-box{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.3125rem}
-.zoo-answer-label{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#8A6B45;white-space:nowrap}
-.zoo-answer-word{flex:none;font-size:1.0625rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;white-space:nowrap}
+.zoo-answer-box{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.375rem}
+.zoo-answer-label{flex:none;font-size:0.875rem;font-weight:var(--w-bold);color:#8A6B45;white-space:nowrap}
+.zoo-answer-word{flex:none;font-size:1.3125rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;white-space:nowrap}
 .zoo-answer-box .zoo-audio-btn{flex:none}
 .zoo-answer-meta{display:contents}
-.zoo-answer-phon{flex:none;font-size:0.75rem;font-weight:var(--w-bold);color:#957047;white-space:nowrap}
-.zoo-meaning-text{flex:0 1 auto;min-width:0;font-size:0.8125rem;font-weight:var(--w-bold);color:#8A6431;
+.zoo-answer-phon{flex:none;font-size:0.875rem;font-weight:var(--w-bold);color:#957047;white-space:nowrap}
+.zoo-meaning-text{flex:0 1 auto;min-width:0;font-size:0.9375rem;font-weight:var(--w-bold);color:#8A6431;
   white-space:normal;overflow-wrap:anywhere}
 /* 连线题答后：完整的配对答案清单（图 + 单词 + 喇叭 + 音标 + 中文，最右对错标记） */
-.zoo-feedback-body.is-match{flex-direction:column;align-items:stretch;gap:0.5rem}
+.zoo-feedback-body.is-match{flex-direction:column;align-items:stretch;gap:0.625rem}
 .zoo-feedback-body.is-match .zoo-action-btn{align-self:flex-end}
-.zoo-match-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:0.375rem;
-  max-height:52dvh;overflow-y:auto}
-.zoo-match-row{display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0.5rem;border-radius:0.75rem;
+.zoo-match-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:0.4375rem;
+  max-height:50dvh;overflow-y:auto}
+.zoo-match-row{display:flex;align-items:center;gap:0.5625rem;padding:0.4375rem 0.5625rem;border-radius:0.8125rem;
   background:#FFFDF5;border:0.09375rem solid #EADFC6}
 .zoo-match-row.is-wrong{background:#FFF1EC;border-color:#F2B5A6}
-.zoo-match-thumb{flex:none;width:2.375rem;height:2.375rem;border-radius:0.5rem;background:#fff;
+.zoo-match-thumb{flex:none;width:2.625rem;height:2.625rem;border-radius:0.5625rem;background:#fff;
   border:0.09375rem solid #E7DCC4;display:grid;place-items:center;overflow:hidden}
 .zoo-match-thumb-img{width:100%;height:100%;object-fit:contain}
-.zoo-match-thumb-emoji{font-size:1.5rem;line-height:1;display:grid;place-items:center}
-.zoo-match-main{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.25rem 0.375rem}
-.zoo-match-word{font-size:1rem;font-weight:var(--w-black);color:#4B3626;line-height:1.25;overflow-wrap:anywhere}
-.zoo-match-phon{font-size:0.6875rem;font-weight:var(--w-bold);color:#957047;overflow-wrap:anywhere}
-.zoo-match-zh{font-size:0.75rem;font-weight:var(--w-bold);color:#8A6431;overflow-wrap:anywhere}
-.zoo-match-picked{flex-basis:100%;font-size:0.6875rem;font-weight:var(--w-bold);color:#C0492F;overflow-wrap:anywhere}
+.zoo-match-thumb-emoji{font-size:1.6875rem;line-height:1;display:grid;place-items:center}
+.zoo-match-main{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.3125rem 0.4375rem}
+.zoo-match-word{font-size:1.125rem;font-weight:var(--w-black);color:#4B3626;line-height:1.25;overflow-wrap:anywhere}
+.zoo-match-phon{font-size:0.75rem;font-weight:var(--w-bold);color:#957047;overflow-wrap:anywhere}
+.zoo-match-zh{font-size:0.8125rem;font-weight:var(--w-bold);color:#8A6431;overflow-wrap:anywhere}
+.zoo-match-picked{flex-basis:100%;font-size:0.75rem;font-weight:var(--w-bold);color:#C0492F;overflow-wrap:anywhere}
 .zoo-match-picked b{font-weight:var(--w-black)}
-.zoo-match-flag{flex:none;width:1.125rem;height:1.125rem;border-radius:50%;display:grid;place-items:center;
-  font-size:0.75rem;font-weight:var(--w-black);color:#fff;background:#4FAE55;border:0.09375rem solid #1E6B3B}
+.zoo-match-flag{flex:none;width:1.25rem;height:1.25rem;border-radius:50%;display:grid;place-items:center;
+  font-size:0.8125rem;font-weight:var(--w-black);color:#fff;background:#4FAE55;border:0.09375rem solid #1E6B3B}
 .zoo-match-row.is-wrong .zoo-match-flag{background:#E8604A;border-color:#8F2D1F}
-.zoo-action-btn{position:relative;flex:none;display:inline-flex;align-items:center;gap:0.25rem;
-  min-height:2.25rem;padding:0 0.8125rem;border-radius:0.75rem;border:0.125rem solid #6B4A24;
-  background:#FFD166;color:#5A3A12;font-size:0.875rem;font-weight:var(--w-black);white-space:nowrap;
+.zoo-action-btn{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:0.3125rem;
+  min-height:3.625rem;padding:0 1.5rem;border-radius:1rem;border:0.125rem solid #6B4A24;
+  background:#FFD166;color:#5A3A12;font-size:1.25rem;line-height:1;font-weight:var(--w-black);white-space:nowrap;
   box-shadow:0 0.1875rem 0 #DFAC3A;cursor:pointer}
 .zoo-action-btn:active{transform:translateY(0.125rem);box-shadow:0 0.0625rem 0 #DFAC3A}
-.zoo-btn-star{position:absolute;width:0.625rem;height:0.625rem}
-.zoo-btn-star.star-top{top:-0.3rem;right:-0.3rem}
-.zoo-btn-star.star-bottom{bottom:-0.3rem;left:-0.3rem}
+.zoo-btn-star{position:absolute;width:0.9375rem;height:0.9375rem}
+.zoo-btn-star.star-top{top:-0.35rem;right:-0.35rem}
+.zoo-btn-star.star-bottom{bottom:-0.35rem;left:-0.35rem}
 /* 角上的草叶 / 藤蔓 / 落叶装饰 */
 .zoo-decor-grass,.zoo-decor-vine,.zoo-decor-leaf{position:absolute;pointer-events:none;z-index:1}
 .zoo-decor-grass{left:0.75rem;top:-0.65rem;width:3.5rem;height:auto}
@@ -768,12 +769,12 @@ h1,h2,h3,h4,p{margin:0}
 /* ============================================================
    🔊 喇叭按钮：圆形底色 + 点击抖动特效
    ============================================================ */
-.zoo-audio-btn{flex:none;width:1.85rem;height:1.85rem;padding:0;border-radius:50%;
+.zoo-audio-btn{flex:none;width:2.5rem;height:2.5rem;padding:0;border-radius:50%;
   background:#FFF8E7;border:0.125rem solid #EFE1C8;
   display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;
   box-shadow:0 0.25rem 0.5rem rgba(155,118,32,.14);transition:transform .12s}
 .zoo-audio-btn:active{transform:scale(.9)}
-.zoo-audio-btn svg{width:60%;height:60%;display:block}
+.zoo-audio-btn svg{width:62%;height:62%;display:block}
 
 /* 抖动特效：播放发音时的按钮反馈 */
 @keyframes shakeAudio{
@@ -788,7 +789,8 @@ h1,h2,h3,h4,p{margin:0}
 .listen.is-shaking,
 .zoo-audio-btn.is-shaking,
 .ref-listen-speaker.is-shaking,
-.ref-action-sound.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
+.ref-action-sound.is-shaking,
+.ref-dialog-ask.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
 .listen.is-shaking svg,
 .zoo-audio-btn.is-shaking svg,
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
@@ -1367,23 +1369,47 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-path.temp{stroke:#E4A14B;stroke-dasharray:none;opacity:.85}
 .quiz-ref-page .listen-row .listen{border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 
-/* 情景对话 */
-.ref-dialog-card{display:flex;flex-direction:column;gap:0.625rem;flex:none}
-.ref-dialog-row{display:flex;align-items:flex-end;gap:0.5rem}
+/* 情景对话：动物园贴纸对话框（角色头像 + 名字牌 + 气泡尾巴 + 场景小装饰） */
+.ref-dialog-card{position:relative;display:flex;flex-direction:column;gap:0.75rem;flex:none}
+/* 角落藤叶 / 草地 / 脚印：只在动物园场景渲染，放在气泡下层 */
+.ref-dialog-zoo{position:absolute;inset:0;pointer-events:none;z-index:0}
+.ref-dialog-zoo svg{position:absolute;display:block}
+.ref-dialog-zoo .zd-vine{top:-0.75rem;right:-0.5rem;width:5.25rem}
+.ref-dialog-zoo .zd-paws{bottom:-0.5rem;left:-0.375rem;width:4.25rem;opacity:.9}
+.ref-dialog-zoo .zd-grass{bottom:-0.375rem;right:0.5rem;width:3.25rem;opacity:.9}
+.ref-dialog-row{position:relative;z-index:1;display:flex;align-items:flex-end;gap:0.75rem}
 .ref-dialog-row.reply{justify-content:flex-end}
-.ref-dialog-person{width:4.5rem;height:5.75rem;flex:none}
-.ref-dialog-bubble{position:relative;display:flex;align-items:center;gap:0.5rem;flex:1;max-width:calc(100% - 5rem);min-height:4rem;padding:0.75rem;
+.ref-dialog-person{width:4.5rem;height:5.75rem;flex:none;display:grid;place-items:end center}
+.ref-dialog-person .ref-keeper-art{width:100%;height:100%;display:block}
+/* 动物朋友头像：方形贴纸框，和小朋友头像区分 */
+.ref-dialog-person.person--animal{width:4.25rem;height:4.25rem;margin-bottom:0.25rem;padding:0.2rem;place-items:center;
+  border:0.125rem solid var(--sticker-ink);border-radius:1.25rem;background:#F3FBE6;box-shadow:0 0.25rem 0 #B9D3A2}
+.ref-dialog-person.person--animal .ref-zoo-art{width:100%;height:100%;display:block}
+.ref-dialog-bubble{position:relative;display:flex;align-items:center;gap:0.5rem;flex:1;max-width:calc(100% - 5.5rem);min-height:4rem;padding:0.95rem 0.75rem 0.7rem;
   border:0.125rem solid var(--sticker-ink);border-radius:1.25rem 1.25rem 1.25rem 0.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade)}
+/* 气泡小尾巴，指向说话的角色 */
+.ref-dialog-bubble::after{content:"";position:absolute;left:-0.4rem;bottom:0.5rem;width:0.65rem;height:0.65rem;background:var(--sticker-paper);
+  border-left:0.125rem solid var(--sticker-ink);border-bottom:0.125rem solid var(--sticker-ink);border-bottom-left-radius:0.2rem;transform:rotate(45deg)}
 .ref-dialog-row.reply .ref-dialog-bubble{border-radius:1.25rem 1.25rem 0.25rem 1.25rem;background:#FFF0F3}
-.ref-dialog-bubble p{font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
+.ref-dialog-row.reply .ref-dialog-bubble::after{left:auto;right:-0.4rem;border-left:0;border-bottom:0;
+  border-right:0.125rem solid var(--sticker-ink);border-bottom:0.125rem solid var(--sticker-ink);border-bottom-left-radius:0;border-bottom-right-radius:0.2rem}
+.ref-dialog-bubble p{flex:1;min-width:0;font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
+/* A 的提问气泡：点击即可朗读整句 */
+.ref-dialog-ask{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ref-dialog-bubble .blank{color:#6B8D46;border-bottom:0.125rem dashed #9DB97B;padding:0 0.125rem}
 /* 对话中的动物/食物单词：暖棕色 + 虚线底，帮助小朋友认读 */
 .ref-dialog-word{color:#B5651D;font-weight:var(--w-black);
   text-decoration:underline dashed #E0A458;text-underline-offset:0.22em;text-decoration-thickness:0.09em}
-.ref-dialog-name{display:grid;place-items:center;align-self:flex-start;flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:#FFE49A;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-black)}
-.ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center}
+/* 名字牌：压在气泡上边缘的小贴纸 */
+.ref-dialog-name{position:absolute;top:-0.65rem;left:0.75rem;z-index:2;display:inline-flex;align-items:center;width:auto;height:auto;
+  padding:0.0625rem 0.5rem;border:0.09375rem solid var(--sticker-ink);border-radius:999px;background:#FFE49A;color:var(--sticker-ink);
+  font-size:0.6875rem;font-weight:var(--w-black);line-height:1.5;white-space:nowrap;box-shadow:0 0.125rem 0 rgba(92,65,29,.28)}
+.ref-dialog-row.reply .ref-dialog-name{left:auto;right:0.75rem;background:#FFD9E3}
+/* 气泡里的动物照片：小相框 + 轻微倾斜 */
+.ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center;padding:0.125rem;
+  border:0.09375rem solid var(--sticker-line);border-radius:0.75rem;background:#FFFDF6;box-shadow:0 0.125rem 0 rgba(92,65,29,.16);transform:rotate(3deg)}
+.ref-dialog-pic img{width:100%;height:100%;object-fit:contain;display:block}
 .ref-dialog-pic svg{width:100%;height:100%}
-.ref-dialog-listen{margin-top:0.25rem}
 .quiz-ref-page .ref-dialog-options{flex:1;min-height:9rem}
 .quiz-ref-page .ref-dialog-options .option{min-height:3.25rem}
 /* 情景对话：整句选项（英文整句，允许换行） */
@@ -1397,7 +1423,9 @@ h1,h2,h3,h4,p{margin:0}
 /* 结算卡：整句正确答案换行展示 */
 .zoo-answer-box.is-sentence{align-items:flex-start}
 .zoo-answer-box.is-sentence .zoo-answer-label{padding-top:0.1875rem}
-.zoo-answer-box.is-sentence .zoo-answer-word{flex:1 1 auto;min-width:0;font-size:clamp(0.875rem,3.2vw,1.0625rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.zoo-answer-box.is-sentence .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:clamp(1rem,3.6vw,1.25rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+/* 整句答案：英文与中文分列两行展示 */
+.zoo-answer-box.is-sentence .zoo-meaning-text{flex:1 1 100%;padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
@@ -1446,7 +1474,9 @@ h1,h2,h3,h4,p{margin:0}
   .ref-picture-art{padding:0.25rem}
   .ref-listen-speaker{height:7rem}
   .ref-dialog-person{width:3.5rem;height:4.5rem}
-  .ref-dialog-bubble{min-height:3.25rem;padding:0.5rem}
+  .ref-dialog-person.person--animal{width:3.25rem;height:3.25rem}
+  .ref-dialog-pic{width:2.5rem;height:2.5rem}
+  .ref-dialog-bubble{min-height:3.25rem;padding:0.85rem 0.5rem 0.5rem}
   .ref-puzzle-hint .pz-art{width:4.5rem;height:4.5rem}
   .ref-feed-animal .fd-art{width:6rem;height:6rem}
   .quiz-ref-page .fd-food{height:5rem}
@@ -3537,6 +3567,9 @@ window.DINO_WORD_SETS.push({
 
     const two = shuffle(others).slice(0, 2);
     const food = foodEn(w.food);
+    /* 结果卡展示正确答案时使用的中文翻译素材 */
+    const foodZh = (w.food && w.food.zh) || food;
+    const animalZh = w.zh || w.word;
     /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
     const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
     const modes = ["word"];
@@ -3565,6 +3598,7 @@ window.DINO_WORD_SETS.push({
           ]),
           answerValue: correct,
           answerText: correct,
+          answerZh: `它吃${foodZh}。`,
         };
       }
     }
@@ -3591,6 +3625,7 @@ window.DINO_WORD_SETS.push({
           options: shuffle(options.map((v) => ({ value: v, label: v }))),
           answerValue: correct,
           answerText: correct,
+          answerZh: isRight ? "是的，它吃。" : `不，它不吃。它吃${foodZh}。`,
         };
       }
     }
@@ -3611,6 +3646,7 @@ window.DINO_WORD_SETS.push({
         ]),
         answerValue: correct,
         answerText: correct,
+        answerZh: `不，它不是。它是${animalZh}。`,
       };
     }
 
@@ -3658,7 +3694,47 @@ window.DINO_WORD_SETS.push({
     };
   }
 
-  window.DialogTemplates = { build, ASKS: DEFAULT_ASKS, SCOPES };
+  /* 情景对话出场角色：动物园场景下随机安排
+     动物×动物（两个动物朋友聊画面里的动物）、小朋友×小朋友、饲养员×小朋友。
+     动物头像只用 QuizUiArt 内置的纯 SVG 白名单，避免和题目配图混淆 */
+  const CAST_NAMES = { boy: "Ben", girl: "Mia", keeper: "Zookeeper" };
+  const cap = (word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : "");
+  function buildCast(task, pool, dlg) {
+    if (!task || !dlg) return null;
+    if (typeof window.isZooScene !== "function" || !window.isZooScene()) return null;
+    const avatarWords = typeof QuizUiArt !== "undefined" && Array.isArray(QuizUiArt.zooAnimalWords)
+      ? QuizUiArt.zooAnimalWords : [];
+    const others = (pool || []).filter((x) =>
+      x && x.animal && x.word && x.word !== task.word && avatarWords.indexOf(x.word) >= 0
+    );
+    const kinds = ["kids", "keeper"];
+    /* 图片选项题的画面在选项里，不使用动物角色，避免角色与题目混淆 */
+    if (others.length >= 2 && dlg.mode !== "image") kinds.push("animal");
+    const kind = pick(kinds);
+    if (kind === "animal") {
+      const [friendA, friendB] = shuffle(others).slice(0, 2);
+      return {
+        kind,
+        ask: { type: "animal", word: friendA.word, name: cap(friendA.word) },
+        reply: { type: "animal", word: friendB.word, name: cap(friendB.word) },
+      };
+    }
+    if (kind === "keeper") {
+      return {
+        kind,
+        ask: { type: "keeper", name: CAST_NAMES.keeper },
+        reply: { type: "child", gender: "girl", name: CAST_NAMES.girl },
+      };
+    }
+    const boyFirst = Math.random() < 0.5;
+    return {
+      kind: "kids",
+      ask: { type: "child", gender: boyFirst ? "boy" : "girl", name: CAST_NAMES[boyFirst ? "boy" : "girl"] },
+      reply: { type: "child", gender: boyFirst ? "girl" : "boy", name: CAST_NAMES[boyFirst ? "girl" : "boy"] },
+    };
+  }
+
+  window.DialogTemplates = { build, buildCast, ASKS: DEFAULT_ASKS, SCOPES };
 })();
 
 </script>
@@ -3693,12 +3769,11 @@ window.DINO_WORD_SETS.push({
   ];
 
   /* BOSS 关固定配比：5 题全部为进阶题型
-     词汇拼图/连线/喂食 + 情景对话 + 动作猜猜 + 对比观察 */
+     词汇拼图/连线/喂食 + 2 道情景对话 + 动作猜猜 + 局部/对比观察 */
   const BOSS_MIX = [
     { role: "noun",      count: 1 },
-    { role: "dialog",    count: 1 },
+    { role: "dialog",    count: 2 },
     { role: "verb",      count: 1 },
-    { role: "adj",       count: 1 },
     { role: "partOrAdj", count: 1 },
   ];
   const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
@@ -4049,6 +4124,7 @@ window.DINO_WORD_SETS.push({
       pic: {
         label: "看图选词",
         title: "看图，选出正确的单词",
+        prompt: "What is this animal?",
         pageClass: "pic-page",
         build: threeChoiceBuild,
         render({ q, choiceButton, options }) {
@@ -4068,6 +4144,7 @@ window.DINO_WORD_SETS.push({
       listen: {
         label: "听音选图",
         title: "听单词，选出正确的图片",
+        prompt: "Listen and choose the correct picture.",
         autoSpeak: true,
         build: threeChoiceBuild,
         render({ q, quiz, artOf }) {
@@ -4103,6 +4180,7 @@ window.DINO_WORD_SETS.push({
       match: {
         label: "单词连线",
         title: "把单词和图片连起来",
+        prompt: "Match the words with the pictures.",
         build(task, pool) {
           /* 只连同类词，避免连线题里混进动词/形容词 */
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
@@ -4231,10 +4309,15 @@ window.DINO_WORD_SETS.push({
             ? window.DialogTemplates.build(task, pool, { themeId: currentTheme().id, sceneId: state.scene })
             : null;
           if (dlg) {
+            /* 动物园场景：为 A / B 随机安排对话角色（动物、小朋友、饲养员） */
+            dlg.cast = window.DialogTemplates.buildCast
+              ? window.DialogTemplates.buildCast(task, pool, dlg)
+              : null;
             markDialogWords(dlg, task, pool);
             task.dialog = dlg;
             task.answerValue = dlg.answerValue;
             task.answerText = dlg.answerText;
+            task.answerZh = dlg.answerZh || "";
             if (dlg.mode === "word") task.options = dlg.options.map((o) => o.value);
             return;
           }
@@ -4263,6 +4346,50 @@ window.DINO_WORD_SETS.push({
           const askPic = d && d.askImg
             ? `<span class="ref-dialog-pic">${artWithImage(q.img, "ref-dialog-img", q.art())}</span>`
             : "";
+          /* 出场角色：动物朋友 / 小朋友 / 饲养员，未配置时回退到 A、B 小朋友 */
+          const cast = d && d.cast;
+          const personArt = (p) => {
+            if (p && p.type === "animal") {
+              /* 角色头像用内置纯 SVG，不加载单词素材图片 */
+              return QuizUiArt.zooAnimal(p.word) || QuizUiArt.child("boy");
+            }
+            if (p && p.type === "keeper") return QuizUiArt.zookeeper();
+            const gender = p && p.gender === "girl" ? "girl" : "boy";
+            return QuizUiArt.child(gender);
+          };
+          const person = (p, fallbackGender) => {
+            const kind = p ? p.type : "child";
+            return `<div class="ref-dialog-person person--${kind}">${personArt(p || { type: "child", gender: fallbackGender })}</div>`;
+          };
+          const nameTag = (p, fallback) => `<span class="ref-dialog-name">${p ? p.name : fallback}</span>`;
+          const zooDeco = window.isZooScene && isZooScene()
+            ? `<div class="ref-dialog-zoo" aria-hidden="true">
+                <svg class="zd-vine" viewBox="0 0 120 92">
+                  <path d="M8 88Q34 46 112 10" fill="none" stroke="#3F7E4A" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M38 62C22 52 26 28 44 30C52 44 50 56 38 62Z" fill="#8FD07A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                  <path d="M64 42C70 22 92 20 98 34C90 48 76 50 64 42Z" fill="#B6E39A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                  <path d="M86 24C92 10 112 12 114 24C106 34 94 32 86 24Z" fill="#8FD07A" stroke="#3F7E4A" stroke-width="2.5" stroke-linejoin="round"/>
+                </svg>
+                <svg class="zd-paws" viewBox="0 0 92 50">
+                  <g fill="#C79A54" opacity=".45">
+                    <g transform="translate(6 16) rotate(-14)">
+                      <ellipse cx="14" cy="20" rx="8" ry="7"/>
+                      <circle cx="5" cy="9" r="3.2"/><circle cx="12" cy="6" r="3.2"/><circle cx="19" cy="7" r="3.5"/><circle cx="25" cy="12" r="2.8"/>
+                    </g>
+                    <g transform="translate(48 2) rotate(12)">
+                      <ellipse cx="14" cy="20" rx="7" ry="6"/>
+                      <circle cx="6" cy="10" r="2.8"/><circle cx="12" cy="7.5" r="2.8"/><circle cx="18" cy="8" r="3"/><circle cx="23" cy="12" r="2.4"/>
+                    </g>
+                  </g>
+                </svg>
+                <svg class="zd-grass" viewBox="0 0 74 36">
+                  <g fill="none" stroke="#5FA05A" stroke-width="3" stroke-linecap="round">
+                    <path d="M10 34Q8 20 2 14"/><path d="M21 34Q21 16 21 7"/>
+                    <path d="M32 34Q34 18 42 12"/><path d="M43 34Q47 24 55 20"/>
+                  </g>
+                </svg>
+              </div>`
+            : "";
           let askText = q.dlgQ;
           let replyHtml = "";
           if (d) {
@@ -4277,9 +4404,8 @@ window.DINO_WORD_SETS.push({
             askText = q.dlgQ.replace("{word}", q.word);
             replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
           }
-          /* 喇叭朗读 A 提问框里的整句英文（去掉高亮标签，避免读出 HTML） */
+          /* 点击 A 的对话气泡直接朗读提问句（去掉高亮标签，避免读出 HTML） */
           const askSoundText = askText.replace(/<[^>]*>/g, "");
-          const askSound = `<button class="listen" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="朗读 A 的句子">${I.speaker(16)}</button>`;
           let optionHtml;
           if (!d) {
             optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
@@ -4308,12 +4434,12 @@ window.DINO_WORD_SETS.push({
           }
           return {
             body: `<div class="ref-dialog-card">
-                <div class="ref-dialog-row"><div class="ref-dialog-person">${QuizUiArt.child("boy")}</div>
-                  <div class="ref-dialog-bubble"><span class="ref-dialog-name">A</span><p>${askText}</p>${askPic}</div></div>
-                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
-                  <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
+                ${zooDeco}
+                <div class="ref-dialog-row">${person(cast && cast.ask, "boy")}
+                  <div class="ref-dialog-bubble ref-dialog-ask" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="点击朗读 A 的句子">${nameTag(cast && cast.ask, "A")}<p>${askText}</p>${askPic}</div></div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble">${nameTag(cast && cast.reply, "B")}${replyHtml}</div>
+                  ${person(cast && cast.reply, "girl")}</div>
               </div>
-              <div class="listen-row ref-dialog-listen">${askSound}</div>
               ${optionHtml}`,
             btn: choiceButton("选一个答案"),
           };
@@ -4323,6 +4449,7 @@ window.DINO_WORD_SETS.push({
       word_puzzle: {
         label: "词汇拼图",
         title: "拖动字母块，拼出单词！",
+        prompt: "Spell the word with the letters.",
         build(task) {
           /* 随机给出 0~2 个提示字母（至少留 3 个空槽），其余字母进入拼槽；
              字母数超过 5 个槽时，把同一连续片段内的相邻字母合并成一个拼块 */
@@ -4416,6 +4543,7 @@ window.DINO_WORD_SETS.push({
       feed_animal: {
         label: "动物喂食",
         title: "给动物喂它爱吃的食物！",
+        prompt: "What does this animal like to eat?",
         build(task, pool) {
           /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
           const unique = [];
@@ -4487,6 +4615,7 @@ window.DINO_WORD_SETS.push({
       action: {
         label: "动作猜猜",
         title: "看动作，选出正确的单词",
+        prompt: "What is the animal doing?",
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
@@ -4521,6 +4650,7 @@ window.DINO_WORD_SETS.push({
       body_zoom: {
         label: "局部特写",
         title: "放大看看，这是哪个部位？",
+        prompt: "Which body part is this?",
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const f = q.focus || { x: "0%", y: "0%", scale: 2 };
@@ -4550,6 +4680,7 @@ window.DINO_WORD_SETS.push({
       compare: {
         label: "对比观察",
         title: "对比看看，选出正确的单词",
+        prompt: "Which word describes the animal?",
         build: buildCompareOptions,
         render({ q, quiz, options }) {
           const c = q.compare || { a: { emoji: q.emoji || "🐾", scale: 1 }, b: { emoji: "🐾", scale: 1 }, target: "a" };
@@ -5229,6 +5360,15 @@ function sfx(name) {
       tone(1568, 0.36, "sine", 0.035, 0.34);
     }
     else if (name === "wrong") { tone(190, 0.2, "sawtooth", 0.035); tone(150, 0.24, "sawtooth", 0.03, 0.12); }
+    /* 纯单词选项题型答后弹框：正确 / 错误各自的专属结果音效 */
+    else if (name === "answer-right") {
+      [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.18, "triangle", 0.05, i * 0.09));
+      tone(1976, 0.4, "sine", 0.028, 0.4);
+    }
+    else if (name === "answer-wrong") {
+      [392, 330, 262].forEach((f, i) => tone(f, 0.22, "triangle", 0.045, i * 0.12));
+      tone(196, 0.36, "sine", 0.03, 0.36);
+    }
     else if (name === "coin") { tone(988, 0.08, "triangle", 0.05); tone(1318, 0.14, "triangle", 0.045, 0.07); }
     else if (name === "star") { tone(740, 0.1, "sine", 0.05); tone(1108, 0.14, "sine", 0.04, 0.09); }
     else if (name === "evolve") { [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.24, "triangle", 0.05, i * 0.13)); }
@@ -5236,7 +5376,8 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词朗读 */
+/* 英文单词 / 句子朗读；传入数组时按顺序连续朗读 */
+let speakToken = 0;
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -5244,19 +5385,27 @@ function speak(text) {
       return;
     }
     const synth = window.speechSynthesis;
-    const say = () => {
-      const u = new SpeechSynthesisUtterance(text);
+    const lines = (Array.isArray(text) ? text : [text])
+      .map((t) => String(t == null ? "" : t).trim())
+      .filter(Boolean);
+    if (!lines.length) return;
+    const token = ++speakToken;
+    const sayFrom = (i) => {
+      if (token !== speakToken || i >= lines.length) return;
+      const u = new SpeechSynthesisUtterance(lines[i]);
       u.lang = "en-US";
       u.rate = 0.82;
       u.pitch = 1.08;
+      /* 一句读完自动接下一句；被新的朗读打断后不再继续 */
+      u.onend = () => sayFrom(i + 1);
       synth.speak(u);
     };
     /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
     if (synth.speaking || synth.pending) {
       synth.cancel();
-      setTimeout(say, 60);
+      setTimeout(() => sayFrom(0), 60);
     } else {
-      say();
+      sayFrom(0);
     }
   } catch (e) { /* ignore */ }
 }
@@ -5414,6 +5563,92 @@ const I = {
 
 /* ------------------------------------------------ quiz UI art */
 /* 答题页通用奶油卡通素材；题目单词图仍由 wordArt/artOf 提供 */
+/* 情景对话的动物角色头像：纯 SVG 绘制，不使用单词素材图片，避免与题目配图混淆 */
+const ZOO_AVATAR_ART = {
+  panda: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="31" cy="30" r="14" fill="#3E3A36" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="89" cy="30" r="14" fill="#3E3A36" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="66" r="41" fill="#FFFDF6" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="43" cy="62" rx="12" ry="15" fill="#3E3A36" transform="rotate(-18 43 62)"/>
+    <ellipse cx="77" cy="62" rx="12" ry="15" fill="#3E3A36" transform="rotate(18 77 62)"/>
+    <circle cx="45" cy="62" r="4" fill="#FFFDF6"/><circle cx="75" cy="62" r="4" fill="#FFFDF6"/>
+    <ellipse cx="60" cy="80" rx="7" ry="5" fill="#3E3A36"/>
+    <path d="M51 88q9 7 18 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  monkey: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="22" cy="52" r="15" fill="#C98A55" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="98" cy="52" r="15" fill="#C98A55" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="64" r="40" fill="#D89A63" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="78" rx="25" ry="20" fill="#F6D3A8" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="46" cy="57" r="4.5" fill="#4B3626"/><circle cx="74" cy="57" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="74" rx="5" ry="4" fill="#4B3626"/>
+    <path d="M51 85q9 7 18 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  rabbit: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="43" cy="28" rx="11" ry="25" fill="#F7F2E7" stroke="#5C411D" stroke-width="5" transform="rotate(-8 43 28)"/>
+    <ellipse cx="77" cy="28" rx="11" ry="25" fill="#F7F2E7" stroke="#5C411D" stroke-width="5" transform="rotate(8 77 28)"/>
+    <ellipse cx="43" cy="29" rx="4.5" ry="15" fill="#F2B7C4"/>
+    <ellipse cx="77" cy="29" rx="4.5" ry="15" fill="#F2B7C4"/>
+    <circle cx="60" cy="69" r="38" fill="#F7F2E7" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="46" cy="64" r="4.5" fill="#4B3626"/><circle cx="74" cy="64" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="77" rx="5.5" ry="4" fill="#E48A9E"/>
+    <path d="M60 81v6M52 88q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  duck: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="60" cy="66" r="38" fill="#FFD75E" stroke="#5C411D" stroke-width="5"/>
+    <path d="M49 30q5-14 16-10" fill="none" stroke="#EFAF2F" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="46" cy="59" r="4.5" fill="#4B3626"/><circle cx="74" cy="59" r="4.5" fill="#4B3626"/>
+    <ellipse cx="60" cy="80" rx="17" ry="10" fill="#F79B3E" stroke="#5C411D" stroke-width="4"/>
+    <path d="M44 80q16 6 32 0" fill="none" stroke="#D97B22" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+  lion: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <g fill="#E8A33D" stroke="#5C411D" stroke-width="4">
+      <circle cx="104" cy="64" r="10"/><circle cx="96" cy="90" r="10"/><circle cx="74" cy="106" r="10"/>
+      <circle cx="46" cy="106" r="10"/><circle cx="24" cy="90" r="10"/><circle cx="16" cy="64" r="10"/>
+      <circle cx="24" cy="38" r="10"/><circle cx="46" cy="22" r="10"/><circle cx="74" cy="22" r="10"/><circle cx="96" cy="38" r="10"/>
+    </g>
+    <circle cx="60" cy="64" r="44" fill="#E8A33D" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="66" r="31" fill="#FFD08A" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="80" rx="16" ry="11" fill="#FFE7BE"/>
+    <circle cx="48" cy="63" r="4.5" fill="#4B3626"/><circle cx="72" cy="63" r="4.5" fill="#4B3626"/>
+    <path d="M55 76h10l-5 6z" fill="#4B3626"/>
+    <path d="M52 87q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  elephant: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="24" cy="64" rx="20" ry="27" fill="#AEBAC6" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="96" cy="64" rx="20" ry="27" fill="#AEBAC6" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="62" r="37" fill="#BCC8D4" stroke="#5C411D" stroke-width="5"/>
+    <path d="M60 84q-2 19 5 27q7 7 13 1" fill="none" stroke="#5C411D" stroke-width="15" stroke-linecap="round"/>
+    <path d="M60 84q-2 19 5 27q7 7 13 1" fill="none" stroke="#BCC8D4" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="47" cy="58" r="4.5" fill="#4B3626"/><circle cx="73" cy="58" r="4.5" fill="#4B3626"/>
+    <path d="M44 80q-6 6-2 12M76 80q6 6 2 12" fill="none" stroke="#FFFDF6" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+  giraffe: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M46 26V15M74 26V15" stroke="#5C411D" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="46" cy="12" r="6" fill="#C98A3E" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="74" cy="12" r="6" fill="#C98A3E" stroke="#5C411D" stroke-width="4"/>
+    <ellipse cx="32" cy="41" rx="12" ry="8" fill="#F3C766" stroke="#5C411D" stroke-width="4" transform="rotate(-24 32 41)"/>
+    <ellipse cx="88" cy="41" rx="12" ry="8" fill="#F3C766" stroke="#5C411D" stroke-width="4" transform="rotate(24 88 41)"/>
+    <ellipse cx="60" cy="70" rx="32" ry="40" fill="#F3C766" stroke="#5C411D" stroke-width="5"/>
+    <ellipse cx="60" cy="88" rx="22" ry="21" fill="#F7DD9E" stroke="#5C411D" stroke-width="4"/>
+    <circle cx="48" cy="60" r="4.5" fill="#4B3626"/><circle cx="72" cy="60" r="4.5" fill="#4B3626"/>
+    <circle cx="37" cy="45" r="5" fill="#C98A3E"/><circle cx="83" cy="51" r="4.5" fill="#C98A3E"/><circle cx="40" cy="76" r="4" fill="#C98A3E"/>
+    <ellipse cx="53" cy="87" rx="3" ry="4" fill="#C98A3E"/><ellipse cx="67" cy="87" rx="3" ry="4" fill="#C98A3E"/>
+    <path d="M54 97q6 5 12 0" fill="none" stroke="#5C411D" stroke-width="3.5" stroke-linecap="round"/>
+  </svg>`,
+  tiger: () => `<svg class="ref-zoo-art" viewBox="0 0 120 120" aria-hidden="true">
+    <circle cx="28" cy="36" r="13" fill="#F0A03E" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="92" cy="36" r="13" fill="#F0A03E" stroke="#5C411D" stroke-width="5"/>
+    <circle cx="60" cy="68" r="40" fill="#F5A23F" stroke="#5C411D" stroke-width="5"/>
+    <path d="M46 30l4 14M60 26v14M74 30l-4 14" stroke="#4B3626" stroke-width="5" stroke-linecap="round"/>
+    <path d="M24 58l12 4M22 72l12 2M96 58l-12 4M98 72l-12 2" stroke="#4B3626" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="60" cy="82" rx="22" ry="17" fill="#FFF1D6"/>
+    <circle cx="47" cy="63" r="4.5" fill="#4B3626"/><circle cx="73" cy="63" r="4.5" fill="#4B3626"/>
+    <path d="M54 76h12l-6 6z" fill="#4B3626"/>
+    <path d="M52 88q8 6 16 0" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+  </svg>`,
+};
+
 const QuizUiArt = {
   speaker() {
     return `<svg class="ref-toast-art" viewBox="0 0 180 150" aria-hidden="true">
@@ -5440,6 +5675,28 @@ const QuizUiArt = {
       <path class="ref-child-mouth" d="M50 80Q60 90 71 80" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
       <path d="M44 120L60 132L76 120" fill="none" stroke="#FFF8E7" stroke-width="5" stroke-linecap="round"/>
     </svg>`;
+  },
+  zookeeper() {
+    return `<svg class="ref-keeper-art" viewBox="0 0 120 150" aria-hidden="true">
+      <path d="M26 140Q27 104 60 103Q93 104 94 140Z" fill="#7FA85A" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M46 104L60 118L74 104" fill="none" stroke="#FFF8E7" stroke-width="5" stroke-linecap="round"/>
+      <rect x="52" y="118" width="16" height="13" rx="3" fill="#FFE08C" stroke="#5C411D" stroke-width="3"/>
+      <circle cx="60" cy="124.5" r="3" fill="#B5651D"/>
+      <ellipse cx="60" cy="70" rx="32" ry="30" fill="#FFD8B5" stroke="#5C411D" stroke-width="5"/>
+      <path d="M29 58Q22 34 58 32Q92 34 91 56Q76 52 62 42Q50 54 29 58Z" fill="#7A4A2B" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="48" cy="70" r="3.6" fill="#5C411D"/><circle cx="73" cy="70" r="3.6" fill="#5C411D"/>
+      <circle cx="38" cy="80" r="5.5" fill="#F5A2A0" opacity=".6"/><circle cx="83" cy="80" r="5.5" fill="#F5A2A0" opacity=".6"/>
+      <path class="ref-keeper-mouth" d="M51 84Q60 92 70 84" fill="none" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+      <path d="M30 45Q31 22 60 20Q89 22 90 45Z" fill="#8FAF63" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M22 46Q60 38 98 46Q98 54 60 56Q22 54 22 46Z" fill="#A8C77C" stroke="#5C411D" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M60 23V43" stroke="#5C411D" stroke-width="3"/>
+    </svg>`;
+  },
+  /* 出场动物角色白名单：只使用下面这些纯 SVG 头像，保证名字和形象一致 */
+  zooAnimalWords: ["panda", "monkey", "rabbit", "duck", "lion", "elephant", "giraffe", "tiger"],
+  zooAnimal(word) {
+    const art = ZOO_AVATAR_ART[word];
+    return art ? art() : "";
   },
   scene() {
     return `
@@ -5541,7 +5798,8 @@ const QuizUiArt = {
 
   /* 独立 Logo：不再跟随背景切片，viewBox 完整包住艺术字，可放进任意容器安全缩放 */
   logo() {
-    return `<svg class="ref-logo-art" viewBox="0 0 720 160" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
+    /* viewBox 底部留白收紧：艺术字在容器内垂直居中，整体观感更靠下 */
+    return `<svg class="ref-logo-art" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
       <defs>
         <!-- 贴纸柔投影 -->
         <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
@@ -6260,7 +6518,9 @@ document.addEventListener("click", (e) => {
     shakeBtn(el);
     listenSelected();
   } else if (action === "action-sound") {
-    if (playActionSound(el.dataset.sound, el)) shakeBtn(el);
+    /* 无论该动作是否配置拟声音效，点击都给出抖动反馈 */
+    shakeBtn(el);
+    playActionSound(el.dataset.sound, el);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "close-quiz") {
@@ -6283,7 +6543,15 @@ document.addEventListener("click", (e) => {
     /* 结果条喇叭：朗读正确答案 */
     shakeBtn(el);
     const q = quiz && quiz.order[quiz.index];
-    if (q) speak(q.word || q.correctFood || "");
+    /* 动物喂食题读食物；情景对话整句题读正确整句；其余读单词 */
+    if (q) {
+      const isDialogSentence = q.type === "dialog" && q.dialog && q.dialog.mode === "sentence";
+      const text = q.type === "feed_animal"
+        ? (q.correctFood || q.word || "")
+        : isDialogSentence ? (q.answerText || q.answerValue || q.word || "")
+          : (q.word || "");
+      speak(text);
+    }
   } else if (action === "evolve") {
     beginEvolution();
   } else if (action === "collect-tab") {
@@ -7190,7 +7458,7 @@ function screenQuiz() {
       : (isFeed ? q.correctFood
         : (isDialog && q.dialog ? q.dialog.answerValue
           : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
-  const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
+  const answerZh = isFeed ? q.correctZh : (dialogSentence ? (q.answerZh || "") : q.zh);
   const answerPhon = isFeed
     ? (q.correctPhon || "")
     : (answerWord && answerWord === q.word ? (q.phon || "") : "");
@@ -7320,7 +7588,21 @@ function screenQuiz() {
 
 function speakTask() {
   const q = quiz && quiz.order[quiz.index];
-  if (q && currentTheme().games[q.type].autoSpeak) setTimer(() => speak(q.word), 450);
+  if (!q) return;
+  const game = currentTheme().games[q.type];
+  const lines = [];
+  if (q.type === "dialog") {
+    /* 情景对话：直接朗读 A 的提问句 */
+    const d = q.dialog;
+    const ask = d && d.ask ? d.ask : (q.dlgQ || "").replace("{word}", q.word);
+    const text = String(ask || "").replace(/<[^>]*>/g, "").trim();
+    if (text) lines.push(text);
+  } else if (game && game.prompt) {
+    lines.push(game.prompt);
+  }
+  /* 听音选图：先读题型说明，再读要听的目标单词 */
+  if (game && game.autoSpeak && q.word) lines.push(q.word);
+  if (lines.length) setTimer(() => speak(lines), 450);
 }
 function selectOption(word) {
   if (!quiz || quiz.revealed) return;
@@ -7389,6 +7671,14 @@ function feedCheck() {
   render();
 }
 
+/* 纯单词选项题型：答对后弹框自动朗读该单词，并播放专属结果音效 */
+const WORD_OPTION_TYPES = ["pic", "action", "body_zoom", "compare"];
+function isWordOptionTask(q) {
+  if (!q) return false;
+  /* 情景对话只有「单词选项」模式算纯单词题，整句 / 图片选项不算 */
+  if (q.type === "dialog") return !q.dialog || (q.dialog.mode !== "sentence" && q.dialog.mode !== "image");
+  return WORD_OPTION_TYPES.includes(q.type);
+}
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   stopActionSound();
@@ -7398,16 +7688,23 @@ function checkAnswer() {
   const ok = quiz.selected === correctValue;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
+  const wordOption = isWordOptionTask(q);
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
-    sfx("excellent");
+    if (wordOption) {
+      sfx("answer-right");
+      /* 弹框出现后再朗读单词，避免与结果音效重叠 */
+      setTimer(() => speak(q.answerValue || q.word), 600);
+    } else {
+      sfx("excellent");
+    }
     unlockTaskWord(q);
     /* 🦁 动物园场景：答对 → 尝试清除错题库 */
     WrongBank.applyResult(q, true);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1);
-    sfx("wrong");
+    sfx(wordOption ? "answer-wrong" : "wrong");
     /* 🦁 动物园场景：答错 → 自动收录错题库 */
     WrongBank.applyResult(q, false);
   }

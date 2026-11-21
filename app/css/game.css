@@ -180,23 +180,47 @@
 .ref-match-path.temp{stroke:#E4A14B;stroke-dasharray:none;opacity:.85}
 .quiz-ref-page .listen-row .listen{border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 
-/* 情景对话 */
-.ref-dialog-card{display:flex;flex-direction:column;gap:0.625rem;flex:none}
-.ref-dialog-row{display:flex;align-items:flex-end;gap:0.5rem}
+/* 情景对话：动物园贴纸对话框（角色头像 + 名字牌 + 气泡尾巴 + 场景小装饰） */
+.ref-dialog-card{position:relative;display:flex;flex-direction:column;gap:0.75rem;flex:none}
+/* 角落藤叶 / 草地 / 脚印：只在动物园场景渲染，放在气泡下层 */
+.ref-dialog-zoo{position:absolute;inset:0;pointer-events:none;z-index:0}
+.ref-dialog-zoo svg{position:absolute;display:block}
+.ref-dialog-zoo .zd-vine{top:-0.75rem;right:-0.5rem;width:5.25rem}
+.ref-dialog-zoo .zd-paws{bottom:-0.5rem;left:-0.375rem;width:4.25rem;opacity:.9}
+.ref-dialog-zoo .zd-grass{bottom:-0.375rem;right:0.5rem;width:3.25rem;opacity:.9}
+.ref-dialog-row{position:relative;z-index:1;display:flex;align-items:flex-end;gap:0.75rem}
 .ref-dialog-row.reply{justify-content:flex-end}
-.ref-dialog-person{width:4.5rem;height:5.75rem;flex:none}
-.ref-dialog-bubble{position:relative;display:flex;align-items:center;gap:0.5rem;flex:1;max-width:calc(100% - 5rem);min-height:4rem;padding:0.75rem;
+.ref-dialog-person{width:4.5rem;height:5.75rem;flex:none;display:grid;place-items:end center}
+.ref-dialog-person .ref-keeper-art{width:100%;height:100%;display:block}
+/* 动物朋友头像：方形贴纸框，和小朋友头像区分 */
+.ref-dialog-person.person--animal{width:4.25rem;height:4.25rem;margin-bottom:0.25rem;padding:0.2rem;place-items:center;
+  border:0.125rem solid var(--sticker-ink);border-radius:1.25rem;background:#F3FBE6;box-shadow:0 0.25rem 0 #B9D3A2}
+.ref-dialog-person.person--animal .ref-zoo-art{width:100%;height:100%;display:block}
+.ref-dialog-bubble{position:relative;display:flex;align-items:center;gap:0.5rem;flex:1;max-width:calc(100% - 5.5rem);min-height:4rem;padding:0.95rem 0.75rem 0.7rem;
   border:0.125rem solid var(--sticker-ink);border-radius:1.25rem 1.25rem 1.25rem 0.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade)}
+/* 气泡小尾巴，指向说话的角色 */
+.ref-dialog-bubble::after{content:"";position:absolute;left:-0.4rem;bottom:0.5rem;width:0.65rem;height:0.65rem;background:var(--sticker-paper);
+  border-left:0.125rem solid var(--sticker-ink);border-bottom:0.125rem solid var(--sticker-ink);border-bottom-left-radius:0.2rem;transform:rotate(45deg)}
 .ref-dialog-row.reply .ref-dialog-bubble{border-radius:1.25rem 1.25rem 0.25rem 1.25rem;background:#FFF0F3}
-.ref-dialog-bubble p{font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
+.ref-dialog-row.reply .ref-dialog-bubble::after{left:auto;right:-0.4rem;border-left:0;border-bottom:0;
+  border-right:0.125rem solid var(--sticker-ink);border-bottom:0.125rem solid var(--sticker-ink);border-bottom-left-radius:0;border-bottom-right-radius:0.2rem}
+.ref-dialog-bubble p{flex:1;min-width:0;font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
+/* A 的提问气泡：点击即可朗读整句 */
+.ref-dialog-ask{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ref-dialog-bubble .blank{color:#6B8D46;border-bottom:0.125rem dashed #9DB97B;padding:0 0.125rem}
 /* 对话中的动物/食物单词：暖棕色 + 虚线底，帮助小朋友认读 */
 .ref-dialog-word{color:#B5651D;font-weight:var(--w-black);
   text-decoration:underline dashed #E0A458;text-underline-offset:0.22em;text-decoration-thickness:0.09em}
-.ref-dialog-name{display:grid;place-items:center;align-self:flex-start;flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:#FFE49A;color:var(--sticker-ink);font-size:0.75rem;font-weight:var(--w-black)}
-.ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center}
+/* 名字牌：压在气泡上边缘的小贴纸 */
+.ref-dialog-name{position:absolute;top:-0.65rem;left:0.75rem;z-index:2;display:inline-flex;align-items:center;width:auto;height:auto;
+  padding:0.0625rem 0.5rem;border:0.09375rem solid var(--sticker-ink);border-radius:999px;background:#FFE49A;color:var(--sticker-ink);
+  font-size:0.6875rem;font-weight:var(--w-black);line-height:1.5;white-space:nowrap;box-shadow:0 0.125rem 0 rgba(92,65,29,.28)}
+.ref-dialog-row.reply .ref-dialog-name{left:auto;right:0.75rem;background:#FFD9E3}
+/* 气泡里的动物照片：小相框 + 轻微倾斜 */
+.ref-dialog-pic{width:3rem;height:3rem;flex:none;margin-left:auto;display:grid;place-items:center;padding:0.125rem;
+  border:0.09375rem solid var(--sticker-line);border-radius:0.75rem;background:#FFFDF6;box-shadow:0 0.125rem 0 rgba(92,65,29,.16);transform:rotate(3deg)}
+.ref-dialog-pic img{width:100%;height:100%;object-fit:contain;display:block}
 .ref-dialog-pic svg{width:100%;height:100%}
-.ref-dialog-listen{margin-top:0.25rem}
 .quiz-ref-page .ref-dialog-options{flex:1;min-height:9rem}
 .quiz-ref-page .ref-dialog-options .option{min-height:3.25rem}
 /* 情景对话：整句选项（英文整句，允许换行） */
@@ -210,7 +234,9 @@
 /* 结算卡：整句正确答案换行展示 */
 .zoo-answer-box.is-sentence{align-items:flex-start}
 .zoo-answer-box.is-sentence .zoo-answer-label{padding-top:0.1875rem}
-.zoo-answer-box.is-sentence .zoo-answer-word{flex:1 1 auto;min-width:0;font-size:clamp(0.875rem,3.2vw,1.0625rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+.zoo-answer-box.is-sentence .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:clamp(1rem,3.6vw,1.25rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+/* 整句答案：英文与中文分列两行展示 */
+.zoo-answer-box.is-sentence .zoo-meaning-text{flex:1 1 100%;padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
@@ -259,7 +285,9 @@
   .ref-picture-art{padding:0.25rem}
   .ref-listen-speaker{height:7rem}
   .ref-dialog-person{width:3.5rem;height:4.5rem}
-  .ref-dialog-bubble{min-height:3.25rem;padding:0.5rem}
+  .ref-dialog-person.person--animal{width:3.25rem;height:3.25rem}
+  .ref-dialog-pic{width:2.5rem;height:2.5rem}
+  .ref-dialog-bubble{min-height:3.25rem;padding:0.85rem 0.5rem 0.5rem}
   .ref-puzzle-hint .pz-art{width:4.5rem;height:4.5rem}
   .ref-feed-animal .fd-art{width:6rem;height:6rem}
   .quiz-ref-page .fd-food{height:5rem}

@@ -113,7 +113,7 @@ function screenQuiz() {
       : (isFeed ? q.correctFood
         : (isDialog && q.dialog ? q.dialog.answerValue
           : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
-  const answerZh = dialogSentence ? "" : (isFeed ? q.correctZh : q.zh);
+  const answerZh = isFeed ? q.correctZh : (dialogSentence ? (q.answerZh || "") : q.zh);
   const answerPhon = isFeed
     ? (q.correctPhon || "")
     : (answerWord && answerWord === q.word ? (q.phon || "") : "");
@@ -243,7 +243,21 @@ function screenQuiz() {
 
 function speakTask() {
   const q = quiz && quiz.order[quiz.index];
-  if (q && currentTheme().games[q.type].autoSpeak) setTimer(() => speak(q.word), 450);
+  if (!q) return;
+  const game = currentTheme().games[q.type];
+  const lines = [];
+  if (q.type === "dialog") {
+    /* 情景对话：直接朗读 A 的提问句 */
+    const d = q.dialog;
+    const ask = d && d.ask ? d.ask : (q.dlgQ || "").replace("{word}", q.word);
+    const text = String(ask || "").replace(/<[^>]*>/g, "").trim();
+    if (text) lines.push(text);
+  } else if (game && game.prompt) {
+    lines.push(game.prompt);
+  }
+  /* 听音选图：先读题型说明，再读要听的目标单词 */
+  if (game && game.autoSpeak && q.word) lines.push(q.word);
+  if (lines.length) setTimer(() => speak(lines), 450);
 }
 function selectOption(word) {
   if (!quiz || quiz.revealed) return;
@@ -312,6 +326,14 @@ function feedCheck() {
   render();
 }
 
+/* 纯单词选项题型：答对后弹框自动朗读该单词，并播放专属结果音效 */
+const WORD_OPTION_TYPES = ["pic", "action", "body_zoom", "compare"];
+function isWordOptionTask(q) {
+  if (!q) return false;
+  /* 情景对话只有「单词选项」模式算纯单词题，整句 / 图片选项不算 */
+  if (q.type === "dialog") return !q.dialog || (q.dialog.mode !== "sentence" && q.dialog.mode !== "image");
+  return WORD_OPTION_TYPES.includes(q.type);
+}
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   stopActionSound();
@@ -321,16 +343,23 @@ function checkAnswer() {
   const ok = quiz.selected === correctValue;
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
+  const wordOption = isWordOptionTask(q);
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
-    sfx("excellent");
+    if (wordOption) {
+      sfx("answer-right");
+      /* 弹框出现后再朗读单词，避免与结果音效重叠 */
+      setTimer(() => speak(q.answerValue || q.word), 600);
+    } else {
+      sfx("excellent");
+    }
     unlockTaskWord(q);
     /* 🦁 动物园场景：答对 → 尝试清除错题库 */
     WrongBank.applyResult(q, true);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1);
-    sfx("wrong");
+    sfx(wordOption ? "answer-wrong" : "wrong");
     /* 🦁 动物园场景：答错 → 自动收录错题库 */
     WrongBank.applyResult(q, false);
   }

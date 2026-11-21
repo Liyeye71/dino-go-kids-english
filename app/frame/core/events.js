@@ -43,7 +43,9 @@ document.addEventListener("click", (e) => {
     shakeBtn(el);
     listenSelected();
   } else if (action === "action-sound") {
-    if (playActionSound(el.dataset.sound, el)) shakeBtn(el);
+    /* 无论该动作是否配置拟声音效，点击都给出抖动反馈 */
+    shakeBtn(el);
+    playActionSound(el.dataset.sound, el);
   } else if (action === "next") {
     nextQuestion();
   } else if (action === "close-quiz") {
@@ -66,7 +68,15 @@ document.addEventListener("click", (e) => {
     /* 结果条喇叭：朗读正确答案 */
     shakeBtn(el);
     const q = quiz && quiz.order[quiz.index];
-    if (q) speak(q.word || q.correctFood || "");
+    /* 动物喂食题读食物；情景对话整句题读正确整句；其余读单词 */
+    if (q) {
+      const isDialogSentence = q.type === "dialog" && q.dialog && q.dialog.mode === "sentence";
+      const text = q.type === "feed_animal"
+        ? (q.correctFood || q.word || "")
+        : isDialogSentence ? (q.answerText || q.answerValue || q.word || "")
+          : (q.word || "");
+      speak(text);
+    }
   } else if (action === "evolve") {
     beginEvolution();
   } else if (action === "collect-tab") {
