@@ -588,6 +588,16 @@
           const selected = quiz.selected;
           const d = q.dialog;
           const escAttr = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+          /* 整句选项的关键词高亮：跳过虚词，突出 Yes/No 与食物、动物等实词 */
+          const KEY_STOP = new Set([
+            "yes", "no", "it", "is", "a", "an", "the", "does", "doesnt", "isnt", "dont",
+            "do", "eats", "eat", "i", "you", "we", "they", "this", "that", "are", "am",
+            "not", "of", "on", "in", "my", "your",
+          ]);
+          const highlightKeys = (label) => String(label).replace(/[A-Za-z']+/g, (token) => {
+            const plain = token.toLowerCase().replace(/'/g, "");
+            return KEY_STOP.has(plain) ? token : `<span class="dlg-key">${token}</span>`;
+          });
           /* 答后勾叉 */
           const optionState = (value) => {
             const ok = value === d.answerValue;
@@ -672,7 +682,7 @@
             optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
               const state = optionState(o.value);
               return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
-                <span class="dlg-sentence">${o.label}</span>${markOf(o.value)}
+                <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
               </button>`;
             }).join("")}</div>`;
           } else if (d.mode === "image") {
