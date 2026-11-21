@@ -10,7 +10,7 @@ function wordGlyph(word) {
 function wordArt(w) {
   return w.art || (() => emojiArt(w.emoji || wordGlyph(w.word)));
 }
-/* 单词池：所有 isPool:true 的词性文件里的原子词（带 type 标注），仅供每日随机记单词与单词本使用 */
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 type 标注），仅供每日随机记单词使用 */
 const POS_POOL = (window.DINO_WORD_SETS || [])
   .filter((s) => s.isPool)
   .flatMap((s) => (s.words || []).map((w) => ({ ...w, pos: s.id })))
@@ -19,12 +19,10 @@ const POS_POOL = (window.DINO_WORD_SETS || [])
 const REVIEW_WORDS = POS_POOL.filter(
   (w) => w.pos === "noun" || (w.pos === "verb" && w.type === "phrase")
 );
-/* 词性中文名（单词本页签展示用） */
-const POS_ZH = { noun: "名词", verb: "动词", adj: "形容词", adv: "副词", pron: "代词", prep: "介词", conj: "连词", interj: "感叹词", num: "数词" };
-function posZh(w) {
-  if (!w || !w.pos) return "";
-  if (w.pos === "verb" && w.type === "phrase") return "动词短语";
-  return POS_ZH[w.pos] || "";
+/* 闯关单词分类中文名（词汇页签展示用） */
+const CATEGORY_ZH = { noun: "名词", verb: "动词", part: "身体部位", adj: "形容词" };
+function categoryZh(w) {
+  return (w && CATEGORY_ZH[w.category]) || "";
 }
 /* 关卡主题：每个主题自带独立词表，不再从词库按类型筛选；多场景主题每个场景一套词 */
 function themeWordList(list) {
@@ -57,6 +55,65 @@ function sceneWords(theme, sceneId) {
 }
 function themeWords() {
   return sceneWords(currentTheme(), state && state.scene);
+}
+
+/* ---------------- 单词解锁 ----------------
+   答对题目后把当前主题 / 场景的单词写入存档，词汇页只展示已解锁的词 */
+function unlockWordKey(themeId, sceneId, word) {
+  return `${themeId || ""}:${sceneId || ""}:${word || ""}`;
+}
+function isWordUnlocked(word, themeId, sceneId) {
+  const key = unlockWordKey(
+    themeId || (state && state.theme),
+    sceneId == null ? (state && state.scene) : sceneId,
+    word
+  );
+  return Boolean(state && Array.isArray(state.unlocked) && state.unlocked.includes(key));
+}
+/* 答对后解锁：返回 true 表示首次解锁；只接受当前主题 / 场景词表里的词 */
+function unlockWord(word) {
+  if (!word || !state) return false;
+  const theme = currentTheme();
+  const sceneId = state.scene || "";
+  if (!sceneWords(theme, sceneId).some((w) => w.word === word)) return false;
+  const key = unlockWordKey(theme.id, sceneId, word);
+  if (!Array.isArray(state.unlocked)) state.unlocked = [];
+  if (state.unlocked.includes(key)) return false;
+  state.unlocked.push(key);
+  /* 已学单词数始终与解锁列表保持一致 */
+  state.words = state.unlocked.length;
+  save();
+  return true;
+}
+/* 当前场景已解锁的单词集合，供 BOSS 关优先出题 */
+function unlockedWordSet(themeId, sceneId) {
+  const theme = THEME_BY_ID.get(themeId || (state && state.theme)) || currentTheme();
+  const sid = sceneId == null ? ((state && state.scene) || "") : sceneId;
+  const prefix = `${theme.id}:${sid}:`;
+  return new Set(
+    ((state && Array.isArray(state.unlocked)) ? state.unlocked : [])
+      .filter((key) => key.indexOf(prefix) === 0)
+      .map((key) => key.slice(prefix.length))
+  );
+}
+/* 全部主题 / 场景单词，词汇页按 A–Z 展示（未解锁的灰化占位） */
+function allThemeWords() {
+  const out = [];
+  const seen = new Set();
+  WORD_SETS.forEach((set) => {
+    const groups = set.scenes && set.scenes.length
+      ? set.scenes.map((sc) => ({ sceneId: sc.id, words: sc.words }))
+      : [{ sceneId: "", words: set.words }];
+    groups.forEach(({ sceneId, words }) => {
+      (words || []).forEach((w) => {
+        const key = unlockWordKey(set.id, sceneId, w.word);
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({ ...w, themeId: set.id, themeName: set.name, sceneId, unlockKey: key });
+      });
+    });
+  });
+  return out;
 }
 /* 当前主题（多场景主题为当前场景）的关卡总数：动物乐园 50 关，其余主题 10 关 */
 function levelsPerTheme(id) {

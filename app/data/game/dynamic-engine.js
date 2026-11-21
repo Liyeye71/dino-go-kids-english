@@ -97,8 +97,9 @@
     return fresh[0] || shuffle(types)[0];
   }
 
-  /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重 */
-  function makeQuestion(type, pool, sceneId, usedWords, usedTypes) {
+  /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重
+     familiarSet 存在时（BOSS 关）严格按「错题库 → 已解锁词 → 其他词」优先抽词 */
+  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet) {
     const rule = RULE_BY_KEY[type];
     if (!rule) return null;
 
@@ -106,15 +107,23 @@
     if (!candidates.length) candidates = pool.filter((w) => fitsRule(w, rule));
     if (!candidates.length) return null;
 
-    /* 错题库加权抽词：答错过的词优先复现 */
-    const target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+    let target;
+    if (familiarSet) {
+      const wrong = candidates.filter((w) => WrongBank.isWrongWord(wordId(sceneId, w.word)));
+      const known = candidates.filter((w) => familiarSet.has(w.word));
+      const tier = wrong.length ? wrong : (known.length ? known : candidates);
+      target = tier[Math.floor(Math.random() * tier.length)];
+    } else {
+      /* 错题库加权抽词：答错过的词优先复现 */
+      target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+    }
     usedWords.add(target.word);
     usedTypes.add(type);
     return { gameType: type, recordWrong: rule.recordWrong, targetWord: target };
   }
 
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
-  function buildSession(level, pool, sceneId) {
+  function buildSession(level, pool, sceneId, familiarSet) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
     const isBoss = step === LEVELS_PER_VENUE;
     const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
@@ -132,7 +141,7 @@
           else type = BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
+        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet);
         if (question) questions.push(question);
       }
     }
@@ -140,8 +149,9 @@
     return questions;
   }
 
-  /* 把引擎输出转换成现有 quiz.order 兼容的 task 对象 */
-  function toTask(question, allWords, dlg, sceneId) {
+  /* 把引擎输出转换成现有 quiz.order 兼容的 task 对象
+     buildPool：出题 / 干扰项用词池，BOSS 关会收窄到错题库 + 已解锁词 */
+  function toTask(question, allWords, dlg, sceneId, buildPool) {
     const w = allWords.find((x) => x.word === question.targetWord.word) || question.targetWord;
     const task = {
       type: question.gameType,
@@ -174,26 +184,29 @@
       wrongWordId: wordId(sceneId, w.word),
     };
     const game = currentTheme().games[question.gameType];
-    if (game && game.build) game.build(task, allWords);
+    if (game && game.build) game.build(task, buildPool && buildPool.length ? buildPool : allWords);
     return task;
   }
 
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
   const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
+    const primary = primaryPool && primaryPool.length ? primaryPool : allWords;
     let guard = 0;
     while (tasks.length < size && guard++ < 20) {
       const type = types[Math.floor(Math.random() * types.length)];
       const rule = RULE_BY_KEY[type];
-      let candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+      let candidates = primary.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+      /* 优先池凑不满时，回退到完整场景词表兜底 */
+      if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
       if (!candidates.length) break;
       const w = candidates[Math.floor(Math.random() * candidates.length)];
       usedWords.add(w.word);
-      tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId));
+      tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId, primary));
     }
     return tasks;
   }
@@ -217,12 +230,29 @@
       const boss = window.isAssessmentLevel ? isAssessmentLevel(level) : isAnimalBossLevel(level);
       const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
-      const questions = buildSession(level, allSceneWords, sceneId);
+      /* BOSS 关词池：错题库 + 已解锁词优先，凑不够时补少量场景新词兜底 */
+      const familiarSet = boss ? unlockedWordSet(theme.id, sceneId) : null;
+      let buildPool = allSceneWords;
+      if (boss) {
+        const familiar = allSceneWords.filter(
+          (w) => familiarSet.has(w.word) || WrongBank.isWrongWord(wordId(sceneId, w.word))
+        );
+        if (familiar.length >= 3) {
+          buildPool = familiar.slice();
+          if (buildPool.length < 6) {
+            const names = new Set(buildPool.map((w) => w.word));
+            const rest = shuffle(allSceneWords.filter((w) => !names.has(w.word)));
+            buildPool = buildPool.concat(rest.slice(0, 6 - buildPool.length));
+          }
+        }
+      }
+
+      const questions = buildSession(level, buildPool, sceneId, familiarSet);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
-        .map((q) => toTask(q, allSceneWords, dlg, sceneId));
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES, buildPool).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -514,7 +544,11 @@
             quiz.choiceCorrect = wrongPairs.length === 0;
             if (quiz.choiceCorrect) {
               quiz.correct++;
-              q.pairs.forEach((p) => quiz.words.push(p.word));
+              q.pairs.forEach((p) => {
+                quiz.words.push(p.word);
+                /* 连线全部正确：把配对的单词一并解锁 */
+                if (typeof unlockTaskWord === "function") unlockTaskWord({ word: p.word });
+              });
               sfx("excellent");
             }
             render();
@@ -527,8 +561,10 @@
         label: "情景对话",
         title: "读对话，选出正确的答案",
         build(task, pool) {
-          /* 模板库：自动组合缺词、整句、图片三类情景问答 */
-          const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
+          /* 模板库：按当前主题 / 场景收紧对话内容，避免出现主题外词汇 */
+          const dlg = window.DialogTemplates
+            ? window.DialogTemplates.build(task, pool, { themeId: currentTheme().id, sceneId: state.scene })
+            : null;
           if (dlg) {
             markDialogWords(dlg, task, pool);
             task.dialog = dlg;
@@ -573,8 +609,12 @@
               replyHtml = `<p>${d.reply.replace("___", `<b class="blank">${revealed ? d.answerValue : "＿＿"}</b>`)}</p>`;
             }
           } else {
+            askText = q.dlgQ.replace("{word}", q.word);
             replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
           }
+          /* 喇叭朗读 A 提问框里的整句英文（去掉高亮标签，避免读出 HTML） */
+          const askSoundText = askText.replace(/<[^>]*>/g, "");
+          const askSound = `<button class="listen" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="朗读 A 的句子">${I.speaker(16)}</button>`;
           let optionHtml;
           if (!d) {
             optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
@@ -608,7 +648,7 @@
                 <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
-              <div class="listen-row ref-dialog-listen">${listenPill()}</div>
+              <div class="listen-row ref-dialog-listen">${askSound}</div>
               ${optionHtml}`,
             btn: choiceButton("选一个答案"),
           };

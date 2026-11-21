@@ -176,6 +176,7 @@ document.addEventListener("click", (e) => {
     quiz.selected = ok ? q.word : got;
     if (ok) {
       quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+      unlockTaskWord(q);
       WrongBank.applyResult(q, true);
     } else {
       quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
@@ -211,6 +212,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "speak-word") {
     shakeBtn(el);
     speak(el.dataset.word);
+  } else if (action === "speak-text") {
+    /* 情景对话：朗读 A 提问框里的完整句子 */
+    shakeBtn(el);
+    speak(el.dataset.text);
   } else if (action === "open-review") {
     openReview();
   } else if (action === "record-say") {

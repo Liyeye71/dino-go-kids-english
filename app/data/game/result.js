@@ -37,7 +37,9 @@
     if (assessment) prog.stars[completedLevel] = best;
     /* 只有挑战当前关卡且达到过关线才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
-    state.words += quiz.correct;
+    /* 单词数由解锁列表决定，同一单词答对多次不会重复计数 */
+    state.words = Array.isArray(state.unlocked) ? state.unlocked.length : 0;
+    const newUnlocked = [...new Set(quiz.newWords || [])];
     state.threeStars += stars === 3 ? 1 : 0;
     state.tasks.level = true;
     recordLevel(stars);
@@ -57,10 +59,10 @@
       growthGain,
       starGain,
       seconds: elapsed,
-      newWords: quiz.correct,
+      newWords: newUnlocked.length,
       canEvolve,
       targetStage: target.key,
-      wordList: [...new Set(quiz.words)].slice(0, 5),
+      wordList: newUnlocked.slice(0, 5),
     };
     quiz = null;
     save();
@@ -136,11 +138,11 @@
         <div class="rc-stats">
           <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
           <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
-          <div class="rc-stat"><b class="num">${r.newWords}</b><span>答对单词</span></div>
+          <div class="rc-stat"><b class="num">${r.newWords}</b><span>解锁新词</span></div>
         </div>
         <div class="rc-words">
           <span class="lb">WORDS</span>
-          ${(r.wordList.length ? r.wordList : themeWords().slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
+          ${(r.wordList.length ? r.wordList : (state.unlocked || []).slice(-3).map((k) => k.slice(k.lastIndexOf(":") + 1))).map((w) => `<span class="w">${w}</span>`).join("")}
         </div>
       </div>
 

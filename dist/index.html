@@ -1550,6 +1550,10 @@ h1,h2,h3,h4,p{margin:0}
 .word-row{position:relative;display:flex;align-items:center;gap:0.875rem;padding:0.625rem 0.625rem;min-height:5.125rem;text-align:left;
   background:#fff;border:0.09375rem solid var(--line);border-radius:1rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.04)}
 .word-row:active{transform:scale(.985);background:#FBFDF6}
+/* 未解锁单词：灰化占位，保留卡片高度与排版 */
+.word-row.locked{background:#FAF7F0;border-color:#EDE6D8;box-shadow:none}
+.word-row.locked .wr-pic{background:#F1ECE1}
+.word-row.locked .wr-line b,.word-row.locked .wr-line i,.word-row.locked .wr-line.sub em{color:#B9AE99}
 .wr-pic{width:3rem;height:3rem;border-radius:0.8125rem;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
 .wr-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0.375rem}
 .wr-line{display:flex;align-items:baseline;justify-content:flex-start;gap:0.25rem;min-width:0}
@@ -3283,673 +3287,6 @@ window.DINO_WORD_SETS.push({
 });
 
 </script>
-  <!-- 分级词性组合规则（pattern 槽位从 POS_POOL 取词） -->
-  <script>
-/* DinoGo · 基础词性组合规则：短句、日常口语与简单逻辑
-   写入前逐条常识校验：禁止荒谬或跨槽位不协调搭配。 */
-window.DINO_WORD_RULES = window.DINO_WORD_RULES || [];
-window.DINO_WORD_RULES.push({
-  level: "basic",
-  rules: [
-    {
-      id: "basic-01", name: "第一人称感受",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I"] },
-        { text: "am" },
-        { pos: "adj", type: "basic", words: ["happy", "sad", "tired", "hungry", "busy", "fine", "proud"] }
-      ]
-    },
-    {
-      id: "basic-02", name: "复数主语感受",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["you", "we", "they"] },
-        { text: "are" },
-        { pos: "adj", type: "basic", words: ["happy", "sad", "tired", "hungry", "busy", "excited"] }
-      ]
-    },
-    {
-      id: "basic-03", name: "第三人称感受",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["he", "she", "it"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["happy", "sad", "tired", "hungry", "busy", "excited"] }
-      ]
-    },
-    {
-      id: "basic-04", name: "第三人称能力",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["he", "she"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["run", "jump", "swim", "read", "write", "sing", "dance", "cook"] }
-      ]
-    },
-    {
-      id: "basic-05", name: "复数主语动作",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["play", "jump", "walk", "swim", "run", "sing", "dance", "read", "work", "study"] }
-      ]
-    },
-    {
-      id: "basic-06", name: "喜欢水果",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["like"] },
-        { text: "this" },
-        { pos: "noun", type: "food" }
-      ]
-    },
-    {
-      id: "basic-07", name: "第三人称喜欢食物",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["he", "she"] },
-        { text: "likes this" },
-        { pos: "noun", type: "food" }
-      ]
-    },
-    {
-      id: "basic-08", name: "开关物品祈使句",
-      pattern: [
-        { pos: "verb", type: "action", words: ["open", "close"] },
-        { text: "the" },
-        { pos: "noun", type: "other", words: ["window", "door"] }
-      ]
-    },
-    {
-      id: "basic-09", name: "清洗打扫祈使句",
-      pattern: [
-        { pos: "verb", type: "action", words: ["wash", "clean"] },
-        { text: "the" },
-        { pos: "noun", words: ["face", "hand", "room", "table", "floor"] }
-      ]
-    },
-    {
-      id: "basic-10", name: "简单动作祈使句",
-      pattern: [
-        { pos: "verb", type: "action", words: ["stop", "wait", "look", "run", "jump"] }
-      ]
-    },
-    {
-      id: "basic-11", name: "这是什么",
-      pattern: [
-        { pos: "pron", type: "interrogative", words: ["what"] },
-        { text: "is this?" }
-      ]
-    },
-    {
-      id: "basic-12", name: "物品位置疑问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["where"] },
-        { text: "is my" },
-        { pos: "noun", type: "school" },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "basic-13", name: "年龄疑问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["how old"] },
-        { text: "are you?" }
-      ]
-    },
-    {
-      id: "basic-14", name: "状态问候",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["how"] },
-        { text: "are you?" }
-      ]
-    },
-    {
-      id: "basic-15", name: "单数数量表达",
-      pattern: [
-        { pos: "num", type: "cardinal", words: ["one"] },
-        { pos: "noun", type: "animal" }
-      ]
-    },
-    {
-      id: "basic-16", name: "同形复数数量表达",
-      pattern: [
-        { pos: "num", type: "cardinal", words: ["two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"] },
-        { pos: "noun", type: "animal", words: ["fish", "sheep"] }
-      ]
-    },
-    {
-      id: "basic-17", name: "地点介词短语",
-      pattern: [
-        { pos: "prep", words: ["in", "near", "behind", "in front of", "next to"] },
-        { text: "the" },
-        { pos: "noun", type: "place", words: ["school", "library", "hospital", "cinema", "bookstore", "supermarket", "bank", "gym"] }
-      ]
-    },
-    {
-      id: "basic-18", name: "宾格介词短语",
-      pattern: [
-        { pos: "prep", words: ["with", "for"] },
-        { pos: "pron", type: "object" }
-      ]
-    },
-    {
-      id: "basic-19", name: "感叹与评价",
-      pattern: [
-        { pos: "interj", words: ["wow", "oh", "hooray"] },
-        { text: "! It is" },
-        { pos: "adj", type: "basic", words: ["beautiful", "colorful", "pretty", "good", "nice"] }
-      ]
-    },
-    {
-      id: "basic-20", name: "并列形容词",
-      pattern: [
-        { pos: "adj", type: "basic", words: ["kind", "nice", "smart", "funny", "cute", "lovely", "helpful"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { pos: "adj", type: "basic", words: ["kind", "nice", "smart", "funny", "cute", "lovely", "helpful"] }
-      ]
-    }
-  ]
-});
-
-</script>
-  <script>
-/* DinoGo · 进阶词性组合规则：并列、多从句及生活学习场景
-   写入前逐条常识校验：禁止荒谬或跨槽位不协调搭配。 */
-window.DINO_WORD_RULES = window.DINO_WORD_RULES || [];
-window.DINO_WORD_RULES.push({
-  level: "advance",
-  rules: [
-    {
-      id: "advance-01", name: "并列食物宾语",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["like"] },
-        { pos: "noun", type: "food", words: ["bread", "rice", "milk", "juice", "water", "tea", "coffee", "soup", "salad", "meat", "chicken", "beef", "pork"] },
-        { pos: "conj", type: "coordinating", words: ["and", "or"] },
-        { pos: "noun", type: "food", words: ["bread", "rice", "milk", "juice", "water", "tea", "coffee", "soup", "salad", "meat", "chicken", "beef", "pork"] }
-      ]
-    },
-    {
-      id: "advance-02", name: "并列动作",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["play", "read", "write", "sing", "dance", "work", "study"] },
-        { pos: "conj", type: "coordinating", words: ["and", "or"] },
-        { pos: "verb", type: "action", words: ["play", "read", "write", "sing", "dance", "work", "study"] }
-      ]
-    },
-    {
-      id: "advance-03", name: "并列动词短语",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["read books", "do homework", "watch TV", "play sports", "go shopping", "go hiking", "have a picnic", "play chess", "listen to music", "clean the room", "drink water", "take a trip", "go home"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { pos: "verb", type: "phrase", words: ["read books", "do homework", "watch TV", "play sports", "go shopping", "go hiking", "have a picnic", "play chess", "listen to music", "clean the room", "drink water", "take a trip", "go home"] }
-      ]
-    },
-    {
-      id: "advance-04", name: "能力选择",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["run", "jump", "swim", "read", "write", "sing", "dance", "cook"] },
-        { pos: "conj", type: "coordinating", words: ["or"] },
-        { pos: "verb", type: "action", words: ["run", "jump", "swim", "read", "write", "sing", "dance", "cook"] }
-      ]
-    },
-    {
-      id: "advance-05", name: "感受与原因",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["feel"] },
-        { pos: "adj", type: "basic", words: ["happy", "sad", "tired", "hungry", "excited"] },
-        { pos: "conj", type: "reason", words: ["because"] },
-        { pos: "pron", type: "subject", words: ["it"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["nice", "good", "hot", "cold", "warm", "cool"] }
-      ]
-    },
-    {
-      id: "advance-06", name: "喜欢地点及原因",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["like"] },
-        { text: "the" },
-        { pos: "noun", type: "place", words: ["school", "library", "playground", "gym", "art room", "music room"] },
-        { pos: "conj", type: "reason", words: ["because"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["quiet", "nice", "good", "clean", "beautiful", "colorful"] }
-      ]
-    },
-    {
-      id: "advance-07", name: "天气条件与动作",
-      pattern: [
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["hot", "cold", "warm", "cool", "fine"] },
-        { text: "," },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["play", "walk", "swim", "run", "read", "study"] }
-      ]
-    },
-    {
-      id: "advance-08", name: "附带条件的动作",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["play", "walk", "swim", "run", "read", "study"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "you like" }
-      ]
-    },
-    {
-      id: "advance-09", name: "时间与感受从句",
-      pattern: [
-        { pos: "conj", type: "time", words: ["when"] },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["do homework", "read books", "play sports", "do housework"] },
-        { text: "," },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["feel"] },
-        { pos: "adj", type: "basic", words: ["happy", "tired", "excited"] }
-      ]
-    },
-    {
-      id: "advance-10", name: "环境时间从句",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["read books", "do homework"] },
-        { pos: "conj", type: "time", words: ["when"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["quiet", "warm", "cool", "fine"] }
-      ]
-    },
-    {
-      id: "advance-11", name: "之前动作顺序",
-      pattern: [
-        { pos: "conj", type: "time", words: ["before"] },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["go to school", "go to bed", "eat breakfast", "eat dinner"] },
-        { text: "," },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["do homework", "read a book", "wash the dishes", "clean the room"] }
-      ]
-    },
-    {
-      id: "advance-12", name: "之后动作顺序",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["play sports", "watch TV", "go home", "read books"] },
-        { pos: "conj", type: "time", words: ["after"] },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["do homework", "eat dinner", "go to school", "clean the room"] }
-      ]
-    },
-    {
-      id: "advance-13", name: "第二人称宾语从句",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I"] },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "you are" },
-        { pos: "adj", type: "basic", words: ["right", "kind", "smart", "helpful", "good"] }
-      ]
-    },
-    {
-      id: "advance-14", name: "第三人称宾语从句",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { pos: "pron", type: "subject", words: ["he", "she", "it"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["right", "kind", "smart", "helpful", "good"] }
-      ]
-    },
-    {
-      id: "advance-15", name: "推测宾语从句",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["guess"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["right", "good", "new", "easy", "beautiful"] }
-      ]
-    },
-    {
-      id: "advance-16", name: "地点动作疑问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["where"] },
-        { text: "do" },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["go", "live", "work", "study"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "advance-17", name: "时间活动疑问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["when"] },
-        { text: "do" },
-        { pos: "pron", type: "subject", words: ["I", "you", "we", "they"] },
-        { pos: "verb", type: "phrase", words: ["get up", "go to school", "eat breakfast", "eat dinner", "go to bed"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "advance-18", name: "喜好原因疑问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["why"] },
-        { text: "do" },
-        { pos: "pron", type: "subject", words: ["you", "we", "they"] },
-        { pos: "verb", type: "action", words: ["like"] },
-        { text: "this" },
-        { pos: "noun", type: "animal" },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "advance-19", name: "动物比较",
-      pattern: [
-        { text: "The" },
-        { pos: "noun", type: "animal" },
-        { text: "is" },
-        { pos: "adj", type: "comparative" },
-        { text: "than the" },
-        { pos: "noun", type: "animal" }
-      ]
-    },
-    {
-      id: "advance-20", name: "多地位置关系",
-      pattern: [
-        { text: "The" },
-        { pos: "noun", type: "place", words: ["library", "hospital", "cinema", "bookstore"] },
-        { text: "is" },
-        { pos: "prep", words: ["between"] },
-        { text: "the" },
-        { pos: "noun", type: "place", words: ["school", "post office", "supermarket"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { text: "the" },
-        { pos: "noun", type: "place", words: ["bank", "gym"] }
-      ]
-    }
-  ]
-});
-
-</script>
-  <script>
-/* DinoGo · 高级词性组合规则：多条件嵌套、复杂从句与推理链
-   写入前逐条常识校验：禁止荒谬或跨槽位不协调搭配。 */
-window.DINO_WORD_RULES = window.DINO_WORD_RULES || [];
-window.DINO_WORD_RULES.push({
-  level: "pro",
-  rules: [
-    {
-      id: "pro-01", name: "条件与原因嵌套",
-      pattern: [
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["cold", "hot", "cool", "warm", "fine"] },
-        { text: "," },
-        { pos: "pron", type: "subject", words: ["we"] },
-        { text: "will" },
-        { pos: "verb", type: "phrase", words: ["go home"] },
-        { pos: "conj", type: "reason", words: ["because"] },
-        { text: "we feel" },
-        { pos: "adj", type: "basic", words: ["cold", "hot", "tired", "hungry"] }
-      ]
-    },
-    {
-      id: "pro-02", name: "双条件结果推理",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["we"] },
-        { text: "will" },
-        { pos: "verb", type: "phrase", words: ["go home", "go to bed"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["cold", "hot"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { text: "we feel" },
-        { pos: "adj", type: "basic", words: ["tired"] }
-      ]
-    },
-    {
-      id: "pro-03", name: "让步与原因链",
-      pattern: [
-        { pos: "conj", type: "concession", words: ["although", "though"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["cold", "hot"] },
-        { text: "," },
-        { pos: "pron", type: "subject", words: ["we"] },
-        { text: "will" },
-        { pos: "verb", type: "phrase", words: ["go to school"] },
-        { pos: "conj", type: "reason", words: ["because"] },
-        { text: "we like our" },
-        { pos: "noun", type: "place", words: ["school"] }
-      ]
-    },
-    {
-      id: "pro-04", name: "观点中的条件推理",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I"] },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "we can" },
-        { pos: "verb", type: "action", words: ["learn"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "we" },
-        { pos: "verb", type: "action", words: ["work", "study"] }
-      ]
-    },
-    {
-      id: "pro-05", name: "观点与因果链",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I"] },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["nice", "beautiful", "good"] },
-        { pos: "conj", type: "reason", words: ["because"] },
-        { text: "the" },
-        { pos: "noun", type: "nature", words: ["rainbow", "sky", "forest", "lake"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["beautiful", "colorful", "nice"] }
-      ]
-    },
-    {
-      id: "pro-06", name: "时间中的条件嵌套",
-      pattern: [
-        { pos: "conj", type: "time", words: ["when"] },
-        { text: "we" },
-        { pos: "verb", type: "phrase", words: ["go to school", "go home"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["cold", "cool"] },
-        { text: ", we" },
-        { pos: "verb", type: "action", words: ["wear"] },
-        { text: "our" },
-        { pos: "noun", type: "clothes", words: ["coat", "jacket", "raincoat", "scarf", "gloves"] }
-      ]
-    },
-    {
-      id: "pro-07", name: "顺序与并列建议",
-      pattern: [
-        { pos: "conj", type: "time", words: ["before"] },
-        { text: "we" },
-        { pos: "verb", type: "phrase", words: ["go to school", "go to bed"] },
-        { text: ", we should" },
-        { pos: "verb", type: "action", words: ["read", "write", "study", "think"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { pos: "verb", type: "action", words: ["read", "write", "study", "think"] }
-      ]
-    },
-    {
-      id: "pro-08", name: "后续动作与条件选择",
-      pattern: [
-        { pos: "conj", type: "time", words: ["after"] },
-        { text: "we" },
-        { pos: "verb", type: "phrase", words: ["play sports", "do homework"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "we feel" },
-        { pos: "adj", type: "basic", words: ["tired", "hungry"] },
-        { text: ", we can" },
-        { pos: "verb", type: "phrase", words: ["go home", "eat dinner", "drink water"] }
-      ]
-    },
-    {
-      id: "pro-09", name: "目的与时间条件",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["we"] },
-        { pos: "verb", type: "phrase", words: ["read books"] },
-        { pos: "conj", type: "coordinating", words: ["so"] },
-        { text: "we can" },
-        { pos: "verb", type: "action", words: ["learn"] },
-        { pos: "conj", type: "time", words: ["when"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["quiet", "cool", "warm"] }
-      ]
-    },
-    {
-      id: "pro-10", name: "让步评价与喜好",
-      pattern: [
-        { pos: "conj", type: "concession", words: ["though", "although"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["expensive", "cheap", "new", "old"] },
-        { text: ", it is" },
-        { pos: "adj", type: "basic", words: ["good", "nice", "beautiful"] },
-        { pos: "conj", type: "coordinating", words: ["and"] },
-        { text: "I like this" },
-        { pos: "noun", type: "other", words: ["toy", "gift", "computer", "phone", "picture"] }
-      ]
-    },
-    {
-      id: "pro-11", name: "推测中的条件结果",
-      pattern: [
-        { pos: "pron", type: "subject", words: ["I"] },
-        { pos: "verb", type: "action", words: ["guess"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["fine", "warm", "hot", "cool"] },
-        { text: ", we will" },
-        { pos: "verb", type: "phrase", words: ["have a picnic", "go hiking", "take a trip", "play sports"] }
-      ]
-    },
-    {
-      id: "pro-12", name: "观点原因追问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["why"] },
-        { text: "do you" },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "the" },
-        { pos: "noun", type: "animal" },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["smart", "funny", "cute", "lovely", "active"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "pro-13", name: "推测方法追问",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["how"] },
-        { text: "can we" },
-        { pos: "verb", type: "action", words: ["guess"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["right", "good", "new", "easy"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "pro-14", name: "时间建议与感受条件",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["when"] },
-        { text: "should we" },
-        { pos: "verb", type: "phrase", words: ["go home", "go to bed", "eat dinner", "drink water"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "we feel" },
-        { pos: "adj", type: "basic", words: ["tired", "hungry"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "pro-15", name: "地点选择与环境条件",
-      pattern: [
-        { pos: "adv", type: "interrogative", words: ["where"] },
-        { text: "can we" },
-        { pos: "verb", type: "action", words: ["read", "study", "work", "play"] },
-        { pos: "conj", type: "time", words: ["when"] },
-        { text: "it is" },
-        { pos: "adj", type: "basic", words: ["quiet", "hot", "cold", "fine"] },
-        { text: "?" }
-      ]
-    },
-    {
-      id: "pro-16", name: "人物关系从句",
-      pattern: [
-        { text: "The" },
-        { pos: "noun", type: "people", words: ["friend", "classmate"] },
-        { pos: "pron", type: "interrogative", words: ["who"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["help", "read", "write", "study"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["kind", "helpful", "smart", "strict"] }
-      ]
-    },
-    {
-      id: "pro-17", name: "动物关系从句",
-      pattern: [
-        { text: "The" },
-        { pos: "noun", type: "animal", words: ["fish", "shark", "seal", "duck", "penguin"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { text: "can" },
-        { pos: "verb", type: "action", words: ["swim"] },
-        { text: "is" },
-        { pos: "adj", type: "basic", words: ["small", "big", "active", "cute", "lovely"] }
-      ]
-    },
-    {
-      id: "pro-18", name: "地点关系与方位嵌套",
-      pattern: [
-        { text: "The" },
-        { pos: "noun", type: "place", words: ["library", "school"] },
-        { pos: "adv", type: "interrogative", words: ["where"] },
-        { text: "we can" },
-        { pos: "verb", type: "action", words: ["read", "study"] },
-        { text: "is" },
-        { pos: "prep", words: ["near", "next to", "behind"] },
-        { text: "my" },
-        { pos: "noun", type: "place", words: ["home"] }
-      ]
-    },
-    {
-      id: "pro-19", name: "序数时间与条件结果",
-      pattern: [
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "the" },
-        { pos: "num", type: "ordinal", words: ["first", "second", "third", "fourth", "fifth", "sixth", "seventh"] },
-        { text: "day is" },
-        { pos: "adj", type: "basic", words: ["busy", "hot", "cold", "fine"] },
-        { text: ", we will" },
-        { pos: "verb", type: "phrase", words: ["go home", "read books", "play sports", "take a trip"] }
-      ]
-    },
-    {
-      id: "pro-20", name: "语篇标记与条件推理",
-      pattern: [
-        { pos: "interj", type: "discourse", words: ["well"] },
-        { text: ", I" },
-        { pos: "verb", type: "action", words: ["think"] },
-        { pos: "conj", type: "clause", words: ["that"] },
-        { pos: "conj", type: "condition", words: ["if"] },
-        { text: "we" },
-        { pos: "verb", type: "action", words: ["work", "study"] },
-        { text: ", we can" },
-        { pos: "verb", type: "action", words: ["learn"] }
-      ]
-    }
-  ]
-});
-
-</script>
   <!-- 主题注册器（defineDinoTheme）与题型实现，需在各主题文件之前加载 -->
   <script>
 /* ============================================================
@@ -4073,36 +3410,99 @@ window.DINO_WORD_RULES.push({
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const foodEn = (food) => (food && (food.en || food.word)) || "";
 
-  /* 同一类题型的多组句式，避免每次都是同一句话 */
-  const ASKS = {
+  /* 主题作用域：对话句式与词汇只能来自当前闯关主题 / 场景。
+     zoo   = 陆地动物园（含动物园、饲养员、游客等场景语）
+     animal = 动物主题兜底
+     default = 其他主题（学校、旅行等）使用通用句式 */
+  const ZOO_ASKS = {
+    word: [
+      "Welcome to the zoo! Look at the picture. What animal is this?",
+      "The zookeeper points at the picture. What animal is this?",
+      "You are visiting the zoo. What do you see in this picture?",
+      "Look at the zoo sign. Can you tell me this animal's name?",
+      "At the zoo, we can see many animals. What is this one?",
+      "This animal lives in the zoo. Do you know what it is?",
+    ],
+    wordGeneric: [
+      "Welcome to the zoo! Look at the picture. What is this?",
+      "The zookeeper shows you a picture. What is this?",
+      "At the zoo, what do you see in the picture?",
+      "Do you know this zoo word? What is it?",
+    ],
+    eat: [
+      "At the zoo, what does the {word} eat?",
+      "The zookeeper asks: what food does the {word} like?",
+      "Look at the {word} in its enclosure. What does it eat?",
+      "What do visitors feed the {word} at the zoo?",
+      "What is the {word}'s favourite food at the zoo?",
+      "The {word} is hungry. What should the zookeeper give it?",
+    ],
+    eatYesNo: [
+      "Does the {word} like {food} at the zoo?",
+      "The zookeeper feeds the {word} some {food}. Is that right?",
+      "Is {food} good food for the {word} at the zoo?",
+      "A visitor asks: does the {word} like {food}?",
+    ],
+    yesno: [
+      "A visitor asks: is this a {wrong}?",
+      "Look at the zoo sign. Is this a {wrong}?",
+      "The little boy at the zoo says: is this a {wrong}? What do you think?",
+      "This animal is in the zoo. Is it a {wrong}?",
+    ],
+    image: [
+      "The zoo map shows many animals. Which one is the {word}?",
+      "Can you find the {word} in the zoo?",
+      "Point to the {word} on the zoo map, please.",
+      "Where is the {word} in the zoo picture?",
+      "The zookeeper is looking for the {word}. Which one is it?",
+    ],
+    foodImage: [
+      "Which zoo animal eats {food}?",
+      "At the zoo, who likes to eat {food}?",
+      "Which animal would like some {food} at the zoo?",
+      "The zookeeper has some {food}. Which animal wants it?",
+    ],
+  };
+
+  const DEFAULT_ASKS = {
     word: [
       "Look at the picture. What animal is this?",
       "Can you tell me what this is?",
       "What do you see in the picture?",
       "Do you know this animal? What is it?",
+      "Look carefully. What is in the picture?",
     ],
     wordGeneric: [
       "Look at the picture. What is this?",
       "Can you tell me what this is?",
       "What do you see in the picture?",
       "Do you know this word? What is it?",
+      "Look carefully. What is this?",
     ],
     eat: [
       "What does the {word} eat?",
       "What food does the {word} like?",
       "Tell me, what does a {word} eat?",
       "What is the {word}'s favourite food?",
+      "The {word} is hungry. What does it eat?",
+    ],
+    eatYesNo: [
+      "Does the {word} eat {food}?",
+      "Is {food} good food for the {word}?",
+      "Does the {word} like {food}?",
     ],
     yesno: [
       "Is this a {wrong}?",
       "Look carefully. Is this a {wrong}?",
       "Excuse me, is this a {wrong}?",
+      "Is this animal a {wrong}?",
     ],
     image: [
       "Which one is the {word}?",
       "Can you find the {word}?",
       "Point to the {word}, please.",
       "Where is the {word}?",
+      "Which picture shows the {word}?",
     ],
     foodImage: [
       "Which animal eats {food}?",
@@ -4110,6 +3510,13 @@ window.DINO_WORD_RULES.push({
       "Which animal would like some {food}?",
     ],
   };
+
+  const SCOPES = { zoo: ZOO_ASKS, animal: ZOO_ASKS, default: DEFAULT_ASKS };
+  /* 按「场景 → 主题 → 通用」顺序解析作用域，主题不存在时自动使用通用句式 */
+  function asksFor(scope) {
+    const s = scope || {};
+    return SCOPES[s.sceneId] || SCOPES[s.themeId] || SCOPES.default;
+  }
 
   function animalOption(w) {
     return {
@@ -4119,9 +3526,10 @@ window.DINO_WORD_RULES.push({
     };
   }
 
-  function build(task, pool) {
+  function build(task, pool, scope) {
     const w = task;
     if (!w || !w.word) return null;
+    const ASKS = asksFor(scope);
     const others = (pool || []).filter(
       (x) => x && x.word && x.word !== w.word && x.category === w.category
     );
@@ -4129,17 +3537,17 @@ window.DINO_WORD_RULES.push({
 
     const two = shuffle(others).slice(0, 2);
     const food = foodEn(w.food);
+    /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
+    const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
     const modes = ["word"];
-    if (w.animal && food && others.some((x) => foodEn(x.food) && foodEn(x.food) !== food)) {
-      modes.push("eat", "foodImage");
-    }
+    if (w.animal && food && altFoods.length >= 2) modes.push("eat", "foodImage");
+    if (w.animal && food && altFoods.length >= 3) modes.push("eatYesNo");
     if (w.animal && others.every((x) => x.img || x.animal)) modes.push("image");
     if (w.animal) modes.push("yesno");
 
     let mode = pick(modes);
 
     if (mode === "eat") {
-      const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
       if (altFoods.length < 2) {
         mode = "word";
       } else {
@@ -4155,6 +3563,32 @@ window.DINO_WORD_RULES.push({
             { value: `It eats ${f1}.`, label: `It eats ${f1}.` },
             { value: `It eats ${f2}.`, label: `It eats ${f2}.` },
           ]),
+          answerValue: correct,
+          answerText: correct,
+        };
+      }
+    }
+
+    if (mode === "eatYesNo") {
+      if (!food || altFoods.length < 3) {
+        mode = "word";
+      } else {
+        const askedFood = Math.random() < 0.5 ? food : pick(altFoods);
+        const isRight = askedFood === food;
+        const correct = isRight ? "Yes, it does." : `No, it doesn't. It eats ${food}.`;
+        const wrongFoods = shuffle(altFoods.filter((f) => f !== askedFood)).slice(0, 2);
+        const noAnswer = `No, it doesn't. It eats ${wrongFoods[0]}.`;
+        const options = isRight
+          ? [correct, noAnswer, `No, it doesn't. It eats ${wrongFoods[1]}.`]
+          : [correct, "Yes, it does.", noAnswer];
+        return {
+          mode: "sentence",
+          replyMode: "sentence",
+          askImg: true,
+          ask: pick(ASKS.eatYesNo)
+            .replace("{word}", w.word)
+            .replace("{food}", askedFood),
+          options: shuffle(options.map((v) => ({ value: v, label: v }))),
           answerValue: correct,
           answerText: correct,
         };
@@ -4224,7 +3658,7 @@ window.DINO_WORD_RULES.push({
     };
   }
 
-  window.DialogTemplates = { build, ASKS };
+  window.DialogTemplates = { build, ASKS: DEFAULT_ASKS, SCOPES };
 })();
 
 </script>
@@ -4328,8 +3762,9 @@ window.DINO_WORD_RULES.push({
     return fresh[0] || shuffle(types)[0];
   }
 
-  /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重 */
-  function makeQuestion(type, pool, sceneId, usedWords, usedTypes) {
+  /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重
+     familiarSet 存在时（BOSS 关）严格按「错题库 → 已解锁词 → 其他词」优先抽词 */
+  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet) {
     const rule = RULE_BY_KEY[type];
     if (!rule) return null;
 
@@ -4337,15 +3772,23 @@ window.DINO_WORD_RULES.push({
     if (!candidates.length) candidates = pool.filter((w) => fitsRule(w, rule));
     if (!candidates.length) return null;
 
-    /* 错题库加权抽词：答错过的词优先复现 */
-    const target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+    let target;
+    if (familiarSet) {
+      const wrong = candidates.filter((w) => WrongBank.isWrongWord(wordId(sceneId, w.word)));
+      const known = candidates.filter((w) => familiarSet.has(w.word));
+      const tier = wrong.length ? wrong : (known.length ? known : candidates);
+      target = tier[Math.floor(Math.random() * tier.length)];
+    } else {
+      /* 错题库加权抽词：答错过的词优先复现 */
+      target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+    }
     usedWords.add(target.word);
     usedTypes.add(type);
     return { gameType: type, recordWrong: rule.recordWrong, targetWord: target };
   }
 
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
-  function buildSession(level, pool, sceneId) {
+  function buildSession(level, pool, sceneId, familiarSet) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
     const isBoss = step === LEVELS_PER_VENUE;
     const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
@@ -4363,7 +3806,7 @@ window.DINO_WORD_RULES.push({
           else type = BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes);
+        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet);
         if (question) questions.push(question);
       }
     }
@@ -4371,8 +3814,9 @@ window.DINO_WORD_RULES.push({
     return questions;
   }
 
-  /* 把引擎输出转换成现有 quiz.order 兼容的 task 对象 */
-  function toTask(question, allWords, dlg, sceneId) {
+  /* 把引擎输出转换成现有 quiz.order 兼容的 task 对象
+     buildPool：出题 / 干扰项用词池，BOSS 关会收窄到错题库 + 已解锁词 */
+  function toTask(question, allWords, dlg, sceneId, buildPool) {
     const w = allWords.find((x) => x.word === question.targetWord.word) || question.targetWord;
     const task = {
       type: question.gameType,
@@ -4405,26 +3849,29 @@ window.DINO_WORD_RULES.push({
       wrongWordId: wordId(sceneId, w.word),
     };
     const game = currentTheme().games[question.gameType];
-    if (game && game.build) game.build(task, allWords);
+    if (game && game.build) game.build(task, buildPool && buildPool.length ? buildPool : allWords);
     return task;
   }
 
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
   const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool) {
     const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
     const usedWords = new Set(tasks.map((task) => task.word));
+    const primary = primaryPool && primaryPool.length ? primaryPool : allWords;
     let guard = 0;
     while (tasks.length < size && guard++ < 20) {
       const type = types[Math.floor(Math.random() * types.length)];
       const rule = RULE_BY_KEY[type];
-      let candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+      let candidates = primary.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
+      /* 优先池凑不满时，回退到完整场景词表兜底 */
+      if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
       if (!candidates.length) break;
       const w = candidates[Math.floor(Math.random() * candidates.length)];
       usedWords.add(w.word);
-      tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId));
+      tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId, primary));
     }
     return tasks;
   }
@@ -4448,12 +3895,29 @@ window.DINO_WORD_RULES.push({
       const boss = window.isAssessmentLevel ? isAssessmentLevel(level) : isAnimalBossLevel(level);
       const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
 
-      const questions = buildSession(level, allSceneWords, sceneId);
+      /* BOSS 关词池：错题库 + 已解锁词优先，凑不够时补少量场景新词兜底 */
+      const familiarSet = boss ? unlockedWordSet(theme.id, sceneId) : null;
+      let buildPool = allSceneWords;
+      if (boss) {
+        const familiar = allSceneWords.filter(
+          (w) => familiarSet.has(w.word) || WrongBank.isWrongWord(wordId(sceneId, w.word))
+        );
+        if (familiar.length >= 3) {
+          buildPool = familiar.slice();
+          if (buildPool.length < 6) {
+            const names = new Set(buildPool.map((w) => w.word));
+            const rest = shuffle(allSceneWords.filter((w) => !names.has(w.word)));
+            buildPool = buildPool.concat(rest.slice(0, 6 - buildPool.length));
+          }
+        }
+      }
+
+      const questions = buildSession(level, buildPool, sceneId, familiarSet);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
-        .map((q) => toTask(q, allSceneWords, dlg, sceneId));
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES).slice(0, size);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES, buildPool).slice(0, size);
     }
 
     /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
@@ -4745,7 +4209,11 @@ window.DINO_WORD_RULES.push({
             quiz.choiceCorrect = wrongPairs.length === 0;
             if (quiz.choiceCorrect) {
               quiz.correct++;
-              q.pairs.forEach((p) => quiz.words.push(p.word));
+              q.pairs.forEach((p) => {
+                quiz.words.push(p.word);
+                /* 连线全部正确：把配对的单词一并解锁 */
+                if (typeof unlockTaskWord === "function") unlockTaskWord({ word: p.word });
+              });
               sfx("excellent");
             }
             render();
@@ -4758,8 +4226,10 @@ window.DINO_WORD_RULES.push({
         label: "情景对话",
         title: "读对话，选出正确的答案",
         build(task, pool) {
-          /* 模板库：自动组合缺词、整句、图片三类情景问答 */
-          const dlg = window.DialogTemplates ? window.DialogTemplates.build(task, pool) : null;
+          /* 模板库：按当前主题 / 场景收紧对话内容，避免出现主题外词汇 */
+          const dlg = window.DialogTemplates
+            ? window.DialogTemplates.build(task, pool, { themeId: currentTheme().id, sceneId: state.scene })
+            : null;
           if (dlg) {
             markDialogWords(dlg, task, pool);
             task.dialog = dlg;
@@ -4804,8 +4274,12 @@ window.DINO_WORD_RULES.push({
               replyHtml = `<p>${d.reply.replace("___", `<b class="blank">${revealed ? d.answerValue : "＿＿"}</b>`)}</p>`;
             }
           } else {
+            askText = q.dlgQ.replace("{word}", q.word);
             replyHtml = `<p>${q.dlgA.replace("{word}", `<b class="blank">${revealed ? q.word : "＿＿"}</b>`)}</p>`;
           }
+          /* 喇叭朗读 A 提问框里的整句英文（去掉高亮标签，避免读出 HTML） */
+          const askSoundText = askText.replace(/<[^>]*>/g, "");
+          const askSound = `<button class="listen" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="朗读 A 的句子">${I.speaker(16)}</button>`;
           let optionHtml;
           if (!d) {
             optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
@@ -4839,7 +4313,7 @@ window.DINO_WORD_RULES.push({
                 <div class="ref-dialog-row reply"><div class="ref-dialog-bubble"><span class="ref-dialog-name">B</span>${replyHtml}</div>
                   <div class="ref-dialog-person">${QuizUiArt.child("girl")}</div></div>
               </div>
-              <div class="listen-row ref-dialog-listen">${listenPill()}</div>
+              <div class="listen-row ref-dialog-listen">${askSound}</div>
               ${optionHtml}`,
             btn: choiceButton("选一个答案"),
           };
@@ -6251,7 +5725,7 @@ const ULTRA_SKINS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 8,
+  v: 9,
   name: "毛肚",
   stars: 0,
   growth: 0,
@@ -6261,6 +5735,8 @@ const DEFAULT_STATE = {
   scene: "zoo",
   progress: {},
   log: {},
+  /* 已解锁单词：存档键为 "主题:场景:单词"，词汇页只展示这里列出的词 */
+  unlocked: [],
   words: 0,
   threeStars: 0,
   tasks: { level: false },
@@ -6285,7 +5761,7 @@ function wordGlyph(word) {
 function wordArt(w) {
   return w.art || (() => emojiArt(w.emoji || wordGlyph(w.word)));
 }
-/* 单词池：所有 isPool:true 的词性文件里的原子词（带 type 标注），仅供每日随机记单词与单词本使用 */
+/* 单词池：所有 isPool:true 的词性文件里的原子词（带 type 标注），仅供每日随机记单词使用 */
 const POS_POOL = (window.DINO_WORD_SETS || [])
   .filter((s) => s.isPool)
   .flatMap((s) => (s.words || []).map((w) => ({ ...w, pos: s.id })))
@@ -6294,12 +5770,10 @@ const POS_POOL = (window.DINO_WORD_SETS || [])
 const REVIEW_WORDS = POS_POOL.filter(
   (w) => w.pos === "noun" || (w.pos === "verb" && w.type === "phrase")
 );
-/* 词性中文名（单词本页签展示用） */
-const POS_ZH = { noun: "名词", verb: "动词", adj: "形容词", adv: "副词", pron: "代词", prep: "介词", conj: "连词", interj: "感叹词", num: "数词" };
-function posZh(w) {
-  if (!w || !w.pos) return "";
-  if (w.pos === "verb" && w.type === "phrase") return "动词短语";
-  return POS_ZH[w.pos] || "";
+/* 闯关单词分类中文名（词汇页签展示用） */
+const CATEGORY_ZH = { noun: "名词", verb: "动词", part: "身体部位", adj: "形容词" };
+function categoryZh(w) {
+  return (w && CATEGORY_ZH[w.category]) || "";
 }
 /* 关卡主题：每个主题自带独立词表，不再从词库按类型筛选；多场景主题每个场景一套词 */
 function themeWordList(list) {
@@ -6332,6 +5806,65 @@ function sceneWords(theme, sceneId) {
 }
 function themeWords() {
   return sceneWords(currentTheme(), state && state.scene);
+}
+
+/* ---------------- 单词解锁 ----------------
+   答对题目后把当前主题 / 场景的单词写入存档，词汇页只展示已解锁的词 */
+function unlockWordKey(themeId, sceneId, word) {
+  return `${themeId || ""}:${sceneId || ""}:${word || ""}`;
+}
+function isWordUnlocked(word, themeId, sceneId) {
+  const key = unlockWordKey(
+    themeId || (state && state.theme),
+    sceneId == null ? (state && state.scene) : sceneId,
+    word
+  );
+  return Boolean(state && Array.isArray(state.unlocked) && state.unlocked.includes(key));
+}
+/* 答对后解锁：返回 true 表示首次解锁；只接受当前主题 / 场景词表里的词 */
+function unlockWord(word) {
+  if (!word || !state) return false;
+  const theme = currentTheme();
+  const sceneId = state.scene || "";
+  if (!sceneWords(theme, sceneId).some((w) => w.word === word)) return false;
+  const key = unlockWordKey(theme.id, sceneId, word);
+  if (!Array.isArray(state.unlocked)) state.unlocked = [];
+  if (state.unlocked.includes(key)) return false;
+  state.unlocked.push(key);
+  /* 已学单词数始终与解锁列表保持一致 */
+  state.words = state.unlocked.length;
+  save();
+  return true;
+}
+/* 当前场景已解锁的单词集合，供 BOSS 关优先出题 */
+function unlockedWordSet(themeId, sceneId) {
+  const theme = THEME_BY_ID.get(themeId || (state && state.theme)) || currentTheme();
+  const sid = sceneId == null ? ((state && state.scene) || "") : sceneId;
+  const prefix = `${theme.id}:${sid}:`;
+  return new Set(
+    ((state && Array.isArray(state.unlocked)) ? state.unlocked : [])
+      .filter((key) => key.indexOf(prefix) === 0)
+      .map((key) => key.slice(prefix.length))
+  );
+}
+/* 全部主题 / 场景单词，词汇页按 A–Z 展示（未解锁的灰化占位） */
+function allThemeWords() {
+  const out = [];
+  const seen = new Set();
+  WORD_SETS.forEach((set) => {
+    const groups = set.scenes && set.scenes.length
+      ? set.scenes.map((sc) => ({ sceneId: sc.id, words: sc.words }))
+      : [{ sceneId: "", words: set.words }];
+    groups.forEach(({ sceneId, words }) => {
+      (words || []).forEach((w) => {
+        const key = unlockWordKey(set.id, sceneId, w.word);
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({ ...w, themeId: set.id, themeName: set.name, sceneId, unlockKey: key });
+      });
+    });
+  });
+  return out;
 }
 /* 当前主题（多场景主题为当前场景）的关卡总数：动物乐园 50 关，其余主题 10 关 */
 function levelsPerTheme(id) {
@@ -6446,6 +5979,12 @@ function loadState() {
       /* 余额不能超过关卡累计星数，避免旧存档虚高 */
       parsed.stars = Math.min(Number(parsed.stars) || 0, earned);
     }
+    /* v8 → v9：单词改为「答对解锁」，旧存档只有计数无法映射到具体单词，从零重新解锁 */
+    if (prevVersion < 9) {
+      parsed.unlocked = [];
+      parsed.words = 0;
+    }
+    const unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
     const next = {
       ...initialState(),
       ...parsed,
@@ -6455,6 +5994,9 @@ function loadState() {
       scene: parsed.scene || DEFAULT_STATE.scene,
       progress,
       log: parsed.log || {},
+      unlocked,
+      /* 已学单词数始终与解锁列表保持一致 */
+      words: unlocked.length,
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
       ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
@@ -6514,6 +6056,7 @@ function initialState() {
     tasks: { ...DEFAULT_STATE.tasks },
     progress: {},
     log: {},
+    unlocked: [],
     bgOwned: [...DEFAULT_STATE.bgOwned],
     dex: [...DEFAULT_STATE.dex],
   };
@@ -6850,6 +6393,7 @@ document.addEventListener("click", (e) => {
     quiz.selected = ok ? q.word : got;
     if (ok) {
       quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+      unlockTaskWord(q);
       WrongBank.applyResult(q, true);
     } else {
       quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
@@ -6885,6 +6429,10 @@ document.addEventListener("click", (e) => {
   } else if (action === "speak-word") {
     shakeBtn(el);
     speak(el.dataset.word);
+  } else if (action === "speak-text") {
+    /* 情景对话：朗读 A 提问框里的完整句子 */
+    shakeBtn(el);
+    speak(el.dataset.text);
   } else if (action === "open-review") {
     openReview();
   } else if (action === "record-say") {
@@ -7301,7 +6849,9 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     if (assessment) prog.stars[completedLevel] = best;
     /* 只有挑战当前关卡且达到过关线才推进进度，复习旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
-    state.words += quiz.correct;
+    /* 单词数由解锁列表决定，同一单词答对多次不会重复计数 */
+    state.words = Array.isArray(state.unlocked) ? state.unlocked.length : 0;
+    const newUnlocked = [...new Set(quiz.newWords || [])];
     state.threeStars += stars === 3 ? 1 : 0;
     state.tasks.level = true;
     recordLevel(stars);
@@ -7321,10 +6871,10 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       growthGain,
       starGain,
       seconds: elapsed,
-      newWords: quiz.correct,
+      newWords: newUnlocked.length,
       canEvolve,
       targetStage: target.key,
-      wordList: [...new Set(quiz.words)].slice(0, 5),
+      wordList: newUnlocked.slice(0, 5),
     };
     quiz = null;
     save();
@@ -7400,11 +6950,11 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
         <div class="rc-stats">
           <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
           <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
-          <div class="rc-stat"><b class="num">${r.newWords}</b><span>答对单词</span></div>
+          <div class="rc-stat"><b class="num">${r.newWords}</b><span>解锁新词</span></div>
         </div>
         <div class="rc-words">
           <span class="lb">WORDS</span>
-          ${(r.wordList.length ? r.wordList : themeWords().slice(0, 3).map((w) => w.word)).map((w) => `<span class="w">${w}</span>`).join("")}
+          ${(r.wordList.length ? r.wordList : (state.unlocked || []).slice(-3).map((k) => k.slice(k.lastIndexOf(":") + 1))).map((w) => `<span class="w">${w}</span>`).join("")}
         </div>
       </div>
 
@@ -7559,6 +7109,7 @@ function startQuiz(level) {
     matchWrong: 0,
     startedAt: Date.now(),
     words: [],
+    newWords: [],
     order: DynamicEngine.buildTasks(lvl),
   };
   lastResult = null;
@@ -7817,6 +7368,11 @@ function feedPick(food) {
   /* 点选食物后立即判题，不再需要底部确认按钮 */
   feedCheck();
 }
+/* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
+function unlockTaskWord(q) {
+  if (!q || !q.word || typeof unlockWord !== "function") return;
+  if (unlockWord(q.word) && quiz && Array.isArray(quiz.newWords)) quiz.newWords.push(q.word);
+}
 function feedCheck() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
@@ -7824,6 +7380,7 @@ function feedCheck() {
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
     quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    unlockTaskWord(q);
     WrongBank.applyResult(q, true);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
@@ -7845,6 +7402,7 @@ function checkAnswer() {
     quiz.correct++;
     quiz.words.push(q.word);
     sfx("excellent");
+    unlockTaskWord(q);
     /* 🦁 动物园场景：答对 → 尝试清除错题库 */
     WrongBank.applyResult(q, true);
   } else {
@@ -8677,7 +8235,6 @@ function openAnimalPreview(scene) {
 
 let dexFilter = "all";
 let wordsLetter = "all";
-let wordsAlphaCache = null;
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
@@ -8753,29 +8310,35 @@ function ultraSkinSection() {
 }
 
 /* ------------------------------------------------ words */
-/* 词库单词按首字母 A–Z 分组：单词本只展示词库，不掺入各主题馆的闯关词 */
+/* 词汇本：只展示闯关答对后解锁的单词，未解锁的灰化占位 */
 function allWordsAlpha() {
-  if (wordsAlphaCache) return wordsAlphaCache;
-  const seen = new Set();
-  const all = POS_POOL.filter((w) => {
-    if (seen.has(w.word)) return false;
-    seen.add(w.word);
-    return true;
+  const byWord = new Map();
+  allThemeWords().forEach((w) => {
+    const exist = byWord.get(w.word);
+    /* 同一拼写只保留一条，优先展示已解锁的那条 */
+    if (!exist || (!isWordUnlocked(exist.word, exist.themeId, exist.sceneId) && isWordUnlocked(w.word, w.themeId, w.sceneId))) {
+      byWord.set(w.word, w);
+    }
   });
-  all.sort((a, b) => a.word.localeCompare(b.word, "en"));
   const groups = [];
-  all.forEach((w) => {
-    const L = w.word[0].toUpperCase();
-    let g = groups.find((x) => x.letter === L);
-    if (!g) groups.push((g = { letter: L, words: [] }));
-    g.words.push(w);
-  });
-  return (wordsAlphaCache = groups);
+  [...byWord.values()]
+    .sort((a, b) => a.word.localeCompare(b.word, "en"))
+    .forEach((w) => {
+      const L = w.word[0].toUpperCase();
+      let g = groups.find((x) => x.letter === L);
+      if (!g) groups.push((g = { letter: L, words: [] }));
+      g.words.push(w);
+    });
+  return groups;
 }
 
 function screenWords() {
   const groups = allWordsAlpha();
   const total = groups.reduce((n, g) => n + g.words.length, 0);
+  const learned = groups.reduce(
+    (n, g) => n + g.words.filter((w) => isWordUnlocked(w.word, w.themeId, w.sceneId)).length,
+    0
+  );
   const letters = groups.map((g) => g.letter);
   const shown = wordsLetter === "all" ? groups : groups.filter((g) => g.letter === wordsLetter);
   const index = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
@@ -8783,8 +8346,8 @@ function screenWords() {
   return `<section class="screen has-tab" data-screen="words">
     <div class="scroll">
       <div class="words-head">
-        <div class="t"><h1>单词本</h1><p>词库里的单词，按 A–Z 排好队</p></div>
-        <div class="words-count"><b class="num">${total}</b><span>词</span></div>
+        <div class="t"><h1>单词本</h1><p>闯关答对就能解锁新单词</p></div>
+        <div class="words-count"><b class="num">${learned}</b><span>/ ${total} 词</span></div>
       </div>
 
       <div class="wl-bar">
@@ -8795,17 +8358,29 @@ function screenWords() {
       ${shown.map((g) => `<div class="word-group">
         <div class="wg-letter">${g.letter}<span>${g.words.length}</span></div>
         <div class="wg-list">
-          ${g.words.map((w) => `<button class="word-row" data-action="speak-word" data-word="${esc(w.word)}" aria-label="${w.word} ${w.zh}">
-            <span class="wr-pic">${w.art()}</span>
-            <span class="wr-main">
-              <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
-              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}</span>
-            </span>
-          </button>`).join("")}
+          ${g.words.map((w) => {
+            const unlocked = isWordUnlocked(w.word, w.themeId, w.sceneId);
+            if (!unlocked) {
+              return `<div class="word-row locked" aria-label="未解锁单词">
+                <span class="wr-pic">${I.lock(16, "#B9AE99")}</span>
+                <span class="wr-main">
+                  <span class="wr-line"><b>???</b><i>待解锁</i></span>
+                  <span class="wr-line sub"><em>闯关答对后解锁</em>${categoryZh(w) ? `<span class="wr-tag pos">${categoryZh(w)}</span>` : ""}</span>
+                </span>
+              </div>`;
+            }
+            return `<button class="word-row" data-action="speak-word" data-word="${esc(w.word)}" aria-label="${w.word} ${w.zh}">
+              <span class="wr-pic">${w.art()}</span>
+              <span class="wr-main">
+                <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
+                <span class="wr-line sub"><em>${w.phon || ""}</em>${categoryZh(w) ? `<span class="wr-tag pos">${categoryZh(w)}</span>` : ""}</span>
+              </span>
+            </button>`;
+          }).join("")}
         </div>
       </div>`).join("")}
 
-      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，词库会持续补充新词</div>
+      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，闯关答对后新词会自动解锁</div>
     </div>
     ${tabbar("words")}
   </section>`;

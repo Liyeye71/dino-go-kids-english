@@ -6,7 +6,6 @@
 
 let dexFilter = "all";
 let wordsLetter = "all";
-let wordsAlphaCache = null;
 
 /* ------------------------------------------------ dex */
 function dexRewardInfo() {
@@ -82,29 +81,35 @@ function ultraSkinSection() {
 }
 
 /* ------------------------------------------------ words */
-/* 词库单词按首字母 A–Z 分组：单词本只展示词库，不掺入各主题馆的闯关词 */
+/* 词汇本：只展示闯关答对后解锁的单词，未解锁的灰化占位 */
 function allWordsAlpha() {
-  if (wordsAlphaCache) return wordsAlphaCache;
-  const seen = new Set();
-  const all = POS_POOL.filter((w) => {
-    if (seen.has(w.word)) return false;
-    seen.add(w.word);
-    return true;
+  const byWord = new Map();
+  allThemeWords().forEach((w) => {
+    const exist = byWord.get(w.word);
+    /* 同一拼写只保留一条，优先展示已解锁的那条 */
+    if (!exist || (!isWordUnlocked(exist.word, exist.themeId, exist.sceneId) && isWordUnlocked(w.word, w.themeId, w.sceneId))) {
+      byWord.set(w.word, w);
+    }
   });
-  all.sort((a, b) => a.word.localeCompare(b.word, "en"));
   const groups = [];
-  all.forEach((w) => {
-    const L = w.word[0].toUpperCase();
-    let g = groups.find((x) => x.letter === L);
-    if (!g) groups.push((g = { letter: L, words: [] }));
-    g.words.push(w);
-  });
-  return (wordsAlphaCache = groups);
+  [...byWord.values()]
+    .sort((a, b) => a.word.localeCompare(b.word, "en"))
+    .forEach((w) => {
+      const L = w.word[0].toUpperCase();
+      let g = groups.find((x) => x.letter === L);
+      if (!g) groups.push((g = { letter: L, words: [] }));
+      g.words.push(w);
+    });
+  return groups;
 }
 
 function screenWords() {
   const groups = allWordsAlpha();
   const total = groups.reduce((n, g) => n + g.words.length, 0);
+  const learned = groups.reduce(
+    (n, g) => n + g.words.filter((w) => isWordUnlocked(w.word, w.themeId, w.sceneId)).length,
+    0
+  );
   const letters = groups.map((g) => g.letter);
   const shown = wordsLetter === "all" ? groups : groups.filter((g) => g.letter === wordsLetter);
   const index = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
@@ -112,8 +117,8 @@ function screenWords() {
   return `<section class="screen has-tab" data-screen="words">
     <div class="scroll">
       <div class="words-head">
-        <div class="t"><h1>单词本</h1><p>词库里的单词，按 A–Z 排好队</p></div>
-        <div class="words-count"><b class="num">${total}</b><span>词</span></div>
+        <div class="t"><h1>单词本</h1><p>闯关答对就能解锁新单词</p></div>
+        <div class="words-count"><b class="num">${learned}</b><span>/ ${total} 词</span></div>
       </div>
 
       <div class="wl-bar">
@@ -124,17 +129,29 @@ function screenWords() {
       ${shown.map((g) => `<div class="word-group">
         <div class="wg-letter">${g.letter}<span>${g.words.length}</span></div>
         <div class="wg-list">
-          ${g.words.map((w) => `<button class="word-row" data-action="speak-word" data-word="${esc(w.word)}" aria-label="${w.word} ${w.zh}">
-            <span class="wr-pic">${w.art()}</span>
-            <span class="wr-main">
-              <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
-              <span class="wr-line sub"><em>${w.phon || ""}</em>${posZh(w) ? `<span class="wr-tag pos">${posZh(w)}</span>` : ""}</span>
-            </span>
-          </button>`).join("")}
+          ${g.words.map((w) => {
+            const unlocked = isWordUnlocked(w.word, w.themeId, w.sceneId);
+            if (!unlocked) {
+              return `<div class="word-row locked" aria-label="未解锁单词">
+                <span class="wr-pic">${I.lock(16, "#B9AE99")}</span>
+                <span class="wr-main">
+                  <span class="wr-line"><b>???</b><i>待解锁</i></span>
+                  <span class="wr-line sub"><em>闯关答对后解锁</em>${categoryZh(w) ? `<span class="wr-tag pos">${categoryZh(w)}</span>` : ""}</span>
+                </span>
+              </div>`;
+            }
+            return `<button class="word-row" data-action="speak-word" data-word="${esc(w.word)}" aria-label="${w.word} ${w.zh}">
+              <span class="wr-pic">${w.art()}</span>
+              <span class="wr-main">
+                <span class="wr-line"><b>${w.word}</b><i>${w.zh}</i></span>
+                <span class="wr-line sub"><em>${w.phon || ""}</em>${categoryZh(w) ? `<span class="wr-tag pos">${categoryZh(w)}</span>` : ""}</span>
+              </span>
+            </button>`;
+          }).join("")}
         </div>
       </div>`).join("")}
 
-      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，词库会持续补充新词</div>
+      <div class="words-foot">${I.leaf(12)} 点单词可以听发音，闯关答对后新词会自动解锁</div>
     </div>
     ${tabbar("words")}
   </section>`;

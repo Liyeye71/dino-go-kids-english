@@ -69,6 +69,12 @@ function loadState() {
       /* 余额不能超过关卡累计星数，避免旧存档虚高 */
       parsed.stars = Math.min(Number(parsed.stars) || 0, earned);
     }
+    /* v8 → v9：单词改为「答对解锁」，旧存档只有计数无法映射到具体单词，从零重新解锁 */
+    if (prevVersion < 9) {
+      parsed.unlocked = [];
+      parsed.words = 0;
+    }
+    const unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
     const next = {
       ...initialState(),
       ...parsed,
@@ -78,6 +84,9 @@ function loadState() {
       scene: parsed.scene || DEFAULT_STATE.scene,
       progress,
       log: parsed.log || {},
+      unlocked,
+      /* 已学单词数始终与解锁列表保持一致 */
+      words: unlocked.length,
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
       ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
@@ -137,6 +146,7 @@ function initialState() {
     tasks: { ...DEFAULT_STATE.tasks },
     progress: {},
     log: {},
+    unlocked: [],
     bgOwned: [...DEFAULT_STATE.bgOwned],
     dex: [...DEFAULT_STATE.dex],
   };

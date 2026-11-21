@@ -32,6 +32,7 @@ function startQuiz(level) {
     matchWrong: 0,
     startedAt: Date.now(),
     words: [],
+    newWords: [],
     order: DynamicEngine.buildTasks(lvl),
   };
   lastResult = null;
@@ -290,6 +291,11 @@ function feedPick(food) {
   /* 点选食物后立即判题，不再需要底部确认按钮 */
   feedCheck();
 }
+/* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
+function unlockTaskWord(q) {
+  if (!q || !q.word || typeof unlockWord !== "function") return;
+  if (unlockWord(q.word) && quiz && Array.isArray(quiz.newWords)) quiz.newWords.push(q.word);
+}
 function feedCheck() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
@@ -297,6 +303,7 @@ function feedCheck() {
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
     quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    unlockTaskWord(q);
     WrongBank.applyResult(q, true);
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
@@ -318,6 +325,7 @@ function checkAnswer() {
     quiz.correct++;
     quiz.words.push(q.word);
     sfx("excellent");
+    unlockTaskWord(q);
     /* 🦁 动物园场景：答对 → 尝试清除错题库 */
     WrongBank.applyResult(q, true);
   } else {

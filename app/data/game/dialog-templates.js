@@ -17,36 +17,99 @@
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const foodEn = (food) => (food && (food.en || food.word)) || "";
 
-  /* 同一类题型的多组句式，避免每次都是同一句话 */
-  const ASKS = {
+  /* 主题作用域：对话句式与词汇只能来自当前闯关主题 / 场景。
+     zoo   = 陆地动物园（含动物园、饲养员、游客等场景语）
+     animal = 动物主题兜底
+     default = 其他主题（学校、旅行等）使用通用句式 */
+  const ZOO_ASKS = {
+    word: [
+      "Welcome to the zoo! Look at the picture. What animal is this?",
+      "The zookeeper points at the picture. What animal is this?",
+      "You are visiting the zoo. What do you see in this picture?",
+      "Look at the zoo sign. Can you tell me this animal's name?",
+      "At the zoo, we can see many animals. What is this one?",
+      "This animal lives in the zoo. Do you know what it is?",
+    ],
+    wordGeneric: [
+      "Welcome to the zoo! Look at the picture. What is this?",
+      "The zookeeper shows you a picture. What is this?",
+      "At the zoo, what do you see in the picture?",
+      "Do you know this zoo word? What is it?",
+    ],
+    eat: [
+      "At the zoo, what does the {word} eat?",
+      "The zookeeper asks: what food does the {word} like?",
+      "Look at the {word} in its enclosure. What does it eat?",
+      "What do visitors feed the {word} at the zoo?",
+      "What is the {word}'s favourite food at the zoo?",
+      "The {word} is hungry. What should the zookeeper give it?",
+    ],
+    eatYesNo: [
+      "Does the {word} like {food} at the zoo?",
+      "The zookeeper feeds the {word} some {food}. Is that right?",
+      "Is {food} good food for the {word} at the zoo?",
+      "A visitor asks: does the {word} like {food}?",
+    ],
+    yesno: [
+      "A visitor asks: is this a {wrong}?",
+      "Look at the zoo sign. Is this a {wrong}?",
+      "The little boy at the zoo says: is this a {wrong}? What do you think?",
+      "This animal is in the zoo. Is it a {wrong}?",
+    ],
+    image: [
+      "The zoo map shows many animals. Which one is the {word}?",
+      "Can you find the {word} in the zoo?",
+      "Point to the {word} on the zoo map, please.",
+      "Where is the {word} in the zoo picture?",
+      "The zookeeper is looking for the {word}. Which one is it?",
+    ],
+    foodImage: [
+      "Which zoo animal eats {food}?",
+      "At the zoo, who likes to eat {food}?",
+      "Which animal would like some {food} at the zoo?",
+      "The zookeeper has some {food}. Which animal wants it?",
+    ],
+  };
+
+  const DEFAULT_ASKS = {
     word: [
       "Look at the picture. What animal is this?",
       "Can you tell me what this is?",
       "What do you see in the picture?",
       "Do you know this animal? What is it?",
+      "Look carefully. What is in the picture?",
     ],
     wordGeneric: [
       "Look at the picture. What is this?",
       "Can you tell me what this is?",
       "What do you see in the picture?",
       "Do you know this word? What is it?",
+      "Look carefully. What is this?",
     ],
     eat: [
       "What does the {word} eat?",
       "What food does the {word} like?",
       "Tell me, what does a {word} eat?",
       "What is the {word}'s favourite food?",
+      "The {word} is hungry. What does it eat?",
+    ],
+    eatYesNo: [
+      "Does the {word} eat {food}?",
+      "Is {food} good food for the {word}?",
+      "Does the {word} like {food}?",
     ],
     yesno: [
       "Is this a {wrong}?",
       "Look carefully. Is this a {wrong}?",
       "Excuse me, is this a {wrong}?",
+      "Is this animal a {wrong}?",
     ],
     image: [
       "Which one is the {word}?",
       "Can you find the {word}?",
       "Point to the {word}, please.",
       "Where is the {word}?",
+      "Which picture shows the {word}?",
     ],
     foodImage: [
       "Which animal eats {food}?",
@@ -54,6 +117,13 @@
       "Which animal would like some {food}?",
     ],
   };
+
+  const SCOPES = { zoo: ZOO_ASKS, animal: ZOO_ASKS, default: DEFAULT_ASKS };
+  /* 按「场景 → 主题 → 通用」顺序解析作用域，主题不存在时自动使用通用句式 */
+  function asksFor(scope) {
+    const s = scope || {};
+    return SCOPES[s.sceneId] || SCOPES[s.themeId] || SCOPES.default;
+  }
 
   function animalOption(w) {
     return {
@@ -63,9 +133,10 @@
     };
   }
 
-  function build(task, pool) {
+  function build(task, pool, scope) {
     const w = task;
     if (!w || !w.word) return null;
+    const ASKS = asksFor(scope);
     const others = (pool || []).filter(
       (x) => x && x.word && x.word !== w.word && x.category === w.category
     );
@@ -73,17 +144,17 @@
 
     const two = shuffle(others).slice(0, 2);
     const food = foodEn(w.food);
+    /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
+    const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
     const modes = ["word"];
-    if (w.animal && food && others.some((x) => foodEn(x.food) && foodEn(x.food) !== food)) {
-      modes.push("eat", "foodImage");
-    }
+    if (w.animal && food && altFoods.length >= 2) modes.push("eat", "foodImage");
+    if (w.animal && food && altFoods.length >= 3) modes.push("eatYesNo");
     if (w.animal && others.every((x) => x.img || x.animal)) modes.push("image");
     if (w.animal) modes.push("yesno");
 
     let mode = pick(modes);
 
     if (mode === "eat") {
-      const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
       if (altFoods.length < 2) {
         mode = "word";
       } else {
@@ -99,6 +170,32 @@
             { value: `It eats ${f1}.`, label: `It eats ${f1}.` },
             { value: `It eats ${f2}.`, label: `It eats ${f2}.` },
           ]),
+          answerValue: correct,
+          answerText: correct,
+        };
+      }
+    }
+
+    if (mode === "eatYesNo") {
+      if (!food || altFoods.length < 3) {
+        mode = "word";
+      } else {
+        const askedFood = Math.random() < 0.5 ? food : pick(altFoods);
+        const isRight = askedFood === food;
+        const correct = isRight ? "Yes, it does." : `No, it doesn't. It eats ${food}.`;
+        const wrongFoods = shuffle(altFoods.filter((f) => f !== askedFood)).slice(0, 2);
+        const noAnswer = `No, it doesn't. It eats ${wrongFoods[0]}.`;
+        const options = isRight
+          ? [correct, noAnswer, `No, it doesn't. It eats ${wrongFoods[1]}.`]
+          : [correct, "Yes, it does.", noAnswer];
+        return {
+          mode: "sentence",
+          replyMode: "sentence",
+          askImg: true,
+          ask: pick(ASKS.eatYesNo)
+            .replace("{word}", w.word)
+            .replace("{food}", askedFood),
+          options: shuffle(options.map((v) => ({ value: v, label: v }))),
           answerValue: correct,
           answerText: correct,
         };
@@ -168,5 +265,5 @@
     };
   }
 
-  window.DialogTemplates = { build, ASKS };
+  window.DialogTemplates = { build, ASKS: DEFAULT_ASKS, SCOPES };
 })();

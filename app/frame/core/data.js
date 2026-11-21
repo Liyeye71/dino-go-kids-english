@@ -26,7 +26,7 @@ const ULTRA_SKINS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 8,
+  v: 9,
   name: "毛肚",
   stars: 0,
   growth: 0,
@@ -36,6 +36,8 @@ const DEFAULT_STATE = {
   scene: "zoo",
   progress: {},
   log: {},
+  /* 已解锁单词：存档键为 "主题:场景:单词"，词汇页只展示这里列出的词 */
+  unlocked: [],
   words: 0,
   threeStars: 0,
   tasks: { level: false },
