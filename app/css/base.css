@@ -21,8 +21,6 @@
   --green:#2E8B57;
   --green-d:#1E6B47;
   --green-l:#E9F7D9;
-  --lime:#B8E05A;
-  --yellow:#FFC94A;
   --orange:#FF8A4C;
   --coral:#FF6F61;
   --shadow:0 0.625rem 1.5rem rgba(94,70,30,.08);
@@ -126,7 +124,7 @@ h1,h2,h3,h4,p{margin:0}
 /* 跨文件复用的原子规则：flex 子项省略布局 / 插画铺满 / 隐藏滚动条 */
 .collect-head .t,.bg-item .bg-info,.dex-sum .ds-main,.dex-reward .dr-main,.words-head .t,.gc-main,.evo-unlock .u-txt,.home-top .greet,.growth-panel .g-main,.task .t-body,.profile-head .t,.nc-l{flex:1;min-width:0}
 .wr-pic svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
-.scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar,.theme-tabs::-webkit-scrollbar{display:none}
+.scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar{display:none}
 
 .eyebrow{font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.1125rem;color:var(--muted);text-transform:uppercase}
 .card{background:var(--paper);border:0.09375rem solid var(--line);border-radius:1.5rem;box-shadow:var(--shadow)}

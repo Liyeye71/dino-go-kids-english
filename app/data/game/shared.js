@@ -36,13 +36,7 @@
     const L = Number(level) || 0;
     return L > 0 && L % STAGE_SIZE === 0;
   }
-  /* 前 4 关为基础练习（0 星）；考核关只做顺序解锁，不再设星数门槛 */
-  function canEnterLevel() {
-    return true;
-  }
-  window.STAGE_SIZE = STAGE_SIZE;
   window.isAssessmentLevel = isAssessmentLevel;
-  window.canEnterLevel = canEnterLevel;
 
   /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
   window.definePlaceholderTheme = function definePlaceholderTheme(opts) {
@@ -55,7 +49,7 @@
       emoji: o.emoji,
       dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
       playable: false,
-      words: [],
+      words: o.words || [],
       scenes: [],
       map: {
         title: "敬请期待",

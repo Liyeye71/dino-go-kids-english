@@ -224,6 +224,14 @@ document.addEventListener("click", (e) => {
     else stopActionSound();
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
+  } else if (action === "toggle-voice") {
+    state.voice = state.voice === "standard" ? "kids" : "standard";
+    save();
+    sfx("tap");
+    stopSpeak();
+    speak("Hello! Let's learn English together!");
+    openSettings();
+    toast(state.voice === "kids" ? "已切换童趣朗读" : "已切换标准朗读");
   } else if (action === "install-guide") {
     openInstallGuide();
   } else if (action === "reset-confirm") {

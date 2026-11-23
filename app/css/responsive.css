@@ -84,7 +84,6 @@
   .ref-listen-grid{gap:0.375rem;flex:none;min-height:0}
   .ref-listen-card{padding:0.5rem 0.25rem}
   .ref-listen-card-art{width:clamp(2.5rem,22vw,3.5rem);height:clamp(2.5rem,22vw,3.5rem)}
-  .ref-listen-card-word{font-size:0.75rem}
 
   /* 进阶题型 选项容器：缩小 gap */
   .ref-action-options,.ref-zoom-options,.ref-cmp-options{gap:0.375rem}

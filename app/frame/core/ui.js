@@ -59,6 +59,11 @@ function openSettings() {
           <div class="s-txt"><b>音效与发音</b><span>答对 / 答错 / 翻页的提示音</span></div>
           <button class="switch ${state.sound ? "on" : ""}" data-action="toggle-sound" aria-label="音效开关"></button>
         </div>
+        <div class="setting-row">
+          <div class="s-ic">${I.volume(18)}</div>
+          <div class="s-txt"><b>英文读音</b><span>${state.voice === "standard" ? "标准朗读 · 教材发音" : "童趣朗读 · 更慢更亮，像卡通姐姐"}</span></div>
+          <button class="switch ${state.voice !== "standard" ? "on" : ""}" data-action="toggle-voice" aria-label="读音风格切换"></button>
+        </div>
         <div class="setting-row" data-action="install-guide" role="button">
           <div class="s-ic">${I.share(18)}</div>
           <div class="s-txt"><b>安装到主屏幕</b><span>全屏运行，像原生 App 一样</span></div>

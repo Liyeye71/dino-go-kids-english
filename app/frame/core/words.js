@@ -43,7 +43,7 @@ const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
    闯关页顶层按单元组织：basic 已开放，advance 锁定待后续迭代
    themes 为单元内主题地图的展示顺序（唯一来源），后续给 advance 加地图时在此追加 id */
 const UNITS = [
-  { id: "basic", name: "基础乐园", en: "Basic", emoji: "🌱", locked: false, themes: ["animal", "go", "school"] },
+  { id: "basic", name: "基础乐园", en: "Basic", emoji: "🌱", locked: false, themes: ["animal", "travel", "school"] },
   { id: "advance", name: "进阶岛", en: "Advance", emoji: "🏝️", locked: true, themes: [] },
 ];
 const UNIT_BY_ID = new Map(UNITS.map((u) => [u.id, u]));
@@ -129,6 +129,8 @@ function allThemeWords() {
   const out = [];
   const seen = new Set();
   WORD_SETS.forEach((set) => {
+    /* 筹备中的占位主题不进入单词本，避免出现永远无法解锁的词条 */
+    if (set.isTheme && set.playable === false) return;
     const groups = set.scenes && set.scenes.length
       ? set.scenes.map((sc) => ({ sceneId: sc.id, words: sc.words }))
       : [{ sceneId: "", words: set.words }];

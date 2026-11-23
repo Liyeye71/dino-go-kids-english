@@ -65,13 +65,13 @@ const ANIMAL_ZOO_NODES = [
 
 /* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
 /* ============================================================
-   动物乐园题库（106 词，仅陆地动物园）
+   动物乐园题库（126 词，仅陆地动物园）
    1. 核心动物名词 39 个：看图选词 / 听音识图 / 词汇拼图
-   2. 动作动词 28 个：动作猜猜（中央动态动物 + 纯文字选项）
+   2. 动作动词 48 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 19 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
    ============================================================ */
-/* 词表：引用全局词库（data/words/library.js），不再自带词表
+/* 词表：引用全局词库（data/game/library.js），不再自带词表
    - 字符串引用 = 整条取库；动词对象 = 库条目 + 地图动画参数（actor/motion）
    - 同一个词可被其他主题（school 等）同时引用；下方 normalize 仍按原逻辑
      派生 assetKey/img/food/dialogueClue 等动物园场景字段 */
@@ -177,24 +177,24 @@ const ANIMAL_ACTION_SOUND_WORDS = new Set([
 /* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
-   - 食物图统一命名为 food-xx.webp 放在 images/words/food/，动作图放在 images/words/action/
+   - 食物图直接以单词命名放在 images/words/food/，动作图统一命名为 animal-xx.webp 放在 images/words/action/
    ============================================================ */
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/food-meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/food-bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/food-banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/food-carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/food-grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/food-fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/food-nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/food-bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/food-apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/food-worm.webp" },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/food-leaves.webp" },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/food-corn.webp" },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/food-milk.webp" },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/food-honey.webp" },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/food-watermelon.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp" },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp" },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp" },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp" },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp" },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp" },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp" },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp" },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp" },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp" },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp" },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp" },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp" },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp" },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp" },
 };
 
 /* 39 种动物各自爱吃的食物 */
@@ -224,8 +224,8 @@ const PART_OWNER_WORD_MAP = {
 
 ANIMAL_ZOO_WORDS.forEach((w) => {
   if (w.category === "verb") {
-    /* 动作题统一用 action-{word} 素材键，已有自定义键保持不变 */
-    if (!w.assetKey || w.assetKey.indexOf("action-") !== 0) w.assetKey = `action-${w.word}`;
+    /* 动作题统一用 animal-{word} 素材键，便于后续主题动作词汇区分 */
+    if (!w.assetKey || w.assetKey.indexOf("animal-") !== 0) w.assetKey = `animal-${w.word}`;
     w.img = w.img || `images/words/action/${w.assetKey}.webp`;
     w.actionSound = ANIMAL_ACTION_SOUND_WORDS.has(w.word) ? w.word : "";
   } else if (w.category === "part") {
@@ -410,7 +410,7 @@ function renderZooRouteSheet(scene, prog) {
   const venue = current ? current.venue : scene.venues[scene.venues.length - 1];
 
   const nodes = scene.levels.map((s) => {
-    const locked = s.level > level || !canEnterLevel(s.level);
+    const locked = s.level > level;
     const done = s.level < level;
     const isCurrent = s.level === level;
     const cls = [

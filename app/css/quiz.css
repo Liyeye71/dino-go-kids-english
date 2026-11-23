@@ -17,7 +17,6 @@
   display:inline-flex;align-items:center;justify-content:center;color:#9B7620;border:0.09375rem solid #fff;
   box-shadow:0 0.3125rem 0.75rem rgba(155,118,32,.16);cursor:pointer}
 .listen svg{display:block}
-.listen-row{display:flex;justify-content:flex-end;margin-top:0.5rem;flex:none}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;flex:none;margin-top:0.875rem}
 .option{min-height:4.375rem;border-radius:1.125rem;background:#fff;border:0.125rem solid #EFE2CB;display:flex;align-items:center;justify-content:center;gap:0.5625rem;
   padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:center;transition:all .15s ease}

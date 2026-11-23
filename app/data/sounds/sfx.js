@@ -63,8 +63,45 @@ function sfx(name) {
   } catch (e) { /* no audio */ }
 }
 
-/* 英文单词 / 句子朗读；传入数组时按顺序连续朗读 */
+/* 英文单词 / 句子朗读；传入数组时按顺序连续朗读
+   读音风格由设置切换：kids 童趣（更慢更亮，优先儿童/活泼女声音色）/ standard 标准 */
 let speakToken = 0;
+
+/* 触发音色列表异步加载（Chrome 首次 getVoices 为空，voiceschanged 后可用） */
+if ("speechSynthesis" in window) {
+  try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => {}; } catch (e) { /* ignore */ }
+}
+
+/* 童趣朗读偏好的音色：Ana（Win11 真儿童音色）→ 活泼/柔和女声 → Google 女声 */
+const KID_VOICE_HINTS = [
+  "ana", "aria", "zira", "michelle", "samantha", "karen", "moira", "tessa",
+  "google us english", "google uk english female", "female",
+];
+/* 标准朗读偏好的音色：发音最清晰的教材风音色 */
+const STANDARD_VOICE_HINTS = ["daniel", "google uk english", "aria", "google us english", "zira", "samantha"];
+
+function pickVoice() {
+  try {
+    const voices = window.speechSynthesis.getVoices() || [];
+    const en = voices.filter((v) => /^en([-_]|$)/i.test(v.lang || "") || /english/i.test(v.name || ""));
+    if (!en.length) return null;
+    const hints = state.voice === "standard" ? STANDARD_VOICE_HINTS : KID_VOICE_HINTS;
+    for (const hint of hints) {
+      const hit = en.find((v) => (v.name || "").toLowerCase().includes(hint));
+      if (hit) return hit;
+    }
+    return en.find((v) => /female|女/i.test(v.name || "")) || en[0];
+  } catch (e) { return null; }
+}
+
+/* 立即停止当前朗读（切换读音风格、翻页、弹窗等场景调用） */
+function stopSpeak() {
+  try {
+    speakToken++;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  } catch (e) { /* ignore */ }
+}
+
 function speak(text) {
   try {
     if (!("speechSynthesis" in window)) {
@@ -77,12 +114,16 @@ function speak(text) {
       .filter(Boolean);
     if (!lines.length) return;
     const token = ++speakToken;
+    const kids = state.voice !== "standard";
+    const voice = pickVoice();
     const sayFrom = (i) => {
       if (token !== speakToken || i >= lines.length) return;
       const u = new SpeechSynthesisUtterance(lines[i]);
       u.lang = "en-US";
-      u.rate = 0.82;
-      u.pitch = 1.08;
+      /* 童趣：语速更慢、音调更高，听起来像卡通姐姐；标准：教材朗读节奏 */
+      u.rate = kids ? 0.72 : 0.82;
+      u.pitch = kids ? 1.32 : 1.08;
+      if (voice) u.voice = voice;
       /* 一句读完自动接下一句；被新的朗读打断后不再继续 */
       u.onend = () => sayFrom(i + 1);
       synth.speak(u);

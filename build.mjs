@@ -8,42 +8,26 @@ const distDir = path.join(root, "dist");
 const iconsDir = path.join(appDir, "data", "images", "icons");
 const themeDir = path.join(appDir, "data", "theme");
 
-// 主题加载顺序：新增主题放入该目录后重新构建即可自动加入。
-const themeOrder = ["go.js", "animal.js", "school.js"];
-const themeFiles = fs.readdirSync(themeDir)
-  .filter((file) => file.endsWith(".js") && file !== "index.js")
-  .sort((a, b) => {
-    const ai = themeOrder.indexOf(a), bi = themeOrder.indexOf(b);
-    return (ai < 0 ? themeOrder.length : ai) - (bi < 0 ? themeOrder.length : bi) || a.localeCompare(b);
-  });
-
-// 依次内联拆分后的样式，顺序必须与 index.html 一致（responsive 放最后）
-// 主题样式放在 css/theme/ 下，按文件名排序自动登记，新增主题无需改动本文件
-const themeCssDir = path.join(appDir, "css", "theme");
-const themeCss = fs.existsSync(themeCssDir)
-  ? fs.readdirSync(themeCssDir).filter((f) => f.endsWith(".css")).sort().map((f) => `theme/${f.replace(/\.css$/, "")}`)
-  : [];
-const CSS_FILES = ["base", "home", "map", "quiz", "result", "quiz-types", "game", "dex", "collect", "overlays", ...themeCss, "responsive"];
-const css = CSS_FILES.map((name) => fs.readFileSync(path.join(appDir, "css", `${name}.css`), "utf8")).join("\n");
+// index.html 是资源清单的唯一事实源：样式与脚本顺序都从页面标签解析，避免两处维护
 const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
-
-// 依次内联主题词汇 + 声音模块 + core + 四个 Tab 文件，顺序必须与 index.html 一致
-const JS_FILES = [
-  "data/words/library.js",
-  "data/game/shared.js", "data/game/dialog-templates.js", "data/game/dynamic-engine.js",
-  ...themeFiles.map((f) => `data/theme/${f}`),
-  "data/sounds/sfx.js",
-  "frame/core/utils.js", "frame/core/visual.js", "frame/core/data.js", "frame/core/words.js",
-  "frame/core/state.js", "frame/core/ui.js", "frame/core/events.js", "frame/core/boot.js",
-  "data/game/wrongbank.js", "data/game/chest.js", "data/game/result.js",
-  "data/game/main.js", "data/game/quiz-view.js",
-  "frame/home.js", "frame/map.js", "frame/dex.js", "frame/collect.js",
-];
+const CSS_FILES = [...html.matchAll(/<link rel="stylesheet" href="css\/([\w./-]+)\.css">/g)].map((m) => m[1]);
+const JS_FILES = [...html.matchAll(/<script src="([\w./-]+\.js)(?:\?v=\d+)?"><\/script>/g)].map((m) => m[1]);
+// 主题目录中存在但未在 index.html 引用的脚本直接报错，避免新增主题被静默漏打包
+for (const file of fs.readdirSync(themeDir).filter((f) => f.endsWith(".js") && f !== "index.js")) {
+  if (!JS_FILES.includes(`data/theme/${file}`)) {
+    throw new Error(`build.mjs: index.html 中找不到 <script src="data/theme/${file}"> 标签`);
+  }
+}
+const css = CSS_FILES.map((name) => fs.readFileSync(path.join(appDir, "css", `${name}.css`), "utf8")).join("\n");
 let inlined = html.replace(/\n\s*<link rel="stylesheet" href="css\/(?:[\w.-]+\/)*[\w.-]+\.css">/g, "");
 inlined = inlined.replace("</head>", () => `  <style>\n${css}\n  </style>\n</head>`);
 for (const file of JS_FILES) {
   const src = fs.readFileSync(path.join(appDir, file), "utf8").replace(/<\/script>/gi, "<\\/script>");
-  inlined = inlined.replace(`<script src="${file}"></script>`, () => `<script>\n${src}\n</script>`);
+  /* 兼容开发版 index.html 的缓存版本参数（?v=N）：内联时一并替换 */
+  const escaped = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const tag = new RegExp(`<script src="${escaped}(\\?v=\\d+)?"></script>`);
+  if (!tag.test(inlined)) throw new Error(`build.mjs: index.html 中找不到 <script src="${file}"> 标签`);
+  inlined = inlined.replace(tag, () => `<script>\n${src}\n</script>`);
 }
 
 // ---- PWA build (dist/ only, GitHub Actions 自动部署到 Pages) -------
@@ -94,8 +78,8 @@ if (fs.existsSync(wordImgDir)) {
     fs.copyFileSync(path.join(wordImgDir, file), path.join(distDir, "images", "words", file));
   }
 }
-/* 分类单词插画：animal / food / action 分别复制到对应子目录 */
-for (const group of ["animal", "food", "action"]) {
+/* 分类单词插画：按目录分组复制到 dist 对应子目录 */
+for (const group of ["animal", "food", "action", "transport", "tool"]) {
   const srcDir = path.join(wordImgDir, group);
   if (!fs.existsSync(srcDir)) continue;
   const outDir = path.join(distDir, "images", "words", group);

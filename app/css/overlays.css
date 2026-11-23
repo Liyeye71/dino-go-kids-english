@@ -74,9 +74,6 @@
 .cf-stage{transform-origin:center}
 .chest-meta{text-align:center}
 .chest-rarity{font-size:0.9375rem;letter-spacing:0.125rem;line-height:1}
-.chest-rarity.rarity-3{color:#B0B0B0}
-.chest-rarity.rarity-4{color:#6BB6FF}
-.chest-rarity.rarity-5{color:#FFB64D}
 .chest-meta h2{font-size:1.25rem;font-weight:var(--w-black);color:#3D5A3D;margin:0.25rem 0}
 .chest-meta h2 b{color:#FF8C3D}
 .chest-desc{font-size:0.75rem;color:#70624D;line-height:1.6;margin:0.25rem 0.5rem}

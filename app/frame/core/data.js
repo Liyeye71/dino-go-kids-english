@@ -48,4 +48,6 @@ const DEFAULT_STATE = {
   ultraSkin: 1,
   dex: ["egg"],
   sound: true,
+  /* 英文读音风格：kids 童趣朗读（默认，更慢更亮）/ standard 标准朗读（教材发音） */
+  voice: "kids",
 };

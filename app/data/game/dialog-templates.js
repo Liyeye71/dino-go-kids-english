@@ -6,14 +6,6 @@
    image  图片选择（图片选项）
    ============================================================ */
 (function () {
-  const shuffle = (list) => {
-    const arr = [...list];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  };
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
   const foodEn = (food) => (food && (food.en || food.word)) || "";
 

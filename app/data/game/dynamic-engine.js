@@ -74,10 +74,6 @@
     return "feed_animal";
   }
 
-  function wordId(sceneId, word) {
-    return WrongBank.makeId(sceneId, word);
-  }
-
   /* 单词是否符合某个题型：标签匹配 + 特殊资源（动作 / 部位 / 对比图）齐备 */
   function fitsRule(w, rule) {
     if (!w || !rule.cats.includes(w.category)) return false;
@@ -108,13 +104,13 @@
 
     let target;
     if (familiarSet) {
-      const wrong = candidates.filter((w) => WrongBank.isWrongWord(wordId(sceneId, w.word)));
+      const wrong = candidates.filter((w) => WrongBank.isWrongWord(WrongBank.makeId(sceneId, w.word)));
       const known = candidates.filter((w) => familiarSet.has(w.word));
       const tier = wrong.length ? wrong : (known.length ? known : candidates);
       target = tier[Math.floor(Math.random() * tier.length)];
     } else {
       /* 错题库加权抽词：答错过的词优先复现 */
-      target = WrongBank.pickWithBias(candidates, (w) => wordId(sceneId, w.word)) || candidates[0];
+      target = WrongBank.pickWithBias(candidates, (w) => WrongBank.makeId(sceneId, w.word)) || candidates[0];
     }
     usedWords.add(target.word);
     usedTypes.add(type);
@@ -180,7 +176,7 @@
       dlgQ: question.gameType === "dialog" && w.dialogueClue ? w.dialogueClue : dlg.q,
       dlgA: dlg.a,
       recordWrong: question.recordWrong,
-      wrongWordId: wordId(sceneId, w.word),
+      wrongWordId: WrongBank.makeId(sceneId, w.word),
     };
     const game = currentTheme().games[question.gameType];
     if (game && game.build) game.build(task, buildPool && buildPool.length ? buildPool : allWords);
@@ -234,7 +230,7 @@
       let buildPool = allSceneWords;
       if (boss) {
         const familiar = allSceneWords.filter(
-          (w) => familiarSet.has(w.word) || WrongBank.isWrongWord(wordId(sceneId, w.word))
+          (w) => familiarSet.has(w.word) || WrongBank.isWrongWord(WrongBank.makeId(sceneId, w.word))
         );
         if (familiar.length >= 3) {
           buildPool = familiar.slice();
@@ -286,10 +282,53 @@
     };
   }
 
-  /* 选择题通用选项：干扰项优先取同类词（名词配名词、动词配动词） */
+  /* ============================================================
+     歧义词过滤：同义/近义/时态易混的词不出现在同一道题的选项里
+     （如正确答案 sleep 的选项不出现 nap，避免儿童看图/听音无法区分）
+     ============================================================ */
+  const AMBIGUOUS_GROUPS = [
+    /* 动词同义/近义 */
+    ["sleep", "nap"], ["smile", "laugh"], ["see", "look", "watch", "saw"], ["listen", "hear"],
+    ["say", "speak", "talk", "tell", "said", "told"], ["start", "begin"], ["like", "love"],
+    /* 形容词近义 */
+    ["small", "little"], ["big", "large", "huge"], ["happy", "glad"], ["sad", "unhappy"],
+    ["fast", "quick", "quickly"], ["beautiful", "pretty"], ["tall", "high"],
+    /* 名词同义 */
+    ["film", "movie"], ["picture", "photo"], ["gift", "present"],
+    ["autumn", "fall"], ["colour", "color"], ["grey", "gray"],
+    /* 家庭称呼变体 */
+    ["mum", "mom", "mother", "mummy"], ["dad", "father", "daddy"],
+    ["grandma", "grandmother"], ["grandpa", "grandfather"],
+    /* 交际用语 */
+    ["hello", "hi"], ["thanks", "thank you"], ["bye", "goodbye"],
+    /* 不规则动词现在/过去式易混 */
+    ["eat", "ate"], ["go", "went"], ["take", "took"], ["come", "came"], ["run", "ran"],
+    ["sing", "sang"], ["drink", "drank"], ["give", "gave"], ["buy", "bought"], ["make", "made"],
+    ["get", "got"], ["have", "had"], ["do", "did"], ["fly", "flew"], ["draw", "drew"],
+    ["swim", "swam"], ["sit", "sat"], ["stand", "stood"], ["write", "wrote"],
+    ["teach", "taught"], ["find", "found"], ["know", "knew"], ["grow", "grew"], ["blow", "blew"],
+    ["break", "broke"], ["drive", "drove"], ["ride", "rode"], ["wear", "wore"], ["think", "thought"],
+  ];
+  const AMBIG_INDEX = {};
+  AMBIGUOUS_GROUPS.forEach((group, gi) => group.forEach((w) => { AMBIG_INDEX[w.toLowerCase()] = gi; }));
+  /* 两个词条是否互为歧义：落在同一歧义组，或中文释义完全相同 */
+  function isAmbiguous(a, b) {
+    if (!a || !b) return false;
+    const ga = AMBIG_INDEX[String(a.word || a).toLowerCase()];
+    const gb = AMBIG_INDEX[String(b.word || b).toLowerCase()];
+    if (ga !== undefined && ga === gb) return true;
+    return !!a.zh && !!b.zh && a.zh === b.zh;
+  }
+
+  /* 选择题通用选项：干扰项优先取同类词（名词配名词、动词配动词），并排除与答案歧义的词 */
   function buildOptions(task, pool, count) {
-    const sameCat = pool.filter((x) => x.word !== task.word && x.category && x.category === task.category);
-    const source = sameCat.length >= count - 1 ? sameCat : pool.filter((x) => x.word !== task.word);
+    const others = pool.filter((x) => x.word !== task.word);
+    const clean = others.filter((x) => !isAmbiguous(x, task));
+    const sameCatClean = clean.filter((x) => x.category && x.category === task.category);
+    /* 优先同类无歧义 → 全池无歧义 → 兜底放开，保证选项总能凑齐 */
+    let source = sameCatClean;
+    if (source.length < count - 1) source = clean;
+    if (source.length < count - 1) source = others;
     task.options = shuffle([
       task.word,
       ...shuffle(source).slice(0, count - 1).map((x) => x.word),
@@ -300,11 +339,11 @@
     buildOptions(task, pool, 3);
   }
 
-  /* 对比观察选项：正确词 + 成对形容词 + 其他形容词干扰 */
+  /* 对比观察选项：正确词 + 成对形容词 + 其他形容词干扰（成对词是题意保留，extras 排除歧义词） */
   function buildCompareOptions(task, pool) {
     const adjPool = pool.filter((w) => w.category === "adj");
     const pair = task.compare && task.compare.pair;
-    const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair)).slice(0, 3 - (pair ? 2 : 1));
+    const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair && !isAmbiguous(w, task))).slice(0, 3 - (pair ? 2 : 1));
     task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
   }
 
@@ -443,7 +482,19 @@
         build(task, pool) {
           /* 只连同类词，避免连线题里混进动词/形容词 */
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
-          const picked = shuffle(trioPool.length >= 3 ? trioPool : pool).slice(0, 3);
+          /* 歧义过滤：同义/易混词不能同时出现在连线里（如 sleep 与 nap 都画着睡觉） */
+          const picked = [];
+          for (const cand of shuffle(trioPool)) {
+            if (picked.length >= 3) break;
+            if (picked.every((p) => !isAmbiguous(p, cand))) picked.push(cand);
+          }
+          /* 极端兜底：同类词过滤后不足 3 个，放开类别限制补齐 */
+          if (picked.length < 3) {
+            for (const cand of shuffle(pool)) {
+              if (picked.length >= 3) break;
+              if (picked.every((p) => p.word !== cand.word && !isAmbiguous(p, cand))) picked.push(cand);
+            }
+          }
 
           /* 英文单词既可以是动物名词，也可以是动物爱吃的水果/食物：
              保证至少 1 只动物，最多混入 2 个食物（食物取自动物自身的 food 数据） */
@@ -887,10 +938,10 @@
         build: threeChoiceBuild,
         render({ q, quiz, options }) {
           const motion = q.motion || "run";
-          const actionSrc = q.img || `images/words/action/${q.assetKey && q.assetKey.indexOf("action-") === 0 ? q.assetKey : `action-${q.word}`}.webp`;
+          const actionSrc = q.img || `images/words/action/${q.assetKey}.webp`;
           return advancedLayout({
             wrap: "ref-action-wrap",
-            stage: `<div class="ref-action-stage" data-asset-key="${q.assetKey || q.word}">
+            stage: `<div class="ref-action-stage">
                   <span class="ref-action-sun" aria-hidden="true"></span>
                   <span class="ref-action-cloud c1" aria-hidden="true"></span>
                   <span class="ref-action-cloud c2" aria-hidden="true"></span>
@@ -931,7 +982,7 @@
             : `<span class="ref-zoom-art" style="--fx:${f.x};--fy:${f.y};--fs:${f.scale}">${q.owner || q.emoji || "🐾"}</span>`;
           return advancedLayout({
             wrap: "ref-zoom-wrap",
-            stage: `<div class="ref-zoom-lens" data-asset-key="${q.assetKey || q.word}" aria-hidden="true">
+            stage: `<div class="ref-zoom-lens" aria-hidden="true">
                   ${zoomArt}
                   <span class="ref-zoom-spot"></span>
                 </div>
@@ -961,7 +1012,7 @@
             </div>`;
           return advancedLayout({
             wrap: "ref-cmp-wrap",
-            stage: `<div class="ref-cmp-stage mode-${c.mode || "size"}" data-asset-key="${q.assetKey || q.word}" data-target="${c.target || "a"}" aria-hidden="true">
+            stage: `<div class="ref-cmp-stage mode-${c.mode || "size"}" data-target="${c.target || "a"}" aria-hidden="true">
                   ${item("a", a)}
                   ${item("b", b)}
                   <span class="ref-cmp-floor"></span>
