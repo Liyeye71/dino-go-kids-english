@@ -93,7 +93,7 @@ function screenMap() {
         <span class="dcc-tx">
           <b>每日随机挑战</b>
           <em>${enlightenOn
-            ? "启蒙 2 选项 · 首答答对 1 题得 1★ · 不计成长值"
+            ? "启蒙 2 选项 · 答对 1 题得 1★ · 不计成长值"
             : "全主题混抽 5 题 · 答对 1 题得 1★ · 不计成长值"}</em>
         </span>
         <span class="dcc-count">${dailyChallengeLeft()}<small>/ ${DAILY_CHALLENGE_LIMIT} 次</small></span>

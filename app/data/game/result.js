@@ -8,11 +8,10 @@
   /* ============================================================
      闯关结算
      ============================================================ */
-  /* 每日随机挑战结算：首答正确 1 题得 1★，不推进关卡、不计成长值、不入学习日志 */
+  /* 每日随机挑战结算：一题一星，答对 1 题得 1★，不推进关卡、不计成长值、不入学习日志 */
   function finishDailyQuiz() {
     const total = quiz.order.length || 1;
     const correct = Math.min(quiz.correct, total);
-    /* 启蒙模式下答错可重试，但重试后答对的题不再计星 */
     const stars = Math.min((quiz.starIndex || []).length, total);
     const enlighten = Boolean(state.enlighten);
     const seconds = Math.max(1, Math.round((Date.now() - quiz.startedAt) / 1000));
@@ -135,17 +134,15 @@
       <path d="M53 77q8 9 16 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
       <circle cx="41" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/><circle cx="83" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/>
     </svg>`;
-    /* 星级按「首答正确」计：启蒙模式重试答对不计星，视觉统一跟随 r.stars */
+    /* 星级按答对题数计：一题一星，视觉统一跟随 r.stars */
     const crown = r.stars >= 5 ? `<svg class="dd-crown" viewBox="0 0 48 34" aria-hidden="true">
       <path d="M4 27l3-18 9 8 7-13 7 13 9-8 3 18z" fill="#FFC94A" stroke="#E0A63F" stroke-width="2" stroke-linejoin="round"/>
       <circle cx="7" cy="9" r="2.6" fill="#FF8A4C"/><circle cx="24" cy="4" r="2.8" fill="#FF6F61"/><circle cx="41" cy="9" r="2.6" fill="#FF8A4C"/>
     </svg>` : "";
     const title = r.stars >= 5 ? "满星通关！" : r.stars >= 4 ? "太厉害啦！" : "挑战完成！";
     const bubble = r.stars >= 5
-      ? "全部一次答对，太神啦！"
-      : r.correct > r.stars
-        ? `答对 ${r.correct} 题，其中 ${r.stars} 题一次答对`
-        : `你答对了 ${r.correct} 个单词！`;
+      ? "全部答对，太神啦！"
+      : `你答对了 ${r.correct} 个单词！`;
     const cheer = r.stars >= 5 ? "全对！你是今天的单词小达人 🎉"
       : r.stars >= 4 ? "只差 1 颗星就满星啦"
       : r.stars >= 3 ? "不错哦！再答对 2 题就满星啦"
@@ -207,7 +204,7 @@
           ? `<button class="btn" data-action="daily-start">再抽一次（剩 ${r.dailyLeft} 次）</button>`
           : `<button class="btn off" disabled>明天再来</button>`}
         <button class="btn ghost" data-action="close-quiz">回地图</button>
-        <div class="foot-note">${r.enlighten ? "启蒙模式：答错可重试，但该题不再得星 · " : ""}随机挑战不推进关卡进度，也不计入成长值</div>
+        <div class="foot-note">${r.enlighten ? "启蒙模式：答错直接公布答案 · " : ""}随机挑战不推进关卡进度，也不计入成长值</div>
       </div>
     </section>`;
   }

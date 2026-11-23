@@ -79,7 +79,14 @@
     if (step <= 1) types = ["pic", "listen", "feed_animal"];
     else if (step === 2) types = ["pic", "listen", "feed_animal", "match"];
     else types = ["pic", "listen", "word_puzzle", "feed_animal", "match"];
-    return withoutToddlerBlocked(types);
+    types = withoutToddlerBlocked(types);
+    /* 启蒙模式：让选项是图片的题型（听音选图 / 动物喂食 / 单词连线）占多数，
+       看图选词这类纯字母选项的题型降为低频 */
+    if (enlightenOn()) {
+      const imageTypes = types.filter((t) => t !== "pic");
+      if (imageTypes.length && types.includes("pic")) return imageTypes.concat(imageTypes, ["pic"]);
+    }
+    return types;
   }
 
   /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
@@ -278,7 +285,9 @@
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
+      /* 启蒙模式补题同样避开纯字母选项的看图选词，保证图片选项题型占多数 */
+      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES)
+        .filter((t) => !(enlightenOn() && t === "pic"));
       return fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
     }
 
@@ -1147,7 +1156,10 @@
       const theme = themes.find((t) => pools.get(t.id).some((x) => x.word === w.word)) || themes[0];
       picked.push({ theme, w });
     }
-    const types = ["pic", "listen", "pic", "listen", "pic"];
+    /* 启蒙模式：选项是图片的「听音选图」为主，纯字母选项的看图选词只留 1 题 */
+    const types = enlightenOn()
+      ? ["listen", "listen", "listen", "listen", "pic"]
+      : ["pic", "listen", "pic", "listen", "pic"];
     return picked.map(({ theme, w }, i) => {
       const type = types[i % types.length];
       const pool = pools.get(theme.id) || [];

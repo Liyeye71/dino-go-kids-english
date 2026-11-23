@@ -84,7 +84,7 @@ function startDailyQuiz() {
     startedAt: Date.now(),
     words: [],
     newWords: [],
-    /* 每日挑战：首答正确（没有任何错误尝试）的题目下标，用于计星 */
+    /* 每日挑战：答对题目的下标，一题一星 */
     starIndex: [],
     order,
   };
@@ -368,10 +368,9 @@ function unlockTaskWord(q) {
   if (!q || !q.word || typeof unlockWord !== "function") return;
   if (unlockWord(q.word) && quiz && Array.isArray(quiz.newWords)) quiz.newWords.push(q.word);
 }
-/* 每日挑战计星：只有「首答正确」的题目才得星；启蒙模式答错重试后答对不再计星 */
+/* 每日挑战计星：一题一星，答对即得星；答错直接公布答案，不重来 */
 function markDailyStar() {
   if (!quiz || quiz.mode !== "daily") return;
-  if ((quiz.triedWrong || []).length) return;
   quiz.starIndex = quiz.starIndex || [];
   if (!quiz.starIndex.includes(quiz.index)) quiz.starIndex.push(quiz.index);
 }
@@ -421,8 +420,9 @@ function checkAnswer() {
   /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
   const correctValue = q.answerValue != null ? q.answerValue : q.word;
   const ok = quiz.selected === correctValue;
-  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读目标词，可继续尝试直到答对 */
-  if (!ok && enlightenOn()) {
+  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读目标词，可继续尝试直到答对
+     每日随机挑战例外：一题一星，答错直接公布答案进入下一题，不重来 */
+  if (!ok && enlightenOn() && quiz.mode !== "daily") {
     quiz.triedWrong = quiz.triedWrong || [];
     if (!quiz.triedWrong.includes(quiz.selected)) quiz.triedWrong.push(quiz.selected);
     quiz.selected = null;

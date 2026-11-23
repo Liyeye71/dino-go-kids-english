@@ -3721,7 +3721,14 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     if (step <= 1) types = ["pic", "listen", "feed_animal"];
     else if (step === 2) types = ["pic", "listen", "feed_animal", "match"];
     else types = ["pic", "listen", "word_puzzle", "feed_animal", "match"];
-    return withoutToddlerBlocked(types);
+    types = withoutToddlerBlocked(types);
+    /* 启蒙模式：让选项是图片的题型（听音选图 / 动物喂食 / 单词连线）占多数，
+       看图选词这类纯字母选项的题型降为低频 */
+    if (enlightenOn()) {
+      const imageTypes = types.filter((t) => t !== "pic");
+      if (imageTypes.length && types.includes("pic")) return imageTypes.concat(imageTypes, ["pic"]);
+    }
+    return types;
   }
 
   /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
@@ -3920,7 +3927,9 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
+      /* 启蒙模式补题同样避开纯字母选项的看图选词，保证图片选项题型占多数 */
+      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES)
+        .filter((t) => !(enlightenOn() && t === "pic"));
       return fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
     }
 
@@ -4789,7 +4798,10 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       const theme = themes.find((t) => pools.get(t.id).some((x) => x.word === w.word)) || themes[0];
       picked.push({ theme, w });
     }
-    const types = ["pic", "listen", "pic", "listen", "pic"];
+    /* 启蒙模式：选项是图片的「听音选图」为主，纯字母选项的看图选词只留 1 题 */
+    const types = enlightenOn()
+      ? ["listen", "listen", "listen", "listen", "pic"]
+      : ["pic", "listen", "pic", "listen", "pic"];
     return picked.map(({ theme, w }, i) => {
       const type = types[i % types.length];
       const pool = pools.get(theme.id) || [];
@@ -7581,11 +7593,10 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   /* ============================================================
      闯关结算
      ============================================================ */
-  /* 每日随机挑战结算：首答正确 1 题得 1★，不推进关卡、不计成长值、不入学习日志 */
+  /* 每日随机挑战结算：一题一星，答对 1 题得 1★，不推进关卡、不计成长值、不入学习日志 */
   function finishDailyQuiz() {
     const total = quiz.order.length || 1;
     const correct = Math.min(quiz.correct, total);
-    /* 启蒙模式下答错可重试，但重试后答对的题不再计星 */
     const stars = Math.min((quiz.starIndex || []).length, total);
     const enlighten = Boolean(state.enlighten);
     const seconds = Math.max(1, Math.round((Date.now() - quiz.startedAt) / 1000));
@@ -7708,17 +7719,15 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       <path d="M53 77q8 9 16 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
       <circle cx="41" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/><circle cx="83" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/>
     </svg>`;
-    /* 星级按「首答正确」计：启蒙模式重试答对不计星，视觉统一跟随 r.stars */
+    /* 星级按答对题数计：一题一星，视觉统一跟随 r.stars */
     const crown = r.stars >= 5 ? `<svg class="dd-crown" viewBox="0 0 48 34" aria-hidden="true">
       <path d="M4 27l3-18 9 8 7-13 7 13 9-8 3 18z" fill="#FFC94A" stroke="#E0A63F" stroke-width="2" stroke-linejoin="round"/>
       <circle cx="7" cy="9" r="2.6" fill="#FF8A4C"/><circle cx="24" cy="4" r="2.8" fill="#FF6F61"/><circle cx="41" cy="9" r="2.6" fill="#FF8A4C"/>
     </svg>` : "";
     const title = r.stars >= 5 ? "满星通关！" : r.stars >= 4 ? "太厉害啦！" : "挑战完成！";
     const bubble = r.stars >= 5
-      ? "全部一次答对，太神啦！"
-      : r.correct > r.stars
-        ? `答对 ${r.correct} 题，其中 ${r.stars} 题一次答对`
-        : `你答对了 ${r.correct} 个单词！`;
+      ? "全部答对，太神啦！"
+      : `你答对了 ${r.correct} 个单词！`;
     const cheer = r.stars >= 5 ? "全对！你是今天的单词小达人 🎉"
       : r.stars >= 4 ? "只差 1 颗星就满星啦"
       : r.stars >= 3 ? "不错哦！再答对 2 题就满星啦"
@@ -7780,7 +7789,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
           ? `<button class="btn" data-action="daily-start">再抽一次（剩 ${r.dailyLeft} 次）</button>`
           : `<button class="btn off" disabled>明天再来</button>`}
         <button class="btn ghost" data-action="close-quiz">回地图</button>
-        <div class="foot-note">${r.enlighten ? "启蒙模式：答错可重试，但该题不再得星 · " : ""}随机挑战不推进关卡进度，也不计入成长值</div>
+        <div class="foot-note">${r.enlighten ? "启蒙模式：答错直接公布答案 · " : ""}随机挑战不推进关卡进度，也不计入成长值</div>
       </div>
     </section>`;
   }
@@ -8065,7 +8074,7 @@ function startDailyQuiz() {
     startedAt: Date.now(),
     words: [],
     newWords: [],
-    /* 每日挑战：首答正确（没有任何错误尝试）的题目下标，用于计星 */
+    /* 每日挑战：答对题目的下标，一题一星 */
     starIndex: [],
     order,
   };
@@ -8349,10 +8358,9 @@ function unlockTaskWord(q) {
   if (!q || !q.word || typeof unlockWord !== "function") return;
   if (unlockWord(q.word) && quiz && Array.isArray(quiz.newWords)) quiz.newWords.push(q.word);
 }
-/* 每日挑战计星：只有「首答正确」的题目才得星；启蒙模式答错重试后答对不再计星 */
+/* 每日挑战计星：一题一星，答对即得星；答错直接公布答案，不重来 */
 function markDailyStar() {
   if (!quiz || quiz.mode !== "daily") return;
-  if ((quiz.triedWrong || []).length) return;
   quiz.starIndex = quiz.starIndex || [];
   if (!quiz.starIndex.includes(quiz.index)) quiz.starIndex.push(quiz.index);
 }
@@ -8402,8 +8410,9 @@ function checkAnswer() {
   /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
   const correctValue = q.answerValue != null ? q.answerValue : q.word;
   const ok = quiz.selected === correctValue;
-  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读目标词，可继续尝试直到答对 */
-  if (!ok && enlightenOn()) {
+  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读目标词，可继续尝试直到答对
+     每日随机挑战例外：一题一星，答错直接公布答案进入下一题，不重来 */
+  if (!ok && enlightenOn() && quiz.mode !== "daily") {
     quiz.triedWrong = quiz.triedWrong || [];
     if (!quiz.triedWrong.includes(quiz.selected)) quiz.triedWrong.push(quiz.selected);
     quiz.selected = null;
@@ -9208,7 +9217,7 @@ function screenMap() {
         <span class="dcc-tx">
           <b>每日随机挑战</b>
           <em>${enlightenOn
-            ? "启蒙 2 选项 · 首答答对 1 题得 1★ · 不计成长值"
+            ? "启蒙 2 选项 · 答对 1 题得 1★ · 不计成长值"
             : "全主题混抽 5 题 · 答对 1 题得 1★ · 不计成长值"}</em>
         </span>
         <span class="dcc-count">${dailyChallengeLeft()}<small>/ ${DAILY_CHALLENGE_LIMIT} 次</small></span>
