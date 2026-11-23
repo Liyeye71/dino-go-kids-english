@@ -23,8 +23,15 @@
   function optionCount() {
     return enlightenOn() ? 2 : 3;
   }
+  /* 启蒙模式只保留「选项全是图片」的题型：听音选图 / 动物喂食。
+     看图选词、单词连线、动作猜猜、词汇拼图、情景对话都会出现英文单词或字母选项，一律不出 */
+  const TODDLER_TYPES = ["listen", "feed_animal"];
   function withoutToddlerBlocked(types) {
-    return enlightenOn() ? types.filter((t) => t !== "word_puzzle" && t !== "dialog") : types;
+    return enlightenOn() ? types.filter((t) => TODDLER_TYPES.includes(t)) : types;
+  }
+  /* 动词槽题型：启蒙模式改用「听音选图」，让选项是动作图片而非纯字母 */
+  function verbType() {
+    return enlightenOn() ? "listen" : "action";
   }
 
   /* 四维词库标签 */
@@ -79,14 +86,7 @@
     if (step <= 1) types = ["pic", "listen", "feed_animal"];
     else if (step === 2) types = ["pic", "listen", "feed_animal", "match"];
     else types = ["pic", "listen", "word_puzzle", "feed_animal", "match"];
-    types = withoutToddlerBlocked(types);
-    /* 启蒙模式：让选项是图片的题型（听音选图 / 动物喂食 / 单词连线）占多数，
-       看图选词这类纯字母选项的题型降为低频 */
-    if (enlightenOn()) {
-      const imageTypes = types.filter((t) => t !== "pic");
-      if (imageTypes.length && types.includes("pic")) return imageTypes.concat(imageTypes, ["pic"]);
-    }
-    return types;
+    return withoutToddlerBlocked(types);
   }
 
   /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
@@ -96,7 +96,10 @@
 
   /* 单词是否符合某个题型：标签匹配 + 特殊资源（动作 / 部位 / 对比图）齐备 */
   function fitsRule(w, rule) {
-    if (!w || !rule.cats.includes(w.category)) return false;
+    /* 听音选图：启蒙模式下允许动词（选项用 action 动作图），其余情况仍限名词 */
+    const catOk = rule.cats.includes(w && w.category)
+      || (rule.key === "listen" && enlightenOn() && w && w.category === "verb");
+    if (!w || !catOk) return false;
     if (rule.maxLetters && String(w.word).length > rule.maxLetters) return false;
     if (rule.key === "action" && !w.actor) return false;
     if (rule.key === "body_zoom" && !w.owner) return false;
@@ -152,12 +155,14 @@
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
         if (isBoss) {
-          const bossNounTypes = withoutToddlerBlocked(BOSS_NOUN_TYPES);
+          /* 启蒙模式 BOSS 关同样只用图片选项题型，避免出现单词/字母选项 */
+          const bossNounTypes = enlightenOn() ? TODDLER_TYPES.slice() : BOSS_NOUN_TYPES;
           if (slot.role === "noun") type = pickType(bossNounTypes, usedTypes);
           else if (slot.role === "dialog") type = enlightenOn() ? pickType(bossNounTypes, usedTypes) : "dialog";
           else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-          else type = BOSS_TYPE_BY_ROLE[slot.role];
+          else type = slot.role === "verb" ? verbType() : BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        else if (slot.role === "verb") type = verbType();
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet);
         if (question) questions.push(question);
@@ -225,7 +230,7 @@
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
   const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool) {
-    const types = allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES;
+    const types = withoutToddlerBlocked(allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES);
     const usedWords = new Set(tasks.map((task) => task.word));
     const primary = primaryPool && primaryPool.length ? primaryPool : allWords;
     let guard = 0;
@@ -285,10 +290,11 @@
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      /* 启蒙模式补题同样避开纯字母选项的看图选词，保证图片选项题型占多数 */
-      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES)
-        .filter((t) => !(enlightenOn() && t === "pic"));
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
+      /* 启蒙模式补题只允许图片选项题型，避免补进看图/连线/动作这类单词选项 */
+      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
+      /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音选图能显示动词图片 */
+      return filled.map((task) => attachOptionArt(task, allSceneWords));
     }
 
     /* ✈️🚌 单场景主题（上学了 / 去旅行）：与动物乐园共用同一套动态出题
@@ -1004,10 +1010,11 @@
           const foods = q.foods.map((f) => {
             const id = f.id || f.word;
             const art = f.img ? artWithImage(f.img, "ref-food-img", f.emoji || "🍎") : (f.emoji || artOf(id)());
-            /* 启蒙模式：已排除的伪选项灰化并禁用 */
+            /* 启蒙模式：已排除的伪选项灰化并禁用；食物选项不显示英文名，保持纯图片选项 */
             const tried = !revealed && (quiz.triedWrong || []).includes(id);
+            const foodLabel = enlightenOn() ? "" : `<small>${id}</small>`;
             return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""} ${tried ? "tried" : ""}"
-              data-action="fd-pick" data-drag="food" data-food="${id}"${tried ? " disabled" : ""}><span class="ref-food-art">${art}</span><small>${id}</small></button>`;
+              data-action="fd-pick" data-drag="food" data-food="${id}"${tried ? " disabled" : ""}><span class="ref-food-art">${art}</span>${foodLabel}</button>`;
           }).join("");
           const body = `
             <div class="fd-wrap ref-feed-wrap">
@@ -1156,9 +1163,9 @@
       const theme = themes.find((t) => pools.get(t.id).some((x) => x.word === w.word)) || themes[0];
       picked.push({ theme, w });
     }
-    /* 启蒙模式：选项是图片的「听音选图」为主，纯字母选项的看图选词只留 1 题 */
+    /* 启蒙模式：每日一练全部使用「听音选图」，不出现纯单词选项 */
     const types = enlightenOn()
-      ? ["listen", "listen", "listen", "listen", "pic"]
+      ? ["listen"]
       : ["pic", "listen", "pic", "listen", "pic"];
     return picked.map(({ theme, w }, i) => {
       const type = types[i % types.length];

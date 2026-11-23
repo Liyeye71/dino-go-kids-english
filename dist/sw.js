@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "0.86";
+const VERSION = "0.87";
 const ASSETS = [
   "./",
   "./index.html",
@@ -37,7 +37,14 @@ const ASSETS = [
   "./data/sounds/action/dig.wav",
   "./data/sounds/action/walk.wav",
   "./data/sounds/action/drink.wav",
-  "./data/sounds/action/sniff.wav"
+  "./data/sounds/action/sniff.wav",
+  "./data/sounds/action/laugh.wav",
+  "./data/sounds/action/cry.wav",
+  "./data/sounds/action/dance.wav",
+  "./data/sounds/action/climb.wav",
+  "./data/sounds/action/wag.wav",
+  "./data/sounds/action/catch.wav",
+  "./data/sounds/action/stretch.wav"
 ];
 
 self.addEventListener("install", (event) => {

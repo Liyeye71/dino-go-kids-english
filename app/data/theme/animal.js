@@ -174,6 +174,7 @@ const ANIMAL_ADJ_ASSET_KEYS = {
 const ANIMAL_ACTION_SOUND_WORDS = new Set([
   "eat", "sleep", "jump", "run", "swim", "roar", "fly", "bark",
   "lick", "bite", "sing", "splash", "dig", "walk", "drink", "sniff",
+  "laugh", "cry", "dance", "climb", "wag", "catch", "stretch",
 ]);
 
 /* ============================================================
