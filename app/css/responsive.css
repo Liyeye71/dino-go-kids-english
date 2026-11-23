@@ -174,7 +174,7 @@
   gap: clamp(0.5rem, 1.6cqh, 0.875rem) !important;
 }
 
-/* 单词连线：六项内容居中，图片列贴左、英文列贴右，两侧仅留少量空白 */
+/* 单词连线：六项内容居中，单词列贴左、图片列贴右，两侧仅留少量空白 */
 .quiz-ref-page .ref-match-wrap .ref-match-area,
 .quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-area {
   flex: 1 1 0 !important;

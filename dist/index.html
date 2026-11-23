@@ -1448,13 +1448,13 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-row.done{opacity:.55}
 .ref-match-row.wrong{opacity:.8}
 /* 单词框可复用，连过之后仍保持可点观感，不做灰化 */
-.ref-match-col-right .ref-match-row.marked{opacity:1}
+.ref-match-col-left .ref-match-row.marked{opacity:1}
 .ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
 .ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
 .ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
 /* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
-.ref-match-col-left .ref-match-row{flex-direction:row}
-.ref-match-col-right .ref-match-row{flex-direction:row;min-height:var(--match-card)}
+.ref-match-col-left .ref-match-row{flex-direction:row;min-height:var(--match-card)}
+.ref-match-col-right .ref-match-row{flex-direction:row}
 .ref-match-art-card{display:flex;align-items:center;justify-content:center;width:var(--match-card);height:var(--match-card);flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
 .ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
@@ -2134,7 +2134,7 @@ h1,h2,h3,h4,p{margin:0}
   gap: clamp(0.5rem, 1.6cqh, 0.875rem) !important;
 }
 
-/* 单词连线：六项内容居中，图片列贴左、英文列贴右，两侧仅留少量空白 */
+/* 单词连线：六项内容居中，单词列贴左、图片列贴右，两侧仅留少量空白 */
 .quiz-ref-page .ref-match-wrap .ref-match-area,
 .quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-area {
   flex: 1 1 0 !important;
@@ -3665,9 +3665,9 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
   function optionCount() {
     return enlightenOn() ? 2 : 3;
   }
-  /* 启蒙模式只保留「选项全是图片」的题型：听音选图 / 动物喂食。
-     看图选词、单词连线、动作猜猜、词汇拼图、情景对话都会出现英文单词或字母选项，一律不出 */
-  const TODDLER_TYPES = ["listen", "feed_animal"];
+  /* 启蒙模式可出的题型：听音选图 / 动物喂食（选项全为图片）、单词连线（左词右图，点单词抖动朗读）。
+     看图选词、动作猜猜、词汇拼图、情景对话会成组出现英文单词或字母选项，一律不出 */
+  const TODDLER_TYPES = ["listen", "feed_animal", "match"];
   function withoutToddlerBlocked(types) {
     return enlightenOn() ? types.filter((t) => TODDLER_TYPES.includes(t)) : types;
   }
@@ -4241,23 +4241,24 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
           const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
           const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
           const selected = quiz.pickWord;
-          const leftCol = q.arts.map((p) => {
-            const isDone = solved.has(p.word);
-            const isWrong = wrongArts.has(p.word);
-            const isSel = selected === p.word && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
-            </div>`;
-          }).join("");
-          const rightCol = q.words.map((w) => {
+          /* 左列英文单词、右列图片：点单词卡片会抖动并朗读 */
+          const leftCol = q.words.map((w) => {
             const isDone = solved.has(w);
             const isWrong = wrongWords.has(w);
             /* 单词框可复用：连过后仍可继续选，不锁定 */
             const isSel = selected === w;
             return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
+              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+            </div>`;
+          }).join("");
+          const rightCol = q.arts.map((p) => {
+            const isDone = solved.has(p.word);
+            const isWrong = wrongArts.has(p.word);
+            const isSel = selected === p.word && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
+              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
             </div>`;
           }).join("");
           return {
@@ -8581,20 +8582,7 @@ window.QuizView = {
         if (dot) this.startMatchDrag(e, dot);
       }, options);
     });
-    /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
-    area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
-      row.addEventListener("click", (e) => {
-        if (e.target.closest("[data-match-dot]")) return;
-        if (!quiz || quiz.revealed) return;
-        const card = row.querySelector(".ref-match-word-card");
-        speak(row.dataset.word);
-        if (card) {
-          card.classList.remove("is-shaking");
-          void card.offsetWidth;
-          card.classList.add("is-shaking");
-        }
-      }, options);
-    });
+    /* 点击英文单词卡片的朗读 + 抖动在 startMatchDrag 的点击分支里统一处理，避免重复朗读 */
   },
 
   /* 词汇拼图：点击提示图片朗读正确单词 */
@@ -8671,7 +8659,13 @@ window.QuizView = {
           this.tryConnect(dot, targetDot);
         }
       } else {
-        /* 点击模式：切换选中点，若已有另一个侧的选中点则配对 */
+        /* 点击模式：点单词卡片先朗读 + 抖动，再切换选中点；若另一侧已有选中点则配对 */
+        if (side === "word") {
+          speak(word);
+          this.trySelectOrPair(dot);
+          this.shakeWordCard(word);
+          return;
+        }
         this.trySelectOrPair(dot);
       }
     };
@@ -8680,6 +8674,18 @@ window.QuizView = {
     document.addEventListener("pointermove", move, { signal: this.abort.signal });
     document.addEventListener("pointerup", up, { signal: this.abort.signal });
     document.addEventListener("pointercancel", cancel, { signal: this.abort.signal });
+  },
+
+  /* 单词卡片抖动反馈：点击会触发重新渲染，需按单词定位新渲染出的卡片 */
+  shakeWordCard(word) {
+    const card = document.querySelector(
+      `[data-match-area] [data-match-row][data-match-side="word"][data-word="${word}"] .ref-match-word-card`
+    );
+    if (!card) return;
+    card.classList.remove("is-shaking");
+    void card.offsetWidth;
+    card.classList.add("is-shaking");
+    setTimeout(() => card.classList.remove("is-shaking"), 400);
   },
 
   /* 点击配对：参考 temp 的 tryConnect 逻辑 — 同侧切换、异侧配对 */
@@ -8694,11 +8700,11 @@ window.QuizView = {
       /* 另一侧已选中 — 尝试配对 */
       const pickedWord = quiz.pickWord;
       if (side === "art") {
-        /* 当前点是 art（左），之前 pickWord 是 word（右） */
+        /* 当前点是 art（右），之前 pickWord 是 word（左） */
         matchPickWord(pickedWord);
         matchPickArt(word);
       } else {
-        /* 当前点是 word（右），之前 pickWord 是 art（左） */
+        /* 当前点是 word（左），之前 pickWord 是 art（右） */
         matchPickWord(word);
         matchPickArt(pickedWord);
       }

@@ -23,9 +23,9 @@
   function optionCount() {
     return enlightenOn() ? 2 : 3;
   }
-  /* 启蒙模式只保留「选项全是图片」的题型：听音选图 / 动物喂食。
-     看图选词、单词连线、动作猜猜、词汇拼图、情景对话都会出现英文单词或字母选项，一律不出 */
-  const TODDLER_TYPES = ["listen", "feed_animal"];
+  /* 启蒙模式可出的题型：听音选图 / 动物喂食（选项全为图片）、单词连线（左词右图，点单词抖动朗读）。
+     看图选词、动作猜猜、词汇拼图、情景对话会成组出现英文单词或字母选项，一律不出 */
+  const TODDLER_TYPES = ["listen", "feed_animal", "match"];
   function withoutToddlerBlocked(types) {
     return enlightenOn() ? types.filter((t) => TODDLER_TYPES.includes(t)) : types;
   }
@@ -599,23 +599,24 @@
           const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
           const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
           const selected = quiz.pickWord;
-          const leftCol = q.arts.map((p) => {
-            const isDone = solved.has(p.word);
-            const isWrong = wrongArts.has(p.word);
-            const isSel = selected === p.word && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
-            </div>`;
-          }).join("");
-          const rightCol = q.words.map((w) => {
+          /* 左列英文单词、右列图片：点单词卡片会抖动并朗读 */
+          const leftCol = q.words.map((w) => {
             const isDone = solved.has(w);
             const isWrong = wrongWords.has(w);
             /* 单词框可复用：连过后仍可继续选，不锁定 */
             const isSel = selected === w;
             return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
               <div class="ref-match-word-card">${w}</div>
+              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+            </div>`;
+          }).join("");
+          const rightCol = q.arts.map((p) => {
+            const isDone = solved.has(p.word);
+            const isWrong = wrongArts.has(p.word);
+            const isSel = selected === p.word && !isDone && !isWrong;
+            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
+              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
             </div>`;
           }).join("");
           return {

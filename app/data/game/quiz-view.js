@@ -101,20 +101,7 @@ window.QuizView = {
         if (dot) this.startMatchDrag(e, dot);
       }, options);
     });
-    /* 点击英文单词卡片：朗读发音 + 抖动反馈 */
-    area.querySelectorAll('[data-match-row][data-match-side="word"]').forEach((row) => {
-      row.addEventListener("click", (e) => {
-        if (e.target.closest("[data-match-dot]")) return;
-        if (!quiz || quiz.revealed) return;
-        const card = row.querySelector(".ref-match-word-card");
-        speak(row.dataset.word);
-        if (card) {
-          card.classList.remove("is-shaking");
-          void card.offsetWidth;
-          card.classList.add("is-shaking");
-        }
-      }, options);
-    });
+    /* 点击英文单词卡片的朗读 + 抖动在 startMatchDrag 的点击分支里统一处理，避免重复朗读 */
   },
 
   /* 词汇拼图：点击提示图片朗读正确单词 */
@@ -191,7 +178,13 @@ window.QuizView = {
           this.tryConnect(dot, targetDot);
         }
       } else {
-        /* 点击模式：切换选中点，若已有另一个侧的选中点则配对 */
+        /* 点击模式：点单词卡片先朗读 + 抖动，再切换选中点；若另一侧已有选中点则配对 */
+        if (side === "word") {
+          speak(word);
+          this.trySelectOrPair(dot);
+          this.shakeWordCard(word);
+          return;
+        }
         this.trySelectOrPair(dot);
       }
     };
@@ -200,6 +193,18 @@ window.QuizView = {
     document.addEventListener("pointermove", move, { signal: this.abort.signal });
     document.addEventListener("pointerup", up, { signal: this.abort.signal });
     document.addEventListener("pointercancel", cancel, { signal: this.abort.signal });
+  },
+
+  /* 单词卡片抖动反馈：点击会触发重新渲染，需按单词定位新渲染出的卡片 */
+  shakeWordCard(word) {
+    const card = document.querySelector(
+      `[data-match-area] [data-match-row][data-match-side="word"][data-word="${word}"] .ref-match-word-card`
+    );
+    if (!card) return;
+    card.classList.remove("is-shaking");
+    void card.offsetWidth;
+    card.classList.add("is-shaking");
+    setTimeout(() => card.classList.remove("is-shaking"), 400);
   },
 
   /* 点击配对：参考 temp 的 tryConnect 逻辑 — 同侧切换、异侧配对 */
@@ -214,11 +219,11 @@ window.QuizView = {
       /* 另一侧已选中 — 尝试配对 */
       const pickedWord = quiz.pickWord;
       if (side === "art") {
-        /* 当前点是 art（左），之前 pickWord 是 word（右） */
+        /* 当前点是 art（右），之前 pickWord 是 word（左） */
         matchPickWord(pickedWord);
         matchPickArt(word);
       } else {
-        /* 当前点是 word（右），之前 pickWord 是 art（左） */
+        /* 当前点是 word（左），之前 pickWord 是 art（右） */
         matchPickWord(word);
         matchPickArt(pickedWord);
       }

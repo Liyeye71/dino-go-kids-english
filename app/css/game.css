@@ -151,13 +151,13 @@
 .ref-match-row.done{opacity:.55}
 .ref-match-row.wrong{opacity:.8}
 /* 单词框可复用，连过之后仍保持可点观感，不做灰化 */
-.ref-match-col-right .ref-match-row.marked{opacity:1}
+.ref-match-col-left .ref-match-row.marked{opacity:1}
 .ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
 .ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
 .ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
 /* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
-.ref-match-col-left .ref-match-row{flex-direction:row}
-.ref-match-col-right .ref-match-row{flex-direction:row;min-height:var(--match-card)}
+.ref-match-col-left .ref-match-row{flex-direction:row;min-height:var(--match-card)}
+.ref-match-col-right .ref-match-row{flex-direction:row}
 .ref-match-art-card{display:flex;align-items:center;justify-content:center;width:var(--match-card);height:var(--match-card);flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
 .ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
