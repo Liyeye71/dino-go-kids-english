@@ -5,6 +5,10 @@
 
 const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
+/* 启蒙模式（3 岁）：2 选项 + 零挫败答题 */
+function enlightenOn() {
+  return Boolean(state && state.enlighten);
+}
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
   const theme = currentTheme();
@@ -17,6 +21,12 @@ function artOf(word) {
 
 function startQuiz(level) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
+  /* 顺序解锁：已通关的关卡不再提供重玩入口 */
+  const prog = themeProgress();
+  if (lvl < prog.level || (prog.cleared && prog.cleared[lvl])) {
+    toast("这一关已经通关啦，去挑战下一关吧");
+    return;
+  }
   quiz = {
     level: lvl,
     index: 0,
@@ -30,6 +40,8 @@ function startQuiz(level) {
     pickWord: null,
     pickWordSide: null,
     matchWrong: 0,
+    triedWrong: [],
+    matchFlash: null,
     startedAt: Date.now(),
     words: [],
     newWords: [],
@@ -37,6 +49,46 @@ function startQuiz(level) {
   };
   lastResult = null;
   levelCue(currentTheme().id);
+  go("quiz");
+  speakTask();
+}
+
+/* 每日随机挑战：全主题混抽 5 题，答对 1 题得 1★，不推进关卡、不计成长值 */
+function startDailyQuiz() {
+  const order = DynamicEngine.buildDailyTasks(5);
+  if (!order.length) {
+    toast("词库还在准备中，稍后再试");
+    return;
+  }
+  if (dailyChallengeLeft() <= 0) {
+    toast("今天的挑战次数用完啦，明天再来吧");
+    return;
+  }
+  takeDailyChallenge();
+  quiz = {
+    mode: "daily",
+    level: 0,
+    index: 0,
+    correct: 0,
+    hearts: order.length,
+    selected: null,
+    revealed: false,
+    choiceCorrect: null,
+    matched: [],
+    wrongPairs: [],
+    pickWord: null,
+    pickWordSide: null,
+    matchWrong: 0,
+    triedWrong: [],
+    matchFlash: null,
+    startedAt: Date.now(),
+    words: [],
+    newWords: [],
+    /* 每日挑战：首答正确（没有任何错误尝试）的题目下标，用于计星 */
+    starIndex: [],
+    order,
+  };
+  lastResult = null;
   go("quiz");
   speakTask();
 }
@@ -84,11 +136,13 @@ function screenQuiz() {
       if (opt === selected) return `${base} wrong`;
       return `${base} dim`;
     }
+    if ((quiz.triedWrong || []).includes(opt)) return `${base} tried`;
     return opt === selected ? `${base} sel` : base;
   };
   const choiceButton = () => (revealed ? quizNextButton() : "");
   const options = (list) => list.map((opt, i) => {
     const cls = optionClass(opt);
+    const tried = !revealed && (quiz.triedWrong || []).includes(opt);
     let mark = "";
     if (revealed) {
       if (opt === q.word) mark = `<span class="mark">${I.check(11)}</span>`;
@@ -96,7 +150,7 @@ function screenQuiz() {
     } else if (opt === selected) {
       mark = `<span class="mark radio"><i></i></span>`;
     }
-    return `<button class="${cls}" data-action="select" data-word="${opt}">
+    return `<button class="${cls}" data-action="select" data-word="${opt}"${tried ? " disabled" : ""}>
       <span class="word">${opt}</span>${mark}
     </button>`;
   }).join("");
@@ -211,20 +265,21 @@ function screenQuiz() {
       </div>
     </div>` : "";
   const fx = revealed && ok ? correctFx() : "";
+  const isDaily = quiz.mode === "daily";
   const refHead = refType ? `<div class="ref-stage-head">
       <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
-      <div><span class="ref-stage-kicker">${isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</span>
+      <div><span class="ref-stage-kicker">${isDaily ? "每日随机挑战 · " : isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}${isDaily ? "" : `LEVEL ${String(quiz.level).padStart(2, "0")} · `}${game.label}</span>
       <h2>${game.title}</h2></div>
     </div>` : "";
-  const frameTop = refType && state.scene === "zoo"
+  const frameTop = refType && state.scene === "zoo" && !isDaily
     ? `<button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>`
     : `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
       <div class="bar qbar"><i style="width:${progress}%"></i></div>
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
-      <div class="hearts">${hearts}</div>
+      ${isDaily ? `<div class="daily-run">🎲</div>` : `<div class="hearts">${hearts}</div>`}
     </div>`;
-  return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page" : ""}" data-screen="quiz" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
+  return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page" : ""}" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
     ${fx}
     ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
     ${frameTop}
@@ -253,7 +308,10 @@ function speakTask() {
     const text = String(ask || "").replace(/<[^>]*>/g, "").trim();
     if (text) lines.push(text);
   } else if (game && game.prompt) {
-    lines.push(game.prompt);
+    const t = typeof currentTheme === "function" ? currentTheme() : null;
+    /* 每日混抽：看图朗读提示跟随词条来源主题 */
+    const picPrompt = (q.type === "pic" && q.picPrompt) || (q.type === "pic" && t && t.picPrompt) || "";
+    lines.push(picPrompt || game.prompt);
   }
   /* 听音选图：先读题型说明，再读要听的目标单词 */
   if (game && game.autoSpeak && q.word) lines.push(q.word);
@@ -310,20 +368,40 @@ function unlockTaskWord(q) {
   if (!q || !q.word || typeof unlockWord !== "function") return;
   if (unlockWord(q.word) && quiz && Array.isArray(quiz.newWords)) quiz.newWords.push(q.word);
 }
+/* 每日挑战计星：只有「首答正确」的题目才得星；启蒙模式答错重试后答对不再计星 */
+function markDailyStar() {
+  if (!quiz || quiz.mode !== "daily") return;
+  if ((quiz.triedWrong || []).length) return;
+  quiz.starIndex = quiz.starIndex || [];
+  if (!quiz.starIndex.includes(quiz.index)) quiz.starIndex.push(quiz.index);
+}
 function feedCheck() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
   const q = quiz.order[quiz.index];
   const ok = quiz.selected === q.correctFood;
+  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读正确食物，可继续尝试 */
+  if (!ok && enlightenOn()) {
+    quiz.triedWrong = quiz.triedWrong || [];
+    if (!quiz.triedWrong.includes(quiz.selected)) quiz.triedWrong.push(quiz.selected);
+    quiz.selected = null;
+    sfx("tap");
+    setTimer(() => speak(q.correctFood), 280);
+    render();
+    return;
+  }
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
     quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    markDailyStar();
     /* 答对后弹框自动朗读正确的食物单词 */
     setTimer(() => speak(q.correctFood), 600);
-    unlockTaskWord(q);
-    WrongBank.applyResult(q, true);
+    if (quiz.mode !== "daily") {
+      unlockTaskWord(q);
+      WrongBank.applyResult(q, true);
+    }
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
-    WrongBank.applyResult(q, false);
+    if (quiz.mode !== "daily") WrongBank.applyResult(q, false);
   }
   render();
 }
@@ -343,12 +421,23 @@ function checkAnswer() {
   /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
   const correctValue = q.answerValue != null ? q.answerValue : q.word;
   const ok = quiz.selected === correctValue;
+  /* 启蒙模式：答错不扣心、不揭晓，灰化错项并重读目标词，可继续尝试直到答对 */
+  if (!ok && enlightenOn()) {
+    quiz.triedWrong = quiz.triedWrong || [];
+    if (!quiz.triedWrong.includes(quiz.selected)) quiz.triedWrong.push(quiz.selected);
+    quiz.selected = null;
+    sfx("tap");
+    setTimer(() => speak(correctValue), 280);
+    render();
+    return;
+  }
   quiz.revealed = true;
   quiz.choiceCorrect = ok;
   const wordOption = isWordOptionTask(q);
   if (ok) {
     quiz.correct++;
     quiz.words.push(q.word);
+    markDailyStar();
     if (wordOption) {
       sfx("answer-right");
       /* 弹框出现后再朗读单词，避免与结果音效重叠 */
@@ -356,14 +445,16 @@ function checkAnswer() {
     } else {
       sfx("excellent");
     }
-    unlockTaskWord(q);
-    /* 🦁 动物园场景：答对 → 尝试清除错题库 */
-    WrongBank.applyResult(q, true);
+    if (quiz.mode !== "daily") {
+      unlockTaskWord(q);
+      /* 🦁 动物园场景：答对 → 尝试清除错题库 */
+      WrongBank.applyResult(q, true);
+    }
   } else {
     quiz.hearts = Math.max(0, quiz.hearts - 1);
     sfx(wordOption ? "answer-wrong" : "wrong");
-    /* 🦁 动物园场景：答错 → 自动收录错题库 */
-    WrongBank.applyResult(q, false);
+    /* 🦁 动物园场景：答错 → 自动收录错题库（每日随机挑战不入库） */
+    if (quiz.mode !== "daily") WrongBank.applyResult(q, false);
   }
   render();
 }
@@ -381,6 +472,8 @@ function nextQuestion() {
   quiz.pickWord = null;
   quiz.pickWordSide = null;
   quiz.matchWrong = 0;
+  quiz.triedWrong = [];
+  quiz.matchFlash = null;
   render();
   speakTask();
 }

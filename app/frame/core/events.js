@@ -37,8 +37,17 @@ document.addEventListener("click", (e) => {
   } else if (action === "start-quiz") {
     closeOverlay();
     /* 从单元地图卡直接开闯：先切到卡片对应的主题 */
-    if (el.dataset.theme && THEME_BY_ID.get(el.dataset.theme)) { state.theme = el.dataset.theme; save(); }
+    if (el.dataset.theme && THEME_BY_ID.get(el.dataset.theme)) {
+      const next = THEME_BY_ID.get(el.dataset.theme);
+      state.theme = el.dataset.theme;
+      /* 单场景主题没有场景概念，清空上一个主题残留的场景，避免解锁/进度键错位 */
+      if (!(next.scenes || []).some((s) => s.id === state.scene)) state.scene = "";
+      save();
+    }
     startQuiz(el.dataset.level);
+  } else if (action === "daily-start") {
+    closeOverlay();
+    startDailyQuiz();
   } else if (action === "select") {
     selectOption(el.dataset.word);
   } else if (action === "listen-selected") {
@@ -117,6 +126,12 @@ document.addEventListener("click", (e) => {
     save();
     sfx("tap");
     render();
+  } else if (action === "enlighten-toggle") {
+    /* 启蒙模式：2 选项 + 零挫败答题，屏蔽拼写与长句对话 */
+    state.enlighten = !state.enlighten;
+    save();
+    sfx("tap");
+    render();
   } else if (action === "unit") {
     /* 顶层单元切换：锁定单元只提示，不进入 */
     const target = UNIT_BY_ID.get(el.dataset.unit);
@@ -140,6 +155,10 @@ document.addEventListener("click", (e) => {
       toast(`先通过第 ${prog.level} 关，才能解锁这一关`);
       return;
     }
+    if (level < prog.level || (prog.cleared && prog.cleared[level])) {
+      toast("这一关已经通关啦，去挑战下一关吧");
+      return;
+    }
     sfx("tap");
     closeOverlay();
     startQuiz(level);
@@ -153,7 +172,7 @@ document.addEventListener("click", (e) => {
     sfx("tap");
     if (window.ZooRouteView) ZooRouteView.resetZoom();
   } else if (action === "chest-claim") {
-    /* 🎁 旅程进度条上的里程碑宝箱 */
+    /* 🎁 旅程进度条上的里程碑宝箱：开箱即送 1 次免费转盘 */
     const res = ChestManager.claimJourney(Number(el.dataset.threshold) || 0);
     if (res.status === "locked") {
       toast(`再获得 ${res.need} 颗星就能开启这个宝箱`);
@@ -161,29 +180,14 @@ document.addEventListener("click", (e) => {
     }
     if (res.status === "done") return;
     sfx("win");
-    openOverlay(buildChestOverlay(res.reward));
+    LuckyWheel.open({ fromChest: true });
     render();
   } else if (action === "chest-open") {
+    /* 🎁 BOSS 奖励的额外宝箱 */
+    if (!ChestManager.openOne()) return;
     sfx("win");
-    const reward = ChestManager.openOne();
-    const overlay = buildChestOverlay(reward);
-    openOverlay(overlay);
+    LuckyWheel.open({ fromChest: true });
     render(); /* 更新地图上的宝箱计数 */
-  } else if (action === "chest-again") {
-    /* 继续开下一个（如果还有） */
-    if (ChestManager.available() > 0) {
-      sfx("win");
-      const reward = ChestManager.openOne();
-      const overlay = buildChestOverlay(reward);
-      openOverlay(overlay);
-      render();
-    } else {
-      closeOverlay();
-      render();
-    }
-  } else if (action === "chest-close") {
-    closeOverlay();
-    render();
   /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
   } else if (action === "pz-letter") {
     puzzlePlace(Number(el.dataset.letter));
@@ -217,6 +221,17 @@ document.addEventListener("click", (e) => {
 
   } else if (action === "settings") {
     openSettings();
+  } else if (action === "wheel-open") {
+    LuckyWheel.open();
+  } else if (action === "wheel-spin") {
+    LuckyWheel.spin();
+  } else if (action === "coupon-ask") {
+    /* 家长核销第一步：进入二次确认，避免宝宝误点 */
+    LuckyWheel.askRedeem(Number(el.dataset.index));
+  } else if (action === "coupon-cancel") {
+    LuckyWheel.cancelRedeem();
+  } else if (action === "coupon-redeem") {
+    LuckyWheel.redeem(Number(el.dataset.index));
   } else if (action === "toggle-sound") {
     state.sound = !state.sound;
     save();
@@ -269,30 +284,3 @@ window.addEventListener("popstate", (e) => {
 });
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());
-
-/* ============================================================
-   神秘宝箱开箱 overlay
-   ============================================================ */
-function buildChestOverlay(reward) {
-  const nextAvailable = ChestManager.available();
-
-  return `<div class="overlay"><section class="sheet chest-sheet" role="dialog" aria-modal="true">
-    <div class="chest-reveal">
-      <div class="chest-sparkle">✨✨✨</div>
-      <div class="chest-found">
-        <div class="cf-stage"><div class="chest-emoji">🎁</div></div>
-      </div>
-      <div class="chest-meta">
-        <div class="chest-rarity">🎉 恭喜获得</div>
-        <h2 class="chest-reward">${reward || "神秘奖励"}</h2>
-        <p class="chest-desc">把这张宝箱券给爸爸妈妈看，就可以兑换啦</p>
-      </div>
-      <div class="chest-actions">
-        ${nextAvailable > 0
-          ? `<button class="btn" data-action="chest-again">继续开 · 剩 ${nextAvailable} 个</button>
-             <button class="btn ghost" data-action="chest-close">收下了</button>`
-          : `<button class="btn" data-action="chest-close">收下了！</button>`}
-      </div>
-    </div>
-  </section></div>`;
-}

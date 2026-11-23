@@ -18,10 +18,19 @@ function screenMap() {
     </button>`).join("")}
   </div>`;
 
-  /* 唯一的大主标题：单元名，末两字高亮 */
+  /* 唯一的大主标题：单元名，末两字高亮；右侧为启蒙模式开关 */
   const uHead = unit.name.slice(0, -2);
   const uTail = unit.name.slice(-2);
-  const hero = `<section class="map-hero"><h1>${uHead}<span>${uTail}</span></h1></section>`;
+  const enlightenOn = Boolean(state.enlighten);
+  const hero = `<section class="map-hero">
+    <h1>${uHead}<span>${uTail}</span></h1>
+    <button type="button" class="enlighten-btn${enlightenOn ? " on" : ""}" data-action="enlighten-toggle"
+      role="switch" aria-checked="${enlightenOn}" aria-label="启蒙模式开关">
+      <span class="eb-ico">🍬</span>
+      <span class="eb-txt"><b>启蒙模式</b></span>
+      <span class="eb-switch" aria-hidden="true"><i></i></span>
+    </button>
+  </section>`;
 
   if (unit.locked) {
     return `<section class="screen has-tab" data-screen="map">
@@ -79,6 +88,17 @@ function screenMap() {
       ${unitTabs}
       ${hero}
 
+      <button type="button" class="daily-challenge-card${dailyChallengeLeft() ? "" : " is-empty"}" data-action="daily-start">
+        <span class="dcc-ic" aria-hidden="true">🎲</span>
+        <span class="dcc-tx">
+          <b>每日随机挑战</b>
+          <em>${enlightenOn
+            ? "启蒙 2 选项 · 首答答对 1 题得 1★ · 不计成长值"
+            : "全主题混抽 5 题 · 答对 1 题得 1★ · 不计成长值"}</em>
+        </span>
+        <span class="dcc-count">${dailyChallengeLeft()}<small>/ ${DAILY_CHALLENGE_LIMIT} 次</small></span>
+      </button>
+
       <div class="journey">
         <span class="j-lb">我们的旅程</span>
         <span class="j-val num">${starTotal}<em>/ ${starMax} 颗星</em></span>
@@ -131,7 +151,7 @@ function openAnimalPreview(scene) {
         ${nodes}
         <button type="button" class="arm-close" data-action="close-overlay" aria-label="关闭路线预览">×</button>
       </div>
-      <button type="button" class="btn animal-route-start" disabled aria-disabled="true">开始闯关</button>
+      <button type="button" class="btn animal-route-start" disabled aria-disabled="true">即将开放</button>
     </section>
   </div>`);
 }

@@ -16,6 +16,17 @@
   window.QUIZ_SIZE = QUIZ_SIZE;
   window.BOSS_QUIZ_SIZE = BOSS_QUIZ_SIZE;
 
+  /* 启蒙模式（3 岁）：2 选项 + 零挫败，屏蔽拼写与长句对话 */
+  function enlightenOn() {
+    return Boolean(typeof state !== "undefined" && state && state.enlighten);
+  }
+  function optionCount() {
+    return enlightenOn() ? 2 : 3;
+  }
+  function withoutToddlerBlocked(types) {
+    return enlightenOn() ? types.filter((t) => t !== "word_puzzle" && t !== "dialog") : types;
+  }
+
   /* 四维词库标签 */
   const CATEGORIES = ["noun", "verb", "part", "adj"];
 
@@ -64,9 +75,11 @@
      第 1 关看图/听音/喂食，第 2 关加入连线，
      第 3 关起加入拼图，所有普通关题型逐步开放 */
   function nounTypesForStep(step) {
-    if (step <= 1) return ["pic", "listen", "feed_animal"];
-    if (step === 2) return ["pic", "listen", "feed_animal", "match"];
-    return ["pic", "listen", "word_puzzle", "feed_animal", "match"];
+    let types;
+    if (step <= 1) types = ["pic", "listen", "feed_animal"];
+    else if (step === 2) types = ["pic", "listen", "feed_animal", "match"];
+    else types = ["pic", "listen", "word_puzzle", "feed_animal", "match"];
+    return withoutToddlerBlocked(types);
   }
 
   /* 部位特写与对比观察暂时关闭，该槽位改出动物喂食题 */
@@ -82,6 +95,8 @@
     if (rule.key === "body_zoom" && !w.owner) return false;
     if (rule.key === "compare" && !w.compare) return false;
     if (rule.key === "feed_animal" && !w.food) return false;
+    /* 启蒙模式：杂食动物可吃食物太杂，2 选项容易误伤，改出其他题型 */
+    if (rule.key === "feed_animal" && enlightenOn() && w.diet === "omnivore") return false;
     if (rule.key === "dialog" && !w.dialogueClue) return false;
     return true;
   }
@@ -130,8 +145,9 @@
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
         if (isBoss) {
-          if (slot.role === "noun") type = pickType(BOSS_NOUN_TYPES, usedTypes);
-          else if (slot.role === "dialog") type = "dialog";
+          const bossNounTypes = withoutToddlerBlocked(BOSS_NOUN_TYPES);
+          if (slot.role === "noun") type = pickType(bossNounTypes, usedTypes);
+          else if (slot.role === "dialog") type = enlightenOn() ? pickType(bossNounTypes, usedTypes) : "dialog";
           else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
           else type = BOSS_TYPE_BY_ROLE[slot.role];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
@@ -164,6 +180,7 @@
       food: w.food || null,
       foodId: w.foodId || "",
       eats: w.eats || "",
+      diet: w.diet || "",
       ownerWord: w.ownerWord || "",
       dialogueClue: w.dialogueClue || "",
       /* 进阶题型专用数据 */
@@ -180,6 +197,20 @@
     };
     const game = currentTheme().games[question.gameType];
     if (game && game.build) game.build(task, buildPool && buildPool.length ? buildPool : allWords);
+    return task;
+  }
+
+  /* 选项图片映射：从本主题词池取词条插画，供听音选图 / 连线等题型直接复用 */
+  function attachOptionArt(task, pool) {
+    if (!task || !Array.isArray(task.options) || task.optionImgs) return task;
+    if (!task.options.every((opt) => typeof opt === "string")) return task;
+    task.optionImgs = {};
+    task.optionEmojis = {};
+    task.options.forEach((opt) => {
+      const w = pool.find((x) => x.word === opt);
+      task.optionImgs[opt] = (w && w.img) || "";
+      task.optionEmojis[opt] = (w && w.emoji) || "";
+    });
     return task;
   }
 
@@ -247,18 +278,34 @@
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
-      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, boss ? BOSS_TYPES : NORMAL_TYPES, buildPool).slice(0, size);
+      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
+      return fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
     }
 
-    /* ✈️🍽️ 其他主题：原有固定题型顺序逻辑 */
-    const picks = shuffle(pool);
-    return levelPlan(level).map((type, i) => {
-      const w = picks[i % picks.length];
-      const task = { type, word: w.word, art: w.art, phon: w.phon, dlgQ: dlg.q, dlgA: dlg.a };
-      const game = theme.games[type];
-      if (game.build) game.build(task, pool);
-      return task;
-    });
+    /* ✈️🚌 单场景主题（上学了 / 去旅行）：与动物乐园共用同一套动态出题
+       - 关卡题型表决定本关考法，普通关 3 题、考核关 5 题
+       - 每题从本主题词池抽不重复的词，选项图片同样取自本主题词池 */
+    const themeId = theme.id || state.theme || "theme";
+    const isBoss = window.isAssessmentLevel ? isAssessmentLevel(level) : false;
+    const size = isBoss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+    const usedWords = new Set();
+    const usedTypes = new Set();
+    const plan = withoutToddlerBlocked(levelPlan(level) || [])
+      .filter((type) => theme.games[type] && theme.games[type].render);
+    const questions = [];
+    /* 按关卡轮转题型起点，避免每关前三题永远是同几种考法 */
+    const turn = ((Number(level) || 1) - 1) % Math.max(1, plan.length);
+    const ordered = plan.slice(turn).concat(plan.slice(0, turn));
+    for (const type of ordered) {
+      if (questions.length >= size) break;
+      if (usedTypes.has(type)) continue;
+      const q = makeQuestion(type, pool, themeId, usedWords, usedTypes);
+      if (q) questions.push(q);
+    }
+
+    let tasks = questions.map((q) => toTask(q, pool, dlg, themeId, pool));
+    tasks = fillTasks(tasks, size, pool, dlg, themeId, plan, pool).slice(0, size);
+    return tasks.map((task) => attachOptionArt(task, pool));
   }
 
 
@@ -289,6 +336,11 @@
   const AMBIGUOUS_GROUPS = [
     /* 动词同义/近义 */
     ["sleep", "nap"], ["smile", "laugh"], ["see", "look", "watch", "saw"], ["listen", "hear"],
+    /* 动作场景易混：2 选项时同一动作的不同说法会让孩子无法判断 */
+    ["run", "chase", "hunt", "race"], ["swim", "splash"], ["hold", "carry", "catch"],
+    ["give", "share", "help"], ["eat", "bite", "lick"], ["hug", "love"],
+    /* 上位词与具体动物：bird 不能和 eagle / owl 等同时选项 */
+    ["bird", "eagle", "owl", "parrot", "duck", "chicken", "crow", "peacock", "flamingo"],
     ["say", "speak", "talk", "tell", "said", "told"], ["start", "begin"], ["like", "love"],
     /* 形容词近义 */
     ["small", "little"], ["big", "large", "huge"], ["happy", "glad"], ["sad", "unhappy"],
@@ -310,13 +362,17 @@
     ["break", "broke"], ["drive", "drove"], ["ride", "rode"], ["wear", "wore"], ["think", "thought"],
   ];
   const AMBIG_INDEX = {};
-  AMBIGUOUS_GROUPS.forEach((group, gi) => group.forEach((w) => { AMBIG_INDEX[w.toLowerCase()] = gi; }));
+  AMBIGUOUS_GROUPS.forEach((group, gi) => group.forEach((w) => {
+    const key = w.toLowerCase();
+    if (!AMBIG_INDEX[key]) AMBIG_INDEX[key] = [];
+    AMBIG_INDEX[key].push(gi);
+  }));
   /* 两个词条是否互为歧义：落在同一歧义组，或中文释义完全相同 */
   function isAmbiguous(a, b) {
     if (!a || !b) return false;
     const ga = AMBIG_INDEX[String(a.word || a).toLowerCase()];
     const gb = AMBIG_INDEX[String(b.word || b).toLowerCase()];
-    if (ga !== undefined && ga === gb) return true;
+    if (ga && gb && ga.some((g) => gb.indexOf(g) >= 0)) return true;
     return !!a.zh && !!b.zh && a.zh === b.zh;
   }
 
@@ -334,16 +390,16 @@
       ...shuffle(source).slice(0, count - 1).map((x) => x.word),
     ]);
   }
-  /* 三个选项的选择题共用 build（看图 / 听音 / 对话 / 动作 / 局部特写） */
+  /* 选择题共用 build（看图 / 听音 / 对话 / 动作 / 局部特写）：启蒙模式只给 2 个选项 */
   function threeChoiceBuild(task, pool) {
-    buildOptions(task, pool, 3);
+    buildOptions(task, pool, optionCount());
   }
 
   /* 对比观察选项：正确词 + 成对形容词 + 其他形容词干扰（成对词是题意保留，extras 排除歧义词） */
   function buildCompareOptions(task, pool) {
     const adjPool = pool.filter((w) => w.category === "adj");
     const pair = task.compare && task.compare.pair;
-    const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair && !isAmbiguous(w, task))).slice(0, 3 - (pair ? 2 : 1));
+    const extras = shuffle(adjPool.filter((w) => w.word !== task.word && w.word !== pair && !isAmbiguous(w, task))).slice(0, optionCount() - (pair ? 2 : 1));
     task.options = shuffle([task.word, ...(pair ? [pair] : []), ...extras.map((w) => w.word)]);
   }
 
@@ -432,7 +488,7 @@
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
                   ${listenPill()}
                 </div>
-                <p class="ref-hint">猜猜这是什么动物</p>
+                <p class="ref-hint">${q.picHint || (currentTheme() && currentTheme().picHint) || "猜猜这是什么动物"}</p>
                 <div class="options ref-pic-options">${options(q.options)}</div>
               </div>`,
             btn: choiceButton("选一个答案"),
@@ -452,14 +508,17 @@
             const isCorrect = revealed && opt === q.word;
             const isWrong = revealed && opt === selected && opt !== q.word;
             const isSel = !revealed && selected === opt;
+            /* 启蒙模式：已排除的伪选项灰化并禁用 */
+            const isTried = !revealed && (quiz.triedWrong || []).includes(opt);
             const cls = ["ref-listen-card"]
               .concat(isCorrect ? ["ok"] : [])
               .concat(isWrong ? ["wrong"] : [])
               .concat(isSel ? ["sel"] : [])
+              .concat(isTried ? ["tried"] : [])
               .join(" ");
-            return `<button class="${cls}" data-action="select" data-word="${opt}" aria-label="选择 ${opt}">
-              <span class="ref-listen-card-art"><img class="listen-card-img" src="images/words/animal/${opt}.webp" alt="" loading="eager" decoding="async"
-                onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${artOf(opt)()}</span></span>
+            return `<button class="${cls}" data-action="select" data-word="${opt}" aria-label="选择 ${opt}"${isTried ? " disabled" : ""}>
+              <span class="ref-listen-card-art"><img class="listen-card-img" src="${(q.optionImgs && q.optionImgs[opt]) || `images/words/animal/${opt}.webp`}" alt="" loading="eager" decoding="async"
+                onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${(q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)()}</span></span>
               ${isCorrect ? `<i class="ref-listen-mark">✓</i>` : ""}
               ${isWrong ? `<i class="ref-listen-mark bad">✕</i>` : ""}
             </button>`;
@@ -480,18 +539,19 @@
         title: "把单词和图片连起来",
         prompt: "Match the words with the pictures.",
         build(task, pool) {
-          /* 只连同类词，避免连线题里混进动词/形容词 */
+          /* 只连同类词，避免连线题里混进动词/形容词；启蒙模式只连 2 组 */
+          const pairTotal = enlightenOn() ? 2 : 3;
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
           /* 歧义过滤：同义/易混词不能同时出现在连线里（如 sleep 与 nap 都画着睡觉） */
           const picked = [];
           for (const cand of shuffle(trioPool)) {
-            if (picked.length >= 3) break;
+            if (picked.length >= pairTotal) break;
             if (picked.every((p) => !isAmbiguous(p, cand))) picked.push(cand);
           }
-          /* 极端兜底：同类词过滤后不足 3 个，放开类别限制补齐 */
-          if (picked.length < 3) {
+          /* 极端兜底：同类词过滤后数量不足，放开类别限制补齐 */
+          if (picked.length < pairTotal) {
             for (const cand of shuffle(pool)) {
-              if (picked.length >= 3) break;
+              if (picked.length >= pairTotal) break;
               if (picked.every((p) => p.word !== cand.word && !isAmbiguous(p, cand))) picked.push(cand);
             }
           }
@@ -519,8 +579,10 @@
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
           const wrongPairs = quiz.wrongPairs || [];
-          const wrongArts = new Set(wrongPairs.map((p) => p.art));
-          const wrongWords = new Set(wrongPairs.map((p) => p.word));
+          /* 启蒙模式：连错只做短暂提示，不记错 */
+          const flash = quiz.matchFlash || null;
+          const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
+          const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
           const selected = quiz.pickWord;
           const leftCol = q.arts.map((p) => {
             const isDone = solved.has(p.word);
@@ -581,6 +643,16 @@
             /* 🦁 动物园：配对成功 → 尝试清除错题库 */
             if (window.isZooScene && isZooScene() && _makeWid(word)) WrongBank.recordCorrect(_makeWid(word));
           } else {
+            /* 启蒙模式：连错不记错、不扣心，短暂标红后自动恢复，可继续尝试 */
+            if (enlightenOn()) {
+              quiz.matchFlash = { art: word, word: pickedWord };
+              quiz.pickWord = null;
+              quiz.pickWordSide = null;
+              sfx("tap");
+              setTimer(() => { quiz.matchFlash = null; render(); }, 700);
+              render();
+              return;
+            }
             quiz.matchWrong++;
             /* 错误连线保留红线，不会被后续配对覆盖或清除 */
             wrongPairs.push({ art: word, word: pickedWord });
@@ -872,9 +944,17 @@
             seenFood.add(w.food.id);
             unique.push(w.food);
           });
-          if (task.food && unique.length >= 3) {
+          const need = optionCount();
+          if (task.food && unique.length >= need) {
             const correct = task.food;
-            const rest = shuffle(unique.filter((f) => f.id !== correct.id)).slice(0, 2);
+            /* 食性安全：食肉动物只配植物干扰项，食草动物只配动物性干扰项 */
+            const FOOD_CLASS = { meat: "animal", fish: "animal", bone: "animal", worm: "animal", milk: "animal" };
+            const foodClass = (id) => FOOD_CLASS[id] || "plant";
+            let safe = unique.filter((f) => f.id !== correct.id);
+            if (task.diet === "carnivore") safe = safe.filter((f) => foodClass(f.id) === "plant");
+            /* 食草动物：牛奶（奶牛产奶）和虫子（猴/松鼠也吃）都可能被孩子当成正确答案，排除 */
+            else if (task.diet === "herbivore") safe = safe.filter((f) => foodClass(f.id) === "animal" && f.id !== "milk" && f.id !== "worm");
+            const rest = shuffle(safe.length >= need - 1 ? safe : unique.filter((f) => f.id !== correct.id)).slice(0, need - 1);
             task.foods = shuffle([correct, ...rest]);
             task.correctFood = correct.id;
             task.correctZh = correct.zh || "";
@@ -883,9 +963,9 @@
           }
           /* 其他主题沿用原有 emoji 食物池 */
           const foodPool = pool.filter((w) => w.category === "food" || ["banana", "meat", "grass", "honey", "bamboo"].includes(w.word));
-          const foods = foodPool.slice(0, 3).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "", phon: w.phon || "" }));
-          if (foods.length < 3) {
-            /* 兜底：用不重复的基础食物补足到 3 种 */
+          const foods = foodPool.slice(0, need).map((w) => ({ word: w.word, emoji: w.emoji || "🍎", zh: w.zh || "", phon: w.phon || "" }));
+          if (foods.length < need) {
+            /* 兜底：用不重复的基础食物补足选项数 */
             const seen = new Set(foods.map((f) => f.word));
             const fallback = [
               { word: "meat", emoji: "🥩", zh: "肉", phon: "/miːt/" },
@@ -893,7 +973,7 @@
               { word: "bamboo", emoji: "🎋", zh: "竹子", phon: "/bæmˈbuː/" },
             ];
             for (const f of fallback) {
-              if (foods.length >= 3) break;
+              if (foods.length >= need) break;
               if (seen.has(f.word)) continue;
               foods.push(f);
               seen.add(f.word);
@@ -915,8 +995,10 @@
           const foods = q.foods.map((f) => {
             const id = f.id || f.word;
             const art = f.img ? artWithImage(f.img, "ref-food-img", f.emoji || "🍎") : (f.emoji || artOf(id)());
-            return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
-              data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span><small>${id}</small></button>`;
+            /* 启蒙模式：已排除的伪选项灰化并禁用 */
+            const tried = !revealed && (quiz.triedWrong || []).includes(id);
+            return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""} ${tried ? "tried" : ""}"
+              data-action="fd-pick" data-drag="food" data-food="${id}"${tried ? " disabled" : ""}><span class="ref-food-art">${art}</span><small>${id}</small></button>`;
           }).join("");
           const body = `
             <div class="fd-wrap ref-feed-wrap">
@@ -1028,6 +1110,81 @@
     };
   }
 
+  /* ============================================================
+     每日随机挑战：跨主题混抽名词，只出「看图选词 / 听音选图」
+     ============================================================ */
+  /* 主题可用于混抽的名词：多场景主题合并所有可玩场景 */
+  function dailyNounPool(theme) {
+    const scenes = (theme.scenes || []).filter((s) => s.playable !== false && (s.words || []).length);
+    const list = scenes.length ? scenes.flatMap((s) => s.words) : (theme.words || []);
+    const nouns = list.filter((w) => w && w.word && (w.category || "noun") === "noun");
+    return nouns.length >= 4 ? nouns : list.filter((w) => w && w.word);
+  }
+  function buildDailyTasks(size) {
+    const count = Math.max(1, Number(size) || 5);
+    /* 未开放主题（上学了 / 去旅行）只要有词表也参与混抽，保证每日一练能练到 */
+    const themes = (window.DINO_WORD_SETS || []).filter(
+      (t) => t && t.isTheme && dailyNounPool(t).length
+    );
+    if (!themes.length) return [];
+    const pools = new Map(themes.map((t) => [t.id, dailyNounPool(t)]));
+    const used = new Set();
+    const picked = [];
+    /* 先每个主题各抽 1 个，保证跨主题；不足再从全局补抽 */
+    const themeQueue = shuffle(themes.map((t) => t.id));
+    while (themeQueue.length && picked.length < count) {
+      const id = themeQueue.pop();
+      const theme = themes.find((t) => t.id === id);
+      const pool = pools.get(id).filter((w) => !used.has(w.word));
+      const w = shuffle(pool)[0];
+      if (w) { used.add(w.word); picked.push({ theme, w }); }
+    }
+    const rest = shuffle(themes.flatMap((t) => pools.get(t.id).filter((w) => !used.has(w.word))));
+    while (picked.length < count && rest.length) {
+      const w = rest.pop();
+      if (used.has(w.word)) continue;
+      used.add(w.word);
+      const theme = themes.find((t) => pools.get(t.id).some((x) => x.word === w.word)) || themes[0];
+      picked.push({ theme, w });
+    }
+    const types = ["pic", "listen", "pic", "listen", "pic"];
+    return picked.map(({ theme, w }, i) => {
+      const type = types[i % types.length];
+      const pool = pools.get(theme.id) || [];
+      const task = {
+        type,
+        word: w.word,
+        zh: w.zh || "",
+        emoji: w.emoji || "",
+        img: w.img || "",
+        art: w.art || (() => UNKNOWN_ART(w.word)),
+        phon: w.phon || "",
+        category: w.category || "noun",
+        assetKey: w.assetKey || w.word,
+        example: w.example || "",
+        themeId: theme.id,
+        dlgQ: (theme.dialog && theme.dialog.q) || "",
+        dlgA: (theme.dialog && theme.dialog.a) || "",
+        /* 混抽时看图题提示跟随词条所属主题，避免文具题显示动物提示 */
+        picHint: theme.picHint || "",
+        picPrompt: theme.picPrompt || "",
+      };
+      const game = theme.games && theme.games[type];
+      if (game && game.build) game.build(task, pool);
+      /* 选项图片 / 表情按来源主题解析，避免跨主题时拼错素材路径 */
+      task.optionImgs = {};
+      task.optionEmojis = {};
+      (task.options || []).forEach((o) => {
+        const ow = pool.find((x) => x.word === o);
+        if (ow) {
+          task.optionImgs[o] = ow.img || "";
+          task.optionEmojis[o] = ow.emoji || "";
+        }
+      });
+      return task;
+    });
+  }
+
   window.DynamicEngine = {
     GAME_RULES,
     CATEGORIES,
@@ -1037,6 +1194,7 @@
     defaultGames,
     defaultLevelGames,
     buildTasks,
+    buildDailyTasks,
 
     /* 兼容旧调用：level 全局 1~50；pool 为当前场景词池 */
     generateSession(sceneWords, stopWords, sceneId, level) {

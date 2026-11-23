@@ -36,7 +36,7 @@
 .unit-map-card{display:flex;align-items:center;justify-content:center}
 
 /* ------------------------------------------------ hero */
-.map-hero{padding:0.125rem 0.125rem 0.75rem}
+.map-hero{display:flex;align-items:center;justify-content:space-between;gap:0.625rem;flex-wrap:wrap;padding:0.125rem 0.125rem 0.75rem}
 .map-hero .eyebrow{display:inline-flex;align-items:center;gap:0.375rem;color:var(--green);
   font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.1125rem;text-transform:uppercase;margin-bottom:0.5rem}
 .map-hero .eyebrow i{width:0.375rem;height:0.375rem;border-radius:50%;background:#82A16C}
@@ -44,8 +44,26 @@
 .map-hero h1 span{background:linear-gradient(transparent 64%,#FFE08A 64%);padding:0 0.125rem}
 .map-hero p{font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);line-height:1.7;margin-top:0.4375rem}
 
+/* 启蒙模式入口：糖果胶囊风（方案 C） */
+.enlighten-btn{display:flex;align-items:center;gap:0.4375rem;flex:none;margin-left:auto;
+  padding:0.25rem 0.5rem 0.25rem 0.3125rem;border-radius:6.1875rem;
+  background:#FFE3B0;border:0.1875rem solid #fff;
+  box-shadow:0 0.1875rem 0 #E8BE7A,0 0.375rem 0.75rem rgba(232,190,122,.18);
+  font-family:inherit;color:inherit;cursor:pointer;text-align:left}
+.enlighten-btn:active{transform:translateY(0.125rem);box-shadow:0 0.0625rem 0 #E8BE7A}
+.eb-ico{width:1.875rem;height:1.875rem;border-radius:50%;background:#FFF3D6;display:grid;place-items:center;font-size:0.9375rem;flex:none}
+.eb-txt{display:flex;flex-direction:column;gap:0.0625rem}
+.eb-txt b{font-size:0.8125rem;font-weight:var(--w-black);color:#7A4B12;line-height:1.15}
+.eb-txt em{font-style:normal;font-size:0.5625rem;font-weight:var(--w-read);color:#A77835;line-height:1.15}
+.eb-switch{position:relative;flex:none;width:2.4rem;height:1.4rem;border-radius:6.1875rem;background:#E4D9C2;transition:background .2s}
+.eb-switch i{position:absolute;left:0.125rem;top:0.125rem;width:1.15rem;height:1.15rem;border-radius:50%;background:#fff;
+  box-shadow:0 0.0625rem 0.1875rem rgba(122,75,18,.22);transition:transform .2s}
+.enlighten-btn.on .eb-switch{background:#FF9EB5}
+.enlighten-btn.on .eb-switch i{transform:translateX(1rem)}
+@media (max-width:22.5rem){.eb-txt em{display:none}}
+
 /* ------------------------------------------------ journey */
-.journey{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem;margin-bottom:0.875rem;
+.journey{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem;margin:0.875rem 0;
   background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.125rem;box-shadow:0 0.25rem 0 #EADAC0}
 .journey .j-lb{font-size:0.625rem;font-weight:var(--w-black);color:#947B5A;letter-spacing:0.075rem;white-space:nowrap}
 .journey .j-val{font-size:1rem;font-weight:var(--w-black);letter-spacing:0.0125rem;white-space:nowrap}
@@ -133,24 +151,31 @@
 .animal-route-start:disabled{opacity:1;pointer-events:none}
 
 /* ============================================================
-   🦁 Zoo 入口图层（整张地图）
-   - 图上「开始闯关」为热区
-   - 点击后进入下方 zoo 内嵌路线图
+   🦁 Zoo 场景入口（左右双卡）
+   - 左：陆地动物园（可玩，进路线抽屉）
+   - 右：海洋馆（关卡未接入，仅弹出路线预览）
    ============================================================ */
-.zoo-cover-layer{position:relative;width:100%;aspect-ratio:1024/683;overflow:hidden;
-  border-radius:1.25rem;background:#FBF3E3;border:0.09375rem solid var(--line);
-  box-shadow:0 0.25rem 0 #EADAC0}
-.zoo-cover-img{display:block;width:100%;height:100%;object-fit:cover}
-
-/* 「开始闯关」热区：完全透明地覆盖图上木牌标题，仅保留点击与按压反馈 */
-.zoo-cover-start{position:absolute;z-index:2;right:3%;top:1%;width:24%;height:max(2.75rem,8.4%);
-  padding:0;border:0;border-radius:6.1875rem;background:transparent;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;transition:transform .12s ease}
-.zoo-cover-start:active{transform:scale(.96)}
-.zoo-cover-start:focus-visible{outline:0.1875rem solid rgba(46,139,87,.45);outline-offset:0.1875rem}
-
-@media (max-width:480px){
-  .zoo-cover-layer{border-radius:1rem}
+.zoo-scene-entry{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-width:34rem;margin:0 auto}
+.zoo-scene-card{position:relative;display:block;padding:0;border:0;border-radius:1rem;overflow:hidden;
+  background:#FBF3E3;box-shadow:0 0.25rem 0.625rem rgba(120,90,40,.18);cursor:pointer;
+  font:inherit;color:inherit;text-align:left;-webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease}
+.zoo-scene-card:active{transform:scale(.98)}
+.zoo-scene-card:focus-visible{outline:0.1875rem solid rgba(46,139,87,.45);outline-offset:0.1875rem}
+.zoo-scene-img{display:block;width:100%;aspect-ratio:837/941;object-fit:cover}
+.zoo-scene-card.is-soon .zoo-scene-img{filter:saturate(.9) brightness(.97)}
+.zoo-scene-foot{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:0.0625rem;
+  padding:1.75rem 0.75rem 0.6875rem;color:#fff;
+  background:linear-gradient(180deg,rgba(38,30,18,0) 0%,rgba(38,30,18,.6) 48%,rgba(38,30,18,.82) 100%)}
+.zoo-scene-foot b{font-size:0.9375rem;font-weight:var(--w-black);letter-spacing:0.03rem;
+  text-shadow:0 0.0625rem 0.1875rem rgba(0,0,0,.35)}
+.zoo-scene-foot em{font-size:0.6875rem;font-style:normal;opacity:.9}
+.zoo-scene-badge{position:absolute;left:0.5rem;top:0.5rem;padding:0.1875rem 0.5rem;border-radius:6.1875rem;
+  background:rgba(255,251,243,.94);color:#8A6415;font-size:0.625rem;font-weight:var(--w-black);
+  box-shadow:0 0.125rem 0.375rem rgba(80,60,25,.18)}
+@media (max-width:380px){
+  .zoo-scene-foot b{font-size:0.875rem}
+  .zoo-scene-foot em{font-size:0.625rem}
 }
 
 /* ============================================================
@@ -236,3 +261,20 @@
   animation:clear-glow 2.4s ease-in-out infinite}
 .zoo-all-clear span{font-size:1.25rem}
 @keyframes clear-glow{0%,100%{box-shadow:0 0.25rem 0.625rem rgba(255,152,0,.3)}50%{box-shadow:0 0.375rem 1rem rgba(255,107,53,.55)}}
+
+/* ------------------------------------------------ 每日随机挑战入口 */
+.daily-challenge-card{display:flex;align-items:center;gap:0.75rem;width:100%;margin:0.875rem 0 0;padding:0.8125rem 0.9375rem;
+  border:0.09375rem solid #EDDFC7;border-radius:1.25rem;background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  box-shadow:0 0.18rem 0 #EADAC0;transition:transform .12s ease}
+.daily-challenge-card:active{transform:scale(.985)}
+.daily-challenge-card.is-empty{opacity:.62}
+.dcc-ic{flex:none;display:grid;place-items:center;width:2.875rem;height:2.875rem;border-radius:0.9375rem;
+  background:#FFE9BC;font-size:1.375rem;line-height:1}
+.dcc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.1875rem}
+.dcc-tx b{font-size:0.9375rem;font-weight:var(--w-black);color:#4E3C22}
+.dcc-tx em{font-style:normal;font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);line-height:1.45}
+.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:2.875rem;height:2.875rem;
+  border-radius:0.9375rem;background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
+  font-size:0.9375rem;font-weight:var(--w-black);line-height:1;box-shadow:0 0.125rem 0 #2F6B3F}
+.dcc-count small{margin-top:0.1875rem;font-size:0.53125rem;font-weight:var(--w-bold);opacity:.85}
+.daily-challenge-card.is-empty .dcc-count{background:#C9BFAA;box-shadow:0 0.125rem 0 #B3A88F}

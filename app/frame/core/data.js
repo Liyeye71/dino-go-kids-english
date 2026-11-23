@@ -4,11 +4,11 @@
 
 const STAGES = [
   { key: "egg",   name: "恐龙蛋",       phase: "孵化期", min: 0,    vocab: "basic",   rarity: 3, height: "18 cm", weight: "0.4 kg", skill: "等待破壳", desc: "一颗奶油色的恐龙蛋，壳上画着彩色小斑点。每天认真学习，它就会听见你的声音。" },
-  { key: "baby",  name: "幼龙",         phase: "幼年期", min: 240,  vocab: "basic",   rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，橙色皮肤上挂着彩色斑点，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
-  { key: "teen",  name: "少年龙",       phase: "成长期", min: 900,  vocab: "basic",   rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "嘴巴张得大大的，露出小牙齿，橙色鳞片越擦越亮。它已经能记住好多水果单词了。" },
-  { key: "adult", name: "成年龙",       phase: "成熟期", min: 2100, vocab: "advance", rarity: 4, height: "2.1 m", weight: "120 kg", skill: "元气满满", desc: "叫声越来越有威势，橙色的身体配上粗描边，像从蜡笔画里走出来。现在是森林里最可靠的伙伴。" },
-  { key: "super", name: "霸王龙",       phase: "完全体", min: 4200, vocab: "advance", rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "背上升起一排气派的彩色骨板，身边像有火焰在跳动。它记得你陪它走过的每一次闯关。" },
-  { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 6000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
+  { key: "baby",  name: "幼龙",         phase: "幼年期", min: 60,   vocab: "basic",   rarity: 3, height: "0.6 m", weight: "8 kg", skill: "奶声奶气", desc: "刚破壳的小家伙，橙色皮肤上挂着彩色斑点，走起路来摇摇晃晃。最喜欢和你一起读单词。" },
+  { key: "teen",  name: "少年龙",       phase: "成长期", min: 250,  vocab: "basic",   rarity: 4, height: "1.2 m", weight: "36 kg", skill: "记忆力 +10%", desc: "嘴巴张得大大的，露出小牙齿，橙色鳞片越擦越亮。它已经能记住好多水果单词了。" },
+  { key: "adult", name: "成年龙",       phase: "成熟期", min: 600,  vocab: "advance", rarity: 4, height: "2.1 m", weight: "120 kg", skill: "元气满满", desc: "叫声越来越有威势，橙色的身体配上粗描边，像从蜡笔画里走出来。现在是森林里最可靠的伙伴。" },
+  { key: "super", name: "霸王龙",       phase: "完全体", min: 1200, vocab: "advance", rarity: 5, height: "3.6 m", weight: "1.2 t", skill: "王者气势", desc: "背上升起一排气派的彩色骨板，身边像有火焰在跳动。它记得你陪它走过的每一次闯关。" },
+  { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 2000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
 ];
 
 const BACKGROUNDS = [
@@ -29,6 +29,16 @@ const DEFAULT_STATE = {
   v: 9,
   name: "毛肚",
   stars: 0,
+  /* 宝箱赠送的免费转盘机会，可累积并保留到下次 */
+  spins: 0,
+  /* 每日转盘次数限制：spinDay 记录当天日期键，spinCount 为当天已转次数 */
+  spinDay: "",
+  spinCount: 0,
+  /* 每日随机挑战（全主题共享）：dailyDay 记录当天日期键，dailyCount 为当天已玩次数 */
+  dailyDay: "",
+  dailyCount: 0,
+  /* 启蒙模式：开启后 2 选项 + 零挫败答题，屏蔽词汇拼图与情景对话 */
+  enlighten: false,
   growth: 0,
   stage: "egg",
   theme: "animal",

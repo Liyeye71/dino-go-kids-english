@@ -1,6 +1,6 @@
 /* ============================================================
-   DinoGo · 恐龙英语 — 去旅行（占位主题）
-   主题名称 + 交通词表；闯关地图与场景后续开放
+   DinoGo · 恐龙英语 — 去旅行（未开放主题）
+   19 个交通词表已就绪，仅供每日随机挑战混抽；闯关暂不开放
    ============================================================ */
 /* 交通词表：插画位于 images/words/transport/，文件名由单词生成 */
 const TRAVEL_WORDS = [
@@ -30,18 +30,28 @@ const TRAVEL_WORDS = [
   example,
   emoji,
   category: "noun",
+  assetKey: word,
   img: `images/words/transport/${word.replace(/ /g, "-")}.webp`,
+  /* 情景对话：把例句中的目标词挖空 */
+  dialogueClue: example.replace(
+    new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+")}\\b`, "i"),
+    "___"
+  ),
 }));
 
+/* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
 definePlaceholderTheme({
   id: "travel",
   name: "去旅行",
-  chip: "旅行单词",
+  chip: "交通单词",
   emoji: "🗺️",
-  dialog: { q: "Where are we going?", a: "We are going to {word}." },
-  mapIntro: "「去旅行」主题正在筹备中…",
-  plan: "后续将开放世界地标、旅行场景与航线地图",
+  dialog: { q: "Where are we going?", a: "We are going by {word}." },
   color: "#4A6E8A",
   accent: "#3A6E8A",
+  tip: "#6B8CA6",
+  plan: "汽车、火车、飞机排好队，闯关地图正在筹备中",
+  mapIntro: "「去旅行」词表已就绪，闯关地图正在筹备中…",
+  picHint: "猜猜这是什么交通工具",
+  picPrompt: "What is this?",
   words: TRAVEL_WORDS,
 });

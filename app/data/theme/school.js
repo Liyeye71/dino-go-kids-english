@@ -1,6 +1,6 @@
 /* ============================================================
-   DinoGo · 恐龙英语 — 上学了（占位主题）
-   主题名称 + 文具词表；闯关地图与场景后续开放
+   DinoGo · 恐龙英语 — 上学了（未开放主题）
+   15 件文具词表已就绪，仅供每日随机挑战混抽；闯关暂不开放
    ============================================================ */
 /* 文具词表：插画位于 images/words/tool/，文件名由单词生成 */
 const SCHOOL_WORDS = [
@@ -26,18 +26,28 @@ const SCHOOL_WORDS = [
   example,
   emoji,
   category: "noun",
+  assetKey: word,
   img: `images/words/tool/${word.replace(/ /g, "-")}.webp`,
+  /* 情景对话：把例句中的目标词挖空 */
+  dialogueClue: example.replace(
+    new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+")}\\b`, "i"),
+    "___"
+  ),
 }));
 
+/* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
 definePlaceholderTheme({
   id: "school",
   name: "上学了",
-  chip: "学科单词",
+  chip: "文具单词",
   emoji: "🎒",
   dialog: { q: "What's this?", a: "It's a {word}." },
-  mapIntro: "「上学了」主题正在筹备中…",
-  plan: "后续将开放学科单词、课程表与校园场景",
   color: "#8C6B3D",
   accent: "#5C411D",
+  tip: "#A08560",
+  plan: "铅笔、尺子、书包装进书包，闯关地图正在筹备中",
+  mapIntro: "「上学了」词表已就绪，闯关地图正在筹备中…",
+  picHint: "猜猜这是什么文具",
+  picPrompt: "What is this?",
   words: SCHOOL_WORDS,
 });

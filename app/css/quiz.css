@@ -8,6 +8,9 @@
 .quiz-top .qcount{font-size:0.75rem;font-weight:var(--w-black);color:var(--green-d);white-space:nowrap}
 .quiz-top .qcount em{font-style:normal;color:#A5B2A7;font-weight:var(--w-mid)}
 .hearts{display:flex;align-items:center;gap:0.1875rem;flex:none}
+/* 每日随机挑战：用骰子标记代替生命值 */
+.quiz-top .daily-run{flex:none;display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;
+  background:#FFE9BC;border:0.0625rem solid #F0D79E;font-size:0.875rem;line-height:1}
 .quiz-body{flex:1;min-height:0;overflow:hidden;padding:0.5rem 1.25rem 0.125rem;display:flex;flex-direction:column;scrollbar-width:none}
 .quiz-prompt{display:flex;flex-direction:column;gap:0.4375rem;margin-top:0.75rem;flex:none}
 .quiz-prompt .chip{align-self:flex-start;display:inline-flex;align-items:center;gap:0.3125rem;height:1.375rem;padding:0 0.5rem;border-radius:0.4375rem;

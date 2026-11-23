@@ -119,6 +119,21 @@ function starBalance() {
   return Math.max(0, Math.floor(Number(state.stars) || 0));
 }
 
+/* ------------------------------------------------ daily challenge */
+/* 每日随机挑战：全主题共享 2 次/天，按自然日重置 */
+const DAILY_CHALLENGE_LIMIT = 2;
+function dailyChallengeLeft() {
+  if (state.dailyDay !== dateKey()) return DAILY_CHALLENGE_LIMIT;
+  return Math.max(0, DAILY_CHALLENGE_LIMIT - (Number(state.dailyCount) || 0));
+}
+function takeDailyChallenge() {
+  if (state.dailyDay !== dateKey()) {
+    state.dailyDay = dateKey();
+    state.dailyCount = 0;
+  }
+  state.dailyCount = (Number(state.dailyCount) || 0) + 1;
+}
+
 /* ------------------------------------------------ study log */
 function dateKey(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

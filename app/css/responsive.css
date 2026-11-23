@@ -634,3 +634,25 @@
 .quiz-ref-page .ref-puzzle-wrap .pz-check-spacer {
   margin-top: 0 !important;
 }
+
+/* ============================================================
+   启蒙模式（3 岁）：2 选项布局 + 零挫败反馈
+   ============================================================ */
+.quiz-page[data-enlighten="1"] .ref-pic-options,
+.quiz-page[data-enlighten="1"] .ref-action-options,
+.quiz-page[data-enlighten="1"] .ref-zoom-options,
+.quiz-page[data-enlighten="1"] .ref-cmp-options,
+.quiz-page[data-enlighten="1"] .fd-foods,
+.quiz-page[data-enlighten="1"] .ref-dialog-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+/* 已排除的伪选项：灰化并禁用，避免重复点选 */
+.quiz-page .option.tried,
+.quiz-page .ref-listen-card.tried,
+.quiz-page .fd-food.tried {
+  opacity: 0.32 !important;
+  filter: grayscale(1) !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
+}

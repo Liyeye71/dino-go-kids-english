@@ -11,7 +11,7 @@ function tabbar(active) {
     </button>`).join("")}</nav>`;
 }
 function starPill() {
-  return `<div class="star-pill">${star(22)}<span class="num">${fmt(starBalance())}</span></div>`;
+  return `<button class="star-pill" data-action="wheel-open" aria-label="星星幸运大转盘">${star(22)}<span class="num">${fmt(starBalance())}</span></button>`;
 }
 function stageChip() {
   const st = stageMeta(state.stage);

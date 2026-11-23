@@ -48,6 +48,9 @@
       unit: o.unit,
       emoji: o.emoji,
       dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
+      /* 每日随机挑战混抽到该主题时，看图题的提示文案跟随主题 */
+      picHint: o.picHint || "",
+      picPrompt: o.picPrompt || "",
       playable: false,
       words: o.words || [],
       scenes: [],

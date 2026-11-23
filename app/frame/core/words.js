@@ -168,15 +168,20 @@ function activeProgressKey(themeId) {
   }
   return id;
 }
-/* 每个主题（多场景主题为当前场景）独立关卡进度：{ level, stars }，互不影响 */
+/* 每个主题（多场景主题为当前场景）独立关卡进度：{ level, stars, cleared }，互不影响 */
 function themeProgress(id) {
   const key = activeProgressKey(id);
   if (!state.progress) state.progress = {};
   if (!state.progress[key]) state.progress[key] = { level: 1, stars: {} };
+  if (!state.progress[key].cleared) state.progress[key].cleared = {};
   return state.progress[key];
 }
+/* 旅程/宝箱进度只统计考核关（第 5/10/15… 关）的星星；启蒙模式普通关的星星只计入可消费余额 */
 function themeStars(p) {
-  return Object.values(p.stars || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+  return Object.entries(p.stars || {}).reduce(
+    (a, [lv, v]) => (Number(lv) % 5 === 0 ? a + (Number(v) || 0) : a),
+    0
+  );
 }
 function totalLevelsDone() {
   return Object.values(state.progress || {}).reduce(

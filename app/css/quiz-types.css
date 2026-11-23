@@ -100,6 +100,7 @@
 .act-scratch{animation:actScratch .6s ease-in-out infinite}
 .act-sniff{animation:actSniff .9s ease-in-out infinite}
 .act-peck{animation:actPeck .55s ease-in-out infinite}
+.act-wag{animation:actSwing .55s ease-in-out infinite}
 
 @keyframes actRun{0%,100%{transform:translateX(-0.35rem) rotate(-4deg)}50%{transform:translateX(0.35rem) rotate(4deg)}}
 @keyframes actJump{0%,100%{transform:translateY(0) scaleY(.94)}30%{transform:translateY(-1.6rem) scaleY(1.04)}62%{transform:translateY(0) scaleY(.9)}}
