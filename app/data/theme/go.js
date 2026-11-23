@@ -6,7 +6,6 @@ definePlaceholderTheme({
   id: "go",
   name: "去旅行",
   chip: "旅行单词",
-  unit: "Unit 3 · 去旅行",
   emoji: "🗺️",
   dialog: { q: "Where are we going?", a: "We are going to {word}." },
   mapIntro: "「去旅行」主题正在筹备中…",

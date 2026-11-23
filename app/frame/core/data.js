@@ -32,6 +32,8 @@ const DEFAULT_STATE = {
   growth: 0,
   stage: "egg",
   theme: "animal",
+  /* 闯关单元：basic 开放；advance 锁定待后续迭代，旧存档缺省回落 basic */
+  unit: "basic",
   /* 多场景主题的当前场景（动物乐园：zoo / ocean），各场景进度独立 */
   scene: "zoo",
   progress: {},

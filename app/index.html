@@ -35,16 +35,8 @@
     <div class="toast-root" id="toast-root"></div>
   </div>
   <!-- 主题词汇、地图与玩法由 build.mjs 自动汇总加载 -->
-  <!-- 词性词汇池（原子词，带 attrs 分类标签） -->
-  <script src="data/words/noun.js"></script>
-  <script src="data/words/verb.js"></script>
-  <script src="data/words/adj.js"></script>
-  <script src="data/words/adv.js"></script>
-  <script src="data/words/pron.js"></script>
-  <script src="data/words/prep.js"></script>
-  <script src="data/words/conj.js"></script>
-  <script src="data/words/interj.js"></script>
-  <script src="data/words/num.js"></script>
+  <!-- 全局词库（唯一事实源）：含主题词与 9 个词性池（原 data/words/*.js 已并入），需在主题文件之前加载 -->
+  <script src="data/words/library.js"></script>
   <!-- 主题注册器（defineDinoTheme）与题型实现，需在各主题文件之前加载 -->
   <script src="data/game/shared.js"></script>
   <script src="data/game/dialog-templates.js"></script>

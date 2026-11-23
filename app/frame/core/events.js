@@ -36,6 +36,8 @@ document.addEventListener("click", (e) => {
     sfx("tap");
   } else if (action === "start-quiz") {
     closeOverlay();
+    /* 从单元地图卡直接开闯：先切到卡片对应的主题 */
+    if (el.dataset.theme && THEME_BY_ID.get(el.dataset.theme)) { state.theme = el.dataset.theme; save(); }
     startQuiz(el.dataset.level);
   } else if (action === "select") {
     selectOption(el.dataset.word);
@@ -112,6 +114,18 @@ document.addEventListener("click", (e) => {
     renderAndResetScroll();
   } else if (action === "theme") {
     state.theme = el.dataset.theme;
+    save();
+    sfx("tap");
+    render();
+  } else if (action === "unit") {
+    /* 顶层单元切换：锁定单元只提示，不进入 */
+    const target = UNIT_BY_ID.get(el.dataset.unit);
+    if (!target) return;
+    if (target.locked) { toast(`${target.name}正在筹备中，敬请期待`); return; }
+    const first = themesOfUnit(target)[0];
+    if (!first) { toast("这个单元还没有开放内容"); return; }
+    state.unit = target.id;
+    state.theme = first.id;
     save();
     sfx("tap");
     render();

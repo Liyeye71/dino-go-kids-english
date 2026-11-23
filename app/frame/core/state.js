@@ -91,6 +91,8 @@ function loadState() {
       ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
     };
+    /* 单元制后主题 tab 已移除：旧存档当前主题若已无可玩内容（如占位主题/脏值），回落到第一个可玩主题 */
+    if (!themeHasContent(THEME_BY_ID.get(next.theme))) next.theme = defaultTheme().id;
     /* 迁移后的数据立即落盘，避免旧存档每次启动都重复迁移 */
     if (prevVersion > 0 && prevVersion < DEFAULT_STATE.v) {
       try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch (e2) { /* 忽略写入失败 */ }

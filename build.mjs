@@ -29,8 +29,7 @@ const html = fs.readFileSync(path.join(appDir, "index.html"), "utf8");
 
 // 依次内联主题词汇 + 声音模块 + core + 四个 Tab 文件，顺序必须与 index.html 一致
 const JS_FILES = [
-  "data/words/noun.js", "data/words/verb.js", "data/words/adj.js", "data/words/adv.js",
-  "data/words/pron.js", "data/words/prep.js", "data/words/conj.js", "data/words/interj.js", "data/words/num.js",
+  "data/words/library.js",
   "data/game/shared.js", "data/game/dialog-templates.js", "data/game/dynamic-engine.js",
   ...themeFiles.map((f) => `data/theme/${f}`),
   "data/sounds/sfx.js",

@@ -39,8 +39,36 @@ const WORD_SETS = (window.DINO_WORD_SETS || [])
 const LEVELS_PER_THEME = 10;
 /* 主题按 id 建索引，避免每次渲染都线性查找 */
 const THEME_BY_ID = new Map(WORD_SETS.map((set) => [set.id, set]));
+/* ---------------- 单元制导航 ----------------
+   闯关页顶层按单元组织：basic 已开放，advance 锁定待后续迭代
+   themes 为单元内主题地图的展示顺序（唯一来源），后续给 advance 加地图时在此追加 id */
+const UNITS = [
+  { id: "basic", name: "基础乐园", en: "Basic", emoji: "🌱", locked: false, themes: ["animal", "go", "school"] },
+  { id: "advance", name: "进阶岛", en: "Advance", emoji: "🏝️", locked: true, themes: [] },
+];
+const UNIT_BY_ID = new Map(UNITS.map((u) => [u.id, u]));
+function currentUnit() {
+  return UNIT_BY_ID.get(state && state.unit) || UNITS[0];
+}
+function themesOfUnit(unit) {
+  const u = typeof unit === "string" ? UNIT_BY_ID.get(unit) : unit;
+  return ((u && u.themes) || []).map((id) => THEME_BY_ID.get(id)).filter(Boolean);
+}
+/* 默认主题：第一个开放单元的第一个主题地图 */
+function defaultTheme() {
+  return themesOfUnit(UNITS[0])[0] || WORD_SETS[0];
+}
+/* 主题是否有可玩内容：有词表且未标记 playable:false（占位主题只渲染筹备中卡片） */
+function themeHasContent(t) {
+  if (!t || t.playable === false) return false;
+  const scenes = t.scenes || [];
+  const words = scenes.length
+    ? scenes.reduce((n, s) => n + (s.playable !== false ? (s.words || []).length : 0), 0)
+    : (t.words || []).length;
+  return words > 0;
+}
 function currentTheme() {
-  return THEME_BY_ID.get(state.theme) || WORD_SETS[0];
+  return THEME_BY_ID.get(state.theme) || defaultTheme();
 }
 /* 多场景主题取当前场景词表，单场景主题取主题词表 */
 function sceneOf(theme, sceneId) {
@@ -129,7 +157,7 @@ function sceneProgress(themeId, sceneId) {
   return state.progress[key];
 }
 function activeProgressKey(themeId) {
-  const id = themeId || (state && state.theme) || WORD_SETS[0].id;
+  const id = themeId || (state && state.theme) || defaultTheme().id;
   const theme = THEME_BY_ID.get(id);
   const scenes = theme && theme.scenes;
   if (scenes && scenes.length) {

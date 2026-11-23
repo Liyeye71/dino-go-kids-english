@@ -2,6 +2,39 @@
    DinoGo · 恐龙英语 — map：旅程进度 / 主题地图 / 下一关
    ============================================================ */
 
+/* ------------------------------------------------ unit tabs */
+/* 顶层单元切换：basic 开放 / advance 锁定，位于主题 tab 之上 */
+.unit-tabs{display:flex;gap:0.375rem;width:max-content;max-width:100%;margin:0 auto 0.625rem;padding:0.25rem;
+  border-radius:6.1875rem;background:#F3EADA;border:0.09375rem solid #E7DAC3;
+  box-shadow:inset 0 0.125rem 0.3125rem rgba(120,90,40,.07);overflow-x:auto;scrollbar-width:none}
+.unit-tabs .ut{flex:none;display:flex;align-items:center;gap:0.4375rem;
+  padding:0.5625rem 0.875rem;border-radius:6.1875rem;white-space:nowrap;
+  background:transparent;border:0;box-shadow:none;font-size:0.875rem;font-weight:var(--w-bold);color:#8B7B5C;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease}
+.unit-tabs .ut:active{transform:scale(.97)}
+.unit-tabs .ut b{font-size:1.0625rem;font-weight:400;line-height:1}
+.unit-tabs .ut .ut-en{font-size:0.6875rem;font-weight:var(--w-bold);opacity:.72}
+.unit-tabs .ut i{font-style:normal;font-size:0.75rem;line-height:1}
+.unit-tabs .ut.on{background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
+  box-shadow:0 0.125rem 0.375rem rgba(52,110,70,.28),inset 0 0.0625rem 0 rgba(255,255,255,.28)}
+.unit-tabs .ut.locked{color:#B0A18A}
+@media (max-width:480px){
+  .unit-tabs{gap:0.25rem;padding:0.25rem;margin-bottom:0.5rem}
+  .unit-tabs .ut{gap:0.3125rem;padding:0.4375rem 0.6875rem;font-size:0.8125rem}
+  .unit-tabs .ut b{font-size:0.9375rem}
+}
+
+/* 锁定单元整卡占位 */
+.unit-locked-card{margin:1.5rem auto 0;max-width:22rem;text-align:center;padding:2rem 1.25rem}
+.unit-locked-card .ulc-emoji{font-size:3rem;line-height:1;margin-bottom:0.625rem}
+.unit-locked-card h3{margin:0 0 0.375rem;font-size:1.0625rem;font-weight:var(--w-black);color:#5C4A2E}
+.unit-locked-card p{margin:0;font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);line-height:1.7}
+
+/* 单元地图堆叠：每个主题一张整卡地图入口 */
+.unit-maps{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:0.25rem}
+.unit-maps .next-card{margin-top:0}
+.unit-map-card{display:flex;align-items:center;justify-content:center}
+
 /* ------------------------------------------------ theme tabs */
 /* 顶部主题切换：居中的分段控件，整体放大 */
 .theme-tabs{display:flex;gap:0.3125rem;width:max-content;max-width:100%;margin:0 auto 1.125rem;padding:0.3125rem;

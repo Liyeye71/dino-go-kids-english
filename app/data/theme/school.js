@@ -6,7 +6,6 @@ definePlaceholderTheme({
   id: "school",
   name: "上学了",
   chip: "学科单词",
-  unit: "Unit 4 · 上学了",
   emoji: "🎒",
   dialog: { q: "What's this?", a: "It's a {word}." },
   mapIntro: "「上学了」主题正在筹备中…",
