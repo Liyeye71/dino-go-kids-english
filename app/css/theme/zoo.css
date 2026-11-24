@@ -4,7 +4,7 @@
    ============================================================ */
 /* zoo 主题：只切换变量（背景素材 + 选项框风格），结构复用通用规则 */
 .quiz-ref-page[data-scene="zoo"]{
-  /* 背景由 responsive.css 方案二接管（暖杏绘本小镇渐变 + SVG 场景） */
+  /* 背景与顶部偏移由 responsive.css 的 zoo 主题块接管 */
 
   --opt-line:#956220;--opt-line-w:0.1875rem;
   --opt-rim:#EAB373;--opt-rim-w:0.125rem;

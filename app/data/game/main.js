@@ -139,8 +139,6 @@ function screenQuiz() {
   const game = currentTheme().games[q.type];
   const selected = quiz.selected;
   const revealed = quiz.revealed;
-  /* 进度条按「已答完的题数」计算，答完最后一题正好 100% */
-  const progress = Math.round(((quiz.index + (revealed ? 1 : 0)) / total) * 100);
   const hearts = [0, 1, 2].map((i) => I.heart(16, "#FF6F61", i < quiz.hearts ? 1 : 0.22)).join("");
   const letters = ["A", "B", "C", "D"];
   const optionClass = (opt, base = "option") => {
@@ -288,7 +286,7 @@ function screenQuiz() {
     ? `<button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>`
     : `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
-      <div class="bar qbar"><i style="width:${progress}%"></i></div>
+      ${pebbleTrail(total, quiz.index, revealed)}
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
       ${isDaily ? `<div class="daily-run">🎲</div>` : `<div class="hearts">${hearts}</div>`}
     </div>`;
@@ -296,7 +294,8 @@ function screenQuiz() {
     ${fx}
     ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
     ${frameTop}
-    <div class="quiz-body${refType ? " ref-quiz-body" : ""}">
+    <div class="quiz-body${refType ? " ref-quiz-body" : ""}${refType && state.scene === "zoo" && !isDaily ? " has-peb" : ""}">
+      ${refType && state.scene === "zoo" && !isDaily ? `<div class="ref-peb-rail">${pebbleTrail(total, quiz.index, revealed)}</div>` : ""}
       ${refType ? refHead : `<div class="quiz-prompt">
         <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
         <h2>${game.title}</h2>
@@ -307,6 +306,18 @@ function screenQuiz() {
     <div class="quiz-foot">${revealed ? "" : view.btn}</div>
     ${refType ? `<div class="ref-logo">${QuizUiArt.logo()}</div>` : ""}
   </section>`;
+}
+
+/* 石子路进度：走过的石子点亮，小恐龙站在当前石子上，最后一块是金蛋 */
+function pebbleTrail(total, index, revealed) {
+  const step = Math.min(total, index + (revealed ? 1 : 0));
+  const items = Array.from({ length: total }, (_, i) => {
+    const state = i < step ? " done" : i === step ? " cur" : "";
+    const goal = i === total - 1 ? " goal" : "";
+    const runner = i === step ? `<b class="peb-runner" aria-hidden="true">🦖</b>` : "";
+    return `<i class="peb${state}${goal}">${runner}</i>`;
+  }).join("");
+  return `<div class="peb-track" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${step}" aria-label="闯关进度">${items}</div>`;
 }
 
 function speakTask() {

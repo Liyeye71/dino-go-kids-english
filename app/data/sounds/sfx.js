@@ -46,7 +46,8 @@ function sfx(name) {
       [659, 784, 988, 1318].forEach((f, i) => tone(f, 0.16, "triangle", 0.05, i * 0.08));
       tone(1568, 0.36, "sine", 0.035, 0.34);
     }
-    else if (name === "wrong") { tone(190, 0.2, "sawtooth", 0.035); tone(150, 0.24, "sawtooth", 0.03, 0.12); }
+    /* 答错：柔和三角波低音下滑，不刺耳、不吓低龄孩子 */
+    else if (name === "wrong") { tone(240, 0.16, "triangle", 0.045); tone(185, 0.22, "triangle", 0.032, 0.1); }
     /* 纯单词选项题型答后弹框：正确 / 错误各自的专属结果音效 */
     else if (name === "answer-right") {
       [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.18, "triangle", 0.05, i * 0.09));

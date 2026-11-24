@@ -98,10 +98,12 @@ function playVoice() {
   audio.play().catch(() => { release(); toast("播放失败，请再试一次"); });
 }
 
-/* 每日随机学单词按当前恐龙时期的词汇难度抽取：蛋/幼龙/少年龙 basic，成年龙/霸王龙 advance，超级霸王龙 pro */
+/* 每日随机学单词按单元解锁状态抽取：advance 未解锁时只取 basic，解锁后 basic + advance 都取 */
 function randomWord() {
-  const level = stageMeta(state.stage).vocab || "basic";
-  const pool = REVIEW_WORDS.filter((w) => (w.attrs || []).includes(level));
+  const advanceOpen = !(UNIT_BY_ID.get("advance") || {}).locked;
+  const pool = advanceOpen
+    ? REVIEW_WORDS
+    : REVIEW_WORDS.filter((w) => (w.attrs || []).includes("basic"));
   const list = pool.length ? pool : REVIEW_WORDS;
   return list[Math.floor(Math.random() * list.length)];
 }
@@ -180,16 +182,26 @@ function screenHome() {
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
-        <button class="avatar" data-action="profile" aria-label="成长档案"><img class="ava-icon" src="${avatarArtSrc()}" alt=""></button>
+        <button class="avatar avatar-hud${pending || (atMax && ultraOpen) ? " is-ready" : ""}" data-action="${isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "growth-info"}" aria-label="进化进度 ${Math.round(barPct * 100)}%">
+          <svg class="avatar-ring" viewBox="0 0 48 48" aria-hidden="true">
+            <circle class="ring-bg" cx="24" cy="24" r="21.4"/>
+            <circle class="ring-fill" cx="24" cy="24" r="21.4" style="stroke-dasharray:${(134.5 * barPct).toFixed(1)} 134.5"/>
+          </svg>
+          <img class="ava-icon" src="${avatarArtSrc()}" alt="">
+        </button>
         <div class="greet">
           <div class="hi">${greeting()}，<b>${state.name}</b></div>
           <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
         </div>
-        ${starPill()}
+        <button class="parent-gate" data-action="parent-gate" aria-label="家长角，长按 1.5 秒进入">${I.lock(15)}<span>家长</span></button>
       </div>
 
       <section class="hero ${heroSkyClass()}">
         ${skyFx()}
+        <div class="hero-deco" aria-hidden="true">
+          <span class="fern f1"></span><span class="fern f2"></span>
+          ${skyPhase() === "night" ? `<span class="firefly x1"></span><span class="firefly x2"></span><span class="firefly x3"></span><span class="firefly x4"></span><span class="firefly x5"></span>` : ""}
+        </div>
         <div class="hero-id">
           <div class="stage-tag">${stageChip()}</div>
           <div class="name"><b>小诺</b></div>
@@ -214,7 +226,7 @@ function screenHome() {
       <div class="word-card">
         <div class="ring"></div>
         <button class="w-main" data-action="open-review" aria-label="随机记单词 ${word.word}">
-          <div class="w-kicker">RANDOM WORDS · 随机记单词</div>
+          <div class="w-kicker">TODAY'S WORD · 今日单词</div>
           <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
           <div class="w-pron-row">
             <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
@@ -223,18 +235,21 @@ function screenHome() {
         <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
       </div>
 
-      <section class="card tasks">
-        <div class="head">
-          <h3>今日任务</h3><span class="count">${doneCount}/3</span>
-          <span class="more">每日 0 点刷新</span>
-        </div>
-        ${tasks.map((t) => `<div class="task ${t.done ? "done" : ""}">
-          <div class="ico ${t.color}">${t.icon(16)}</div>
-          <div class="t-body"><div class="t-title">${t.title}</div><div class="t-sub">${t.sub}</div></div>
-          <span class="reward">${t.reward}</span>
-          <span class="check">${t.done ? I.check(11) : ""}</span>
-        </div>`).join("")}
-      </section>
+      <button class="nest-entry" data-action="nest-open" aria-label="恐龙蛋巢：今日任务 ${doneCount}/3，打开大转盘">
+        <span class="nest-art" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <ellipse cx="32" cy="45" rx="25" ry="12" fill="#C99C63"/>
+            <path d="M9 42q23 14 46 0" fill="none" stroke="#9A6D38" stroke-width="4" stroke-linecap="round"/>
+            <path d="M15 38q17 10 34 0M19 48q13 7 26 0" fill="none" stroke="#B4864C" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="25" cy="33" rx="9" ry="11" fill="#FFF6E2" stroke="#C9A878" stroke-width="3"/>
+            <ellipse cx="38" cy="30" rx="8" ry="10" fill="#FFEFD2" stroke="#C9A878" stroke-width="3"/>
+            <path d="M38 21l2.4 3.6-2.4 2.6 2.2 2.4" fill="none" stroke="#D8A24C" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="nest-tx"><b>恐龙蛋巢</b><em>今日任务 ${doneCount}/3${Number(state.spins) > 0 ? ` · 免费抽奖 ${state.spins} 次` : " · 大转盘"}</em></span>
+        <span class="nest-star">${star(16)}<b class="num">${fmt(starBalance())}</b></span>
+        ${Number(state.spins) > 0 ? `<span class="nest-badge">${state.spins}</span>` : ""}
+      </button>
       <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 今日任务已完成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
     </div>
     ${tabbar("home")}
@@ -315,6 +330,65 @@ function screenProfile() {
   </section>`;
 }
 
+
+function openNest() {
+  const lv = todayLevels();
+  const streak = streakDays();
+  const tasks = tasksData(lv, streak);
+  const doneCount = tasks.filter((t) => t.done).length;
+  const spins = Number(state.spins) || 0;
+  openOverlay(`<div class="overlay">
+    <div class="sheet nest-sheet">
+      <div class="grab"></div>
+      <div class="nest-sheet-head">
+        <h2>恐龙蛋巢</h2>
+        <span class="nest-sheet-count">${doneCount}/3</span>
+      </div>
+      <div class="sheet-sub">今日任务每天 0 点刷新，攒下的免费抽奖机会不会过期。</div>
+      <div class="nest-tasks">
+        ${tasks.map((t) => `<div class="task ${t.done ? "done" : ""}">
+          <div class="ico ${t.color}">${t.icon(16)}</div>
+          <div class="t-body"><div class="t-title">${t.title}</div><div class="t-sub">${t.sub}</div></div>
+          <span class="reward">${t.reward}</span>
+          <span class="check">${t.done ? I.check(11) : ""}</span>
+        </div>`).join("")}
+      </div>
+      <button class="btn yellow nest-wheel" data-action="wheel-open">${I.gift(20, "#4C3306")} 打开 Dingo 恐龙转盘${spins ? `<span class="hint">免费 ${spins} 次</span>` : ""}</button>
+      <div class="sheet-actions">
+        <button class="btn ghost" data-action="close-overlay">完成</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+
+/* 成长路径抽屉：点击头像查看各阶段门槛与当前进度 */
+function openGrowth() {
+  const now = stageIndex(state.stage);
+  const ultraLeft = Math.max(0, ULTRA_MIN - state.growth);
+  const rows = STAGES.filter((s) => s.key !== "ultra").map((s, i) => {
+    const reached = i <= now;
+    const cur = i === now && state.stage !== "ultra";
+    return `<div class="growth-row${reached ? " reached" : ""}${cur ? " current" : ""}">
+      <span class="gr-dot"></span>
+      <span class="gr-name">${s.name}<em>${s.phase}</em></span>
+      <span class="gr-min num">${s.min} 成长值</span>
+      <span class="gr-state">${cur ? "当前" : reached ? "已达成" : "未解锁"}</span>
+    </div>`;
+  }).join("");
+  openOverlay(`<div class="overlay">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>成长路径</h2>
+      <div class="sheet-sub">答对题目和完成闯关都会攒成长值，攒满就能进化。自动进化到完全体后，究极体可用星星兑换。</div>
+      <div class="growth-list">${rows}</div>
+      <div class="ultra-note">究极体 · 已解锁 ${state.dex.includes("ultra") || (state.ultraOwned || []).includes(1) ? "是" : "否"}${ultraLeft ? ` · 还差 ${ultraLeft} 成长值` : " · 已开放星星兑换"}</div>
+      <div class="sheet-actions">
+        <button class="btn" data-action="close-overlay">知道啦</button>
+      </div>
+    </div>
+  </div>`);
+}
 
 function openReview() {
   const w = reviewWord || (reviewWord = randomWord());

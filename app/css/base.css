@@ -41,6 +41,10 @@
   --sticker-paper:#FFFDF7;
   --sticker-line:#E4CFA9;
   --sticker-shade:#D9C39B;
+  /* 3D 玩具材质：统一暖棕投影、顶面高光与果冻回弹曲线 */
+  --warm-shadow:rgba(120,75,40,.14);
+  --warm-edge:#C9A878;
+  --pop-ease:cubic-bezier(.34,1.56,.64,1);
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -133,10 +137,10 @@ h1,h2,h3,h4,p{margin:0}
   padding:0 1.125rem;border-radius:1.125rem;
   background:linear-gradient(180deg,#3AA56B 0%,#28814F 100%);color:#fff;
   font-size:1.125rem;font-weight:var(--w-bold);letter-spacing:0.0375rem;
-  box-shadow:0 0.3125rem 0 #1B6140,0 0.875rem 1.5rem rgba(32,110,70,.24);
-  transition:transform .12s ease,box-shadow .12s ease;
+  box-shadow:inset 0 0.1875rem 0 rgba(255,255,255,.32),0 0.3125rem 0 #1B6140,0 0.875rem 1.5rem rgba(32,110,70,.24);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease;
 }
-.btn:active{transform:translateY(0.1875rem);box-shadow:0 0.125rem 0 #1B6140,0 0.375rem 0.875rem rgba(32,110,70,.22)}
+.btn:active{transform:translateY(0.1875rem) scale(.985);box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.26),0 0.125rem 0 #1B6140,0 0.375rem 0.875rem rgba(32,110,70,.22)}
 .btn:disabled{opacity:.45;pointer-events:none}
 .btn .hint{font-size:0.78125rem;font-weight:var(--w-mid);letter-spacing:0.01875rem;opacity:.85;background:rgba(255,255,255,.18);padding:0.1875rem 0.5rem;border-radius:6.1875rem}
 .btn.yellow{background:linear-gradient(180deg,#FFD766,#F5B62F);color:#4C3306;box-shadow:0 0.3125rem 0 #D6971C,0 0.875rem 1.5rem rgba(214,151,28,.3)}
@@ -152,13 +156,25 @@ h1,h2,h3,h4,p{margin:0}
   font-family:inherit;color:var(--ink);cursor:pointer;transition:transform .12s ease}
 .star-pill:active{transform:scale(.94)}
 .circle-btn{width:2.375rem;height:2.375rem;border-radius:0.8125rem;background:#fff;border:0.09375rem solid var(--line);
-  display:grid;place-items:center;flex:none;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.06);color:var(--ink)}
-.circle-btn:active{transform:scale(.94)}
+  display:grid;place-items:center;flex:none;color:var(--ink);
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.9),0 0.1875rem 0 rgba(201,168,120,.45),0 0.375rem 0.75rem var(--warm-shadow);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease}
+.circle-btn:active{transform:translateY(0.09375rem) scale(.94);box-shadow:inset 0 0.0625rem 0 rgba(255,255,255,.8),0 0.0625rem 0 rgba(201,168,120,.45)}
 
 .avatar{width:2.875rem;height:2.875rem;border-radius:1rem;background:#FFF6E2;border:0.125rem solid #fff;
   box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
 /* 头像从恐龙大图裁切头部区域，与 hero 视觉完全一致 */
 .avatar .ava-icon{width:100%;height:100%;display:block;object-fit:cover;object-position:center 28%}
+/* 环形进化 HUD：头像外圈成长进度环，满格时发暖金呼吸光 */
+.avatar.avatar-hud{overflow:visible;border-radius:50%}
+.avatar.avatar-hud .avatar-ring{position:absolute;inset:-0.1875rem;width:calc(100% + 0.375rem);height:calc(100% + 0.375rem);
+  transform:rotate(-90deg);pointer-events:none;z-index:2}
+.avatar.avatar-hud .avatar-ring circle{fill:none;stroke-width:0.1875rem}
+.avatar.avatar-hud .ring-bg{stroke:rgba(191,170,132,.38)}
+.avatar.avatar-hud .ring-fill{stroke:#7CBF5E;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.avatar.avatar-hud.is-ready .avatar-ring{animation:hudGlow 2.4s ease-in-out infinite}
+.avatar.avatar-hud.is-ready .ring-fill{stroke:#F2B53F}
+@keyframes hudGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,205,110,0))}50%{filter:drop-shadow(0 0 0.3125rem rgba(255,205,110,.85))}}
 
 /* ------------------------------------------------ animations */
 @keyframes screenIn{from{opacity:0;transform:translateY(0.5rem)}to{opacity:1;transform:none}}

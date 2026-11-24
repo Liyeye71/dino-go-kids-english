@@ -1,13 +1,8 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 全局词库（唯一事实源）
-   已合并：原主题词表（animal 132 词）+ 原 9 个词性池文件
-   （noun/verb/adj/adv/pron/prep/conj/interj/num，人教 PEP
-   小学教材词表）。已剔除 99 条短语/短句，仅保留单词。
-   复核后已删除无学习意义的代词/介词/连词/感叹词 55 条、
-   比较级变形 15 条、过时词 4 条、冷门/pro 词 20 条，
-   现共 550 条。
+   词源：人教 PEP 小学教材，仅收录单词（不含短语/短句）。
    - 每条：word/zh/phon/example/emoji/category(+type/attrs)
-     attrs: basic（低年级基础）→ advance（中高年级）→ pro（拓展）
+     attrs: basic（低年级基础）→ advance（中高年级）
    - 同词异义条目用 "word#type" 消歧键（如 light#noun 灯 / light 轻的），
      word 字段保持原词，键仅作库内索引。
    - 主题引用：resolveWordRefs([...])，字符串整条取库，
@@ -291,7 +286,7 @@ window.DINO_WORD_LIBRARY = {
   "van": { word: "van", zh: "小货车", phon: "/væn/", example: "The van carries boxes.", emoji: "🚐", category: "noun", type: "vehicle", attrs: ["advance"] },
   "subway": { word: "subway", zh: "地铁", phon: "/ˈsʌbweɪ/", example: "Take the subway downtown.", emoji: "🚇", category: "noun", type: "vehicle", attrs: ["advance"] },
   "jeep": { word: "jeep", zh: "吉普车", phon: "/dʒiːp/", example: "A jeep can go off road.", emoji: "🚙", category: "noun", type: "vehicle", attrs: ["advance"] },
-  "motorcycle": { word: "motorcycle", zh: "摩托车", phon: "/ˈməʊtəˌsaɪkl/", example: "He rides a motorcycle.", emoji: "🏍️", category: "noun", type: "vehicle", attrs: ["pro"] },
+  "motorcycle": { word: "motorcycle", zh: "摩托车", phon: "/ˈməʊtəˌsaɪkl/", example: "He rides a motorcycle.", emoji: "🏍️", category: "noun", type: "vehicle", attrs: ["advance"] },
   "home": { word: "home", zh: "家", phon: "/həʊm/", example: "I love my home.", emoji: "🏠", category: "noun", type: "place", attrs: ["basic"] },
   "room": { word: "room", zh: "房间", phon: "/ruːm/", example: "This is my room.", emoji: "🚪", category: "noun", type: "place", attrs: ["basic"] },
   "bedroom": { word: "bedroom", zh: "卧室", phon: "/ˈbedruːm/", example: "My bedroom is clean.", emoji: "🛏️", category: "noun", type: "place", attrs: ["basic"] },
@@ -344,21 +339,21 @@ window.DINO_WORD_LIBRARY = {
   "rose": { word: "rose", zh: "玫瑰", phon: "/rəʊz/", example: "A rose smells sweet.", emoji: "🌹", category: "noun", type: "plant", attrs: ["advance"] },
   "Monday": { word: "Monday", zh: "星期一", phon: "/ˈmʌndi/", example: "Monday is the first day.", emoji: "📅", category: "noun", type: "week", attrs: ["basic"] },
   "Tuesday": { word: "Tuesday", zh: "星期二", phon: "/ˈtjuːzdi/", example: "I have music on Tuesday.", emoji: "📅", category: "noun", type: "week", attrs: ["advance"] },
-  "Wednesday": { word: "Wednesday", zh: "星期三", phon: "/ˈwenzdi/", example: "Wednesday is a school day.", emoji: "📅", category: "noun", type: "week", attrs: ["pro"] },
+  "Wednesday": { word: "Wednesday", zh: "星期三", phon: "/ˈwenzdi/", example: "Wednesday is a school day.", emoji: "📅", category: "noun", type: "week", attrs: ["advance"] },
   "Thursday": { word: "Thursday", zh: "星期四", phon: "/ˈθɜːzdi/", example: "We play sports on Thursday.", emoji: "📅", category: "noun", type: "week", attrs: ["advance"] },
   "Friday": { word: "Friday", zh: "星期五", phon: "/ˈfraɪdi/", example: "Friday is fun.", emoji: "📅", category: "noun", type: "week", attrs: ["basic"] },
   "Saturday": { word: "Saturday", zh: "星期六", phon: "/ˈsætədi/", example: "Saturday is the weekend.", emoji: "📅", category: "noun", type: "week", attrs: ["advance"] },
   "Sunday": { word: "Sunday", zh: "星期日", phon: "/ˈsʌndi/", example: "Sunday is family day.", emoji: "📅", category: "noun", type: "week", attrs: ["basic"] },
   "weekend": { word: "weekend", zh: "周末", phon: "/ˌwiːkˈend/", example: "We relax on the weekend.", emoji: "🎉", category: "noun", type: "week", attrs: ["basic"] },
   "January": { word: "January", zh: "1月", phon: "/ˈdʒænjuəri/", example: "January is the first month.", emoji: "❄️", category: "noun", type: "month", attrs: ["advance"] },
-  "February": { word: "February", zh: "2月", phon: "/ˈfebruəri/", example: "February is short.", emoji: "💝", category: "noun", type: "month", attrs: ["pro"] },
+  "February": { word: "February", zh: "2月", phon: "/ˈfebruəri/", example: "February is short.", emoji: "💝", category: "noun", type: "month", attrs: ["advance"] },
   "March": { word: "March", zh: "3月", phon: "/mɑːtʃ/", example: "March is in spring.", emoji: "🌱", category: "noun", type: "month", attrs: ["basic"] },
   "April": { word: "April", zh: "4月", phon: "/ˈeɪprəl/", example: "Flowers bloom in April.", emoji: "🌷", category: "noun", type: "month", attrs: ["basic"] },
   "May": { word: "May", zh: "5月", phon: "/meɪ/", example: "May is warm.", emoji: "🌺", category: "noun", type: "month", attrs: ["basic"] },
   "June": { word: "June", zh: "6月", phon: "/dʒuːn/", example: "School ends in June.", emoji: "🌞", category: "noun", type: "month", attrs: ["basic"] },
   "July": { word: "July", zh: "7月", phon: "/dʒuˈlaɪ/", example: "July is hot.", emoji: "🔥", category: "noun", type: "month", attrs: ["basic"] },
   "August": { word: "August", zh: "8月", phon: "/ˈɔːɡəst/", example: "August is summer.", emoji: "🏖️", category: "noun", type: "month", attrs: ["advance"] },
-  "September": { word: "September", zh: "9月", phon: "/sepˈtembə(r)/", example: "School starts in September.", emoji: "📚", category: "noun", type: "month", attrs: ["pro"] },
+  "September": { word: "September", zh: "9月", phon: "/sepˈtembə(r)/", example: "School starts in September.", emoji: "📚", category: "noun", type: "month", attrs: ["advance"] },
   "October": { word: "October", zh: "10月", phon: "/ɒkˈtəʊbə(r)/", example: "October is cool.", emoji: "🍂", category: "noun", type: "month", attrs: ["advance"] },
   "November": { word: "November", zh: "11月", phon: "/nəʊˈvembə(r)/", example: "November has cold days.", emoji: "🍃", category: "noun", type: "month", attrs: ["advance"] },
   "December": { word: "December", zh: "12月", phon: "/dɪˈsembə(r)/", example: "December is winter.", emoji: "🎄", category: "noun", type: "month", attrs: ["advance"] },
@@ -430,7 +425,7 @@ window.DINO_WORD_LIBRARY = {
   "kite": { word: "kite", zh: "风筝", phon: "/kaɪt/", example: "Fly a kite.", emoji: "🪁", category: "noun", type: "other", attrs: ["basic"] },
   "box": { word: "box", zh: "盒子", phon: "/bɒks/", example: "Put it in the box.", emoji: "📦", category: "noun", type: "other", attrs: ["basic"] },
   "umbrella": { word: "umbrella", zh: "伞", phon: "/ʌmˈbrelə/", example: "Take an umbrella.", emoji: "☂️", category: "noun", type: "other", attrs: ["advance"] },
-  "violin": { word: "violin", zh: "小提琴", phon: "/ˌvaɪəˈlɪn/", example: "Play the violin.", emoji: "🎻", category: "noun", type: "other", attrs: ["pro"] },
+  "violin": { word: "violin", zh: "小提琴", phon: "/ˌvaɪəˈlɪn/", example: "Play the violin.", emoji: "🎻", category: "noun", type: "other", attrs: ["advance"] },
   "nest": { word: "nest", zh: "鸟窝", phon: "/nest/", example: "A bird lives in a nest.", emoji: "🪺", category: "noun", type: "other", attrs: ["advance"] },
   "hole": { word: "hole", zh: "洞", phon: "/həʊl/", example: "A rabbit has a hole.", emoji: "🕳️", category: "noun", type: "other", attrs: ["basic"] },
   "toothbrush": { word: "toothbrush", zh: "牙刷", phon: "/ˈtuːθbrʌʃ/", example: "Brush your teeth.", emoji: "🪥", category: "noun", type: "other", attrs: ["advance"] },
@@ -464,7 +459,7 @@ window.DINO_WORD_LIBRARY = {
   "taste": { word: "taste", zh: "尝", phon: "/teɪst/", example: "Taste the soup.", emoji: "👅", category: "verb", type: "action", attrs: ["advance"] },
   "smell": { word: "smell", zh: "闻", phon: "/smel/", example: "Smell the flowers.", emoji: "👃", category: "verb", type: "action", attrs: ["advance"] },
   "feed": { word: "feed", zh: "喂", phon: "/fiːd/", example: "Feed the fish.", emoji: "🥣", category: "verb", type: "action", attrs: ["basic"] },
-  "milk#action": { word: "milk", zh: "挤牛奶", phon: "/mɪlk/", example: "Milk the cow.", emoji: "🥛", category: "verb", type: "action", attrs: ["pro"], ambig: true },
+  "milk#action": { word: "milk", zh: "挤牛奶", phon: "/mɪlk/", example: "Milk the cow.", emoji: "🥛", category: "verb", type: "action", attrs: ["advance"], ambig: true },
   "guess": { word: "guess", zh: "猜", phon: "/ges/", example: "Guess the answer.", emoji: "🤔", category: "verb", type: "action", attrs: ["basic"] },
   "pass": { word: "pass", zh: "传递", phon: "/pɑːs/", example: "Pass me the pen.", emoji: "🤝", category: "verb", type: "action", attrs: ["basic"] },
   "show": { word: "show", zh: "表演，给……看", phon: "/ʃəʊ/", example: "Show me your picture.", emoji: "🎭", category: "verb", type: "action", attrs: ["basic"] },
@@ -480,7 +475,7 @@ window.DINO_WORD_LIBRARY = {
   "fold": { word: "fold", zh: "折叠", phon: "/fəʊld/", example: "Fold the clothes.", emoji: "👕", category: "verb", type: "action", attrs: ["advance"] },
   "send": { word: "send", zh: "送，寄", phon: "/send/", example: "Send a letter.", emoji: "📤", category: "verb", type: "action", attrs: ["advance"] },
   "shine": { word: "shine", zh: "照耀", phon: "/ʃaɪn/", example: "The stars shine at night.", emoji: "✨", category: "verb", type: "action", attrs: ["advance"] },
-  "become": { word: "become", zh: "变成", phon: "/bɪˈkʌm/", example: "Caterpillars become butterflies.", emoji: "🦋", category: "verb", type: "action", attrs: ["pro"] },
+  "become": { word: "become", zh: "变成", phon: "/bɪˈkʌm/", example: "Caterpillars become butterflies.", emoji: "🦋", category: "verb", type: "action", attrs: ["advance"] },
   "feel": { word: "feel", zh: "感觉", phon: "/fiːl/", example: "I feel happy.", emoji: "😊", category: "verb", type: "action", attrs: ["basic"] },
   "fall#action": { word: "fall", zh: "掉下", phon: "/fɔːl/", example: "Leaves fall in autumn.", emoji: "🍂", category: "verb", type: "action", attrs: ["basic"], ambig: true },
   "wear": { word: "wear", zh: "穿", phon: "/weə(r)/", example: "Wear a coat.", emoji: "👕", category: "verb", type: "action", attrs: ["basic"] },
@@ -515,7 +510,7 @@ window.DINO_WORD_LIBRARY = {
   "beautiful": { word: "beautiful", zh: "美丽的", phon: "/ˈbjuːtɪfl/", example: "The flower is beautiful.", emoji: "🌸", category: "adj", type: "basic", attrs: ["advance"] },
   "colorful": { word: "colorful", zh: "色彩鲜艳的", phon: "/ˈkʌləfl/", example: "The rainbow is colorful.", emoji: "🌈", category: "adj", type: "basic", attrs: ["advance"] },
   "pretty": { word: "pretty", zh: "漂亮的", phon: "/ˈprɪti/", example: "She is pretty.", emoji: "🌷", category: "adj", type: "basic", attrs: ["basic"] },
-  "expensive": { word: "expensive", zh: "贵的", phon: "/ɪkˈspensɪv/", example: "This watch is expensive.", emoji: "💰", category: "adj", type: "basic", attrs: ["pro"] },
+  "expensive": { word: "expensive", zh: "贵的", phon: "/ɪkˈspensɪv/", example: "This watch is expensive.", emoji: "💰", category: "adj", type: "basic", attrs: ["advance"] },
   "juicy": { word: "juicy", zh: "多汁的", phon: "/ˈdʒuːsi/", example: "The orange is juicy.", emoji: "🍊", category: "adj", type: "basic", attrs: ["advance"] },
   "helpful": { word: "helpful", zh: "有用的", phon: "/ˈhelpfl/", example: "He is helpful.", emoji: "🤝", category: "adj", type: "basic", attrs: ["advance"] },
   "easy": { word: "easy", zh: "容易的", phon: "/ˈiːzi/", example: "This question is easy.", emoji: "😌", category: "adj", type: "basic", attrs: ["basic"] },
@@ -526,7 +521,7 @@ window.DINO_WORD_LIBRARY = {
   "cheap": { word: "cheap", zh: "便宜的", phon: "/tʃiːp/", example: "This is cheap.", emoji: "🪙", category: "adj", type: "basic", attrs: ["advance"] },
   "healthy": { word: "healthy", zh: "健康的", phon: "/ˈhelθi/", example: "Vegetables are healthy.", emoji: "💪", category: "adj", type: "basic", attrs: ["advance"] },
   "high": { word: "high", zh: "高的", phon: "/haɪ/", example: "The mountain is high.", emoji: "⛰️", category: "adj", type: "basic", attrs: ["basic"] },
-  "proud": { word: "proud", zh: "自豪的", phon: "/praʊd/", example: "I am proud of you.", emoji: "🏆", category: "adj", type: "basic", attrs: ["pro"] },
+  "proud": { word: "proud", zh: "自豪的", phon: "/praʊd/", example: "I am proud of you.", emoji: "🏆", category: "adj", type: "basic", attrs: ["advance"] },
   "little": { word: "little", zh: "小的", phon: "/ˈlɪtl/", example: "A little cat.", emoji: "🐤", category: "adj", type: "basic", attrs: ["basic"] },
   "how": { word: "how", zh: "怎样", phon: "/haʊ/", example: "How are you?", category: "adv", type: "interrogative", attrs: ["basic"] },
   "when": { word: "when", zh: "什么时候", phon: "/wen/", example: "When do you get up?", category: "adv", type: "interrogative", attrs: ["basic"], ambig: true },

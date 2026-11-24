@@ -18,7 +18,32 @@ function shakeBtn(el) {
   setTimeout(() => el.classList.remove("is-shaking"), 560);
 }
 
+/* 家长角：右上角钥匙需长按 1.5 秒才进入，避免幼儿误触 */
+let parentGateTimer = null;
+let parentGateHit = null;
+let parentGateOpenAt = 0;
+document.addEventListener("pointerdown", (e) => {
+  const gate = e.target.closest && e.target.closest('[data-action="parent-gate"]');
+  if (!gate) return;
+  parentGateHit = gate;
+  clearTimeout(parentGateTimer);
+  parentGateTimer = setTimeout(() => {
+    if (!parentGateHit) return;
+    parentGateHit.dataset.gateOpen = "1";
+    parentGateOpenAt = Date.now();
+    sfx("tap");
+    go("profile");
+  }, 1500);
+}, { passive: true });
+["pointerup", "pointercancel"].forEach((ev) => document.addEventListener(ev, () => {
+  clearTimeout(parentGateTimer);
+  parentGateTimer = null;
+  parentGateHit = null;
+}, { passive: true }));
+
 document.addEventListener("click", (e) => {
+  /* 长按进门后的同一次点击可能是从旧元素冒泡来的，直接吞掉避免误触新页面 */
+  if (parentGateOpenAt && Date.now() - parentGateOpenAt < 600) return;
   if (e.target.classList && e.target.classList.contains("overlay")) { closeOverlay(); return; }
   const el = e.target.closest("[data-action]");
   if (!el) return;
@@ -31,6 +56,15 @@ document.addEventListener("click", (e) => {
   } else if (action === "home") {
     closeOverlay();
     go("home", { replace: true });
+  } else if (action === "parent-gate") {
+    if (el.dataset.gateOpen === "1") { delete el.dataset.gateOpen; return; }
+    toast("长按 1.5 秒进入家长角");
+  } else if (action === "nest-open") {
+    openNest();
+    sfx("tap");
+  } else if (action === "growth-info") {
+    openGrowth();
+    sfx("tap");
   } else if (action === "profile") {
     go("profile");
     sfx("tap");
