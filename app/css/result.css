@@ -1,6 +1,7 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 闯关结算与恐龙进化
    ============================================================ */
+
 .result-page{display:flex;flex-direction:column;height:100%;position:relative;overflow:hidden}
 .result-scroll{flex:1;min-height:0;overflow-y:auto;padding:calc(1.125rem + var(--safe-top)) 1.25rem 1rem;scrollbar-width:none;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-start;gap:1rem}
 .confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
@@ -186,6 +187,7 @@
 /* ============================================================
    🎲 每日随机挑战结算
    ============================================================ */
+
 .daily-result .result-head{margin-top:0.35rem}
 .daily-mascot{position:relative;display:flex;justify-content:center;margin-top:0.25rem}
 .daily-mascot .dd-dino{width:5.125rem;height:5.125rem;animation:daily-bob 2.6s ease-in-out infinite;
@@ -231,3 +233,800 @@
 .daily-result .btn.ghost{min-height:2.75rem;background:#fff;color:#7C6A4B;border:0.09375rem solid #EDDFC7;box-shadow:none;font-size:0.9375rem}
 .daily-result .btn.off{background:#EDE6D7;color:#A99A7B;box-shadow:none;cursor:not-allowed}
 .daily-result .foot-note{text-align:center;font-size:0.625rem;font-weight:var(--w-read);color:#A99A7B}
+
+/* ============================================================
+   DinoGo · 结算页重构 v2：全屏柔光草坡大舞台 + 下半屏弧形托盘
+   仅作用于 .result-stage-v2，不影响其他页面
+   ============================================================ */
+.result-page.result-stage-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #FBF3E3;
+  container-type: size;
+  isolation: isolate;
+}
+
+/* 背景放射状柔光 */
+.rs2-rays {
+  position: absolute;
+  left: 50%;
+  top: 24cqh;
+  width: max(150cqw, 150cqh);
+  height: max(150cqw, 150cqh);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.42) 0deg 10deg,
+    rgba(255, 255, 255, 0) 10deg 22deg
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: spin 90s linear infinite;
+}
+
+/* 中段几何草坡地平线 */
+.rs2-hill {
+  position: absolute;
+  left: -24%;
+  right: -24%;
+  top: 41cqh;
+  bottom: -10%;
+  border-radius: 50% 50% 0 0 / 16cqh 16cqh 0 0;
+  background: linear-gradient(180deg, #98B99D 0%, #83A98A 100%);
+  box-shadow: inset 0 0.25rem 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------------- 上半屏：庆典大舞台 ---------------- */
+.rs2-hero {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 44cqh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: calc(0.85rem + var(--safe-top)) 1rem 0.4rem;
+}
+
+.rs2-title {
+  margin: 0;
+  font-size: clamp(1.375rem, 4.4cqw, 2.05rem);
+  font-weight: var(--w-black);
+  letter-spacing: 0.04rem;
+  line-height: 1.2;
+  color: #E08743;
+  text-align: center;
+  -webkit-text-stroke: 0.09375rem #7A4B22;
+  paint-order: stroke fill;
+  text-shadow: 0 0.1875rem 0 #FFFFFF, 0 0.3125rem 0.75rem rgba(122, 75, 34, 0.14);
+}
+.rs2-title.is-boss {
+  color: #FF6B35;
+}
+
+.rs2-sub {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: var(--w-bold);
+  color: #8A7150;
+}
+
+/* 弧形三颗大星 */
+.rs2-stars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.5cqw, 0.75rem);
+  margin-top: 0.35rem;
+}
+.rs2-stars svg {
+  animation: starPop 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  filter: drop-shadow(0 0.25rem 0.35rem rgba(180, 120, 20, 0.22));
+}
+.rs2-stars svg:nth-child(1) { transform: rotate(-14deg) translateY(0.35rem); animation-delay: 0.08s; }
+.rs2-stars svg:nth-child(2) { animation-delay: 0.2s; }
+.rs2-stars svg:nth-child(3) { transform: rotate(14deg) translateY(0.35rem); animation-delay: 0.32s; }
+
+/* 主角大恐龙 */
+.rs2-dino {
+  position: relative;
+  width: clamp(7.25rem, min(32cqw, 23cqh), 11.75rem);
+  height: clamp(7.25rem, min(32cqw, 23cqh), 11.75rem);
+  margin-top: 0.15rem;
+  display: grid;
+  place-items: center;
+  animation: evoFloat 3.4s ease-in-out infinite;
+  filter: drop-shadow(0 0.5rem 0.65rem rgba(48, 92, 60, 0.2));
+}
+.rs2-dino::after {
+  content: "";
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68%;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: rgba(46, 86, 56, 0.22);
+  filter: blur(0.1875rem);
+  z-index: -1;
+}
+.rs2-dino svg,
+.rs2-dino img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------------- 下半屏：弧形奶油白托盘 ---------------- */
+.rs2-tray-wrap {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 clamp(0.625rem, 3.5cqw, 2.25rem);
+}
+.rs2-tray {
+  width: 100%;
+  max-width: 44rem;
+  padding: clamp(1rem, 2.6cqh, 1.5rem) clamp(1rem, 3.5cqw, 2.25rem) calc(1.15rem + var(--safe-bottom));
+  border-radius: clamp(2rem, 6cqw, 3.25rem) clamp(2rem, 6cqw, 3.25rem) 0 0;
+  background: #FFFDF7;
+  border: 0.3125rem solid #DFC49C;
+  border-bottom: 0;
+  box-shadow:
+    inset 0 0.1875rem 0 rgba(255, 255, 255, 0.9),
+    0 -0.5rem 1.75rem rgba(92, 65, 29, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 2cqh, 1.2rem);
+}
+
+/* 第 1 行：双色 3D 立体奖励胶囊 */
+.rs2-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.625rem, 2.5cqw, 1.25rem);
+  width: 100%;
+}
+.rs2-pill {
+  flex: 0 1 13.5rem;
+  min-height: clamp(2.85rem, 7cqh, 3.45rem);
+  padding: 0 1.15rem;
+  border-radius: 6.1875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: clamp(0.95rem, 2.8cqw, 1.22rem);
+  font-weight: var(--w-black);
+  color: #FFFFFF;
+  text-shadow: 0 0.09375rem 0 rgba(70, 45, 15, 0.32);
+  white-space: nowrap;
+}
+.rs2-pill.exp {
+  background: linear-gradient(180deg, #FFD36E 0%, #F1A63E 100%);
+  border: 0.125rem solid #D98E2B;
+  box-shadow: 0 0.28rem 0 #C77E1E, inset 0 0.15rem 0 rgba(255, 255, 255, 0.55);
+}
+.rs2-pill.star {
+  background: linear-gradient(180deg, #98C2BC 0%, #6E9E99 100%);
+  border: 0.125rem solid #5B8883;
+  box-shadow: 0 0.28rem 0 #4B7470, inset 0 0.15rem 0 rgba(255, 255, 255, 0.45);
+}
+.rs2-pill-ic {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+/* 第 2 行：带小恐龙头像滑块的进化进度条 */
+.rs2-evo {
+  width: min(100%, 30rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+.rs2-evo-txt {
+  font-size: clamp(0.875rem, 2.5cqw, 1.0625rem);
+  font-weight: var(--w-black);
+  color: #5C411D;
+  text-align: center;
+}
+.rs2-evo-txt b {
+  color: var(--green-d);
+}
+.rs2-evo-track {
+  position: relative;
+  width: 100%;
+  height: 0.9375rem;
+  border-radius: 6.1875rem;
+  background: #F4EAD6;
+  border: 0.125rem solid #6B9467;
+  box-shadow: inset 0 0.125rem 0.25rem rgba(92, 65, 29, 0.1);
+}
+.rs2-evo-fill {
+  height: 100%;
+  border-radius: 6.1875rem;
+  background: linear-gradient(90deg, #9AD67E 0%, #68B86A 100%);
+  transition: width 0.6s cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+.rs2-evo-head {
+  position: absolute;
+  top: 50%;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #E9F7D9;
+  border: 0.15625rem solid #5C8E59;
+  box-shadow: 0 0.1875rem 0.45rem rgba(46, 107, 62, 0.24);
+  overflow: hidden;
+  transition: left 0.6s cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+.rs2-evo-head img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 26%;
+  display: block;
+}
+
+/* 第 3 行：带小喇叭的可点读无框动物圆标 */
+.rs2-words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 3cqw, 2rem);
+  width: 100%;
+}
+.rs2-word-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.1875rem 0.375rem;
+  border-radius: 6.1875rem;
+  cursor: pointer;
+  transition: transform 0.14s var(--pop-ease);
+}
+.rs2-word-item:active {
+  transform: scale(0.93);
+}
+.rs2-word-pic {
+  width: clamp(3.15rem, 9cqw, 4.1rem);
+  height: clamp(3.15rem, 9cqw, 4.1rem);
+  border-radius: 50%;
+  padding: 0.38rem;
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow: inset 0 0.125rem 0 rgba(255, 255, 255, 0.7);
+}
+.rs2-word-pic.t0 { background: #F6E6E2; }
+.rs2-word-pic.t1 { background: #F4EAD6; }
+.rs2-word-pic.t2 { background: #DFECCE; }
+.rs2-word-pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.rs2-word-pic .art-fallback {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.rs2-word-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: clamp(1rem, 2.8cqw, 1.3rem);
+  font-weight: var(--w-black);
+  color: #5C411D;
+}
+.rs2-word-label svg {
+  color: #B48A5A;
+  flex: none;
+}
+
+/* 第 4 行：底部 3D 双按钮 */
+.rs2-actions {
+  display: grid;
+  grid-template-columns: 0.9fr 1.25fr;
+  gap: clamp(0.625rem, 2.5cqw, 1.15rem);
+  width: min(100%, 34rem);
+  margin-top: 0.15rem;
+}
+.rs2-btn {
+  min-height: clamp(3.25rem, 8cqh, 3.85rem);
+  padding: 0 1.25rem;
+  border-radius: 6.1875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: clamp(1rem, 2.8cqw, 1.22rem);
+  font-weight: var(--w-black);
+  letter-spacing: 0.03rem;
+  cursor: pointer;
+  transition: transform 0.14s var(--pop-ease), box-shadow 0.1s ease;
+}
+.rs2-btn.secondary {
+  background: #FFFDF7;
+  color: #5C411D;
+  border: 0.15625rem solid #8C6D46;
+  box-shadow: 0 0.3125rem 0 #D8C29F, inset 0 0.125rem 0 #FFFFFF;
+}
+.rs2-btn.secondary:active {
+  transform: translateY(0.1875rem) scale(0.97);
+  box-shadow: 0 0.125rem 0 #D8C29F;
+}
+.rs2-btn.primary {
+  background: linear-gradient(180deg, #42B372 0%, #2E8B57 100%);
+  color: #FFFFFF;
+  border: 0.15625rem solid #FFFFFF;
+  box-shadow: 0 0.35rem 0 #1B6140, 0 0.75rem 1.25rem rgba(27, 97, 64, 0.25), inset 0 0.15rem 0 rgba(255, 255, 255, 0.35);
+}
+.rs2-btn.primary.evolve {
+  background: linear-gradient(180deg, #FFD766 0%, #F2A92C 100%);
+  color: #5C3A06;
+  box-shadow: 0 0.35rem 0 #C47F14, 0 0.75rem 1.25rem rgba(196, 127, 20, 0.28);
+}
+.rs2-btn.primary:active {
+  transform: translateY(0.2rem) scale(0.97);
+  box-shadow: 0 0.125rem 0 #1B6140;
+}
+
+/* 手机窄屏微调：单词圆标与文字改为上下紧凑排版 */
+@media (max-width: 520px) {
+  .rs2-word-item { flex-direction: column; gap: 0.25rem; }
+  .rs2-actions { grid-template-columns: 1fr 1.25fr; }
+}
+
+/* ============================================================
+   🎲 每日挑战 · v2 弧形托盘风格微调
+   ============================================================ */
+
+/* 每日剩余次数胶囊：粉色渐变，和星星胶囊区分 */
+.daily-v2 .rs2-pill.daily {
+  background: linear-gradient(180deg, #F6A9B8 0%, #E77A8C 100%);
+  border: 0.125rem solid #C95C70;
+  box-shadow: 0 0.28rem 0 #B24A5D, inset 0 0.15rem 0 rgba(255, 255, 255, 0.45);
+}
+
+/* 5 颗星用比 3 颗星更紧凑的间距 */
+.daily-v2 .rs2-stars.dv2-stars {
+  gap: clamp(0.15rem, 0.8cqw, 0.4rem);
+}
+
+/* 三列统计行：替代闯关的进化进度条 */
+.dv2-stats {
+  display: flex;
+  width: min(100%, 30rem);
+  border-radius: 0.9375rem;
+  background: #F8F1DF;
+  border: 0.09375rem solid #E8D9B3;
+  overflow: hidden;
+}
+.dv2-stats .ds-stat {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem 0.25rem;
+  position: relative;
+}
+.dv2-stats .ds-stat + .ds-stat::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 0.09375rem;
+  background: #E8D9B3;
+}
+.dv2-stats .ds-stat b {
+  display: block;
+  font-size: clamp(1rem, 2.8cqw, 1.375rem);
+  font-weight: var(--w-black);
+  color: #5C411D;
+  font-variant-numeric: tabular-nums;
+}
+.dv2-stats .ds-stat span {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: var(--w-bold);
+  color: #A88F68;
+  margin-top: 0.125rem;
+}
+
+/* 单词 chip 行 */
+.dv2-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  width: 100%;
+}
+.dv2-chip {
+  padding: 0.25rem 0.625rem;
+  border-radius: 6.1875rem;
+  font-size: clamp(0.8125rem, 2.2cqw, 1rem);
+  font-weight: var(--w-bold);
+  white-space: nowrap;
+  transition: transform 0.14s var(--pop-ease);
+}
+.dv2-chip.ok {
+  background: #E9F7D9;
+  color: #3E6E33;
+  border: 0.09375rem solid #CFE7B7;
+}
+.dv2-chip.no {
+  background: #FDEDE9;
+  color: #B4543C;
+  border: 0.09375rem solid #F5D2C9;
+}
+.dv2-chip:active {
+  transform: scale(0.93);
+}
+
+/* 底部说明脚注 */
+.dv2-note {
+  font-size: 0.6875rem;
+  font-weight: var(--w-read);
+  color: #A88F68;
+  text-align: center;
+  line-height: 1.5;
+  padding-top: 0.125rem;
+}
+
+/* ============================================================
+   DinoGo · 进化页重构 v2：对齐结算页暖杏草坡 + 弧形托盘
+   仅作用于 .evo-stage-v2，不影响结算页及其他页面
+   ============================================================ */
+.evo-page.evo-stage-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  background: #FBF3E3;
+  color: #5C411D;
+  container-type: size;
+  isolation: isolate;
+}
+
+/* 隐藏旧版蓝天层、星点与大环 */
+.evo-page.evo-stage-v2 .bg,
+.evo-page.evo-stage-v2 .stars,
+.evo-page.evo-stage-v2 .ring {
+  display: none;
+}
+
+/* 复用结算页同款旋转放射暖光 + 草坡地平线 */
+.ev2-rays {
+  position: absolute;
+  left: 50%;
+  top: 25cqh;
+  width: max(150cqw, 150cqh);
+  height: max(150cqw, 150cqh);
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.44) 0deg 10deg,
+    rgba(255, 255, 255, 0) 10deg 22deg
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: spin 90s linear infinite;
+}
+
+.ev2-hill {
+  position: absolute;
+  left: -24%;
+  right: -24%;
+  top: 42cqh;
+  bottom: -10%;
+  border-radius: 50% 50% 0 0 / 16cqh 16cqh 0 0;
+  background: linear-gradient(180deg, #98B99D 0%, #83A98A 100%);
+  box-shadow: inset 0 0.25rem 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 顶部里程碑徽章 + 进化跃迁双胶囊 */
+.ev2-top-wrap {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(0.75rem + var(--safe-top)) 3rem 0.25rem;
+}
+
+.ev2-milestone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 1.55rem;
+  padding: 0 0.75rem;
+  border-radius: 6.1875rem;
+  background: rgba(255, 253, 247, 0.94);
+  border: 0.09375rem solid #E4CFA9;
+  box-shadow: 0 0.125rem 0 #D8C29F;
+  font-size: 0.65625rem;
+  font-weight: var(--w-black);
+  letter-spacing: 0.08rem;
+  color: #8A6B45;
+}
+
+.ev2-title {
+  margin-top: 0.25rem;
+  font-size: clamp(1.5rem, 4.6cqw, 2.2rem);
+  font-weight: var(--w-black);
+  letter-spacing: 0.04rem;
+  line-height: 1.18;
+  color: #E08743;
+  text-align: center;
+  -webkit-text-stroke: 0.09375rem #7A4B22;
+  paint-order: stroke fill;
+  text-shadow: 0 0.1875rem 0 #FFFFFF, 0 0.3125rem 0.75rem rgba(122, 75, 34, 0.14);
+}
+
+.ev2-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ev2-st {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.75rem;
+  padding: 0 0.72rem;
+  border-radius: 6.1875rem;
+  background: rgba(255, 253, 247, 0.92);
+  border: 0.09375rem solid #DFC49C;
+  box-shadow: 0 0.125rem 0 #D4BC91;
+  font-size: 0.71875rem;
+  font-weight: var(--w-black);
+  color: #6B5233;
+}
+
+.ev2-st.is-new {
+  background: linear-gradient(180deg, #FFE48A 0%, #F5BE46 100%);
+  border-color: #C98B25;
+  color: #5C3A06;
+}
+
+.ev2-st-arr {
+  color: #B98642;
+  font-weight: var(--w-black);
+  font-size: 0.875rem;
+}
+
+/* 中央新形态大恐龙 + 暖金光晕与虚线轨道 */
+.ev2-hero {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.35rem;
+}
+
+.ev2-halo {
+  position: absolute;
+  left: 50%;
+  bottom: 0.6rem;
+  transform: translateX(-50%);
+  width: clamp(8.5rem, min(36cqw, 26cqh), 13.5rem);
+  height: clamp(8.5rem, min(36cqw, 26cqh), 13.5rem);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 224, 120, 0.55) 0%, rgba(255, 224, 120, 0.12) 62%, transparent 74%);
+  pointer-events: none;
+}
+
+.ev2-orbit {
+  position: absolute;
+  left: 50%;
+  bottom: 0.2rem;
+  transform: translateX(-50%);
+  width: clamp(9.8rem, min(42cqw, 30cqh), 15.5rem);
+  height: clamp(9.8rem, min(42cqw, 30cqh), 15.5rem);
+  border-radius: 50%;
+  border: 0.125rem dashed rgba(184, 134, 62, 0.42);
+  pointer-events: none;
+  animation: spin 48s linear infinite;
+}
+
+.ev2-dino {
+  position: relative;
+  z-index: 2;
+  width: clamp(7.6rem, min(34cqw, 24cqh), 12.25rem);
+  height: clamp(7.6rem, min(34cqw, 24cqh), 12.25rem);
+  display: grid;
+  place-items: center;
+  animation: evoFloat 3.4s ease-in-out infinite;
+  filter: drop-shadow(0 0.5rem 0.65rem rgba(48, 92, 60, 0.22));
+}
+
+.ev2-dino svg,
+.ev2-dino img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 下半屏：弧形奶油白托盘 */
+.ev2-tray-wrap {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 clamp(0.625rem, 3.5cqw, 2.25rem);
+}
+
+.ev2-tray {
+  width: 100%;
+  max-width: 44rem;
+  padding: clamp(1rem, 2.6cqh, 1.55rem) clamp(1rem, 3.5cqw, 2.25rem) calc(1.15rem + var(--safe-bottom));
+  border-radius: clamp(2rem, 6cqw, 3.25rem) clamp(2rem, 6cqw, 3.25rem) 0 0;
+  background: #FFFDF7;
+  border: 0.3125rem solid #DFC49C;
+  border-bottom: 0;
+  box-shadow:
+    inset 0 0.1875rem 0 rgba(255, 255, 255, 0.9),
+    0 -0.5rem 1.75rem rgba(92, 65, 29, 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 2cqh, 1.2rem);
+}
+
+/* 第 1 行：双色 3D 奖励胶囊 */
+.ev2-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(0.625rem, 2.4cqw, 1.15rem);
+  width: 100%;
+}
+
+.ev2-pill {
+  flex: 0 1 13.5rem;
+  min-height: clamp(2.8rem, 6.8cqh, 3.4rem);
+  padding: 0 1.1rem;
+  border-radius: 6.1875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: clamp(0.92rem, 2.6cqw, 1.15rem);
+  font-weight: var(--w-black);
+  color: #FFFFFF;
+  text-shadow: 0 0.09375rem 0 rgba(70, 45, 15, 0.32);
+  white-space: nowrap;
+}
+
+.ev2-pill.gold {
+  background: linear-gradient(180deg, #FFD36E 0%, #F1A63E 100%);
+  border: 0.125rem solid #D98E2B;
+  box-shadow: 0 0.28rem 0 #C77E1E, inset 0 0.15rem 0 rgba(255, 255, 255, 0.55);
+}
+
+.ev2-pill.sage {
+  background: linear-gradient(180deg, #98C2BC 0%, #6E9E99 100%);
+  border: 0.125rem solid #5B8883;
+  box-shadow: 0 0.28rem 0 #4B7470, inset 0 0.15rem 0 rgba(255, 255, 255, 0.45);
+}
+
+/* 第 2 行：进化前后圆标 + 收获说明 */
+.ev2-compare {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.65rem, 2.5cqw, 1.35rem);
+  width: min(100%, 34rem);
+}
+
+.ev2-avatars {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: none;
+}
+
+.ev2-ava {
+  width: clamp(3.1rem, 8.8cqw, 4rem);
+  height: clamp(3.1rem, 8.8cqw, 4rem);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 0.15625rem solid #E4CFA9;
+  box-shadow: 0 0.2rem 0.45rem rgba(92, 65, 29, 0.12);
+  flex: none;
+}
+
+.ev2-ava.from { background: #F6E6E2; }
+.ev2-ava.to   { background: #DFECCE; border-color: #76AF68; }
+
+.ev2-ava img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 26%;
+  display: block;
+}
+
+.ev2-ava-arr {
+  font-size: 1rem;
+  font-weight: var(--w-black);
+  color: #B48A5A;
+}
+
+.ev2-desc {
+  font-size: clamp(0.875rem, 2.5cqw, 1.08rem);
+  font-weight: var(--w-black);
+  line-height: 1.4;
+  color: #5C411D;
+  text-align: left;
+}
+
+.ev2-desc small {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-weight: var(--w-bold);
+  color: #4E8A57;
+}
+
+/* 第 3 行：绿色 3D 主按钮（与结算页 .rs2-btn.primary 一致） */
+.ev2-cta {
+  width: min(100%, 28rem);
+  min-height: clamp(3.3rem, 8cqh, 3.9rem);
+  padding: 0 1.5rem;
+  border-radius: 6.1875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: linear-gradient(180deg, #42B372 0%, #2E8B57 100%);
+  color: #FFFFFF;
+  border: 0.15625rem solid #FFFFFF;
+  font-size: clamp(1.02rem, 2.9cqw, 1.25rem);
+  font-weight: var(--w-black);
+  letter-spacing: 0.03rem;
+  box-shadow: 0 0.35rem 0 #1B6140, 0 0.75rem 1.25rem rgba(27, 97, 64, 0.25), inset 0 0.15rem 0 rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: transform 0.14s var(--pop-ease), box-shadow 0.1s ease;
+}
+
+.ev2-cta:active {
+  transform: translateY(0.2rem) scale(0.97);
+  box-shadow: 0 0.125rem 0 #1B6140;
+}

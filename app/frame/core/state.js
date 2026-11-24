@@ -28,12 +28,12 @@ function loadState() {
     const prevVersion = Number(parsed.v) || 0;
     const legacy = prevVersion < 4;
     const progress = { ...(parsed.progress || {}) };
-    /* 动物乐园改为「主题:场景」两套独立进度，旧存档统一迁入陆地动物园 */
+    /* 动物乐园改为「主题:场景」两套独立进度，旧存档统一迁入神奇动物园 */
     if (progress.animal) {
       if (!progress["animal:zoo"]) progress["animal:zoo"] = progress.animal;
       delete progress.animal;
     }
-    /* v4 → v5：陆地动物园由 10 关扩展为 50 关，重置该场景关卡进度与宝箱里程碑 */
+    /* v4 → v5：神奇动物园由 10 关扩展为 50 关，重置该场景关卡进度与宝箱里程碑 */
     if (prevVersion < 5) {
       delete progress["animal:zoo"];
       if (parsed.chests && parsed.chests.claimed) delete parsed.chests.claimed["animal:zoo"];

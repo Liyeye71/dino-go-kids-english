@@ -45,7 +45,7 @@
   .quiz-ref-page .quiz-foot{width:100%;max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
 
   /* 听音选图：卡片跟随可用高度缩放，不再被 flex 拉成长条 */
-  .ref-listen-wrap{justify-content:center}
+  .ref-listen-wrap{justify-content:space-between}
   .quiz-ref-page .ref-listen-grid{flex:none;width:min(100%,26rem);height:clamp(8rem,22vh,11rem);min-height:0}
 
   /* 其余题型的主容器 / 卡片也按同一视口比例收缩 */
@@ -61,7 +61,7 @@
   .quiz-prompt{gap:0.3125rem;margin-top:0.125rem}
   .quiz-prompt .chip{height:1.25rem;font-size:0.625rem}
   .options{margin-top:0.625rem}
-  .option{min-height:3.875rem}
+  .option{min-height:4.5rem}
   .options.one-col{margin-top:0.5rem}
   .result-scroll{padding-top:calc(0.75rem + var(--safe-top));padding-bottom:0.125rem;gap:0.75rem}
   .result-stars{margin-top:0.3125rem}
@@ -81,7 +81,7 @@
   /* 听音选图 图片卡：去掉 flex:1 让高度自适应，不让卡片被撑得又高又窄 */
   .ref-listen-grid{gap:0.375rem;flex:none;min-height:0}
   .ref-listen-card{padding:0.5rem 0.25rem}
-  .ref-listen-card-art{width:clamp(2.5rem,22vw,3.5rem);height:clamp(2.5rem,22vw,3.5rem)}
+  .ref-listen-card-art{width:clamp(3rem,26vw,4.5rem);height:clamp(3rem,26vw,4.5rem)}
 
   /* 进阶题型 选项容器：缩小 gap */
   .ref-action-options,.ref-zoom-options,.ref-cmp-options{gap:0.375rem}
@@ -218,7 +218,7 @@
 .quiz-ref-page .ref-listen-speaker {
   flex: none !important;
   height: clamp(6.5rem, 21cqh, 9.75rem) !important;
-  margin: auto 0 !important;
+  margin: 0.25rem auto 0.875rem !important;
 }
 .quiz-ref-page .ref-listen-grid {
   flex: none !important;
@@ -491,16 +491,20 @@
   color: #8C663D;
 }
 
-/* 图片选项：仅等比放大素材，不改变选项卡片、主图框及布局尺寸 */
+/* 图片选项：保证素材不超出选项框 */
 .quiz-ref-page .ref-listen-grid .ref-listen-card-art,
 .quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art,
 .quiz-ref-page .fd-foods .ref-food-art,
 .quiz-ref-page .ref-match-art-card > * {
-  transform: scale(1.1);
-  transform-origin: center;
+  overflow: hidden;
 }
-.quiz-ref-page .ref-listen-grid .ref-listen-card-art {
-  transform: scale(1.25);
+.quiz-ref-page .ref-listen-card-art .listen-card-img,
+.quiz-ref-page .ref-food-art img,
+.quiz-ref-page .ref-listen-card-art .listen-card-emoji,
+.quiz-ref-page .ref-food-art .art-fallback {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 .quiz-ref-page .ref-listen-speaker .ref-toast-art {
   transform: scale(1.15);
@@ -525,6 +529,7 @@
    Logo：透明容器只保留文字 + 小恐龙，与答题框相邻，
    独立于背景切片，任意屏幕尺寸 / 横竖屏下都完整显示、不裁剪
    ============================================================ */
+
 .quiz-ref-page .quiz-foot:empty {
   height: 0 !important;
   min-height: 0 !important;
@@ -532,26 +537,33 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-.quiz-ref-page .ref-logo {
+/* Logo 外框：任何页面放入 .ref-logo 即可复用 */
+.ref-logo {
   position: relative;
   z-index: 1;
   flex: none;
-  width: min(calc(100% - 2.5rem), 22rem, 44cqh);
+  width: min(calc(100% - 2.5rem), 22rem);
   margin: 0.375rem auto calc(0.25rem + var(--safe-bottom));
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.quiz-ref-page .ref-logo-art {
+.ref-logo-art {
   display: block;
   width: 100%;
   height: auto;
+}
+/* 具备容器查询上下文的页面，再按可用高度收一档 */
+.quiz-ref-page .ref-logo,
+.screen[data-screen="home"] .ref-logo {
+  width: min(calc(100% - 2.5rem), 22rem, 44cqh);
 }
 
 /* ============================================================
    词汇拼图：提示框保持固定方形尺寸，图片只能显示在框体内
    ============================================================ */
+
 .quiz-ref-page .ref-puzzle-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap {
   justify-content: center !important;
@@ -585,6 +597,7 @@
 /* ============================================================
    启蒙模式（3 岁）：2 选项布局 + 零挫败反馈
    ============================================================ */
+
 .quiz-page[data-enlighten="1"] .ref-pic-options,
 .quiz-page[data-enlighten="1"] .ref-action-options,
 .quiz-page[data-enlighten="1"] .ref-zoom-options,
@@ -606,33 +619,610 @@
 }
 
 /* ============================================================
-   动物园答题页：石子路进度条（卡片顶部留白区内，不占主图高度）
+   DinoGo · 恐龙英语 — UI 整站重构 + iPad 启蒙新玩法整合层 (v3.0)
+   1. 全屏「恐龙树屋营地大厅」首页 (.basecamp-screen)
+   2. 「浮空岛游乐场」闯关地图页 (.island-map-screen)
+   3. 「去套娃大舞台 + 弧形玩具积木托盘」答题页 (.dino-stage-v2)
+   4. 6 大 iPad 优先启蒙新玩法专属舞台样式
+   严格锁定原奶油森林色盘（零换色）
    ============================================================ */
-.quiz-ref-page[data-scene="zoo"] .ref-peb-rail {
-  position: absolute;
-  top: 0.4375rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(34%, 8.5rem);
-  z-index: 6;
+
+/* ---------------- PART 1: 全屏恐龙树屋营地大厅首页 ---------------- */
+.basecamp-screen {
+  position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden;
+  background-color: #DDF2CE; background-size: cover; background-position: center 78%; background-repeat: no-repeat;
+  container-type: size; isolation: isolate;
+}
+.basecamp-screen.bg-jungle { background-image: url("images/background/jungle.webp"); }
+.basecamp-screen.bg-sunset { background-image: url("images/background/sunset.webp"); background-position: center 74%; }
+.basecamp-screen.bg-night  { background-image: url("images/background/night.webp");  background-position: center 74%; }
+.basecamp-screen::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% 42%, rgba(255,252,242,.24) 0%, rgba(255,252,242,0) 70%),
+    linear-gradient(180deg, rgba(251,243,227,.34) 0%, rgba(251,243,227,0) 32%, rgba(46,107,62,.14) 100%);
+}
+.basecamp-screen.sky-night::before {
+  background:
+    radial-gradient(ellipse 85% 55% at 50% 44%, rgba(255,246,210,.08) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(16,28,58,.45) 0%, rgba(16,28,58,.12) 45%, rgba(18,36,30,.32) 100%);
+}
+.bc-hills { position: absolute; left: -12%; right: -12%; bottom: -6%; height: 44cqh; z-index: 2; pointer-events: none; }
+.bc-hill { position: absolute; border-radius: 50%; }
+.bc-hill.h1 { left: -8%; bottom: 10cqh; width: 68%; height: 28cqh; background: rgba(197,230,166,.62); }
+.bc-hill.h2 { right: -10%; bottom: 8cqh; width: 66%; height: 26cqh; background: rgba(173,218,138,.68); }
+.bc-hill.h3 {
+  left: 4%; right: 4%; bottom: -8cqh; height: 36cqh;
+  background: linear-gradient(180deg, rgba(166,214,128,.88) 0%, rgba(132,192,98,.94) 100%);
+  box-shadow: inset 0 0.25rem 0 rgba(255,255,255,.35);
+}
+.basecamp-screen.sky-night .bc-hill.h1 { background: rgba(78,118,92,.42); }
+.basecamp-screen.sky-night .bc-hill.h2 { background: rgba(62,102,78,.48); }
+.basecamp-screen.sky-night .bc-hill.h3 { background: linear-gradient(180deg, rgba(56,98,72,.82) 0%, rgba(36,72,54,.92) 100%); }
+
+.bc-fern {
+  position: absolute; bottom: -0.25rem; width: clamp(4.5rem, 15cqw, 8rem); height: auto;
+  z-index: 6; pointer-events: none; transform-origin: bottom center; animation: bcFernSway 5.6s ease-in-out infinite;
+}
+.bc-fern.left { left: -0.35rem; }
+.bc-fern.right { right: -0.35rem; transform: scaleX(-1); animation-name: bcFernSwayR; animation-delay: -2.2s; }
+@keyframes bcFernSway  { 0%,100%{transform:rotate(-2.5deg)} 50%{transform:rotate(3.5deg)} }
+@keyframes bcFernSwayR { 0%,100%{transform:scaleX(-1) rotate(-2.5deg)} 50%{transform:scaleX(-1) rotate(3.5deg)} }
+
+.bc-hud {
+  position: relative; z-index: 12; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  padding: calc(0.75rem + var(--safe-top)) clamp(0.875rem, 3.2cqw, 1.5rem) 0; flex: none;
+}
+.bc-evo-hud {
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border-radius: 6.1875rem; background: rgba(255,253,247,.92); border: 0.125rem solid #E4CFA9;
+  box-shadow: 0 0.25rem 0 rgba(196,166,118,.55), 0 0.5rem 1rem rgba(92,65,29,.12);
+  backdrop-filter: blur(0.5rem); -webkit-backdrop-filter: blur(0.5rem);
+  transition: transform .14s var(--pop-ease); max-width: 56%;
+}
+.bc-evo-hud:active { transform: translateY(0.125rem) scale(.97); }
+.bc-evo-hud.is-ready {
+  border-color: #E8A23C; background: linear-gradient(180deg, #FFFDF5 0%, #FFF2C6 100%);
+  box-shadow: 0 0.25rem 0 #D6971C, 0 0 0 0.25rem rgba(255,215,102,.35);
+}
+.bc-ring-wrap { position: relative; width: 3.125rem; height: 3.125rem; flex: none; display: grid; place-items: center; }
+.bc-ring-svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.bc-ring-track { fill: none; stroke: #EFE4CE; stroke-width: 5; }
+.bc-ring-fill  { fill: none; stroke: #3AA56B; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+.bc-evo-hud.is-ready .bc-ring-fill { stroke: #F0A92E; }
+.bc-ring-ava { width: 2.35rem; height: 2.35rem; border-radius: 50%; background: #E9F7D9; border: 0.125rem solid #fff; overflow: hidden; }
+.bc-ring-ava img { width: 100%; height: 100%; object-fit: cover; object-position: center 26%; display: block; }
+.bc-evo-info { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; text-align: left; }
+.bc-evo-stage { font-size: 0.78125rem; font-weight: var(--w-black); color: var(--ink); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.bc-evo-sub { font-size: 0.65625rem; font-weight: var(--w-bold); color: var(--green-d); margin-top: 0.125rem; white-space: nowrap; }
+.bc-evo-hud.is-ready .bc-evo-sub { color: #B4690E; }
+
+.bc-hud-right { display: flex; align-items: center; gap: 0.4375rem; flex: none; }
+.bc-hud-right .star-pill {
+  height: 2.4rem; padding: 0 0.75rem 0 0.5625rem; background: var(--sticker-paper);
+  border: 0.125rem solid #E4CFA9; box-shadow: 0 0.25rem 0 #D9C39B, 0 0.375rem 0.75rem rgba(92,65,29,.12);
+}
+.bc-hud-right .parent-gate {
+  margin-left: 0; height: 2.4rem; padding: 0 0.75rem; background: rgba(255,253,247,.94);
+  border: 0.125rem solid #E4CFA9; box-shadow: 0 0.25rem 0 #D9C39B, 0 0.375rem 0.75rem rgba(92,65,29,.1);
+}
+
+.bc-world { position: relative; z-index: 8; flex: 1; min-height: 0; width: 100%; max-width: 48rem; margin: 0 auto; }
+.bc-dino-stage {
+  position: absolute; left: 50%; bottom: clamp(1.4rem, 5.5cqh, 3.1rem); transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; z-index: 6;
+}
+.bc-dino-pad {
+  position: absolute; bottom: -0.35rem; left: 50%; transform: translateX(-50%);
+  width: clamp(11.5rem, 38cqw, 17rem); height: clamp(2.5rem, 6cqh, 3.5rem); border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(114,179,82,.78) 0%, rgba(142,200,103,.32) 72%, transparent 100%);
   pointer-events: none;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb-track {
-  width: 100%;
+.bc-dino-shadow {
+  position: absolute; bottom: 0.35rem; left: 50%; transform: translateX(-50%);
+  width: clamp(7rem, 22cqw, 10.5rem); height: 1.125rem; border-radius: 50%;
+  background: rgba(30,82,46,.24); filter: blur(0.25rem); pointer-events: none;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb {
-  height: 0.5rem;
-  flex: 1;
-  max-width: 1.625rem;
+.bc-dino-btn {
+  position: relative; width: clamp(11.5rem, min(46cqw, 36cqh), 18.5rem); height: clamp(11.5rem, min(46cqw, 36cqh), 18.5rem);
+  display: grid; place-items: center; transform-origin: bottom center;
+  animation: bcDinoBreathe 3s ease-in-out infinite;
+  filter: drop-shadow(0 0.75rem 1rem rgba(48,104,64,.18)); cursor: pointer;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb-runner {
-  font-size: 0.75rem;
-  bottom: -0.1875rem;
+.bc-dino-btn.ultra { filter: drop-shadow(0 0 1.25rem rgba(255,210,90,.55)) drop-shadow(0 0.75rem 1rem rgba(48,104,64,.22)); }
+.bc-dino-btn.is-poked { animation: bcDinoJump .55s var(--pop-ease) both; }
+.bc-dino-btn img, .bc-dino-btn svg { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+@keyframes bcDinoBreathe { 0%,100%{transform:translateY(0) scale(1,1)} 50%{transform:translateY(-0.35rem) scale(.985,1.028)} }
+@keyframes bcDinoJump {
+  0%{transform:translateY(0) scale(1,1)} 25%{transform:translateY(0.25rem) scale(1.08,.9)}
+  58%{transform:translateY(-1.75rem) scale(.95,1.06)} 82%{transform:translateY(0.1rem) scale(1.04,.96)} 100%{transform:translateY(0) scale(1,1)}
 }
-/* 有石子路时在卡片顶部预留一条窄带，头部标题顺延下移，避免石子压在标题上 */
-.quiz-ref-page[data-scene="zoo"] .ref-quiz-body.has-peb {
-  padding-top: 1.875rem !important;
+.bc-bubble {
+  position: absolute; top: -1.75rem; left: 50%; transform: translateX(-50%);
+  padding: 0.375rem 0.875rem; border-radius: 6.1875rem; background: var(--sticker-paper);
+  border: 0.125rem solid #E4CFA9; box-shadow: 0 0.25rem 0 rgba(212,188,145,.75), 0 0.375rem 0.875rem rgba(92,65,29,.12);
+  font-size: 0.78125rem; font-weight: var(--w-black); color: var(--sticker-ink); white-space: nowrap;
+  z-index: 9; pointer-events: none; animation: bcBubbleFloat 3.6s ease-in-out infinite;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-quiz-body.has-peb .ref-stage-head {
-  margin-top: 0.625rem !important;
+.bc-bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -0.35rem; width: 0.625rem; height: 0.625rem;
+  background: var(--sticker-paper); border-right: 0.125rem solid #E4CFA9; border-bottom: 0.125rem solid #E4CFA9;
+  transform: translateX(-50%) rotate(45deg);
 }
+@keyframes bcBubbleFloat { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-0.25rem)} }
+.bc-heart-pop {
+  position: absolute; left: 50%; top: 22%; font-size: 1.25rem; pointer-events: none; z-index: 15;
+  animation: bcHeartFly .85s ease-out forwards;
+}
+@keyframes bcHeartFly {
+  0%{opacity:0;transform:translate(-50%,0) scale(.5)} 20%{opacity:1;transform:translate(calc(-50% + var(--hx,0px)),-1rem) scale(1.15)}
+  100%{opacity:0;transform:translate(calc(-50% + var(--hx,0px)),-4.25rem) scale(.85)}
+}
+
+.bc-prop {
+  position: absolute; display: flex; flex-direction: column; align-items: center; gap: 0.25rem;
+  z-index: 8; transition: transform .16s var(--pop-ease); cursor: pointer;
+}
+.bc-prop:active { transform: scale(.92); }
+.bc-prop-label {
+  display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2rem 0.625rem; border-radius: 6.1875rem;
+  background: rgba(255,253,247,.95); border: 0.125rem solid #E4CFA9; box-shadow: 0 0.1875rem 0 #D4BC91;
+  font-size: 0.6875rem; font-weight: var(--w-black); color: var(--sticker-ink); white-space: nowrap;
+}
+.bc-prop-badge {
+  position: absolute; top: -0.25rem; right: 0.15rem; min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem;
+  border-radius: 6.1875rem; background: var(--orange); border: 0.125rem solid #fff; color: #fff;
+  font-size: 0.625rem; font-weight: var(--w-black); display: grid; place-items: center;
+  box-shadow: 0 0.1875rem 0.375rem rgba(180,70,20,.28);
+}
+.bc-prop-tent { left: clamp(0.65rem, 4cqw, 2.25rem); top: clamp(2rem, 10cqh, 5rem); }
+.bc-prop-tent svg { width: clamp(4.25rem, 13cqw, 6.25rem); height: auto; filter: drop-shadow(0 0.375rem 0.5rem rgba(92,65,29,.18)); }
+.bc-prop-words { right: clamp(0.65rem, 4cqw, 2.25rem); top: clamp(2rem, 10cqh, 5rem); }
+.bc-prop-words svg { width: clamp(3.6rem, 11cqw, 5.1rem); height: auto; filter: drop-shadow(0 0.375rem 0.5rem rgba(92,65,29,.18)); }
+.bc-prop-nest { left: clamp(0.65rem, 4cqw, 2.5rem); bottom: clamp(0.9rem, 4.2cqh, 2.4rem); }
+.bc-prop-nest svg { width: clamp(4.5rem, 14cqw, 6.5rem); height: auto; filter: drop-shadow(0 0.375rem 0.5rem rgba(92,65,29,.2)); }
+.bc-prop-nest.has-reward svg { animation: bcNestWiggle 2.8s ease-in-out infinite; }
+.bc-prop-nest.has-reward .bc-prop-label { background: linear-gradient(180deg,#FFF7DA 0%,#FFE4A3 100%); border-color: #E2A83C; color: #7A4B12; }
+@keyframes bcNestWiggle {
+  0%,72%,100%{transform:rotate(0)} 78%{transform:rotate(-6deg) translateY(-0.18rem)}
+  84%{transform:rotate(6deg) translateY(-0.18rem)} 90%{transform:rotate(-4deg)} 95%{transform:rotate(3deg)}
+}
+
+.bc-word-sign {
+  position: absolute; right: clamp(0.65rem, 3.8cqw, 2.25rem); bottom: clamp(0.85rem, 4cqh, 2.3rem);
+  z-index: 9; display: flex; flex-direction: column; align-items: center;
+}
+.bc-sign-board {
+  position: relative; min-width: clamp(6.4rem, 21cqw, 8.8rem); max-width: clamp(7.8rem, 25cqw, 10.2rem);
+  padding: 0.45rem 0.65rem 0.5rem; border-radius: 1.0625rem;
+  background: linear-gradient(180deg, #FFF7DB 0%, #FFEBBF 100%);
+  border: 0.15625rem solid #5C411D;
+  box-shadow: 0 0.28rem 0 #C89B63, 0 0.5rem 1rem rgba(92,65,29,.2), inset 0 0.125rem 0 rgba(255,255,255,.78);
+  text-align: center; transition: transform .14s ease;
+}
+.bc-sign-board:active { transform: translateY(0.125rem) scale(.97); }
+.bc-sign-top { display: flex; align-items: center; justify-content: space-between; gap: 0.25rem; margin-bottom: 0.125rem; }
+.bc-sign-tag { font-size: 0.5625rem; font-weight: var(--w-black); color: #9C6F3B; letter-spacing: 0.04rem; }
+.bc-sign-mini-btn {
+  width: 1.45rem; height: 1.45rem; border-radius: 50%; background: #fff; border: 0.09375rem solid #E4CFA9;
+  color: #B4811C; display: grid; place-items: center; flex: none; box-shadow: 0 0.125rem 0 #DFC280;
+}
+.bc-sign-word { display: block; width: 100%; font-size: clamp(1rem, 3.3cqw, 1.35rem); font-weight: var(--w-black); color: #4A360F; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bc-sign-zh { display: block; font-size: 0.65625rem; font-weight: var(--w-bold); color: #8A6A2E; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bc-sign-post {
+  width: 0.625rem; height: 1.05rem; margin-top: -0.08rem; border-radius: 0 0 0.25rem 0.25rem;
+  background: linear-gradient(90deg,#8C6232 0%,#B8864D 55%,#8C6232 100%); border: 0.125rem solid #5C411D; border-top: 0; pointer-events: none;
+}
+
+.bc-cta-bar {
+  position: relative; z-index: 12; flex: none;
+  padding: 0.35rem clamp(1.25rem, 6cqw, 3rem) calc(1.05rem + var(--safe-bottom)); display: flex; justify-content: center;
+}
+.bc-play-btn {
+  position: relative; width: min(100%, 24rem); min-height: clamp(3.85rem, 9.5cqh, 4.65rem); padding: 0 1.5rem;
+  border-radius: 6.1875rem; display: flex; align-items: center; justify-content: center; gap: 0.625rem;
+  background: linear-gradient(180deg,#42B372 0%,#2E8B57 62%,#247849 100%);
+  border: 0.1875rem solid #fff; color: #fff; font-size: clamp(1.1875rem, 3.6cqw, 1.4375rem);
+  font-weight: var(--w-black); letter-spacing: 0.05rem; text-shadow: 0 0.125rem 0 rgba(20,74,46,.45);
+  box-shadow: 0 0.4375rem 0 #1B6140, 0 0.95rem 1.75rem rgba(24,86,52,.32), inset 0 0.22rem 0 rgba(255,255,255,.42);
+  overflow: hidden; transition: transform .14s var(--pop-ease), box-shadow .1s ease;
+}
+.bc-play-btn::after {
+  content: ""; position: absolute; top: 0; left: -65%; width: 45%; height: 100%;
+  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,.28) 50%, transparent 80%);
+  animation: bcPlayShine 4.2s ease-in-out infinite; pointer-events: none;
+}
+.bc-play-btn:active { transform: translateY(0.28rem) scale(.97,.94); box-shadow: 0 0.15rem 0 #1B6140, 0 0.35rem 0.75rem rgba(24,86,52,.28); }
+@keyframes bcPlayShine { 0%,62%{left:-65%} 100%{left:130%} }
+
+.dino-paw-ripple {
+  position: fixed; width: 2.5rem; height: 2.5rem; pointer-events: none; z-index: 90;
+  transform: translate(-50%,-50%) scale(.4) rotate(var(--pr,-12deg)); animation: dinoPawFade .8s ease-out forwards;
+}
+@keyframes dinoPawFade {
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(var(--pr,-12deg))}
+  22%{opacity:.65;transform:translate(-50%,-50%) scale(1.08) rotate(var(--pr,-12deg))}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.35) rotate(var(--pr,-12deg))}
+}
+@media (max-width:480px) {
+  .bc-prop-tent { top: 1.4rem; left: 0.45rem; }
+  .bc-prop-words { top: 1.4rem; right: 0.45rem; }
+  .bc-prop-nest { bottom: 0.5rem; left: 0.45rem; }
+  .bc-word-sign { bottom: 0.5rem; right: 0.45rem; }
+  .bc-dino-stage { bottom: 4.4rem; }
+  .bc-dino-btn { width: clamp(10.5rem, 48vw, 13.5rem); height: clamp(10.5rem, 48vw, 13.5rem); }
+}
+
+/* ---------------- PART 2: 浮空岛游乐场地图页 (.island-map-screen) ---------------- */
+.island-map-screen {
+  position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255,255,255,.88) 0%, transparent 42%),
+    radial-gradient(circle at 84% 22%, rgba(255,232,190,.6) 0%, transparent 46%),
+    linear-gradient(180deg, #E8F6E8 0%, #FBF3E3 56%, #F3E5CA 100%);
+  container-type: size; isolation: isolate;
+}
+.im-clouds { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.im-cloud {
+  position: absolute; border-radius: 6rem; background: rgba(255,255,255,.86);
+  box-shadow: 1.5rem 0.35rem 0 -0.15rem rgba(255,255,255,.82), -1.4rem 0.4rem 0 -0.2rem rgba(255,255,255,.76);
+  animation: skyDrift 30s ease-in-out infinite alternate;
+}
+.im-cloud.c1 { width: 5.5rem; height: 1.85rem; left: 6%; top: 16%; }
+.im-cloud.c2 { width: 4.5rem; height: 1.5rem; right: 12%; top: 24%; animation-duration: 24s; opacity: .82; }
+.im-cloud.c3 { width: 6.5rem; height: 2rem; left: 32%; bottom: 20%; animation-duration: 36s; opacity: .62; }
+
+.im-top {
+  position: relative; z-index: 10; flex: none;
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: calc(0.75rem + var(--safe-top)) clamp(0.875rem, 3cqw, 1.5rem) 0.25rem;
+}
+.im-top .unit-tabs { margin: 0; flex: 0 1 auto; }
+.im-top .enlighten-btn { margin-left: auto; }
+
+/* 漂浮的每日随机热气球飞艇 */
+.im-balloon {
+  position: absolute; right: clamp(0.75rem, 3.5cqw, 2rem); top: clamp(4.5rem, 11cqh, 6.2rem);
+  z-index: 11; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  cursor: pointer; animation: zooBalloonFloat 4.6s ease-in-out infinite;
+  transition: transform .15s var(--pop-ease);
+}
+.im-balloon:active { transform: scale(.92); }
+.im-balloon.is-empty { opacity: .58; filter: grayscale(.35); }
+.im-balloon svg { width: clamp(3.2rem, 9.5cqw, 4.75rem); height: auto; filter: drop-shadow(0 0.4rem 0.6rem rgba(120,75,40,.2)); }
+.im-balloon-tag {
+  padding: 0.18rem 0.56rem; border-radius: 6rem; background: #FFFDF7; border: 0.125rem solid #E4CFA9;
+  box-shadow: 0 0.16rem 0 #D4BC91; font-size: 0.65625rem; font-weight: var(--w-black); color: var(--sticker-ink); white-space: nowrap;
+}
+
+/* 两侧副岛：隐藏，只留中间大岛 + 左右箭头 */
+.im-side-island { display: none; }
+
+/* 浮空岛主舞台（含左右轮播箭头 + 扩大中央主题框） */
+.im-stage {
+  position: relative; z-index: 8; flex: 1; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.25rem clamp(3.4rem, 9cqw, 5.25rem);
+}
+
+/* 左 / 右 3D 切换箭头按钮 */
+.im-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 14;
+  width: clamp(2.85rem, 7.5cqw, 3.85rem); height: clamp(2.85rem, 7.5cqw, 3.85rem);
+  border-radius: 50%; display: grid; place-items: center;
+  background: linear-gradient(180deg, #FFFDF7 0%, #FBEED3 100%);
+  border: 0.1875rem solid #5C411D; color: #5C411D;
+  box-shadow: 0 0.3125rem 0 #C89B63, 0 0.65rem 1.25rem rgba(92,65,29,.18), inset 0 0.15rem 0 rgba(255,255,255,.9);
+  cursor: pointer; transition: transform .14s var(--pop-ease), box-shadow .1s ease;
+}
+.im-nav-btn.prev { left: clamp(0.5rem, 2.2cqw, 1.5rem); }
+.im-nav-btn.next { right: clamp(0.5rem, 2.2cqw, 1.5rem); }
+.im-nav-btn:active {
+  transform: translateY(calc(-50% + 0.1875rem)) scale(.92);
+  box-shadow: 0 0.125rem 0 #C89B63, 0 0.25rem 0.625rem rgba(92,65,29,.16);
+}
+.im-nav-btn svg { width: 52%; height: 52%; display: block; }
+
+/* 中央立体浮空主岛（显著放大当前主题框） */
+.im-main-island {
+  position: relative; flex: 0 1 34rem; display: flex; flex-direction: column; align-items: center;
+  animation: imIslandFloat 4.4s ease-in-out infinite;
+}
+.im-main-island.slide-next { animation: imSlideFromRight .34s var(--pop-ease) both; }
+.im-main-island.slide-prev { animation: imSlideFromLeft .34s var(--pop-ease) both; }
+@keyframes imIslandFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-0.42rem)} }
+@keyframes imSlideFromRight { from{opacity:.25;transform:translateX(3.5rem) scale(.92)} to{opacity:1;transform:none} }
+@keyframes imSlideFromLeft  { from{opacity:.25;transform:translateX(-3.5rem) scale(.92)} to{opacity:1;transform:none} }
+
+.im-main-sign {
+  padding: 0.42rem 1.35rem; border-radius: 6rem; background: #FFFDF7; border: 0.1875rem solid #5C411D;
+  box-shadow: 0 0.28rem 0 #D4BC91, 0 0.55rem 1.1rem rgba(92,65,29,.14);
+  font-size: clamp(1.02rem, 3cqw, 1.3rem); font-weight: var(--w-black); color: var(--sticker-ink);
+  margin-bottom: -0.85rem; z-index: 4; white-space: nowrap;
+}
+.im-main-body {
+  position: relative;
+  /* 随屏幕高度放大主题框：优先吃满竖向空间，同时保留左右安全边距 */
+  width: clamp(16.25rem, min(70cqw, 68cqh), 30rem);
+  display: flex; flex-direction: column; align-items: center;
+}
+.im-main-cover {
+  position: relative; z-index: 3; width: 92%; aspect-ratio: 3 / 2; border-radius: 2rem; overflow: hidden;
+  border: 0.3125rem solid #FFFFFF;
+  background: linear-gradient(180deg, #E8F6E8 0%, #FFF9E8 100%);
+  box-shadow: 0 0.5rem 0 #89BE67, 0 1.2rem 2.2rem rgba(46,107,62,.24);
+  cursor: pointer; transition: transform .16s var(--pop-ease);
+  display: grid; place-items: center;
+}
+.im-main-cover:active { transform: scale(.96); }
+.im-main-cover img.im-cover-full { width: 100%; height: 100%; object-fit: cover; display: block; }
+.im-cover-ribbon {
+  position: absolute; top: 0.85rem; right: 0.85rem; padding: 0.25rem 0.7rem; border-radius: 6rem;
+  background: rgba(255,253,247,.95); border: 0.125rem solid #E4CFA9;
+  font-size: 0.75rem; font-weight: var(--w-black); color: #8A6415;
+  box-shadow: 0 0.2rem 0.5rem rgba(92,65,29,.16);
+}
+.im-main-base {
+  width: 100%; height: clamp(4rem, 10.5cqh, 5.5rem); margin-top: -2rem; border-radius: 50%;
+  background: linear-gradient(180deg, #9DD17A 0%, #7BBF5E 54%, #C89B63 55%, #A67942 100%);
+  border: 0.1875rem solid #5C411D;
+  box-shadow: 0 0.95rem 2rem rgba(92,65,29,.22); z-index: 2;
+}
+.im-main-island.theme-school .im-main-base {
+  background: linear-gradient(180deg, #F6D89E 0%, #E5BC74 54%, #C89B63 55%, #A67942 100%);
+}
+.im-main-island.theme-travel .im-main-base {
+  background: linear-gradient(180deg, #B5D9F8 0%, #8BBCEB 54%, #C89B63 55%, #A67942 100%);
+}
+.im-enter-btn {
+  position: relative; z-index: 5; margin-top: -1.75rem; min-height: 3.55rem; padding: 0 2rem;
+  border-radius: 6rem; display: inline-flex; align-items: center; gap: 0.45rem;
+  background: linear-gradient(180deg,#42B372 0%,#2E8B57 100%); border: 0.1875rem solid #fff; color: #fff;
+  font-size: clamp(1.02rem, 3.2cqw, 1.22rem); font-weight: var(--w-black); letter-spacing: 0.03rem;
+  box-shadow: 0 0.375rem 0 #1B6140, 0 0.85rem 1.4rem rgba(24,86,52,.28);
+  transition: transform .14s var(--pop-ease), box-shadow .1s ease;
+}
+.im-enter-btn:active { transform: translateY(0.2rem) scale(.96); box-shadow: 0 0.15rem 0 #1B6140; }
+.im-enter-btn.is-soon {
+  background: linear-gradient(180deg, #FFE29A 0%, #F2C057 100%); color: #5C411D;
+  box-shadow: 0 0.375rem 0 #C89228, 0 0.75rem 1.25rem rgba(180,120,20,.22);
+}
+
+/* 轮播指示小圆点 */
+.im-dots {
+  display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+  margin-top: 0.55rem; z-index: 6;
+}
+.im-dot {
+  width: 0.5625rem; height: 0.5625rem; border-radius: 6rem; background: #D9C8AA;
+  border: 0; padding: 0; cursor: pointer; transition: width .22s ease, background .22s ease;
+}
+.im-dot.on { width: 1.65rem; background: var(--green); }
+
+/* 浮空岛底部悬浮旅程宝箱轨 */
+.im-bottom {
+  position: relative; z-index: 10; flex: none;
+  width: min(100%, 42rem); margin: 0 auto;
+  padding: 0 1rem calc(5.25rem + var(--safe-bottom));
+}
+.im-bottom .journey { margin: 0; }
+@media (max-width:560px) {
+  .im-stage { padding: 0.25rem 3.1rem; gap: 0.25rem; }
+  .im-side-island { display: none; }
+  .im-main-body { width: min(100%, 21rem); }
+  .im-balloon { top: 4.5rem; right: 0.45rem; }
+}
+
+/* ---------------- PART 3: 去套娃大舞台 + 弧形玩具积木托盘 ---------------- */
+.quiz-ref-page.dino-stage-v2 {
+  background: linear-gradient(180deg, #FFFBF2 0%, #FDF2DC 56%, #E2F2CC 56.5%, #CEE6B0 100%) !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-scene-bg {
+  background-image:
+    radial-gradient(ellipse 130% 42% at 50% 62%, #DDF0C6 0%, #CEE6B0 55%, transparent 56%),
+    radial-gradient(circle at 16% 14%, rgba(255,255,255,.9) 0%, transparent 42%),
+    linear-gradient(180deg, #FFFBF2 0%, #FDF2DC 62%, #E2F2CC 100%) !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-scene-svg { opacity: .28; }
+.quiz-ref-page.dino-stage-v2 .quiz-top {
+  width: min(100%, 46rem) !important; max-width: min(100%, 46rem) !important;
+  padding: 0.35rem 1rem 0.25rem !important; gap: 0.625rem;
+}
+.quiz-ref-page.dino-stage-v2 .peb { height: 0.85rem; }
+.quiz-ref-page.dino-stage-v2 .peb-runner { font-size: 1.15rem; bottom: 38%; }
+
+/* 拆除 .ref-quiz-body 三层套娃粗木框 */
+.quiz-ref-page.dino-stage-v2 .ref-quiz-body {
+  width: min(100%, 46rem) !important; max-width: min(100%, 46rem) !important;
+  margin: 0 auto !important; padding: 0.75rem 0 0 !important;
+  background: transparent !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-stage-head {
+  margin: 0.15rem auto clamp(0.4rem, 1.4cqh, 0.75rem) !important; min-height: 2.35rem !important;
+  padding: 0.22rem 1rem 0.22rem 0.45rem !important; border-radius: 6.1875rem !important;
+  background: rgba(255,253,247,.94) !important; border: 0.125rem solid #E4CFA9 !important;
+  box-shadow: 0 0.22rem 0 #DEC69E, 0 0.375rem 0.875rem rgba(92,65,29,.08) !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-stage-badge { width: 2rem !important; height: 2rem !important; border-radius: 50% !important; transform: none !important; }
+.quiz-ref-page.dino-stage-v2 .ref-stage-kicker { display: none; }
+.quiz-ref-page.dino-stage-v2 .ref-stage-head h2 { font-size: clamp(0.95rem, 2.5cqw, 1.25rem) !important; color: #5C411D !important; }
+
+.quiz-ref-page.dino-stage-v2 .ref-picture-frame,
+.quiz-ref-page.dino-stage-v2 .ref-action-stage,
+.quiz-ref-page.dino-stage-v2 .ref-cmp-stage {
+  max-height: 54cqh !important; width: min(94%, 34rem) !important;
+  border: 0.1875rem solid rgba(255,255,255,.92) !important; border-radius: 2rem !important;
+  background: radial-gradient(circle at 50% 48%, rgba(255,255,255,.9) 0%, rgba(255,253,247,.52) 66%, rgba(255,253,247,.18) 100%) !important;
+  box-shadow: 0 0.75rem 1.75rem rgba(92,65,29,.1) !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-action-stage.has-art { background: rgba(255,255,255,.94) !important; }
+
+/* 底部弧形玩具积木托盘（Toy Dock） */
+.quiz-ref-page.dino-stage-v2 .ref-pic-options,
+.quiz-ref-page.dino-stage-v2 .ref-action-options,
+.quiz-ref-page.dino-stage-v2 .ref-zoom-options,
+.quiz-ref-page.dino-stage-v2 .ref-cmp-options,
+.quiz-ref-page.dino-stage-v2 .ref-listen-grid,
+.quiz-ref-page.dino-stage-v2 .fd-foods,
+.quiz-ref-page.dino-stage-v2 .ref-dialog-options,
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid,
+.quiz-ref-page.dino-stage-v2 .td-dock {
+  width: 100% !important; max-width: min(100%, 44rem) !important; margin: 0 auto !important;
+  padding: clamp(0.85rem, 2.2cqh, 1.25rem) clamp(0.85rem, 3cqw, 1.5rem) calc(0.95rem + var(--safe-bottom)) !important;
+  border-radius: 2rem 2rem 0 0 !important;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='%23b5835a' fill-opacity='0.05'%3E%3Ccircle cx='20' cy='24' r='4'/%3E%3Ccircle cx='13' cy='16' r='2'/%3E%3Ccircle cx='20' cy='13.5' r='2'/%3E%3Ccircle cx='27' cy='16' r='2'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, #FFFDF7 0%, #F9E8C8 100%) !important;
+  border-top: 0.25rem solid #D8B07A !important;
+  box-shadow: 0 -0.625rem 1.75rem rgba(140,98,50,.14), inset 0 0.1875rem 0 rgba(255,255,255,.85) !important;
+}
+.quiz-ref-page.dino-stage-v2 .option,
+.quiz-ref-page.dino-stage-v2 .ref-listen-card,
+.quiz-ref-page.dino-stage-v2 .fd-food {
+  border-radius: 1.35rem !important; border: 0.15625rem solid #C89B63 !important; border-bottom-width: 0.4375rem !important;
+  background: #FFFDF7 !important;
+  box-shadow: 0 0.375rem 0.875rem rgba(120,75,40,.12), inset 0 0.1875rem 0 rgba(255,255,255,.9) !important;
+  transition: transform .14s var(--pop-ease), border-bottom-width .1s ease !important;
+}
+.quiz-ref-page.dino-stage-v2 .option:active,
+.quiz-ref-page.dino-stage-v2 .ref-listen-card:active,
+.quiz-ref-page.dino-stage-v2 .fd-food:active {
+  transform: translateY(0.25rem) scale(.96,.93) !important; border-bottom-width: 0.15625rem !important;
+}
+.quiz-ref-page.dino-stage-v2 .option.correct,
+.quiz-ref-page.dino-stage-v2 .ref-listen-card.ok,
+.quiz-ref-page.dino-stage-v2 .fd-food.correct {
+  background: linear-gradient(180deg,#F0FAE4 0%,#DFF2C8 100%) !important; border-color: #4FA55E !important;
+}
+.quiz-ref-page.dino-stage-v2 .option.wrong,
+.quiz-ref-page.dino-stage-v2 .ref-listen-card.wrong {
+  background: linear-gradient(180deg,#FFF5F2 0%,#FFE4DC 100%) !important; border-color: #DC8470 !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-listen-grid { height: auto !important; min-height: clamp(8.5rem, 24cqh, 12rem) !important; }
+.quiz-ref-page.dino-stage-v2 .ref-listen-card { min-height: clamp(6.25rem, 18cqh, 9.25rem) !important; }
+.quiz-ref-page.dino-stage-v2 .ref-dialog-card { width: min(92%, 38rem) !important; margin: auto auto 0.5rem !important; }
+.quiz-ref-page.dino-stage-v2 .ref-match-wrap,
+.quiz-ref-page.dino-stage-v2 .ref-puzzle-wrap { padding: 0 1rem 1rem !important; }
+.quiz-ref-page.dino-stage-v2 .ref-logo { display: none !important; }
+.quiz-ref-page.dino-stage-v2 .zoo-feedback-card { width: min(88%, 28rem) !important; border-radius: 1.625rem !important; }
+
+@media (min-width:600px) {
+  .quiz-ref-page.dino-stage-v2[data-enlighten="1"] .option,
+  .quiz-ref-page.dino-stage-v2[data-enlighten="1"] .ref-listen-card,
+  .quiz-ref-page.dino-stage-v2[data-enlighten="1"] .fd-food {
+    min-height: 5.5rem !important; border-radius: 1.5rem !important;
+  }
+}
+
+/* ---------------- PART 4: 6 大 iPad 优先启蒙新玩法样式 ---------------- */
+.td-stage {
+  flex: 1 1 0; min-height: 0; width: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+/* 2. 草丛捉迷藏 (hide_seek) */
+.td-bushes {
+  display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: clamp(0.625rem, 2.5cqw, 1.25rem);
+  width: min(94%, 40rem); margin: auto; align-items: end;
+}
+.td-bush {
+  position: relative; aspect-ratio: 1 / 1.05; border-radius: 1.75rem;
+  background: radial-gradient(circle at 50% 65%, #A5D97D 0%, #6EB85A 72%, #4E9448 100%);
+  border: 0.1875rem solid #2E6B3E; border-bottom-width: 0.45rem;
+  display: grid; place-items: center; overflow: hidden; padding: 0.75rem;
+  box-shadow: 0 0.625rem 1.25rem rgba(46,107,62,.2); cursor: pointer;
+  transition: transform .16s var(--pop-ease), background .25s ease;
+}
+.td-bush:active { transform: translateY(0.25rem) scale(.95); }
+.td-bush img {
+  width: 82%; height: 82%; object-fit: contain;
+  filter: brightness(0) opacity(.38); transform: translateY(14%) scale(.88);
+  transition: filter .35s ease, transform .35s var(--pop-ease);
+}
+.td-bush.opened { background: #FFFDF7; border-color: #4FA55E; }
+.td-bush.opened img { filter: none; transform: translateY(0) scale(1.06); }
+.td-bush.tried { background: #FAF3E6; border-color: #D8C5A8; opacity: .68; pointer-events: none; }
+.td-bush.tried img { filter: none; opacity: .75; transform: translateY(0) scale(.92); }
+.td-bush-leaf { position: absolute; bottom: -0.25rem; left: 0; right: 0; height: 34%; background: linear-gradient(180deg, rgba(122,199,102,0) 0%, #59A84F 70%); pointer-events: none; }
+.td-bush.opened .td-bush-leaf, .td-bush.tried .td-bush-leaf { display: none; }
+
+/* 3. 听指令比大小/高矮 (voice_compare) */
+.td-vcmp-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.875rem, 3cqw, 1.5rem);
+  width: min(94%, 38rem); margin: auto;
+}
+.td-vcmp-card {
+  position: relative; min-height: clamp(11.5rem, 34cqh, 17rem); border-radius: 1.75rem;
+  background: #FFFDF7; border: 0.1875rem solid #C89B63; border-bottom-width: 0.5rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+  box-shadow: 0 0.625rem 1.5rem rgba(120,75,40,.14); cursor: pointer;
+  transition: transform .15s var(--pop-ease);
+}
+.td-vcmp-card:active { transform: translateY(0.25rem) scale(.96); border-bottom-width: 0.2rem; }
+.td-vcmp-card .td-vcmp-emoji { font-size: clamp(3.75rem, 13cqh, 6.25rem); line-height: 1; transform: scale(var(--s, 1)); }
+.td-vcmp-card.ok { background: linear-gradient(180deg,#F0FAE4 0%,#DFF2C8 100%); border-color: #4FA55E; }
+.td-vcmp-card.tried { opacity: .35; filter: grayscale(1); pointer-events: none; }
+
+/* 4. 戳破单词泡泡 (bubble_pop) */
+.td-bubble-arena {
+  position: relative; flex: 1; min-height: 13rem; width: min(96%, 42rem); margin: auto;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(0.875rem, 3cqw, 1.75rem);
+  padding: 0.75rem;
+}
+.td-bubble {
+  position: relative; width: clamp(6.75rem, min(28cqw, 26cqh), 9.75rem); height: clamp(6.75rem, min(28cqw, 26cqh), 9.75rem);
+  border-radius: 50%; padding: 1rem; display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 26%, rgba(255,255,255,.95) 0%, rgba(255,250,238,.78) 48%, rgba(233,247,217,.65) 100%);
+  border: 0.1875rem solid rgba(255,255,255,.95);
+  box-shadow: inset -0.25rem -0.35rem 0.75rem rgba(120,165,95,.2), 0 0.625rem 1.25rem rgba(92,65,29,.12);
+  cursor: pointer; animation: tdBubbleBob 3.4s ease-in-out infinite;
+  transition: transform .14s var(--pop-ease), opacity .2s ease;
+}
+.td-bubble:nth-child(even) { animation-delay: -1.5s; animation-duration: 3.9s; }
+.td-bubble:active { transform: scale(.88); }
+.td-bubble img { width: 82%; height: 82%; object-fit: contain; pointer-events: none; }
+.td-bubble.ok { transform: scale(1.16); border-color: #4FA55E; background: #EAF9DD; }
+.td-bubble.tried { opacity: .28; transform: scale(.86); pointer-events: none; }
+@keyframes tdBubbleBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-0.65rem)} }
+
+/* 5. 数一数喂食 (count_feed) */
+.td-cfeed-animal {
+  position: relative; width: min(90%, 24rem); padding: 0.75rem 1rem; border-radius: 2rem;
+  background: rgba(255,253,247,.9); border: 0.1875rem dashed #C89B63;
+  display: flex; align-items: center; justify-content: center; gap: 1rem; margin: auto;
+}
+.td-cfeed-pic { width: clamp(6rem, 18cqh, 8.75rem); height: clamp(6rem, 18cqh, 8.75rem); flex: none; display: grid; place-items: center; }
+.td-cfeed-pic img { width: 100%; height: 100%; object-fit: contain; }
+.td-cfeed-count { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+.td-cfeed-count b { font-size: clamp(1.35rem, 4cqw, 1.85rem); font-weight: var(--w-black); color: var(--green-d); }
+.td-cfeed-pips { display: flex; gap: 0.375rem; }
+.td-cfeed-pips i {
+  width: 1.35rem; height: 1.35rem; border-radius: 50%; background: #EFE4CE; border: 0.125rem solid #C89B63;
+  display: grid; place-items: center; font-style: normal; font-size: 0.75rem; color: #fff; font-weight: var(--w-black);
+}
+.td-cfeed-pips i.fed { background: #3FA46A; border-color: #1E6B47; }
+.td-cfeed-tray { display: flex; justify-content: center; gap: clamp(0.75rem, 3cqw, 1.5rem); }
+.td-cfeed-food {
+  width: clamp(5.25rem, 16cqw, 7rem); height: clamp(5.25rem, 16cqw, 7rem); padding: 0.65rem;
+  border-radius: 1.5rem; background: #FFFDF7; border: 0.15625rem solid #C89B63; border-bottom-width: 0.45rem;
+  display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 0.375rem 0.875rem rgba(120,75,40,.14); transition: transform .14s var(--pop-ease);
+}
+.td-cfeed-food:active { transform: translateY(0.25rem) scale(.92); border-bottom-width: 0.15rem; }
+.td-cfeed-food img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
+/* 6. 声音小侦探 (sound_detective) */
+.td-sdet-btn {
+  display: inline-flex; align-items: center; gap: 0.625rem; margin: auto;
+  padding: 0.85rem 1.65rem; border-radius: 6rem;
+  background: linear-gradient(180deg, #FFE477 0%, #FFC84D 100%);
+  border: 0.1875rem solid #5C411D; box-shadow: 0 0.375rem 0 #C88B22, 0 0.75rem 1.25rem rgba(180,120,20,.22);
+  font-size: clamp(1rem, 3cqw, 1.2rem); font-weight: var(--w-black); color: #5C411D; cursor: pointer;
+}
+.td-sdet-btn:active { transform: translateY(0.2rem) scale(.96); box-shadow: 0 0.15rem 0 #C88B22; }
+.td-voice-bar {
+  display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 1.1rem; border-radius: 6rem;
+  background: #FFFDF7; border: 0.125rem solid #E4CFA9; box-shadow: 0 0.22rem 0 #D4BC91;
+  font-size: 0.84375rem; font-weight: var(--w-black); color: #6A4C2D; cursor: pointer;
+}
+.td-voice-bar:active { transform: translateY(0.125rem) scale(.96); }

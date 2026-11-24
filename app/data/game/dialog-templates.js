@@ -10,7 +10,7 @@
   const foodEn = (food) => (food && (food.en || food.word)) || "";
 
   /* 主题作用域：对话句式与词汇只能来自当前闯关主题 / 场景。
-     zoo   = 陆地动物园（含动物园、饲养员、游客等场景语）
+     zoo   = 神奇动物园（含动物园、饲养员、游客等场景语）
      animal = 动物主题兜底
      default = 其他主题（学校、旅行等）使用通用句式 */
   const ZOO_ASKS = {

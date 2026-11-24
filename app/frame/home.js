@@ -142,13 +142,49 @@ function tasksData(lv, streak) {
 function fitHomeWord() {
   const el = document.querySelector(".w-word");
   if (!el) return;
-  const box = el.closest(".w-main");
+  const box = el.closest(".w-main, .bc-sign-board");
+  if (!box) return;
   el.style.fontSize = "";
   const base = parseFloat(getComputedStyle(el).fontSize) || 36;
   const avail = box.clientWidth;
   const need = el.scrollWidth;
   if (avail > 0 && need > avail) {
     el.style.fontSize = `${Math.max(18, Math.floor((base * avail) / need) - 1)}px`;
+  }
+}
+
+
+const DINO_GREETINGS = [
+  "Hi! 今天去哪玩?",
+  "Roar! 准备出发啦!",
+  "点我一起学英语!",
+  "Let's explore!",
+  "You are awesome!",
+];
+let dinoGreetIdx = 0;
+
+function pokeDinoInteraction(btn) {
+  sfx("star");
+  dinoGreetIdx = (dinoGreetIdx + 1) % DINO_GREETINGS.length;
+  const bubble = $(".bc-bubble");
+  if (bubble) bubble.textContent = DINO_GREETINGS[dinoGreetIdx];
+  if (btn) {
+    btn.classList.remove("is-poked");
+    void btn.offsetWidth;
+    btn.classList.add("is-poked");
+    setTimeout(() => btn.classList.remove("is-poked"), 580);
+    const stage = btn.closest(".bc-dino-stage");
+    if (stage) {
+      ["💛", "✨", "💚"].forEach((sym, i) => {
+        const sp = document.createElement("span");
+        sp.className = "bc-heart-pop";
+        sp.textContent = sym;
+        sp.style.setProperty("--hx", `${(i - 1) * 34}px`);
+        sp.style.animationDelay = `${i * 75}ms`;
+        stage.appendChild(sp);
+        setTimeout(() => sp.remove(), 950);
+      });
+    }
   }
 }
 
@@ -160,99 +196,122 @@ function screenHome() {
   const atMax = st.key === "super";
   const isUltra = st.key === "ultra";
   const ultraOpen = ultraExchangeOpen();
-  const ultraLeft = Math.max(0, ULTRA_MIN - state.growth);
   const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
   const barPct = isUltra ? 1 : atMax ? ultraPct : pct;
   const lv = todayLevels();
   const streak = streakDays();
   const tasks = tasksData(lv, streak);
   const doneCount = tasks.filter((t) => t.done).length;
-  const word = reviewWord = randomWord();
-  const example = generateExample(word);
-  const remain = next ? Math.max(0, next.min - state.growth) : 0;
+  const hasReward = doneCount < 3 || Number(state.spins) > 0;
+  const word = reviewWord || (reviewWord = randomWord());
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
-  const growthVal = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
-  const growthText = isUltra
-    ? "究极体形态已解锁 · 可在图鉴切换"
-    : atMax
-      ? (ultraOpen ? `究极体兑换已开放 <b>${ULTRA_PRICE}★/只</b>` : `距究极体兑换还差 <b>${ultraLeft}</b>`)
-      : !next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`;
-  const growthAction = isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "start-quiz";
-  const growthIcon = isUltra ? I.bag(19) : atMax && ultraOpen ? I.crownMini(22, "#4A3206") : pending ? I.crownMini(22, "#4A3206") : I.arrow(19);
-  return `<section class="screen has-tab" data-screen="home">
-    <div class="scroll">
-      <div class="home-top">
-        <button class="avatar avatar-hud${pending || (atMax && ultraOpen) ? " is-ready" : ""}" data-action="${isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "growth-info"}" aria-label="进化进度 ${Math.round(barPct * 100)}%">
-          <svg class="avatar-ring" viewBox="0 0 48 48" aria-hidden="true">
-            <circle class="ring-bg" cx="24" cy="24" r="21.4"/>
-            <circle class="ring-fill" cx="24" cy="24" r="21.4" style="stroke-dasharray:${(134.5 * barPct).toFixed(1)} 134.5"/>
-          </svg>
-          <img class="ava-icon" src="${avatarArtSrc()}" alt="">
-        </button>
-        <div class="greet">
-          <div class="hi">${greeting()}，<b>${state.name}</b></div>
-          <div class="meta"><span class="flame">${I.flame(12)}</span> 连续 ${streak} 天 · 今日已学 ${lv * 2} 分钟</div>
-        </div>
-        <button class="parent-gate" data-action="parent-gate" aria-label="家长角，长按 1.5 秒进入">${I.lock(15)}<span>家长</span></button>
-      </div>
+  const evoReady = pending || (atMax && ultraOpen);
+  const evoAction = isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "growth-info";
+  const evoSub = isUltra ? "究极体已解锁" : evoReady ? "可进化 · 点我!" : `成长 ${Math.round(barPct * 100)}% · 连续${streak}天`;
+  const ringC = 138.23;
+  const ringOffset = (ringC * (1 - barPct)).toFixed(2);
 
-      <section class="hero ${heroSkyClass()}">
-        ${skyFx()}
-        <div class="hero-deco" aria-hidden="true">
-          <span class="fern f1"></span><span class="fern f2"></span>
-          ${skyPhase() === "night" ? `<span class="firefly x1"></span><span class="firefly x2"></span><span class="firefly x3"></span><span class="firefly x4"></span><span class="firefly x5"></span>` : ""}
-        </div>
-        <div class="hero-id">
-          <div class="stage-tag">${stageChip()}</div>
-          <div class="name"><b>小诺</b></div>
-        </div>
-        <div class="dino-wrap ${dinoCls}">${dino(state.stage)}</div>
-      </section>
+  const tentSvg = `<svg viewBox="0 0 120 96" fill="none" aria-hidden="true">
+    <ellipse cx="60" cy="84" rx="44" ry="8" fill="#4F8A45" opacity=".28"/>
+    <path d="M60 14 L60 4" stroke="#5C411D" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M60 4 L80 10 L60 16 Z" fill="#FF8A4C" stroke="#5C411D" stroke-width="2.2" stroke-linejoin="round"/>
+    <path d="M16 82 L60 16 L104 82 Z" fill="#FFE6AC" stroke="#5C411D" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M40 82 L60 44 L80 82 Z" fill="#8C6232" stroke="#5C411D" stroke-width="3" stroke-linejoin="round"/>
+  </svg>`;
+  const wordsBagSvg = `<svg viewBox="0 0 104 96" fill="none" aria-hidden="true">
+    <ellipse cx="52" cy="84" rx="34" ry="7" fill="#4F8A45" opacity=".25"/>
+    <path d="M36 26 C36 14 68 14 68 26" stroke="#5C411D" stroke-width="4" stroke-linecap="round"/>
+    <rect x="20" y="26" width="64" height="54" rx="18" fill="#FFD766" stroke="#5C411D" stroke-width="3.5"/>
+    <rect x="28" y="48" width="48" height="22" rx="9" fill="#FFFDF7" stroke="#5C411D" stroke-width="2.6"/>
+    <path d="M40 59 H64" stroke="#2E8B57" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="52" cy="38" r="5" fill="#FF8A4C" stroke="#5C411D" stroke-width="2.2"/>
+  </svg>`;
+  const nestSvg = `<svg viewBox="0 0 120 100" fill="none" aria-hidden="true">
+    <circle cx="60" cy="48" r="38" fill="#FFD766" opacity="${hasReward ? ".28" : ".12"}"/>
+    <ellipse cx="60" cy="76" rx="44" ry="15" fill="#C89B63" stroke="#5C411D" stroke-width="3.5"/>
+    <ellipse cx="60" cy="72" rx="34" ry="9" fill="#9E723C"/>
+    <ellipse cx="60" cy="50" rx="22" ry="29" fill="#FFFDF7" stroke="#5C411D" stroke-width="3.5"/>
+    <circle cx="51" cy="43" r="5" fill="#FF8A4C" opacity=".82"/>
+    <circle cx="68" cy="54" r="6" fill="#FFD766" opacity=".9"/>
+    <circle cx="54" cy="62" r="4" fill="#3FA46A" opacity=".78"/>
+  </svg>`;
+  const fernSvg = `<svg class="bc-fern left" viewBox="0 0 110 90" fill="none" aria-hidden="true">
+    <path d="M12 88 Q28 42 74 14" stroke="#1E6B47" stroke-width="4" stroke-linecap="round"/>
+    <path d="M24 68 C8 54 14 32 32 38 C38 52 34 62 24 68 Z" fill="#7AC766" stroke="#1E6B47" stroke-width="2.5"/>
+    <path d="M44 48 C34 26 54 14 66 28 C64 42 54 48 44 48 Z" fill="#9BE382" stroke="#1E6B47" stroke-width="2.5"/>
+    <path d="M42 66 C60 56 82 62 84 78 C68 84 52 78 42 66 Z" fill="#63B848" stroke="#1E6B47" stroke-width="2.5"/>
+  </svg>`;
+  const fernSvgR = fernSvg.replace('class="bc-fern left"', 'class="bc-fern right"');
 
-      <div class="growth-panel">
-        <div class="g-main">
-          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${growthVal}</em></span></div>
-          <div class="bar g-bar"><i style="width:${Math.round(barPct * 100)}%"></i></div>
-          <div class="g-next">
-            <span>${growthText}</span>
-            <span>${Math.round(barPct * 100)}%</span>
-          </div>
-        </div>
-        <button class="go-btn ${pending || (atMax && ultraOpen) ? "evolve" : ""}" data-action="${growthAction}" aria-label="${isUltra || (atMax && ultraOpen) ? "去兑换究极体" : pending ? "去进化" : "开始闯关"}">
-          ${growthIcon}
-        </button>
-      </div>
-
-      <div class="word-card">
-        <div class="ring"></div>
-        <button class="w-main" data-action="open-review" aria-label="随机记单词 ${word.word}">
-          <div class="w-kicker">TODAY'S WORD · 今日单词</div>
-          <div class="w-word">${word.emoji ? `<span class="w-emoji">${word.emoji}</span>` : ""}${word.word}</div>
-          <div class="w-pron-row">
-            <div class="w-phon">${word.phon} · ${wordPosLabel(word)} ${word.zh}</div>
-          </div>
-        </button>
-        <button class="spk" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(28, "#B4811C")}</button>
-      </div>
-
-      <button class="nest-entry" data-action="nest-open" aria-label="恐龙蛋巢：今日任务 ${doneCount}/3，打开大转盘">
-        <span class="nest-art" aria-hidden="true">
-          <svg viewBox="0 0 64 64">
-            <ellipse cx="32" cy="45" rx="25" ry="12" fill="#C99C63"/>
-            <path d="M9 42q23 14 46 0" fill="none" stroke="#9A6D38" stroke-width="4" stroke-linecap="round"/>
-            <path d="M15 38q17 10 34 0M19 48q13 7 26 0" fill="none" stroke="#B4864C" stroke-width="3" stroke-linecap="round"/>
-            <ellipse cx="25" cy="33" rx="9" ry="11" fill="#FFF6E2" stroke="#C9A878" stroke-width="3"/>
-            <ellipse cx="38" cy="30" rx="8" ry="10" fill="#FFEFD2" stroke="#C9A878" stroke-width="3"/>
-            <path d="M38 21l2.4 3.6-2.4 2.6 2.2 2.4" fill="none" stroke="#D8A24C" stroke-width="2.4" stroke-linecap="round"/>
-          </svg>
-        </span>
-        <span class="nest-tx"><b>恐龙蛋巢</b><em>今日任务 ${doneCount}/3${Number(state.spins) > 0 ? ` · 免费抽奖 ${state.spins} 次` : " · 大转盘"}</em></span>
-        <span class="nest-star">${star(16)}<b class="num">${fmt(starBalance())}</b></span>
-        ${Number(state.spins) > 0 ? `<span class="nest-badge">${state.spins}</span>` : ""}
-      </button>
-      <div class="home-note">${lv ? `今天已学 ${lv * 2} 分钟 · 今日任务已完成` : "今天还没闯关 · 完成 1 关点亮今日记录"}</div>
+  return `<section class="screen basecamp-screen ${heroSkyClass()}" data-screen="home">
+    ${skyFx()}
+    <div class="hero-deco" aria-hidden="true">
+      ${skyPhase() === "night" ? `<span class="firefly x1"></span><span class="firefly x2"></span><span class="firefly x3"></span><span class="firefly x4"></span><span class="firefly x5"></span>` : ""}
     </div>
-    ${tabbar("home")}
+    <div class="bc-hills" aria-hidden="true"><div class="bc-hill h1"></div><div class="bc-hill h2"></div><div class="bc-hill h3"></div></div>
+    ${fernSvg}${fernSvgR}
+
+    <header class="bc-hud">
+      <button class="bc-evo-hud ${evoReady ? "is-ready" : ""}" data-action="${evoAction}" aria-label="恐龙成长与进化">
+        <span class="bc-ring-wrap">
+          <svg class="bc-ring-svg" viewBox="0 0 52 52" aria-hidden="true">
+            <circle class="bc-ring-track" cx="26" cy="26" r="22"></circle>
+            <circle class="bc-ring-fill" cx="26" cy="26" r="22" stroke-dasharray="${ringC}" stroke-dashoffset="${ringOffset}"></circle>
+          </svg>
+          <span class="bc-ring-ava"><img src="${avatarArtSrc()}" alt=""></span>
+        </span>
+        <span class="bc-evo-info">
+          <span class="bc-evo-stage">小诺 · ${st.name}</span>
+          <span class="bc-evo-sub">${evoSub}</span>
+        </span>
+      </button>
+      <div class="bc-hud-right">
+        ${starPill()}
+        <button class="parent-gate" data-action="parent-gate" aria-label="家长角，长按 1.5 秒进入">${I.lock(14)}<span>家长</span></button>
+      </div>
+    </header>
+
+    <div class="bc-world" data-basecamp-world>
+      <button class="bc-prop bc-prop-tent" data-action="tab" data-screen="collect" aria-label="恐龙图鉴与换装">
+        ${tentSvg}<span class="bc-prop-label">图鉴 · 装扮</span>
+      </button>
+      <button class="bc-prop bc-prop-words" data-action="tab" data-screen="words" aria-label="我的单词本">
+        ${wordsBagSvg}<span class="bc-prop-label">单词本</span>
+      </button>
+      <div class="bc-dino-stage">
+        <div class="bc-bubble">${DINO_GREETINGS[dinoGreetIdx]}</div>
+        <div class="bc-dino-pad"></div>
+        <div class="bc-dino-shadow"></div>
+        <button class="bc-dino-btn ${dinoCls}" data-action="poke-dino" aria-label="和小恐龙小诺互动">${dino(state.stage)}</button>
+      </div>
+      <button class="bc-prop bc-prop-nest ${hasReward ? "has-reward" : ""}" data-action="nest-open" aria-label="恐龙蛋巢奖励与今日任务">
+        ${nestSvg}
+        ${Number(state.spins) > 0 ? `<span class="bc-prop-badge">${state.spins}</span>` : doneCount < 3 ? `<span class="bc-prop-badge">${3 - doneCount}</span>` : ""}
+        <span class="bc-prop-label">蛋巢奖励</span>
+      </button>
+      <div class="bc-word-sign">
+        <div class="bc-sign-board">
+          <div class="bc-sign-top">
+            <span class="bc-sign-tag">每日一词</span>
+            <div style="display:flex;gap:0.2rem">
+              <button class="bc-sign-mini-btn" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(13, "#B4811C")}</button>
+              <button class="bc-sign-mini-btn" data-action="next-home-word" aria-label="换一个单词">${I.refresh(12, "#8C6232")}</button>
+            </div>
+          </div>
+          <button type="button" style="width:100%" data-action="open-review" aria-label="打开单词跟读 ${word.word}">
+            <span class="bc-sign-word w-word">${word.word}</span>
+            <span class="bc-sign-zh">${word.zh} · 点我跟读</span>
+          </button>
+        </div>
+        <div class="bc-sign-post"></div>
+      </div>
+    </div>
+
+    <div class="bc-cta-bar">
+      <button class="bc-play-btn" data-action="tab" data-screen="map" aria-label="进入恐龙乐园闯关">
+        <span>▶</span><span>进入恐龙乐园闯关！</span>
+      </button>
+    </div>
   </section>`;
 }
 

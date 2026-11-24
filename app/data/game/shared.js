@@ -16,9 +16,9 @@
     return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
   }
 
-  /* 每馆第 5 关为馆内 BOSS，最后一关为总 BOSS */
+  /* 每 5 关的第 5 关为阶段 BOSS，最后一关为总 BOSS */
   function isAnimalBossLevel(level) {
-    return isZooScene() && Number(level) % LEVELS_PER_VENUE === 0;
+    return isZooScene() && Number(level) % LEVELS_PER_STAGE === 0;
   }
   function isAnimalFinalBoss(level) {
     const scene = zooScene();

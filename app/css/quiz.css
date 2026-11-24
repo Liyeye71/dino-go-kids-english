@@ -151,30 +151,34 @@
 }
 
 /* ============================================================
-   🔊 喇叭按钮：圆形底色 + 点击抖动特效
+   动物园答题页：石子路进度条（卡片顶部留白区内，不占主图高度）
    ============================================================ */
-.zoo-audio-btn{flex:none;width:2.5rem;height:2.5rem;padding:0;border-radius:50%;
-  background:#FFF8E7;border:0.125rem solid #EFE1C8;
-  display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;
-  box-shadow:0 0.25rem 0.5rem rgba(155,118,32,.14);transition:transform .12s}
-.zoo-audio-btn:active{transform:scale(.9)}
-.zoo-audio-btn svg{width:62%;height:62%;display:block}
 
-/* 抖动特效：播放发音时的按钮反馈 */
-@keyframes shakeAudio{
-  0%   {transform:rotate(0deg) scale(1)}
-  15%  {transform:rotate(-12deg) scale(1.08)}
-  30%  {transform:rotate(10deg) scale(1.06)}
-  45%  {transform:rotate(-6deg) scale(1.04)}
-  60%  {transform:rotate(4deg) scale(1.02)}
-  75%  {transform:rotate(-2deg) scale(1)}
-  100% {transform:rotate(0deg) scale(1)}
+.quiz-ref-page[data-scene="zoo"] .ref-peb-rail {
+  position: absolute;
+  top: 0.4375rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(34%, 8.5rem);
+  z-index: 6;
+  pointer-events: none;
 }
-.listen.is-shaking,
-.zoo-audio-btn.is-shaking,
-.ref-listen-speaker.is-shaking,
-.ref-action-sound.is-shaking,
-.ref-dialog-ask.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
-.listen.is-shaking svg,
-.zoo-audio-btn.is-shaking svg,
-.ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
+.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb-track {
+  width: 100%;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb {
+  height: 0.5rem;
+  flex: 1;
+  max-width: 1.625rem;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-peb-rail .peb-runner {
+  font-size: 0.75rem;
+  bottom: -0.1875rem;
+}
+/* 有石子路时在卡片顶部预留一条窄带，头部标题顺延下移，避免石子压在标题上 */
+.quiz-ref-page[data-scene="zoo"] .ref-quiz-body.has-peb {
+  padding-top: 1.875rem !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-quiz-body.has-peb .ref-stage-head {
+  margin-top: 0.625rem !important;
+}

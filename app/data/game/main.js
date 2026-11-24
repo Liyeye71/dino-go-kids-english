@@ -166,7 +166,7 @@ function screenQuiz() {
     </button>`;
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
-  const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare"].includes(q.type);
+  const refType = ["pic", "listen", "match", "dialog", "word_puzzle", "feed_animal", "action", "body_zoom", "compare", "hide_seek", "voice_compare", "sound_detective", "bubble_pop", "count_feed"].includes(q.type);
   const isMatch = q.type === "match";
   const isFeed = q.type === "feed_animal";
   const isDialog = q.type === "dialog";
@@ -282,20 +282,17 @@ function screenQuiz() {
       <div><span class="ref-stage-kicker">${isDaily ? "每日随机挑战 · " : isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}${isDaily ? "" : `LEVEL ${String(quiz.level).padStart(2, "0")} · `}${game.label}</span>
       <h2>${game.title}</h2></div>
     </div>` : "";
-  const frameTop = refType && state.scene === "zoo" && !isDaily
-    ? `<button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>`
-    : `<div class="quiz-top">
+  const frameTop = `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
       ${pebbleTrail(total, quiz.index, revealed)}
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
       ${isDaily ? `<div class="daily-run">🎲</div>` : `<div class="hearts">${hearts}</div>`}
     </div>`;
-  return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page" : ""}" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
+  return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page dino-stage-v2" : ""}" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
     ${fx}
     ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
     ${frameTop}
-    <div class="quiz-body${refType ? " ref-quiz-body" : ""}${refType && state.scene === "zoo" && !isDaily ? " has-peb" : ""}">
-      ${refType && state.scene === "zoo" && !isDaily ? `<div class="ref-peb-rail">${pebbleTrail(total, quiz.index, revealed)}</div>` : ""}
+    <div class="quiz-body${refType ? " ref-quiz-body" : ""}">
       ${refType ? refHead : `<div class="quiz-prompt">
         <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
         <h2>${game.title}</h2>
@@ -304,7 +301,7 @@ function screenQuiz() {
     </div>
     ${resultPop}
     <div class="quiz-foot">${revealed ? "" : view.btn}</div>
-    ${refType ? `<div class="ref-logo">${QuizUiArt.logo()}</div>` : ""}
+    ${refType ? QuizUiArt.logoBanner() : ""}
   </section>`;
 }
 
@@ -338,7 +335,14 @@ function speakTask() {
     lines.push(picPrompt || game.prompt);
   }
   /* 听音选图：先读题型说明，再读要听的目标单词 */
-  if (game && game.autoSpeak && q.word) lines.push(q.word);
+  if (q.type === "sound_detective" && q.actionSound) {
+    setTimer(() => playActionSound(q.actionSound), 280);
+  }
+  if (q.type === "count_feed" && q.food) {
+    lines.push(`Feed the ${q.word} ${q.feedNumWord || "two"} ${q.food.en}!`);
+  } else if (q.type === "voice_compare") {
+    lines.push(`Touch the ${q.word} one!`);
+  } else if (game && game.autoSpeak && q.word) lines.push(q.word);
   if (lines.length) setTimer(() => speak(lines), 450);
 }
 function selectOption(word) {
@@ -500,6 +504,8 @@ function nextQuestion() {
   quiz.matchFirstTry = true;
   quiz.triedWrong = [];
   quiz.matchFlash = null;
+  quiz.hatchHits = 0;
+  quiz.countFed = 0;
   render();
   speakTask();
 }

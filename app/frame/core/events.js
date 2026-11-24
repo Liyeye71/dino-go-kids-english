@@ -318,7 +318,82 @@ document.addEventListener("click", (e) => {
     recordSay();
   } else if (action === "play-voice") {
     playVoice();
+  } else if (action === "poke-dino") {
+    pokeDinoInteraction(el);
+  } else if (action === "next-home-word") {
+    sfx("tap");
+    reviewWord = randomWord();
+    render();
+  } else if (action === "island-prev") {
+    shiftIsland(-1);
+  } else if (action === "island-next") {
+    shiftIsland(1);
+  } else if (action === "island-jump") {
+    jumpIsland(el.dataset.idx);
+  } else if (action === "island-soon") {
+    sfx("tap");
+    toast(`${el.dataset.name || "新岛屿"}正在云雾中建造，先去每日飞艇抢先体验单词吧！`);
+  } else if (action === "td-hatch") {
+    if (!quiz || quiz.revealed) return;
+    const q = quiz.order[quiz.index];
+    quiz.hatchHits = (quiz.hatchHits || 0) + 1;
+    sfx(quiz.hatchHits >= (q.hatchNeed || 3) ? "excellent" : "tap");
+    if (quiz.hatchHits >= (q.hatchNeed || 3)) {
+      quiz.revealed = true;
+      quiz.choiceCorrect = true;
+      quiz.correct++;
+      quiz.words.push(q.word);
+      if (typeof unlockTaskWord === "function") unlockTaskWord(q);
+      setTimer(() => speak(`It's a ${q.word}! ${q.word}!`), 320);
+    }
+    render();
+  } else if (action === "td-count-feed") {
+    if (!quiz || quiz.revealed) return;
+    const q = quiz.order[quiz.index];
+    const numWords = ["One!", "Two!", "Three!", "Four!", "Five!"];
+    quiz.countFed = (quiz.countFed || 0) + 1;
+    const target = q.feedTarget || 2;
+    speak(numWords[quiz.countFed - 1] || String(quiz.countFed));
+    if (quiz.countFed >= target) {
+      quiz.revealed = true;
+      quiz.choiceCorrect = true;
+      quiz.correct++;
+      quiz.words.push(q.word);
+      sfx("excellent");
+      if (typeof unlockTaskWord === "function") unlockTaskWord(q);
+      setTimer(() => speak(`Yummy! ${q.food ? q.food.en : ""}`), 550);
+    } else {
+      sfx("correct");
+    }
+    render();
   }
+});
+
+
+/* 浮空岛舞台手势：支持在 iPad / 手机上左右滑动切换主题岛 */
+let _imTouchX = null;
+document.addEventListener("pointerdown", (e) => {
+  if (e.target.closest(".im-stage") && !e.target.closest(".im-nav-btn")) _imTouchX = e.clientX;
+});
+document.addEventListener("pointerup", (e) => {
+  if (_imTouchX === null) return;
+  const dx = e.clientX - _imTouchX;
+  _imTouchX = null;
+  if (Math.abs(dx) > 48 && current === "map") shiftIsland(dx < 0 ? 1 : -1);
+});
+
+/* 全屏恐龙营地空白区域点击彩蛋：指尖绽放恐龙小脚印波纹（0.8s 淡出） */
+document.addEventListener("pointerdown", (e) => {
+  if (e.target.closest("button, a, .bc-sign-board, .overlay")) return;
+  if (!e.target.closest(".basecamp-screen")) return;
+  const paw = document.createElement("span");
+  paw.className = "dino-paw-ripple";
+  paw.style.left = `${e.clientX}px`;
+  paw.style.top = `${e.clientY}px`;
+  paw.style.setProperty("--pr", `${Math.round(Math.random() * 44 - 22)}deg`);
+  paw.innerHTML = `<svg viewBox="0 0 40 40" fill="none"><g fill="#8C6232" opacity=".55"><ellipse cx="20" cy="25" rx="8.5" ry="6.8"/><circle cx="11" cy="14" r="3.4"/><circle cx="20" cy="10.5" r="3.6"/><circle cx="29" cy="14" r="3.4"/></g></svg>`;
+  document.body.appendChild(paw);
+  setTimeout(() => paw.remove(), 820);
 });
 
 window.addEventListener("popstate", (e) => {

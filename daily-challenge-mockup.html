@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日随机挑战 · 渲染稿</title>
+<style>
+  @font-face{font-family:"ZCOOL";src:url("./app/font/ZCOOLKuaiLe.woff2") format("woff2");font-display:swap}
+  :root{
+    --ink:#1D3A2E;--ink-2:#4F665A;--muted:#96876A;
+    --cream:#FBF3E3;--paper:#fff;--line:#EDDFC7;
+    --green:#2E8B57;--green-d:#1E6B47;--green-l:#E9F7D9;
+    --orange:#FF8A4C;--sun:#FFC94A;
+    --shadow:0 0.5rem 1.5rem rgba(120,90,40,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"ZCOOL","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:#EFE4CF;color:var(--ink);padding:2.5rem 1.5rem 4rem;
+  }
+  .page-head{max-width:1180px;margin:0 auto 1.75rem}
+  .page-head h1{font-size:1.65rem;letter-spacing:.02em}
+  .page-head p{color:#7C6A4B;font-size:.9rem;margin-top:.4rem;line-height:1.7}
+  .tag{display:inline-block;margin-top:.75rem;padding:.25rem .7rem;border-radius:99px;background:#fff;border:1px solid var(--line);
+    font-size:.72rem;color:#8A7A5C}
+  .stage{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start;max-width:1780px;margin:0 auto}
+  .frame-wrap{display:flex;flex-direction:column;gap:.75rem;align-items:center}
+  .frame-label{font-size:.8rem;color:#8A7A5C;letter-spacing:.06em}
+  .phone{width:390px;height:844px;background:var(--cream);border-radius:2.4rem;border:9px solid #2C2620;
+    box-shadow:0 1.4rem 3rem rgba(60,45,20,.28);overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .notch{position:absolute;top:.55rem;left:50%;transform:translateX(-50%);width:104px;height:23px;background:#2C2620;border-radius:99px;z-index:20}
+  .sbar{display:flex;justify-content:space-between;align-items:center;padding:1.05rem 1.35rem .2rem;font-size:.7rem;color:#7C6A4B;letter-spacing:.05em}
+  .scroll{flex:1;overflow:hidden;padding:1rem 1.25rem 1rem}
+
+  /* 通用卡片 */
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:1.5rem;box-shadow:0 .18rem 0 #EADAC0}
+
+  /* ===== 入口卡 ===== */
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;margin-top:.35rem}
+  .hero h2{font-size:2.1rem;letter-spacing:-.02em}
+  .hero h2 span{color:var(--green)}
+  .enlighten{display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;border-radius:99px;background:#fff;border:1px solid var(--line);font-size:.6rem;color:#7C6A4B}
+  .enlighten i{width:26px;height:16px;border-radius:99px;background:#E3D7BF;position:relative;display:inline-block}
+  .enlighten i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+
+  .daily{margin-top:1rem;padding:.95rem 1rem;display:flex;align-items:center;gap:.85rem;position:relative;overflow:hidden}
+  .daily::after{content:"";position:absolute;right:-28px;top:-34px;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle,#FFF1C9 0%,#FFF9EC 62%,transparent 70%);opacity:.9}
+  .daily .d-ic{width:3.25rem;height:3.25rem;border-radius:1.05rem;background:#FFE9BC;display:grid;place-items:center;font-size:1.55rem;flex:0 0 auto;z-index:1}
+  .daily .d-tx{flex:1;min-width:0;z-index:1}
+  .daily .d-tx h3{font-size:1.02rem;letter-spacing:.01em}
+  .daily .d-tx p{font-size:.72rem;color:var(--muted);margin-top:.22rem;line-height:1.5}
+  .daily .d-tx p b{color:#C57A16;font-weight:400}
+  .daily .d-pill{flex:0 0 auto;min-width:3.1rem;height:3.1rem;border-radius:1rem;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:.78rem;line-height:1.1;text-align:center;z-index:1;box-shadow:0 .16rem 0 var(--green-d)}
+  .daily .d-pill small{display:block;font-size:.55rem;opacity:.85;letter-spacing:.04em}
+
+  .section-t{display:flex;align-items:center;gap:.45rem;margin:1.15rem 0 .6rem;font-size:.8rem;color:#8A7A5C;letter-spacing:.08em}
+  .section-t::before,.section-t::after{content:"";height:1px;background:#E6D8BE;flex:1}
+
+  .scenes{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+  .scene{position:relative;border-radius:1rem;overflow:hidden;aspect-ratio:837/941;background:#F6EBD4;
+    background-image:linear-gradient(160deg,#F8EED8,#F1E2C2);border:1px solid var(--line)}
+  .scene .ph{position:absolute;inset:1rem;border:2px dashed #DCCBA8;border-radius:.7rem;display:grid;place-items:center;
+    color:#B09C74;font-size:.68rem;text-align:center;line-height:1.7}
+  .scene .cap{position:absolute;left:0;right:0;bottom:0;padding:1.5rem .7rem .6rem;color:#fff;
+    background:linear-gradient(180deg,rgba(38,30,18,0),rgba(38,30,18,.62) 50%,rgba(38,30,18,.84))}
+  .scene .cap b{display:block;font-size:.85rem}
+  .scene .cap em{display:block;font-style:normal;font-size:.62rem;opacity:.9;margin-top:.1rem}
+  .scene .badge{position:absolute;left:.45rem;top:.45rem;padding:.14rem .42rem;border-radius:99px;background:rgba(255,251,243,.95);
+    color:#8A6415;font-size:.55rem}
+  .tabbar{margin-top:auto;display:flex;justify-content:space-around;align-items:center;padding:.55rem 0 .9rem;border-top:1px solid var(--line);
+    background:rgba(255,252,246,.92);font-size:.6rem;color:#A89A7C}
+  .tabbar .on{color:var(--green);font-weight:700}
+  .tabbar i{display:block;font-size:1.05rem;margin-bottom:.12rem}
+
+  /* ===== 结算页 ===== */
+  .result{display:flex;flex-direction:column;height:100%;padding:0}
+  .result-head{text-align:center;margin-top:1.4rem}
+  .eyebrow{color:#B4A07B;font-size:.66rem;letter-spacing:.14em}
+  .result-head h1{font-size:2.2rem;font-weight:400;letter-spacing:-.03em;margin-top:.35rem}
+  .stars5{display:flex;align-items:flex-end;justify-content:center;gap:.22rem;height:4.6rem;margin-top:.5rem}
+  .stars5 svg{width:3rem;height:3rem;filter:drop-shadow(0 .14rem 0 rgba(200,150,40,.28))}
+  .stars5 svg:nth-child(1){transform:rotate(-16deg) translateY(.4rem)}
+  .stars5 svg:nth-child(2){transform:rotate(-8deg) translateY(.15rem)}
+  .stars5 svg:nth-child(4){transform:rotate(8deg) translateY(.15rem)}
+  .stars5 svg:nth-child(5){transform:rotate(16deg) translateY(.4rem)}
+  .result-sub{text-align:center;font-size:.82rem;color:#96876A;margin-top:.55rem;line-height:1.6}
+  .result-sub b{color:#C57A16;font-weight:400}
+
+  .rcard{margin-top:1.15rem;border-radius:1.6rem;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);padding:1.15rem 1.2rem}
+  .rc-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+  .rc-mode{display:flex;align-items:center;gap:.7rem}
+  .rc-mode .ic{width:3rem;height:3rem;border-radius:1rem;background:#F1F2F3;display:grid;place-items:center;font-size:1.35rem}
+  .rc-mode .lb{font-size:.68rem;color:var(--muted);letter-spacing:.04em}
+  .rc-mode .v{font-size:1.15rem;color:#8B8F92;margin-top:.15rem}
+  .rc-stars{display:flex;align-items:center;gap:.3rem;height:2.4rem;padding:0 .8rem;border-radius:99px;background:#FFF5D1;
+    color:#C57A16;font-size:1rem;box-shadow:0 .1rem 0 #F0DFA6}
+  .rc-stars svg{width:1.15rem;height:1.15rem}
+  .rc-div{height:1px;background:#F3E8D4;margin:.95rem 0 .8rem}
+  .rc-stats{display:flex}
+  .rc-stat{flex:1;text-align:center;position:relative}
+  .rc-stat+.rc-stat::before{content:"";position:absolute;left:0;top:.2rem;bottom:.2rem;width:1px;background:#F3E8D4}
+  .rc-stat b{display:block;font-size:1.28rem}
+  .rc-stat b.g{color:var(--green-d)}
+  .rc-stat span{display:block;font-size:.66rem;color:var(--muted);margin-top:.2rem}
+  .words{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin-top:.95rem;padding-top:.8rem;border-top:1px dashed #EFE2CA}
+  .words .w{font-size:.68rem;color:#6E5A36;background:#FBF3E3;border:1px solid #EFE2CA;border-radius:99px;padding:.22rem .55rem}
+  .words .hit{background:#E9F7D9;border-color:#CFE7B7;color:#3E6E33}
+  .words .miss{background:#FDEDE9;border-color:#F5D2C9;color:#B4543C}
+
+  .actions{margin-top:auto;padding:1rem 0 1.5rem;display:flex;flex-direction:column;gap:.6rem}
+  .btn{height:3.15rem;border-radius:99px;border:0;font-family:inherit;font-size:1rem;cursor:pointer;letter-spacing:.02em}
+  .btn.primary{background:var(--green);color:#fff;box-shadow:0 .2rem 0 var(--green-d)}
+  .btn.ghost{background:#fff;color:#7C6A4B;border:1px solid var(--line);height:2.7rem;font-size:.86rem}
+  .btn.off{background:#EDE6D7;color:#A99A7B;box-shadow:none;cursor:not-allowed}
+  .btn-note{text-align:center;font-size:.64rem;color:#A99A7B}
+
+  /* ===== 可爱装饰（恐龙 / 气泡 / 星光 / 爪印） ===== */
+  .mascot{position:relative;display:flex;justify-content:center;margin-top:.35rem}
+  .mascot svg.dino{width:82px;height:82px;animation:bob 2.6s ease-in-out infinite;
+    filter:drop-shadow(0 .3rem 0 rgba(120,90,40,.10))}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+  .bubble{position:absolute;left:calc(50% + 36px);top:0;background:#fff;border:1.5px solid #F0E2C6;border-radius:14px;
+    padding:.38rem .62rem;font-size:.63rem;line-height:1.45;color:#7C6A4B;white-space:nowrap;
+    box-shadow:0 .25rem .6rem rgba(120,90,40,.10)}
+  .bubble::after{content:"";position:absolute;left:-7px;top:15px;width:9px;height:9px;background:#fff;
+    border-left:1.5px solid #F0E2C6;border-bottom:1.5px solid #F0E2C6;transform:rotate(45deg)}
+  .bubble b{color:#C57A16}
+  .spark{position:absolute;color:#FFC94A;font-size:.9rem;animation:twinkle 1.9s ease-in-out infinite;pointer-events:none}
+  .spark.s1{left:calc(50% - 64px);top:4px;animation-delay:.15s}
+  .spark.s2{left:calc(50% + 52px);top:38px;font-size:.62rem;animation-delay:.75s}
+  .spark.s3{left:calc(50% - 50px);top:46px;font-size:.6rem;color:#FF8A4C;animation-delay:1.15s}
+  @keyframes twinkle{0%,100%{opacity:.2;transform:scale(.75)}50%{opacity:1;transform:scale(1.15)}}
+  .cheer{margin-top:.5rem;display:inline-flex;align-items:center;gap:.32rem;padding:.3rem .78rem;border-radius:99px;
+    background:#FFF5D1;color:#A8721A;font-size:.69rem;box-shadow:0 .1rem 0 #F0DFA6}
+  .cheer svg{width:.9rem;height:.9rem;flex:0 0 auto}
+  .crown{position:absolute;left:50%;top:-13px;transform:translateX(-50%) rotate(-7deg);width:42px;height:31px;
+    filter:drop-shadow(0 .18rem 0 rgba(200,150,40,.25));animation:bob 2.6s ease-in-out infinite}
+  .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .confetti i{position:absolute;top:-16px;width:7px;height:11px;border-radius:2px;animation:fall 3.4s linear infinite}
+  @keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(460px) rotate(340deg);opacity:0}}
+  .result-head{position:relative;z-index:1}
+  .rcard{position:relative;overflow:hidden}
+  .rcard .paws{position:absolute;right:.65rem;bottom:.5rem;display:flex;gap:.3rem;opacity:.2;color:#C9A96A;
+    transform:rotate(-14deg);pointer-events:none}
+  .rcard .paws svg{width:1.05rem;height:1.05rem}
+  .phone.tall .scroll{overflow-y:auto;scrollbar-width:none}
+  .phone.tall .scroll::-webkit-scrollbar{display:none}
+  .phone.tall .result-head{margin-top:.25rem}
+  .phone.tall .stars5{height:4.05rem}
+  .phone.tall .stars5 svg{width:2.7rem;height:2.7rem}
+
+  .phone.tall .scroll{padding-top:.6rem}
+  .phone.tall .result{padding:0 .2rem}
+  .mock-tip{max-width:1180px;margin:2.25rem auto 0;background:#fff;border:1px solid var(--line);border-radius:1.25rem;padding:1.1rem 1.25rem}
+  .mock-tip h4{font-size:.92rem;margin-bottom:.55rem}
+  .mock-tip ul{margin-left:1.1rem;color:#6E5A36;font-size:.8rem;line-height:1.9}
+  .mock-tip code{background:#FBF3E3;border:1px solid #EFE2CA;border-radius:.35rem;padding:.05rem .3rem;font-family:Consolas,monospace;font-size:.76rem}
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>每日随机挑战 · 入口与结算渲染稿</h1>
+    <p>用于确认视觉与文案。玩法：每天 2 次、每次 5 题、全主题混抽；答对 1 题得 1★，答错不得星；不推进关卡、不计成长值。</p>
+    <span class="tag">静态渲染稿 · 不接入真实数据</span>
+  </div>
+
+  <div class="stage">
+    <!-- ===== 1. 入口 ===== -->
+    <div class="frame-wrap">
+      <div class="frame-label">① 闯关页入口</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="sbar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="scroll">
+          <div class="hero">
+            <h2>动物<span>乐园</span></h2>
+            <div class="enlighten">🍬 启蒙模式 <i></i></div>
+          </div>
+
+          <div class="card daily">
+            <div class="d-ic">🎲</div>
+            <div class="d-tx">
+              <h3>每日随机挑战</h3>
+              <p>全主题混抽 5 题 · 答对 1 题得 <b>1★</b> · 不计成长值</p>
+            </div>
+            <div class="d-pill">2/2<small>今日</small></div>
+          </div>
+
+          <div class="section-t">选择场景</div>
+          <div class="scenes">
+            <div class="scene">
+              <div class="ph">animal-zoo.webp<br>（现有素材）</div>
+              <div class="cap"><b>神奇动物园</b><em>50 关 · 草原探索</em></div>
+            </div>
+            <div class="scene">
+              <div class="ph">animal-ocean.webp<br>（现有素材）</div>
+              <div class="badge">敬请期待</div>
+              <div class="cap"><b>海洋馆</b><em>即将开放</em></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div><i>🏠</i>首页</div>
+          <div class="on"><i>🗺️</i>闯关</div>
+          <div><i>📚</i>单词</div>
+          <div><i>🎒</i>收集</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2. 结算（3/5） ===== -->
+    <div class="frame-wrap">
+      <div class="frame-label">② 结算 · 答对 3 题</div>
+      <div class="phone tall">
+        <div class="notch"></div>
+        <div class="sbar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="scroll">
+          <div class="result">
+            <div class="confetti">
+              <i style="left:8%;background:#FFC94A;animation-delay:.1s"></i>
+              <i style="left:20%;background:#FF8A4C;animation-delay:1.1s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:33%;background:#5BC178;animation-delay:.6s"></i>
+              <i style="left:47%;background:#9FDCF2;animation-delay:1.7s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:61%;background:#B8A7FF;animation-delay:.95s"></i>
+              <i style="left:74%;background:#FF6F61;animation-delay:2s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:88%;background:#FFC94A;animation-delay:1.45s"></i>
+            </div>
+            <div class="result-head">
+              <div class="eyebrow">DAILY CHALLENGE · 5 题</div>
+              <h1>随机挑战完成！</h1>
+              <div class="mascot">
+                <span class="spark s1">✦</span><span class="spark s2">✦</span><span class="spark s3">✧</span>
+                <div class="bubble">你答对了 <b>3</b> 个单词！</div>
+                <svg class="dino" viewBox="0 0 120 120" aria-hidden="true">
+                  <ellipse cx="60" cy="106" rx="30" ry="5.5" fill="#EAD9B8" opacity=".55"/>
+                  <path d="M92 84c8 1 13 5 15 11-6 1-12-1-16-5z" fill="#63C682"/>
+                  <path d="M30 90c-4-22 6-44 30-44 22 0 32 17 32 36 0 9-7 14-16 14H46c-9 0-16-2-16-6z" fill="#63C682"/>
+                  <path d="M38 84c-2-16 5-32 22-32 15 0 23 12 23 26 0 6-5 10-11 10H48c-6 0-10-1-10-4z" fill="#8BDDA4" opacity=".55"/>
+                  <path d="M56 40l4-10 5 9z" fill="#43A96A"/>
+                  <path d="M70 34l5-9 4 9z" fill="#3FA464"/>
+                  <circle cx="50" cy="66" r="5.2" fill="#1D3A2E"/>
+                  <circle cx="74" cy="66" r="5.2" fill="#1D3A2E"/>
+                  <circle cx="51.8" cy="64" r="1.7" fill="#fff"/>
+                  <circle cx="75.8" cy="64" r="1.7" fill="#fff"/>
+                  <path d="M55 78q7 7 14 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                  <circle cx="42" cy="76" r="4.2" fill="#FFB3A7" opacity=".85"/>
+                  <circle cx="82" cy="76" r="4.2" fill="#FFB3A7" opacity=".85"/>
+                </svg>
+              </div>
+              <div class="stars5">
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#F1E7D2" stroke="#E5D7BC" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#F1E7D2" stroke="#E5D7BC" stroke-width="1.1"/></svg>
+              </div>
+              <div class="result-sub">答对 <b>3 / 5</b> · 获得 <b>3★</b> · 今天还能挑战 1 次</div>
+              <div class="cheer">
+                <svg viewBox="0 0 24 24" fill="#E0A63F"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+                不错哦！再答对 2 题就满星啦
+              </div>
+            </div>
+
+            <div class="rcard">
+              <div class="rc-top">
+                <div class="rc-mode">
+                  <div class="ic">🎲</div>
+                  <div>
+                    <div class="lb">本模式</div>
+                    <div class="v">不计成长值</div>
+                  </div>
+                </div>
+                <div class="rc-stars">
+                  <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A"/></svg>
+                  +3
+                </div>
+              </div>
+              <div class="rc-div"></div>
+              <div class="rc-stats">
+                <div class="rc-stat"><b class="g">60%</b><span>正确率</span></div>
+                <div class="rc-stat"><b>01:12</b><span>用时</span></div>
+                <div class="rc-stat"><b>1 次</b><span>今日剩余</span></div>
+              </div>
+              <div class="words">
+                <span class="w hit">tiger ✓</span>
+                <span class="w hit">jump ✓</span>
+                <span class="w miss">red ✗</span>
+                <span class="w hit">apple ✓</span>
+                <span class="w miss">moon ✗</span>
+              </div>
+              <div class="paws">
+                <svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" style="transform:translateY(-5px) rotate(12deg)"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary">再抽一次（剩 1 次）</button>
+              <button class="btn ghost">回地图</button>
+              <div class="btn-note">随机挑战不推进关卡进度，也不计入成长值</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. 次数用完 ===== -->
+    <div class="frame-wrap">
+      <div class="frame-label">③ 今日次数用完</div>
+      <div class="phone tall">
+        <div class="notch"></div>
+        <div class="sbar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="scroll">
+          <div class="result">
+            <div class="result-head">
+              <div class="eyebrow">DAILY CHALLENGE · 已完成</div>
+              <h1>今天挑战完啦</h1>
+              <div class="mascot">
+                <span class="spark s1">✦</span><span class="spark s2">✦</span>
+                <div class="bubble">今天已经很努力啦～</div>
+                <svg class="dino" viewBox="0 0 120 120" aria-hidden="true">
+                  <ellipse cx="60" cy="106" rx="30" ry="5.5" fill="#EAD9B8" opacity=".55"/>
+                  <path d="M92 84c8 1 13 5 15 11-6 1-12-1-16-5z" fill="#63C682"/>
+                  <path d="M30 90c-4-22 6-44 30-44 22 0 32 17 32 36 0 9-7 14-16 14H46c-9 0-16-2-16-6z" fill="#63C682"/>
+                  <path d="M38 84c-2-16 5-32 22-32 15 0 23 12 23 26 0 6-5 10-11 10H48c-6 0-10-1-10-4z" fill="#8BDDA4" opacity=".55"/>
+                  <path d="M56 40l4-10 5 9z" fill="#43A96A"/>
+                  <path d="M70 34l5-9 4 9z" fill="#3FA464"/>
+                  <path d="M45 66q5 5 10 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                  <path d="M69 66q5 5 10 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                  <path d="M55 79q7 5 14 0" stroke="#1D3A2E" stroke-width="3" fill="none" stroke-linecap="round"/>
+                  <circle cx="42" cy="76" r="4.2" fill="#FFB3A7" opacity=".8"/>
+                  <circle cx="82" cy="76" r="4.2" fill="#FFB3A7" opacity=".8"/>
+                  <text x="96" y="44" font-size="13" fill="#7FA98F" font-family="inherit">z</text>
+                  <text x="103" y="32" font-size="9" fill="#9DBFAA" font-family="inherit">z</text>
+                </svg>
+              </div>
+              <div class="stars5">
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#F1E7D2" stroke="#E5D7BC" stroke-width="1.1"/></svg>
+              </div>
+              <div class="result-sub">今天的 2 次都用完啦 · 明天再来抽新题</div>
+              <div class="cheer">
+                <svg viewBox="0 0 24 24" fill="#E0A63F"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+                休息一下，明天再来抽新题～
+              </div>
+            </div>
+
+            <div class="rcard">
+              <div class="rc-top">
+                <div class="rc-mode">
+                  <div class="ic">🎲</div>
+                  <div>
+                    <div class="lb">本模式</div>
+                    <div class="v">不计成长值</div>
+                  </div>
+                </div>
+                <div class="rc-stars">
+                  <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A"/></svg>
+                  +4
+                </div>
+              </div>
+              <div class="rc-div"></div>
+              <div class="rc-stats">
+                <div class="rc-stat"><b class="g">80%</b><span>正确率</span></div>
+                <div class="rc-stat"><b>01:35</b><span>用时</span></div>
+                <div class="rc-stat"><b>0 次</b><span>今日剩余</span></div>
+              </div>
+              <div class="words">
+                <span class="w hit">lion ✓</span>
+                <span class="w hit">blue ✓</span>
+                <span class="w hit">run ✓</span>
+                <span class="w hit">banana ✓</span>
+                <span class="w miss">star ✗</span>
+              </div>
+              <div class="paws">
+                <svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" style="transform:translateY(-5px) rotate(12deg)"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn off">明天再来</button>
+              <button class="btn ghost">回地图</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===== 4. 结算（5/5 全对） ===== -->
+    <div class="frame-wrap">
+      <div class="frame-label">④ 结算 · 全对满星</div>
+      <div class="phone tall">
+        <div class="notch"></div>
+        <div class="sbar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="scroll">
+          <div class="result">
+            <div class="confetti">
+              <i style="left:6%;background:#FFC94A;animation-delay:.05s"></i>
+              <i style="left:16%;background:#FF8A4C;animation-delay:.9s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:27%;background:#5BC178;animation-delay:1.5s"></i>
+              <i style="left:38%;background:#9FDCF2;animation-delay:.45s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:52%;background:#B8A7FF;animation-delay:1.9s"></i>
+              <i style="left:64%;background:#FF6F61;animation-delay:.7s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:76%;background:#FFC94A;animation-delay:2.3s"></i>
+              <i style="left:88%;background:#5BC178;animation-delay:1.2s;width:6px;height:6px;border-radius:50%"></i>
+              <i style="left:94%;background:#FF8A4C;animation-delay:.35s"></i>
+            </div>
+            <div class="result-head">
+              <div class="eyebrow">DAILY CHALLENGE · 全对</div>
+              <h1>满星通关！</h1>
+              <div class="mascot">
+                <span class="spark s1">✦</span><span class="spark s2">✦</span><span class="spark s3">✧</span>
+                <svg class="crown" viewBox="0 0 48 34" aria-hidden="true">
+                  <path d="M4 27l3-18 9 8 7-13 7 13 9-8 3 18z" fill="#FFC94A" stroke="#E0A63F" stroke-width="2" stroke-linejoin="round"/>
+                  <circle cx="7" cy="9" r="2.6" fill="#FF8A4C"/><circle cx="24" cy="4" r="2.8" fill="#FF6F61"/><circle cx="41" cy="9" r="2.6" fill="#FF8A4C"/>
+                </svg>
+                <div class="bubble">全部答对，太神啦！</div>
+                <svg class="dino" viewBox="0 0 120 120" aria-hidden="true">
+                  <ellipse cx="60" cy="106" rx="30" ry="5.5" fill="#EAD9B8" opacity=".55"/>
+                  <path d="M92 84c8 1 13 5 15 11-6 1-12-1-16-5z" fill="#63C682"/>
+                  <path d="M30 90c-4-22 6-44 30-44 22 0 32 17 32 36 0 9-7 14-16 14H46c-9 0-16-2-16-6z" fill="#63C682"/>
+                  <path d="M38 84c-2-16 5-32 22-32 15 0 23 12 23 26 0 6-5 10-11 10H48c-6 0-10-1-10-4z" fill="#8BDDA4" opacity=".55"/>
+                  <path d="M56 40l4-10 5 9z" fill="#43A96A"/>
+                  <path d="M70 34l5-9 4 9z" fill="#3FA464"/>
+                  <path d="M45 64q5 6 10 0" stroke="#1D3A2E" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+                  <path d="M69 64q5 6 10 0" stroke="#1D3A2E" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+                  <path d="M53 77q8 9 16 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                  <circle cx="41" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/>
+                  <circle cx="83" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/>
+                </svg>
+              </div>
+              <div class="stars5">
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A" stroke="#E9A93C" stroke-width="1.1"/></svg>
+              </div>
+              <div class="result-sub">答对 <b>5 / 5</b> · 获得 <b>5★</b> · 今天还能挑战 1 次</div>
+              <div class="cheer">
+                <svg viewBox="0 0 24 24" fill="#E0A63F"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z"/></svg>
+                全对！你是今天的单词小达人 🎉
+              </div>
+            </div>
+
+            <div class="rcard">
+              <div class="rc-top">
+                <div class="rc-mode">
+                  <div class="ic">🎲</div>
+                  <div>
+                    <div class="lb">本模式</div>
+                    <div class="v">不计成长值</div>
+                  </div>
+                </div>
+                <div class="rc-stars">
+                  <svg viewBox="0 0 24 24"><path d="M12 2.6l2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.5 6.2 20.5l1.1-6.5-4.7-4.6 6.5-.95z" fill="#FFC94A"/></svg>
+                  +5
+                </div>
+              </div>
+              <div class="rc-div"></div>
+              <div class="rc-stats">
+                <div class="rc-stat"><b class="g">100%</b><span>正确率</span></div>
+                <div class="rc-stat"><b>01:28</b><span>用时</span></div>
+                <div class="rc-stat"><b>1 次</b><span>今日剩余</span></div>
+              </div>
+              <div class="words">
+                <span class="w hit">panda ✓</span>
+                <span class="w hit">green ✓</span>
+                <span class="w hit">sing ✓</span>
+                <span class="w hit">milk ✓</span>
+                <span class="w hit">star ✓</span>
+              </div>
+              <div class="paws">
+                <svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" style="transform:translateY(-5px) rotate(12deg)"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary">再抽一次（剩 1 次）</button>
+              <button class="btn ghost">回地图</button>
+              <div class="btn-note">随机挑战不推进关卡进度，也不计入成长值</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mock-tip">
+    <h4>规则与实现要点（确认后接入）</h4>
+    <ul>
+      <li>入口位置：闯关页标题下方、场景卡上方，显示今日剩余次数 <code>2/2</code>。</li>
+      <li>词库：从全部主题 <code>WORD_SETS</code> 混抽，5 题不重复词；题型沿用现有题库，避开需要长句的 <code>dialog</code>。</li>
+      <li>计星：答对 1 题 = 1★，最高 5★；答错不得星；直接进 <code>state.stars</code> 余额。</li>
+      <li>不计：关卡进度、成长值、三星收藏、学习日志、旅程/宝箱星星（<code>themeStars</code> 不统计）。</li>
+      <li>限次：新增 <code>dailyDay / dailyCount</code>，全主题共享，每天 2 次，按自然日重置。</li>
+      <li>结算页复用现有结果页，成长值卡片替换为“本模式不计成长值”，星排改为 5 颗。</li>
+      <li>鼓励语按得分切换：0-2 题“没关系，明天再来挑战一次”／3 题“再答对 2 题就满星啦”／4 题“只差 1 颗星就满星”／5 题“全对！你是今天的单词小达人”。</li>
+      <li>装饰元素：小恐龙（点头浮动）、对话气泡、闪烁星星、满星礼花与小皇冠、卡片爪印，全部为内联 SVG，不新增图片资源。</li>
+    </ul>
+  </div>
+</body>
+</html>

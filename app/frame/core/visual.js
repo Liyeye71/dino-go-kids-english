@@ -372,6 +372,11 @@ const QuizUiArt = {
       <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#764422" stroke-width="2"/>
     </svg>`;
   },
+
+  /* Logo 外框：任意页面放入即可复用同一套尺寸与间距 */
+  logoBanner() {
+    return `<div class="ref-logo">${this.logo()}</div>`;
+  },
 };
 
 /* ------------------------------------------------ dino art */

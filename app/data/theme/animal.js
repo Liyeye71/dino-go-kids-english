@@ -1,13 +1,13 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
-   陆地动物园：10 个主题馆 × 5 关 = 50 关，共用一张连续路线图
-   题库共 132 词（仅陆地动物园）：核心动物名词 44 + 动作动词 49 + 身体部位 19 + 特征形容词 20
+   神奇动物园：50 关，共用一张连续路线图
+   题库共 146 词（仅神奇动物园）：核心动物名词 58 + 动作动词 49 + 身体部位 19 + 特征形容词 20
    每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
 
-/* 每个主题馆固定 5 关 */
-const LEVELS_PER_VENUE = 5;
+/* 每 5 关为一个阶段（第 5 关为阶段 BOSS） */
+const LEVELS_PER_STAGE = 5;
 
 /* 路线坐标：animal-zoo-map.webp 上 1~50 号白色圆圈中心（百分比，OpenCV 标定） */
 const ANIMAL_ZOO_NODES = [
@@ -63,10 +63,10 @@ const ANIMAL_ZOO_NODES = [
   { x: 75.75, y: 16.65 }, /* 50 */
 ];
 
-/* 10 个主题馆：每馆 5 关，关卡编号 1~50 按馆顺序连续排列 */
+/* 关卡编号 1~50，按固定顺序连续排列 */
 /* ============================================================
-   动物乐园题库（132 词，仅陆地动物园）
-   1. 核心动物名词 44 个：看图选词 / 听音识图 / 词汇拼图
+   动物乐园题库（146 词，仅神奇动物园）
+   1. 核心动物名词 58 个（含 15 个海洋动物）：看图选词 / 听音识图 / 词汇拼图
    2. 动作动词 49 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 19 个：局部特写（放大镜高亮局部）
    4. 特征形容词 20 个：对比观察（同框对照 + 高亮目标）
@@ -76,7 +76,7 @@ const ANIMAL_ZOO_NODES = [
    - 同一个词可被其他主题（school 等）同时引用；下方 normalize 仍按原逻辑
      派生 assetKey/img/food/dialogueClue 等动物园场景字段 */
 const ANIMAL_ZOO_WORD_REFS = [
-  /* ---------------- 1. 核心动物名词 44 个 ---------------- */
+  /* ---------------- 1. 核心动物名词 58 个 ---------------- */
   "lion", "tiger", "monkey", "panda",
   "bear", "zebra", "giraffe", "elephant",
   "hippo", "crocodile", "kangaroo", "rabbit",
@@ -88,6 +88,10 @@ const ANIMAL_ZOO_WORD_REFS = [
   "pig", "chicken", "bird", "owl",
   "eagle", "crow", "baboon",
   "flamingo", "koala", "lizard", "raccoon", "sloth",
+  /* 海洋动物 14 个（turtle 已包含在上方陆地名单，合计 15 种） */
+  "penguin", "fish", "shark", "seal", "whale",
+  "dolphin", "octopus", "crab", "starfish", "jellyfish",
+  "shrimp", "squid", "clownfish", "otter",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -198,9 +202,14 @@ const ANIMAL_FOODS = {
   milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp" },
   honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp" },
   watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp" },
+  /* 海洋食物：暂无插画，直接用 emoji 呈现 */
+  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "" },
+  shrimp: { id: "shrimp", en: "shrimp", zh: "虾", phon: "/ʃrɪmp/", emoji: "🦐", img: "" },
+  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "" },
+  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "" },
 };
 
-/* 44 种动物各自爱吃的食物 */
+/* 58 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
@@ -215,6 +224,11 @@ const ANIMAL_FEED_MAP = {
   panda: "bamboo",
   dog: "bone",
   flamingo: "fish", raccoon: "fish",
+  /* 海洋动物：按常识配置——鱼食藻、鲸/水母/虾食浮游生物、海星/章鱼食贝类、鲨鱼食肉 */
+  penguin: "fish", fish: "seaweed", shark: "meat", seal: "fish",
+  whale: "plankton", dolphin: "fish", octopus: "shellfish", crab: "fish",
+  starfish: "shellfish", jellyfish: "plankton", shrimp: "plankton", squid: "fish",
+  clownfish: "plankton", otter: "fish",
 };
 
 /* 食性分类：喂食题只从“明显不吃”的食物类别里取干扰项，
@@ -227,6 +241,11 @@ const ANIMAL_DIET = {
   /* 杂食动物在启蒙模式下不出喂食题，因为可吃食物太杂，容易误判 */
   bear: "omnivore", pig: "omnivore", chicken: "omnivore", duck: "omnivore", crow: "omnivore",
   raccoon: "omnivore",
+  /* 海洋动物统一按肉食处理，避免给孩子出「海豚吃竹子」这类错误搭配 */
+  penguin: "carnivore", fish: "carnivore", shark: "carnivore", seal: "carnivore",
+  whale: "carnivore", dolphin: "carnivore", octopus: "carnivore", crab: "carnivore",
+  starfish: "carnivore", jellyfish: "carnivore", shrimp: "carnivore", squid: "carnivore",
+  clownfish: "carnivore", otter: "carnivore",
 };
 
 /* 19 个身体部位 → 宿主动物（局部特写直接裁剪宿主图片） */
@@ -264,112 +283,24 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
   }
 });
 
-const ANIMAL_ZOO_VENUES = [
-  {
-    id: "lion",
-    en: "Lion Savannah",
-    zh: "狮子草原",
-    icon: "🦁",
-  },
-  {
-    id: "monkey",
-    en: "Monkey Island",
-    zh: "猴子岛",
-    icon: "🐒",
-  },
-  {
-    id: "plains",
-    en: "Giraffe & Zebra Plains",
-    zh: "长颈鹿斑马平原",
-    icon: "🦒",
-  },
-  {
-    id: "elephant",
-    en: "Elephant Kingdom",
-    zh: "大象王国",
-    icon: "🐘",
-  },
-  {
-    id: "reptile",
-    en: "Reptile Museum",
-    zh: "爬行动物馆",
-    icon: "🦎",
-  },
-  {
-    id: "tiger",
-    en: "Tiger Temple",
-    zh: "老虎庙",
-    icon: "🐯",
-  },
-  {
-    id: "panda",
-    en: "Panda Pavilion",
-    zh: "熊猫馆",
-    icon: "🐼",
-  },
-  {
-    id: "kangaroo",
-    en: "Kangaroo Creek",
-    zh: "袋鼠溪",
-    icon: "🦘",
-  },
-  {
-    id: "bird",
-    en: "Bird Aviary",
-    zh: "鸟舍",
-    icon: "🦜",
-  },
-  {
-    id: "circus",
-    en: "Animal Frolic Circus",
-    zh: "动物欢乐马戏团",
-    icon: "🎪",
-  },
-];
+/* 50 个关卡：level 1~50，坐标取自路线图标定 */
+const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_NODES.map((node, i) => ({
+  level: i + 1,
+  x: node.x,
+  y: node.y,
+}));
 
-/* 展平为 50 个关卡：level 1~50，step 为馆内第 1~5 关 */
-const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_VENUES.flatMap((venue, vi) =>
-  Array.from({ length: LEVELS_PER_VENUE }, (_, li) => {
-    const level = vi * LEVELS_PER_VENUE + li + 1;
-    return {
-      level,
-      venueIndex: vi,
-      venue,
-      step: li + 1,
-      x: ANIMAL_ZOO_NODES[level - 1].x,
-      y: ANIMAL_ZOO_NODES[level - 1].y,
-    };
-  })
-);
-
-/* 全场景词池：50 关共用同一套 132 词题库（仅陆地动物园） */
+/* 全场景词池：50 关共用同一套 146 词题库（仅神奇动物园） */
 
 const ANIMAL_SCENES = [
   {
     id: "zoo",
-    name: "陆地动物园",
-    /* 入口卡封面（竖版插画），点击进入下方路线抽屉 */
-    image: "./images/background/animal-zoo.webp",
-    alt: "陆地动物园：狮子、长颈鹿、大象与斑马",
+    name: "神奇动物园",
+    /* 点击入口卡进入下方路线抽屉 */
     mapImage: "./images/background/animal-zoo-map.webp",
-    routeLabel: "草原探索路线",
-    entryNote: "50 关 · 草原探索",
-    description: "狮子、长颈鹿与草原伙伴",
-    playable: true,
     levelCount: ANIMAL_ZOO_LEVELS.length,
-    venues: ANIMAL_ZOO_VENUES,
     levels: ANIMAL_ZOO_LEVELS,
     words: ANIMAL_ZOO_WORDS,
-  },
-  {
-    id: "ocean",
-    name: "海洋馆",
-    /* 关卡数据未接入：入口卡可点，仅弹出静态路线预览 */
-    image: "./images/background/animal-ocean.webp",
-    alt: "海洋馆：鲸鱼、海龟与小丑鱼",
-    entryNote: "即将开放",
-    description: "鲸鱼、海龟与珊瑚礁",
-    playable: false,
   },
 ];
 
@@ -434,9 +365,7 @@ function renderZooRouteSheet(scene, prog) {
   const total = scene.levelCount || scene.levels.length;
   const level = Math.min(total, Math.max(1, prog.level || 1));
   const stars = themeStars(prog);
-  const starMax = Math.floor(total / LEVELS_PER_VENUE) * 3;
-  const current = scene.levels[level - 1];
-  const venue = current ? current.venue : scene.venues[scene.venues.length - 1];
+  const starMax = Math.floor(total / LEVELS_PER_STAGE) * 3;
 
   const nodes = scene.levels.map((s) => {
     const locked = s.level > level;
@@ -451,24 +380,23 @@ function renderZooRouteSheet(scene, prog) {
       full ? "full" : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
-      s.step === LEVELS_PER_VENUE ? "venue-boss" : "",
     ].filter(Boolean).join(" ");
     return `<button type="button" class="${cls}" style="left:${s.x}%;top:${s.y}%"
         data-action="zoo-node" data-level="${s.level}"
-        title="${s.venue.zh} · 第 ${s.level} 关${done ? ` · ★${best}` : ""}"
-        aria-label="${s.venue.zh}第 ${s.step} 关${full ? "，已满星" : done ? `，已通关，${best} 星，可复习` : isCurrent ? "，当前关卡" : "，未解锁"}"
+        title="第 ${s.level} 关${done ? ` · ★${best}` : ""}"
+        aria-label="第 ${s.level} 关${full ? "，已满星" : done ? `，已通关，${best} 星，可复习` : isCurrent ? "，当前关卡" : "，未解锁"}"
         ${locked || full ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
   }).join("");
   const lastBest = (prog.stars && prog.stars[level]) || 0;
   const allDone = Boolean(prog.cleared && prog.cleared[level] && lastBest >= 3);
 
   return `<div class="overlay">
-    <section class="sheet animal-route-sheet zoo-route-sheet" role="dialog" aria-modal="true" aria-label="陆地动物园闯关路线">
+    <section class="sheet animal-route-sheet zoo-route-sheet" role="dialog" aria-modal="true" aria-label="神奇动物园闯关路线">
       <div class="grab"></div>
       <div class="zoo-route-head">
         <div class="zoo-route-title">
-          <strong>🦁 陆地动物园</strong>
-          <small>${allDone ? "全部通关" : `第 ${level} 关`} · ${venue ? venue.zh : "全部通关"} · ★ ${stars} / ${starMax}</small>
+          <strong>🦁 神奇动物园</strong>
+          <small>${allDone ? "全部通关" : `第 ${level} 关`} · ★ ${stars} / ${starMax}</small>
         </div>
         <button type="button" class="zoo-route-close" data-action="close-overlay" aria-label="关闭路线图">×</button>
       </div>
@@ -476,7 +404,7 @@ function renderZooRouteSheet(scene, prog) {
         <div class="zoo-board-viewport">
           <div class="zoo-board-inner">
             <div class="animal-route-map has-map zoo" style="--arm-ratio:1505/1045">
-              <img class="arm-bg" src="${scene.mapImage}" alt="陆地动物园闯关路线图">
+              <img class="arm-bg" src="${scene.mapImage}" alt="神奇动物园闯关路线图">
               ${nodes}
             </div>
           </div>
@@ -498,28 +426,4 @@ defineDinoTheme({
   emoji: "🦁",
   dialog: { q: "What animal is this?", a: "It's a {word}." },
   scenes: ANIMAL_SCENES,
-  map: {
-    title: "动物园闯关地图",
-    intro: "选择场景进入：陆地动物园 10 个主题馆、50 个关卡；海洋馆筹备中。",
-    sceneSelector: true,
-    bg: "#FBF3E3",
-    border: "#E7DAC3",
-    render() {
-      /* 双场景入口：左右两张竖版场景卡，动物园进路线抽屉，海洋馆暂为预览 */
-      const cards = ANIMAL_SCENES.map((scene) => {
-        const soon = scene.playable === false;
-        return `<button type="button" class="zoo-scene-card${soon ? " is-soon" : ""}"
-          data-action="open-animal-scene" data-scene="${scene.id}"
-          aria-label="${soon ? `${scene.name}即将开放，查看路线预览` : `进入${scene.name}`}">
-          <img class="zoo-scene-img" src="${scene.image}" alt="${scene.alt || scene.name}">
-          <span class="zoo-scene-foot"><b>${scene.name}</b><em>${scene.entryNote || ""}</em></span>
-          ${soon ? `<span class="zoo-scene-badge">敬请期待</span>` : ""}
-        </button>`;
-      }).join("");
-      return `<section class="zoo-scene-entry" aria-label="选择动物乐园场景">${cards}</section>
-      ${window.ChestManager && ChestManager.isAllCleared()
-        ? `<div class="zoo-all-clear"><span>🏆</span> 陆地动物园全部通关！</div>`
-        : ""}`;
-    },
-  },
 });

@@ -2,19 +2,27 @@
    DynamicEngine · 动物乐园题库引擎 + 全主题题型实现
    - 本文件是题型的唯一实现来源：新增 / 调整题型只改这里
    - 词库四类：核心动物名词 30 / 动作动词 30 / 身体部位 20 / 特征形容词 20
-   - 普通关固定 3 题：1 名词 + 1 动词 + 1 部位/形容词
-   - BOSS 关固定 5 题：3 名词 + 1 动词 + 1 部位/形容词
+   - 关卡题数循环：33335（每 5 关最后一关 5 题，其余 3 题）
    - 每题独立携带 category + assetKey，题型与素材解耦
    - 错题库加权保留：答错过的词优先复现
    ============================================================ */
 (function () {
   "use strict";
 
-  /* 普通关 3 题；BOSS 关 5 题 */
-  const QUIZ_SIZE = 3;
-  const BOSS_QUIZ_SIZE = 5;
-  window.QUIZ_SIZE = QUIZ_SIZE;
-  window.BOSS_QUIZ_SIZE = BOSS_QUIZ_SIZE;
+  /* 关卡题数：每 5 关最后一关 5 题，其余 3 题（33335 循环） */
+  function quizSize(level) {
+    const L = Number(level) || 0;
+    return L > 0 && L % 5 === 0 ? 5 : 3;
+  }
+  window.quizSize = quizSize;
+
+  /* 所有关卡通用配比：1 名词 + 1 动词 + 1 部位/形容词
+     5 题关卡在这 3 题基础上再随机补 2 道（dialog / 进阶题型） */
+  const NORMAL_MIX = [
+    { role: "noun",      count: 1 },
+    { role: "verb",      count: 1 },
+    { role: "partOrAdj", count: 1 },
+  ];
 
   /* 启蒙模式（3 岁）：2 选项 + 零挫败，屏蔽拼写与长句对话 */
   function enlightenOn() {
@@ -23,9 +31,41 @@
   function optionCount() {
     return enlightenOn() ? 2 : 3;
   }
-  /* 启蒙模式可出的题型：听音选图 / 动物喂食（选项全为图片）、单词连线（左词右图，点单词抖动朗读）。
-     看图选词、动作猜猜、词汇拼图、情景对话会成组出现英文单词或字母选项，一律不出 */
-  const TODDLER_TYPES = ["listen", "feed_animal", "match"];
+  /* 设备形态感知：iPad/桌面(>=600px) 走全互动池，手机窄屏自动降级减量 */
+  function isTabletOrDesktop() {
+    return typeof window !== "undefined" && window.innerWidth >= 600;
+  }
+  function toddlerDeviceConfig() {
+    const tablet = isTabletOrDesktop();
+    return { isTablet: tablet, bushCount: tablet ? 3 : 2, bubbleCount: tablet ? 4 : 3 };
+  }
+  /* 启蒙模式零认字玩法全量池（保留原 3 种 + 新增 6 种 iPad 优先互动玩法） */
+  const TODDLER_TYPES = [
+    "hide_seek", "count_feed", "sound_detective",
+    "bubble_pop", "voice_compare", "listen", "feed_animal", "match",
+  ];
+  const TODDLER_SLOTS_IPAD = [
+    [{ type: "hide_seek", w: 4 }, { type: "listen", w: 3 }, { type: "voice_compare", w: 3 }],
+    [{ type: "count_feed", w: 4 }, { type: "feed_animal", w: 3 }, { type: "voice_compare", w: 3 }],
+    [{ type: "sound_detective", w: 4 }, { type: "bubble_pop", w: 4 }, { type: "listen", w: 2 }],
+  ];
+  const TODDLER_SLOTS_PHONE = [
+    [{ type: "hide_seek", w: 5 }, { type: "listen", w: 3 }, { type: "feed_animal", w: 2 }],
+    [{ type: "voice_compare", w: 4 }, { type: "sound_detective", w: 4 }, { type: "feed_animal", w: 2 }],
+    [{ type: "bubble_pop", w: 4 }, { type: "count_feed", w: 3 }, { type: "listen", w: 3 }],
+  ];
+  function pickWeightedToddlerType(slotPool, usedTypes, pool) {
+    const valid = slotPool.filter((it) => {
+      const rule = RULE_BY_KEY[it.type];
+      return rule && !usedTypes.has(it.type) && pool.some((w) => fitsRule(w, rule));
+    });
+    const list = valid.length ? valid : slotPool.filter((it) => RULE_BY_KEY[it.type] && pool.some((w) => fitsRule(w, RULE_BY_KEY[it.type])));
+    if (!list.length) return "listen";
+    const total = list.reduce((s, x) => s + x.w, 0);
+    let r = Math.random() * total;
+    for (const item of list) { r -= item.w; if (r <= 0) return item.type; }
+    return list[0].type;
+  }
   function withoutToddlerBlocked(types) {
     return enlightenOn() ? types.filter((t) => TODDLER_TYPES.includes(t)) : types;
   }
@@ -36,28 +76,6 @@
 
   /* 四维词库标签 */
   const CATEGORIES = ["noun", "verb", "part", "adj"];
-
-  /* 普通关固定配比：1 名词 + 1 动词 + 1 形容词
-     名词题型覆盖看图/听音/拼图/连线/喂食；情景对话仅 BOSS 关开放 */
-  const NORMAL_MIX = [
-    { role: "noun",      count: 1 },
-    { role: "verb",      count: 1 },
-    { role: "partOrAdj", count: 1 },
-  ];
-
-  /* BOSS 关固定配比：5 题全部为进阶题型
-     词汇拼图/连线/喂食 + 2 道情景对话 + 动作猜猜 + 局部/对比观察 */
-  const BOSS_MIX = [
-    { role: "noun",      count: 1 },
-    { role: "dialog",    count: 2 },
-    { role: "verb",      count: 1 },
-    { role: "partOrAdj", count: 1 },
-  ];
-  const BOSS_NOUN_TYPES = ["word_puzzle", "match", "feed_animal"];
-  const BOSS_TYPE_BY_ROLE = { verb: "action", adj: "action" };
-  /* BOSS 关允许的题型：补题时也不会回落到简单题型（对比观察暂时关闭） */
-  const BOSS_TYPES = ["word_puzzle", "action", "match", "feed_animal", "dialog"];
-
 
   /* 题型规则
      basic    = 保底基础认知题（看图 / 听音 / 拼词）
@@ -71,7 +89,13 @@
     { key: "match",       label: "单词连线", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "action",      label: "动作猜猜", group: "advanced", cats: ["verb"], recordWrong: true },
     { key: "body_zoom",   label: "局部特写", group: "advanced", cats: ["part"], recordWrong: true },
-    { key: "compare",     label: "对比观察", group: "advanced", cats: ["adj"],  recordWrong: true },
+    { key: "compare",         label: "对比观察", group: "advanced", cats: ["adj"],  recordWrong: true },
+    /* iPad 优先启蒙新玩法（零认字、强互动） */
+    { key: "hide_seek",       label: "草丛寻宝", group: "toddler",  cats: ["noun"], recordWrong: true },
+    { key: "voice_compare",   label: "听音比大小", group: "toddler", cats: ["adj"],  recordWrong: true },
+    { key: "sound_detective", label: "声音侦探", group: "toddler",  cats: ["verb"], recordWrong: true },
+    { key: "bubble_pop",      label: "戳单词泡泡", group: "toddler", cats: ["noun"], recordWrong: true },
+    { key: "count_feed",      label: "数数喂食", group: "toddler",  cats: ["noun"], recordWrong: true },
   ];
   const RULE_BY_KEY = GAME_RULES.reduce((map, rule) => {
     map[rule.key] = rule;
@@ -108,6 +132,9 @@
     /* 启蒙模式：杂食动物可吃食物太杂，2 选项容易误伤，改出其他题型 */
     if (rule.key === "feed_animal" && enlightenOn() && w.diet === "omnivore") return false;
     if (rule.key === "dialog" && !w.dialogueClue) return false;
+    if (rule.key === "voice_compare" && !w.compare) return false;
+    if (rule.key === "sound_detective" && !w.actionSound) return false;
+    if (rule.key === "count_feed" && (!w.food || w.diet === "omnivore")) return false;
     return true;
   }
 
@@ -147,31 +174,45 @@
     return { gameType: type, recordWrong: rule.recordWrong, targetWord: target };
   }
 
-  /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
+  /* 按固定配比组卷：3 题关卡 1n+1v+1p，5 题关卡再加 2 道进阶题 */
   function buildSession(level, pool, sceneId, familiarSet, targetPool) {
-    const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
-    const isBoss = step === LEVELS_PER_VENUE;
-    const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
+    const step = ((Number(level) - 1) % LEVELS_PER_STAGE) + 1;
+    const size = quizSize(level);
     const usedWords = new Set();
     const usedTypes = new Set();
     const questions = [];
 
-    for (const slot of mix) {
+    /* 启蒙模式：按 iPad / 手机智能分槽位编排 */
+    if (enlightenOn()) {
+      const slots = isTabletOrDesktop() ? TODDLER_SLOTS_IPAD : TODDLER_SLOTS_PHONE;
+      for (let i = 0; i < size; i++) {
+        const slotPool = slots[i % slots.length];
+        const t = pickWeightedToddlerType(slotPool, usedTypes, pool);
+        const q = makeQuestion(t, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
+        if (q) questions.push(q);
+      }
+      return questions;
+    }
+
+    /* 所有关卡共用 NORMAL_MIX 基础配比 */
+    for (const slot of NORMAL_MIX) {
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
-        if (isBoss) {
-          /* 启蒙模式 BOSS 关同样只用图片选项题型，避免出现单词/字母选项 */
-          const bossNounTypes = enlightenOn() ? TODDLER_TYPES.slice() : BOSS_NOUN_TYPES;
-          if (slot.role === "noun") type = pickType(bossNounTypes, usedTypes);
-          else if (slot.role === "dialog") type = enlightenOn() ? pickType(bossNounTypes, usedTypes) : "dialog";
-          else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-          else type = slot.role === "verb" ? verbType() : BOSS_TYPE_BY_ROLE[slot.role];
-        } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "verb") type = verbType();
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
         if (question) questions.push(question);
       }
+    }
+
+    /* 5 题关卡再补 2 道（dialog / 进阶题型，dialog 全开放） */
+    const extraTypes = ["dialog", "word_puzzle", "match", "feed_animal", "action", "body_zoom", "compare"];
+    while (questions.length < size) {
+      const t = pickType(extraTypes, usedTypes);
+      const q = makeQuestion(t, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
+      if (!q) break;
+      questions.push(q);
     }
 
     return questions;
@@ -231,9 +272,8 @@
     return task;
   }
 
-  /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
+  /* 兜底补题：dialog 全开放，所有已实现题型都允许补入 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
-  const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
   function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool, targetPool) {
     const types = withoutToddlerBlocked(allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES);
     const usedWords = new Set(tasks.map((task) => task.word));
@@ -269,31 +309,13 @@
     const theme = currentTheme();
     const pool = themeWords();
     const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
+    const size = quizSize(level);
 
     /* 🦁 动物园场景：按四类题库 + 关卡模板动态组卷 */
     if (isZooScene() && window.DynamicEngine) {
       const sceneId = state.scene || "zoo";
       const scene = zooScene();
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
-      const boss = window.isAssessmentLevel ? isAssessmentLevel(level) : isAnimalBossLevel(level);
-      const size = boss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
-
-      /* BOSS 关词池：错题库 + 已解锁词优先，凑不够时补少量场景新词兜底 */
-      const familiarSet = boss ? unlockedWordSet(theme.id, sceneId) : null;
-      let buildPool = allSceneWords;
-      if (boss) {
-        const familiar = allSceneWords.filter(
-          (w) => familiarSet.has(w.word) || WrongBank.isWrongWord(WrongBank.makeId(sceneId, w.word))
-        );
-        if (familiar.length >= 3) {
-          buildPool = familiar.slice();
-          if (buildPool.length < 6) {
-            const names = new Set(buildPool.map((w) => w.word));
-            const rest = shuffle(allSceneWords.filter((w) => !names.has(w.word)));
-            buildPool = buildPool.concat(rest.slice(0, 6 - buildPool.length));
-          }
-        }
-      }
 
       /* 重玩未满星关卡：目标词只从错词库抽，错词不够时再用正常词补足 */
       let targetPool = null;
@@ -303,24 +325,21 @@
         targetPool = new Set(allSceneWords.filter((w) => wrongWords.has(w.word)).map((w) => w.word));
       }
 
-      const questions = buildSession(level, buildPool, sceneId, familiarSet, targetPool);
+      const questions = buildSession(level, allSceneWords, sceneId, null, targetPool);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
-        .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId, allSceneWords));
 
-      /* 启蒙模式补题只允许图片选项题型，避免补进看图/连线/动作这类单词选项 */
-      const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
-      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool, targetPool).slice(0, size);
+      /* 补题：全部已实现题型都开放（dialog 不再限制） */
+      const allowed = withoutToddlerBlocked(IMPLEMENTED_TYPES);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, allSceneWords, targetPool).slice(0, size);
       /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音选图能显示动词图片 */
       return filled.map((task) => attachOptionArt(task, allSceneWords));
     }
 
     /* ✈️🚌 单场景主题（上学了 / 去旅行）：与动物乐园共用同一套动态出题
-       - 关卡题型表决定本关考法，普通关 3 题、考核关 5 题
-       - 每题从本主题词池抽不重复的词，选项图片同样取自本主题词池 */
+       - 33335 循环：每 5 关最后一关 5 题，其余 3 题 */
     const themeId = theme.id || state.theme || "theme";
-    const isBoss = window.isAssessmentLevel ? isAssessmentLevel(level) : false;
-    const size = isBoss ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
     const usedWords = new Set();
     const usedTypes = new Set();
     const plan = withoutToddlerBlocked(levelPlan(level) || [])
@@ -906,7 +925,7 @@
     if (task.food && unique.length >= need) {
       const correct = task.food;
       /* 食性安全：食肉动物只配植物干扰项，食草动物只配动物性干扰项 */
-      const FOOD_CLASS = { meat: "animal", fish: "animal", bone: "animal", worm: "animal", milk: "animal" };
+      const FOOD_CLASS = { meat: "animal", fish: "animal", bone: "animal", worm: "animal", milk: "animal", shrimp: "animal", shellfish: "animal", plankton: "animal" };
       const foodClass = (id) => FOOD_CLASS[id] || "plant";
       let safe = unique.filter((f) => f.id !== correct.id);
       if (task.diet === "carnivore") safe = safe.filter((f) => foodClass(f.id) === "plant");
@@ -1190,6 +1209,179 @@
         build: buildCompareOptions,
         render: renderCompare,
       },
+      /* 🌿 2. 草丛捉迷藏（剪影寻宝） */
+      hide_seek: {
+        label: "草丛寻宝",
+        title: "听声音，点草丛找朋友！",
+        prompt: "Where is the animal? Find it!",
+        autoSpeak: true,
+        build(task, pool) {
+          const cnt = toddlerDeviceConfig().bushCount;
+          buildOptions(task, pool, cnt);
+        },
+        render({ q, quiz, artOf }) {
+          const revealed = quiz.revealed;
+          const tried = quiz.triedWrong || [];
+          const bushes = (q.options || []).map((opt) => {
+            const isOk = revealed && opt === q.word;
+            const isTried = tried.includes(opt);
+            const src = (q.optionImgs && q.optionImgs[opt]) || `images/words/animal/${opt}.webp`;
+            return `<button type="button" class="td-bush${isOk ? " opened" : ""}${isTried ? " tried" : ""}"
+              data-action="select" data-word="${opt}"${isTried || revealed ? " disabled" : ""} aria-label="翻开草丛">
+              <img src="${src}" alt="" onerror="wordArtFallback(this)">
+              <span style="display:none;font-size:3rem">${(q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)()}</span>
+              <span class="td-bush-leaf" aria-hidden="true"></span>
+            </button>`;
+          }).join("");
+          return {
+            body: `<div class="td-stage">
+              <button type="button" class="td-voice-bar" data-action="speak-word" data-word="Where is the ${q.word}? ${q.word}!">${I.speaker(18, "#B4811C")}<span>点我再听一遍</span></button>
+              <div class="td-bushes" style="--cols:${(q.options || []).length}">${bushes}</div>
+            </div>`,
+            btn: revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* ⚖️ 3. 听指令比大小/高矮（复活 adj.compare，零文字选项） */
+      voice_compare: {
+        label: "听音比大小",
+        title: "听一听，点出正确的动物！",
+        prompt: "Listen and touch the right one!",
+        autoSpeak: true,
+        build(task) {
+          const c = task.compare || { a: { emoji: "🐘", scale: 1.3 }, b: { emoji: "🐭", scale: 0.65 }, target: "a" };
+          task.vcmp = c;
+          task.answerValue = c.target === "b" ? "b" : "a";
+        },
+        render({ q, quiz }) {
+          const c = q.vcmp || q.compare || { a: { emoji: "🐘", scale: 1.3 }, b: { emoji: "🐭", scale: 0.65 }, target: "a" };
+          const revealed = quiz.revealed;
+          const tried = quiz.triedWrong || [];
+          const card = (side, item) => {
+            const isOk = revealed && side === q.answerValue;
+            const isTried = tried.includes(side);
+            return `<button type="button" class="td-vcmp-card${isOk ? " ok" : ""}${isTried ? " tried" : ""}"
+              data-action="select" data-word="${side}"${isTried || revealed ? " disabled" : ""} aria-label="选择动物 ${side}">
+              <span class="td-vcmp-emoji" style="--s:${item.scale || 1}">${item.emoji || "🐾"}</span>
+              ${item.badge ? `<span style="font-size:1.75rem">${item.badge}</span>` : ""}
+            </button>`;
+          };
+          return {
+            body: `<div class="td-stage">
+              <button type="button" class="td-voice-bar" data-action="speak-word" data-word="Touch the ${q.word} one! ${q.word}!">${I.speaker(18, "#B4811C")}<span>听指令：哪一个是「${q.zh}」？</span></button>
+              <div class="td-vcmp-grid">${card("a", c.a || {})}${card("b", c.b || {})}</div>
+            </div>`,
+            btn: revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* 🔊 4. 声音小侦探（复用 23 个 action/*.wav 拟声音效） */
+      sound_detective: {
+        label: "声音侦探",
+        title: "听声音，谁在做这个动作？",
+        prompt: "Listen to the sound! Who is doing this?",
+        autoSpeak: true,
+        build: threeChoiceBuild,
+        render({ q, quiz, artOf }) {
+          const revealed = quiz.revealed;
+          const selected = quiz.selected;
+          const tried = quiz.triedWrong || [];
+          const cards = (q.options || []).map((opt) => {
+            const isOk = revealed && opt === q.word;
+            const isBad = revealed && opt === selected && opt !== q.word;
+            const isTried = !revealed && tried.includes(opt);
+            const src = (q.optionImgs && q.optionImgs[opt]) || `images/words/action/animal-${opt}.webp`;
+            return `<button class="ref-listen-card${isOk ? " ok" : ""}${isBad ? " wrong" : ""}${isTried ? " tried" : ""}"
+              data-action="select" data-word="${opt}"${isTried ? " disabled" : ""}>
+              <span class="ref-listen-card-art"><img class="listen-card-img" src="${src}" alt="" onerror="wordArtFallback(this)"><span class="listen-card-emoji" style="display:none">${(q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)()}</span></span>
+              ${isOk ? `<i class="ref-listen-mark">✓</i>` : ""}
+            </button>`;
+          }).join("");
+          return {
+            body: `<div class="td-stage">
+              <button type="button" class="td-sdet-btn" data-action="action-sound" data-sound="${q.actionSound || ""}">
+                ${I.speaker(24, "#5C411D")}<span>点我听动物声音线索</span>
+              </button>
+              <div class="ref-listen-grid">${cards}</div>
+            </div>`,
+            btn: revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* 🫧 5. 戳破单词泡泡（iPad 4 泡泡 / 手机 3 泡泡） */
+      bubble_pop: {
+        label: "戳单词泡泡",
+        title: "听单词，戳破正确的泡泡！",
+        prompt: "Pop the right bubble!",
+        autoSpeak: true,
+        build(task, pool) {
+          const cnt = toddlerDeviceConfig().bubbleCount;
+          buildOptions(task, pool, cnt);
+        },
+        render({ q, quiz, artOf }) {
+          const revealed = quiz.revealed;
+          const tried = quiz.triedWrong || [];
+          const bubbles = (q.options || []).map((opt) => {
+            const isOk = revealed && opt === q.word;
+            const isTried = !revealed && tried.includes(opt);
+            const src = (q.optionImgs && q.optionImgs[opt]) || `images/words/animal/${opt}.webp`;
+            return `<button type="button" class="td-bubble${isOk ? " ok" : ""}${isTried ? " tried" : ""}"
+              data-action="select" data-word="${opt}"${isTried || revealed ? " disabled" : ""} aria-label="戳破 ${opt} 泡泡">
+              <img src="${src}" alt="" onerror="wordArtFallback(this)">
+              <span style="display:none;font-size:2.75rem">${(q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)()}</span>
+            </button>`;
+          }).join("");
+          return {
+            body: `<div class="td-stage">
+              <button type="button" class="td-voice-bar" data-action="speak-word" data-word="Pop the ${q.word}! ${q.word}!">${I.speaker(18, "#B4811C")}<span>再听一遍泡泡单词</span></button>
+              <div class="td-bubble-arena">${bubbles}</div>
+            </div>`,
+            btn: revealed ? quizNextButton() : "",
+          };
+        },
+      },
+      /* 🎋 6. 数一数喂食（串联数字 1–3 与动物喂食） */
+      count_feed: {
+        label: "数数喂食",
+        title: "数一数，给动物喂够食物！",
+        prompt: "Count and feed the animal!",
+        build(task) {
+          const numWords = ["one", "two", "three"];
+          const n = 2 + Math.floor(Math.random() * 2); // 2 或 3 口，刚好锻炼数数
+          task.feedTarget = n;
+          task.feedNumWord = numWords[n - 1] || "two";
+          task.correctFood = (task.food && task.food.id) || "apple";
+          task.correctZh = (task.food && task.food.zh) || "食物";
+          task.correctPhon = (task.food && task.food.phon) || "";
+        },
+        render({ q, quiz, artOf }) {
+          const fed = quiz.countFed || 0;
+          const target = q.feedTarget || 2;
+          const revealed = quiz.revealed;
+          const food = q.food || { id: "apple", emoji: "🍎", img: "images/words/food/apple.webp", zh: "苹果" };
+          const pips = Array.from({ length: target }, (_, i) => `<i class="${i < fed || revealed ? "fed" : ""}">${i < fed || revealed ? "✓" : i + 1}</i>`).join("");
+          return {
+            body: `<div class="td-stage">
+              <div class="td-cfeed-animal">
+                <div class="td-cfeed-pic">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
+                <div class="td-cfeed-count">
+                  <b>喂 ${target} 个${food.zh}</b>
+                  <div class="td-cfeed-pips">${pips}</div>
+                </div>
+              </div>
+              <div class="td-dock">
+                <div class="td-cfeed-tray">
+                  <button type="button" class="td-cfeed-food" data-action="td-count-feed"${revealed ? " disabled" : ""} aria-label="喂一口 ${food.zh}">
+                    ${artWithImage(food.img, "ref-food-img", food.emoji || "🍎")}
+                  </button>
+                </div>
+                <p class="ref-hint" style="margin-top:0.5rem">点一下食物喂给 ${q.zh}（已喂 ${fed} / ${target}）</p>
+              </div>
+            </div>`,
+            btn: revealed ? quizNextButton() : "",
+          };
+        },
+      },
     };
   }
 
@@ -1275,7 +1467,7 @@
     GAME_RULES,
     CATEGORIES,
     NORMAL_MIX,
-    BOSS_MIX,
+    quizSize,
     /* 题型实现（唯一来源，主题注册时取用） */
     defaultGames,
     defaultLevelGames,

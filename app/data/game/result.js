@@ -48,7 +48,7 @@
     const assessment = window.isAssessmentLevel
       ? isAssessmentLevel(quiz.level)
       : Number(quiz.level) % 5 === 0;
-    const total = assessment ? BOSS_QUIZ_SIZE : QUIZ_SIZE;
+    const total = quizSize(quiz.level);
     const correct = Math.min(quiz.correct, total);
     const accuracy = correct / total;
     const enlighten = Boolean(state.enlighten);
@@ -124,91 +124,76 @@
 
   /* 每日随机挑战结算页：5 颗星、可爱恐龙、鼓励语，展示本局单词 */
   function screenDailyResult(r) {
-    const dino = `<svg class="dd-dino" viewBox="0 0 120 120" aria-hidden="true">
-      <ellipse cx="60" cy="106" rx="30" ry="5.5" fill="#EAD9B8" opacity=".55"/>
-      <path d="M92 84c8 1 13 5 15 11-6 1-12-1-16-5z" fill="#63C682"/>
-      <path d="M30 90c-4-22 6-44 30-44 22 0 32 17 32 36 0 9-7 14-16 14H46c-9 0-16-2-16-6z" fill="#63C682"/>
-      <path d="M38 84c-2-16 5-32 22-32 15 0 23 12 23 26 0 6-5 10-11 10H48c-6 0-10-1-10-4z" fill="#8BDDA4" opacity=".55"/>
-      <path d="M56 40l4-10 5 9z" fill="#43A96A"/><path d="M70 34l5-9 4 9z" fill="#3FA464"/>
-      ${r.stars >= 4
-        ? `<path d="M45 64q5 6 10 0" stroke="#1D3A2E" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M69 64q5 6 10 0" stroke="#1D3A2E" stroke-width="3.4" fill="none" stroke-linecap="round"/>`
-        : `<circle cx="50" cy="66" r="5.2" fill="#1D3A2E"/><circle cx="74" cy="66" r="5.2" fill="#1D3A2E"/><circle cx="51.8" cy="64" r="1.7" fill="#fff"/><circle cx="75.8" cy="64" r="1.7" fill="#fff"/>`}
-      <path d="M53 77q8 9 16 0" stroke="#1D3A2E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-      <circle cx="41" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/><circle cx="83" cy="75" r="4.4" fill="#FFB3A7" opacity=".9"/>
-    </svg>`;
-    /* 星级按答对题数计：一题一星，视觉统一跟随 r.stars */
-    const crown = r.stars >= 5 ? `<svg class="dd-crown" viewBox="0 0 48 34" aria-hidden="true">
-      <path d="M4 27l3-18 9 8 7-13 7 13 9-8 3 18z" fill="#FFC94A" stroke="#E0A63F" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="7" cy="9" r="2.6" fill="#FF8A4C"/><circle cx="24" cy="4" r="2.8" fill="#FF6F61"/><circle cx="41" cy="9" r="2.6" fill="#FF8A4C"/>
-    </svg>` : "";
+    /* 星级按答对题数计：一题一星 */
     const title = r.stars >= 5 ? "满星通关！" : r.stars >= 4 ? "太厉害啦！" : "挑战完成！";
-    const bubble = r.stars >= 5
-      ? "全部答对，太神啦！"
-      : `你答对了 ${r.correct} 个单词！`;
-    const cheer = r.stars >= 5 ? "全对！你是今天的单词小达人 🎉"
-      : r.stars >= 4 ? "只差 1 颗星就满星啦"
-      : r.stars >= 3 ? "不错哦！再答对 2 题就满星啦"
-      : "没关系，明天再来挑战一次";
-    const paw = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="12" cy="15.5" rx="5.2" ry="4.4"/><ellipse cx="5.4" cy="9.6" rx="2.2" ry="2.7"/><ellipse cx="9.6" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="14.4" cy="6.6" rx="2.1" ry="2.6"/><ellipse cx="18.6" cy="9.6" rx="2.2" ry="2.7"/></svg>`;
-    const starRow = [0, 1, 2, 3, 4].map((i) =>
-      star(i === 2 ? 58 : 50, i < r.stars ? "#FFC94A" : "#F1E7D2", i < r.stars ? "#E9A93C" : "#E5D7BC", i < r.stars ? 1 : 0.55)
-    ).join("");
-    const confetti = r.stars >= 4
-      ? Array.from({ length: 14 }, (_, i) => {
-          const left = 4 + Math.round(Math.random() * 92);
-          const delay = (Math.random() * 0.9).toFixed(2);
-          const dur = (1.6 + Math.random() * 0.9).toFixed(2);
-          const size = 5 + Math.round(Math.random() * 4);
-          const round = i % 3 === 0 ? "50%" : "0.125rem";
-          return `<i style="left:${left}%;width:${sz(size)};height:${sz(size + 2)};background:${["#FFC94A", "#FF8A4C", "#5BC178", "#5FBCDA", "#FF6F61"][i % 5]};border-radius:${round};animation-delay:${delay}s;animation-duration:${dur}s"></i>`;
-        }).join("")
-      : "";
     const mm = String(Math.floor(r.seconds / 60)).padStart(2, "0");
     const ss = String(r.seconds % 60).padStart(2, "0");
-    const chips = r.wordList.map((w) => `<span class="w ${w.ok ? "ok" : "no"}">${w.word} ${w.ok ? "✓" : "✗"}</span>`).join("");
-    return `<section class="screen result-page daily-result" data-screen="result">
-      <div class="confetti" aria-hidden="true">${confetti}</div>
-      <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
-      <div class="result-scroll">
-        <div class="result-head">
-          <div class="eyebrow">DAILY CHALLENGE · ${r.total} 题</div>
-          <h1>${title}</h1>
-          <div class="daily-mascot">
-            <span class="spark s1">✦</span><span class="spark s2">✦</span><span class="spark s3">✧</span>
-            ${crown}
-            <div class="daily-bubble">${bubble}</div>
-            ${dino}
+    /* 五颗星（一题一星），用比闯关略小的尺寸 */
+    const starRow = [0, 1, 2, 3, 4].map((i) =>
+      star(i === 2 ? 54 : 44, i < r.stars ? "#FFC94A" : "#EFE4CE", i < r.stars ? "#E09A2B" : "#D6C5A7", i < r.stars ? 1 : 0.55)
+    ).join("");
+    /* 无条件飘彩纸屑（v2 骨架统一） */
+    const confettiPieces = Array.from({ length: 20 }, (_, i) => {
+      const colors = ["#FFC94A", "#FF8A4C", "#68BE83", "#9FDCF2", "#F4B4C6"];
+      const w = 5 + (i % 3) * 2, h = 8 + (i % 4) * 3;
+      return `<i style="left:${(i * 41 + 9) % 100}%;top:${(i * 23 + 4) % 45}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 5]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.4 + (i % 4) * 0.12};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 7) * 0.06}s;animation-duration:${1.4 + (i % 4) * 0.2}s"></i>`;
+    }).join("");
+    /* 单词 chip：带 ok/no 标记 */
+    const chips = r.wordList.map((w) => `<span class="dv2-chip ${w.ok ? "ok" : "no"}">${w.word} ${w.ok ? "✓" : "✗"}</span>`).join("");
+
+    /* 按钮：右侧主按钮为「再抽一次」（次数用完时禁用），左侧次要按钮为「回地图」 */
+    const leftBtn = `<button type="button" class="rs2-btn secondary" data-action="close-quiz">回地图</button>`;
+    const rightBtn = r.dailyLeft > 0
+      ? `<button type="button" class="rs2-btn primary" data-action="daily-start">再抽一次（剩 ${r.dailyLeft}） ▶</button>`
+      : `<button type="button" class="rs2-btn primary" disabled>明天再来 🌙</button>`;
+
+    return `<section class="screen result-page result-stage-v2 daily-v2" data-screen="result">
+    <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
+    <div class="rs2-rays" aria-hidden="true"></div>
+    <div class="rs2-hill" aria-hidden="true"></div>
+    <div class="confetti">${confettiPieces}</div>
+
+    <header class="rs2-hero">
+      <h1 class="rs2-title">${title}</h1>
+      <div class="rs2-sub">DAILY · 答对 ${r.correct}/${r.total} · 得 ${r.stars}★</div>
+      <div class="rs2-stars dv2-stars">${starRow}</div>
+      <div class="rs2-dino">${dino(state.stage)}</div>
+    </header>
+
+    <div class="rs2-tray-wrap">
+      <div class="rs2-tray">
+        <div class="rs2-pills">
+          <div class="rs2-pill star">
+            <span class="rs2-pill-ic">${star(15, "#FFE07D", "#C88B22")}</span>
+            <span class="num">+${r.starGain} 星星</span>
           </div>
-          <div class="result-stars daily-stars">${starRow}</div>
-          <div class="result-sub">答对 <b>${r.correct} / ${r.total}</b> · 获得 <b>${r.stars}★</b> · ${r.dailyLeft > 0 ? `今天还能挑战 ${r.dailyLeft} 次` : "今天的次数用完啦"}</div>
-          <div class="daily-cheer">${paw}${cheer}</div>
+          <div class="rs2-pill daily">
+            <span class="rs2-pill-ic">🎲</span>
+            <span class="num">剩 ${r.dailyLeft} 次</span>
+          </div>
         </div>
-        <div class="result-card daily-card">
-          <div class="rc-top">
-            <div class="rc-mode">
-              <div class="g-ic">🎲</div>
-              <div><div class="lb">本模式</div><div class="v">不计成长值</div></div>
-            </div>
-            <div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>
-          </div>
-          <div class="rc-div"></div>
-          <div class="rc-stats">
-            <div class="rc-stat"><b class="g num">${r.accuracy}%</b><span>正确率</span></div>
-            <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
-            <div class="rc-stat"><b class="num">${r.dailyLeft} 次</b><span>今日剩余</span></div>
-          </div>
-          <div class="daily-words"><span class="lb">本局单词</span>${chips}</div>
-          <div class="paws" aria-hidden="true">${paw}${paw}</div>
+
+        <div class="dv2-stats">
+          <div class="ds-stat"><b>${r.accuracy}%</b><span>正确率</span></div>
+          <div class="ds-stat"><b>${mm}:${ss}</b><span>用时</span></div>
+          <div class="ds-stat"><b>${r.total} 题</b><span>本局总量</span></div>
+        </div>
+
+        <div class="dv2-chips-row" aria-label="本局单词">
+          ${chips}
+        </div>
+
+        <div class="rs2-actions">
+          ${leftBtn}
+          ${rightBtn}
+        </div>
+
+        <div class="dv2-note">
+          ${r.enlighten ? "启蒙模式 · " : ""}随机挑战不推进关卡，不计成长值
         </div>
       </div>
-      <div class="result-foot">
-        ${r.dailyLeft > 0
-          ? `<button class="btn" data-action="daily-start">再抽一次（剩 ${r.dailyLeft} 次）</button>`
-          : `<button class="btn off" disabled>明天再来</button>`}
-        <button class="btn ghost" data-action="close-quiz">回地图</button>
-        <div class="foot-note">${r.enlighten ? "启蒙模式：答错直接公布答案 · " : ""}随机挑战不推进关卡进度，也不计入成长值</div>
-      </div>
-    </section>`;
+    </div>
+  </section>`;
   }
 
   function screenResult() {
@@ -218,6 +203,7 @@
     }
     const r = lastResult;
     if (r.mode === "daily") return screenDailyResult(r);
+
     const st = stageMeta(state.stage);
     const next = nextStage(st.key);
     const pending = r.canEvolve && r.targetStage;
@@ -226,112 +212,129 @@
     const atMax = st.key === "super";
     const isUltra = st.key === "ultra";
     const ultraOpen = ultraExchangeOpen();
-    const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
-    const growPct = isUltra ? 1 : atMax ? ultraPct : pending ? 1 : pct;
-    const growMax = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
-    const growKicker = atMax || isUltra ? "ULTRA · 究极体兑换" : "EVOLUTION · 进化进度";
-    const growTitle = isUltra
-      ? `究极体形态已解锁<span>去图鉴切换喜欢的机甲恐龙</span>`
+    const growPct = isUltra ? 1 : atMax ? clamp(state.growth / ULTRA_MIN, 0, 1) : pending ? 1 : pct;
+    const growPctNum = Math.round(growPct * 100);
+    /* 进度条小恐龙头像滑块位置限制在 8% ~ 94%，避免贴边溢出 */
+    const headLeft = Math.max(8, Math.min(94, growPctNum));
+
+    const evoText = isUltra
+      ? "究极体已解锁 · 可在图鉴切换形态"
       : atMax
         ? (ultraOpen
-            ? `究极体兑换已开放<span><b>${ULTRA_PRICE}★/只</b> · 去图鉴兑换</span>`
-            : `再获得 <b>${Math.max(0, ULTRA_MIN - state.growth)}</b> 成长值<span>开放究极体兑换</span>`)
-        : pending
-          ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>`
-          : next
-            ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>`
-            : "已经达到最高形态";
-    const growNote = isUltra
-      ? "<b>究极体形态真威风！</b>去图鉴用星星兑换更多机甲恐龙吧"
-      : atMax
-        ? (ultraOpen
-            ? "<b>收集图鉴的时间到啦！</b>用星星把喜欢的机甲恐龙带回家"
-            : "<b>小诺今天也很开心！</b>继续积累成长值，就能开启究极体兑换")
-        : pending
-          ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化"
-          : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大";
-    const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
-    const ss = String(r.seconds % 60).padStart(2, "0");
-    /* 顺序解锁：通过后前往下一关，未通过留在本关重试；已无新关卡时只回地图 */
+            ? `究极体兑换已开放（<b>${ULTRA_PRICE}★/只</b>）`
+            : `距 <b>究极体兑换</b> 还差 <b>${Math.max(0, ULTRA_MIN - state.growth)}</b>`)
+      : pending
+        ? `成长值已满 · 可以进化为 <b>${target.name}</b>！`
+        : next
+          ? `距 <b>${next.name}</b> 还差 <b>${Math.max(0, next.min - state.growth)}</b>`
+          : "已达成最高形态";
+
+    /* 关卡进度与按钮逻辑：保持与原 startQuiz 满星保护一致 */
     const progNow = themeProgress();
     const nextLevel = Math.min(progNow.level, r.level + 1);
     const nextBtnLevel = r.passed ? nextLevel : r.level;
     const nextCleared = nextLevel < progNow.level || Boolean(progNow.cleared && progNow.cleared[nextLevel]);
     const canNext = !(r.passed && nextCleared);
-    const isBase = !r.assessment;
-    /* 星星展示：所有关卡都按答对题数发 1~3 星 */
-    const showStars = true;
-    /* 重玩未满星关卡：只复习错词，星级可补，成长值不重复发放 */
-    const replaySub = "复习模式 · 优先抽取错词 · 星级可提升，成长值不重复发放";
-    /* 手绘风对勾 / 叉号：粗圆头描边，比字体图标更有贴纸感 */
-    const markOk = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8.5 21.2c3.1 3.5 5.4 6.4 7.2 8.8 4.7-8.4 9.8-14.3 15.8-18.6"/></svg>`;
-    const markNo = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 11.2c5.1 4.6 10.3 9.5 15.4 15.1"/><path d="M26.1 11.5c-5.1 5.1-10.1 10.1-14.9 14.8"/></svg>`;
-    const baseMarks = Array.from({ length: r.total }, (_, i) =>
-      i < r.correct ? `<span class="mark ok">${markOk}</span>` : `<span class="mark no">${markNo}</span>`).join("");
-    const starRow = [0, 1, 2].map((i) => star(i === 1 ? 80 : 62, i < r.best ? "#FFC94A" : "#F1E7D2", i < r.best ? "#E9A93C" : "#E5D7BC", i < r.best ? 1 : 0.55)).join("");
-    const confettiPieces = Array.from({ length: 26 }, (_, i) => {
-      const colors = ["#FFC94A", "#FF8A4C", "#5BC178", "#9FDCF2", "#B8A7FF", "#FF6F61"];
-      const w = 5 + (i % 4) * 2, h = 8 + (i % 5) * 3;
-      return `<i style="left:${(i * 37 + 13) % 100}%;top:${(i * 29 + 5) % 92}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 6]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.35 + (i % 5) * 0.1};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 8) * 0.05}s;animation-duration:${1.2 + (i % 5) * 0.18}s"></i>`;
+    const canReplay = r.best < 3;
+
+    /* 顶部主标题 */
+    const titleText = r.bossClear
+      ? `BOSS · 全部通关!`
+      : `LEVEL ${String(r.level).padStart(2, "0")} · ${r.replay ? "复习完成" : r.passed ? "闯关完成" : "再试一次"}`;
+
+    /* 弧形三颗大星 */
+    const starRow = [0, 1, 2].map((i) =>
+      star(
+        i === 1 ? 74 : 58,
+        i < r.best ? "#FFC94A" : "#EFE4CE",
+        i < r.best ? "#E09A2B" : "#D6C5A7",
+        i < r.best ? 1 : 0.65
+      )
+    ).join("");
+
+    /* 本关可点读无框动物圆标（最多展示 3 个，点击直接触发全局 speak-word 朗读） */
+    const rawWords = r.wordList && r.wordList.length
+      ? r.wordList
+      : (state.unlocked || []).slice(-3).map((k) => k.slice(k.lastIndexOf(":") + 1));
+    const uniqueWords = [...new Set(rawWords)].slice(0, 3);
+    const lib = window.DINO_WORD_LIBRARY || {};
+    const wordItemsHtml = uniqueWords.map((w, idx) => {
+      const meta = lib[w] || {};
+      const imgSrc = meta.img || `images/words/animal/${w}.webp`;
+      const emoji = meta.emoji || "🐾";
+      return `<button type="button" class="rs2-word-item" data-action="speak-word" data-word="${esc(w)}" aria-label="朗读 ${w}">
+      <span class="rs2-word-pic t${idx % 3}">
+        <img src="${imgSrc}" alt="${esc(w)}" loading="eager" onerror="wordArtFallback(this)">
+        <span class="art-fallback" style="display:none">${emoji}</span>
+      </span>
+      <span class="rs2-word-label"><span>${esc(w)}</span>${I.speaker(16, "#B48A5A")}</span>
+    </button>`;
     }).join("");
-    return `<section class="screen result-page" data-screen="result">
+
+    /* 轻柔飘落彩纸屑 */
+    const confettiPieces = Array.from({ length: 20 }, (_, i) => {
+      const colors = ["#FFC94A", "#FF8A4C", "#68BE83", "#9FDCF2", "#F4B4C6"];
+      const w = 5 + (i % 3) * 2, h = 8 + (i % 4) * 3;
+      return `<i style="left:${(i * 41 + 9) % 100}%;top:${(i * 23 + 4) % 45}%;width:${sz(w)};height:${sz(h)};background:${colors[i % 5]};transform:rotate(${(i * 47) % 180 - 90}deg);opacity:${0.4 + (i % 4) * 0.12};border-radius:${i % 3 === 0 ? "50%" : "0.125rem"};animation-delay:${(i % 7) * 0.06}s;animation-duration:${1.4 + (i % 4) * 0.2}s"></i>`;
+    }).join("");
+
+    /* 左侧辅助按钮：未满星可重新挑战，已满星直接返回地图 */
+    const leftBtn = canReplay
+      ? `<button type="button" class="rs2-btn secondary" data-action="start-quiz" data-level="${r.level}">重新挑战</button>`
+      : `<button type="button" class="rs2-btn secondary" data-action="close-quiz">返回地图</button>`;
+
+    /* 右侧主按钮：满足进化条件优先引导进化 */
+    const rightBtn = pending && r.passed
+      ? `<button type="button" class="rs2-btn primary evolve" data-action="evolve">✨ 见证进化 ▶</button>`
+      : canNext
+        ? `<button type="button" class="rs2-btn primary" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "继续下一关 ▶" : "再试一次 ▶"}</button>`
+        : `<button type="button" class="rs2-btn primary" data-action="close-quiz">回地图看看 ▶</button>`;
+
+    return `<section class="screen result-page result-stage-v2" data-screen="result">
     <button class="circle-btn result-close" data-action="close-quiz" aria-label="关闭">${I.close(16)}</button>
+    <div class="rs2-rays" aria-hidden="true"></div>
+    <div class="rs2-hill" aria-hidden="true"></div>
     <div class="confetti">${confettiPieces}</div>
-    <div class="result-scroll">
-      <div class="result-head">
-        ${r.bossClear ? `<div class="boss-banner">🔥 BOSS 击破！陆地动物园全部通关 🏆</div>` : ""}
-        <div class="eyebrow">${r.bossClear ? "🔥 BOSS · LEVEL" : isBase ? "基础练习 · LEVEL" : "LEVEL"} ${String(r.level).padStart(2, "0")} · ${r.replay ? "REPLAY" : r.passed ? "COMPLETE" : "RETRY"}</div>
-        ${isBase
-          ? `<div class="base-marks">${baseMarks}</div>`
-          : `<h1>${r.bossClear ? "BOSS 击破！你太厉害啦 🎉" : r.replay ? "重玩完成！" : r.passed ? "闯关完成！" : "再试一次吧"}</h1>`}
-        ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
-        ${showStars ? `<div class="result-stars">${starRow}</div>` : ""}
-        <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay ? replaySub : isBase
-          ? `每关最多 3★ · 本关最好 ${r.best}★${r.best < 3 ? " · 没满星可以重玩复习错词" : ""}`
-          : `考核关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}`}</div>
+
+    <header class="rs2-hero">
+      <h1 class="rs2-title${r.bossClear ? " is-boss" : ""}">${titleText}</h1>
+      ${r.bossClear && r.bossChests ? `<div class="rs2-sub">🎁 额外获得 ${r.bossChests} 个神秘宝箱</div>` : ""}
+      <div class="rs2-stars">${starRow}</div>
+      <div class="rs2-dino">${dino(state.stage)}</div>
+    </header>
+
+    <div class="rs2-tray-wrap">
+      <div class="rs2-tray">
+        <div class="rs2-pills">
+          <div class="rs2-pill exp">
+            <span class="rs2-pill-ic">${I.leaf(15, "#FFFFFF")}</span>
+            <span class="num">+${r.growthGain} 成长值</span>
+          </div>
+          <div class="rs2-pill star">
+            <span class="rs2-pill-ic">${star(15, "#FFE07D", "#C88B22")}</span>
+            <span class="num">+${r.starGain} 星星</span>
+          </div>
+        </div>
+
+        <div class="rs2-evo">
+          <div class="rs2-evo-txt">${evoText}</div>
+          <div class="rs2-evo-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${growPctNum}">
+            <div class="rs2-evo-fill" style="width:${growPctNum}%"></div>
+            <span class="rs2-evo-head" style="left:${headLeft}%">
+              <img src="${avatarArtSrc()}" alt="">
+            </span>
+          </div>
+        </div>
+
+        <div class="rs2-words" aria-label="本关收获单词">
+          ${wordItemsHtml}
+        </div>
+
+        <div class="rs2-actions">
+          ${leftBtn}
+          ${rightBtn}
+        </div>
       </div>
-
-      <div class="result-card">
-        <div class="rc-top">
-          <div class="rc-growth">
-            <div class="g-ic">${I.leaf(28)}</div>
-            <div><div class="lb">成长值</div><div class="v num">+${r.growthGain} <small>EXP</small></div></div>
-          </div>
-          ${showStars || r.starGain > 0
-            ? `<div class="rc-stars">${star(19)}<span class="num">+${r.starGain}</span></div>`
-            : `<div class="rc-stars base-none">基础关 · 无星星</div>`}
-        </div>
-        <div class="rc-div"></div>
-        <div class="rc-stats">
-          <div class="rc-stat"><b class="num">${r.accuracy}%</b><span>正确率</span></div>
-          <div class="rc-stat"><b class="num">${mm}:${ss}</b><span>用时</span></div>
-          <div class="rc-stat"><b class="num">${r.newWords}</b><span>解锁新词</span></div>
-        </div>
-        <div class="rc-words">
-          <span class="lb">WORDS</span>
-          ${(r.wordList.length ? r.wordList : (state.unlocked || []).slice(-3).map((k) => k.slice(k.lastIndexOf(":") + 1))).map((w) => `<span class="w">${w}</span>`).join("")}
-        </div>
-      </div>
-
-      <section class="grow-card${pending ? " ready" : ""}">
-        <div class="gc-top">
-          <div class="gc-pet">
-            <span class="halo"></span>
-            <div class="dino">${dino(state.stage)}</div>
-            <span class="gc-phase">${pending ? "可进化" : st.phase}</span>
-          </div>
-          <div class="gc-main">
-            <div class="gc-kicker"><span class="lb">${growKicker}</span><span class="val num">${state.growth}<i> / ${growMax}</i></span></div>
-            <div class="gc-title">${growTitle}</div>
-            <div class="gc-bar"><i style="width:${Math.round(growPct * 100)}%"></i></div>
-          </div>
-        </div>
-        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${growNote}</p></div>
-      </section>
-    </div>
-
-    <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : canNext ? `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>` : `<button class="btn" data-action="close-quiz">回地图看看 ${I.arrow(18)}</button>`}
     </div>
   </section>`;
   }
@@ -378,49 +381,66 @@
       return `<section class="screen"></section>`;
     }
     const info = evolutionInfo;
-    const dots = Array.from({ length: 34 }, (_, i) => {
-      const x = (i * 43 + 7) % 100, y = (i * 31 + 11) % 100, s = 1.5 + (i % 4) * 0.8;
-      return `<i style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${0.2 + (i % 5) * 0.12}"></i>`;
-    }).join("");
-    return `<section class="screen" data-screen="evolution" style="background:#0F2E24">
-    <div class="evo-page">
-      <div class="bg"></div><div class="stars">${dots}</div>
-      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-      <div class="evo-inner">
-        <div class="evo-top">
-          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / ${String(EVOLVE_MAX_INDEX).padStart(2, "0")}</div>
-          <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
+    const fromIdx = stageIndex(info.from.key);
+    const toIdx = stageIndex(info.to.key);
+    const fromSrc = info.from.key === "ultra"
+      ? `images/dino/ultra-${Math.min(ULTRA_ART.length, Math.max(1, Number(state.ultraSkin) || 1))}.webp`
+      : `images/dino/${info.from.key}.webp`;
+    const toSrc = info.to.key === "ultra"
+      ? `images/dino/ultra-${Math.min(ULTRA_ART.length, Math.max(1, Number(state.ultraSkin) || 1))}.webp`
+      : `images/dino/${info.to.key}.webp`;
+
+    const subNote = info.to.key === "ultra"
+      ? "4 种究极体机甲形态可在图鉴中自由切换"
+      : "已收录进图鉴，外形和能力都更强了！";
+
+    return `<section class="screen" data-screen="evolution" style="background:#FBF3E3">
+    <div class="evo-page evo-stage-v2">
+      <button class="circle-btn result-close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
+      <div class="ev2-rays" aria-hidden="true"></div>
+      <div class="ev2-hill" aria-hidden="true"></div>
+
+      <header class="ev2-top-wrap">
+        <div class="ev2-milestone">${spark(11, "#E9A93C")} MILESTONE ${String(toIdx).padStart(2, "0")} / ${String(EVOLVE_MAX_INDEX).padStart(2, "0")}</div>
+        <h1 class="ev2-title">进化成功！</h1>
+        <div class="ev2-stages">
+          <span class="ev2-st">${info.from.name} · LV.${fromIdx + 1}</span>
+          <span class="ev2-st-arr" aria-hidden="true">→</span>
+          <span class="ev2-st is-new">${I.crownMini(13, "#8A5B15")} ${info.to.name} · LV.${toIdx + 1}</span>
         </div>
-        <div class="evo-title">
-          <div class="en">EVOLUTION COMPLETE</div>
-          <h1>进化<em>成功</em>！</h1>
-          <div class="evo-stage">
-            <span class="st">${info.from.name} · LV.${stageIndex(info.from.key) + 1}</span>
-            <span class="arr">${I.arrow(15, "#F2C860")}</span>
-            <span class="st new">${I.crownMini(13, "#FFD25A")} ${info.to.name} · LV.${stageIndex(info.to.key) + 1}</span>
-          </div>
-        </div>
-        <div class="evo-dino">
-          <div class="glow"></div><div class="halo"></div>
-          <span class="spark" style="left:8%;top:18%">${spark(22, "#FFE08A")}</span>
-          <span class="spark" style="right:9%;top:10%">${spark(15, "#FFE08A")}</span>
-          <span class="spark" style="right:14%;bottom:12%">${spark(11, "#FFE08A")}</span>
-          <span class="spark" style="left:13%;bottom:16%">${spark(9, "#FFE08A")}</span>
-          ${dino(info.to.key)}
-        </div>
-        <div class="evo-unlock">
-          <div class="u-head"><span class="lb">NEW UNLOCK · 成长奖励</span><span class="nv">${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span></div>
-          <div class="u-main">
-            <div class="u-ico">${I.crownMini(30, "#8A5B15")}</div>
-            <div class="u-txt">
-              <b>${info.to.name}</b>
-              <span>${info.to.key === "ultra" ? "已收录进图鉴，4 种机甲形态可以在图鉴里自由切换" : "已收录进图鉴，外形和能力都更强了"}</span>
+      </header>
+
+      <div class="ev2-hero">
+        <div class="ev2-halo" aria-hidden="true"></div>
+        <div class="ev2-orbit" aria-hidden="true"></div>
+        <div class="ev2-dino">${dino(info.to.key)}</div>
+      </div>
+
+      <div class="ev2-tray-wrap">
+        <div class="ev2-tray">
+          <div class="ev2-pills">
+            <div class="ev2-pill gold">
+              <span>✨ 新形态 · ${info.to.name}</span>
             </div>
-            <div style="color:#FFD25A">${I.chevron(12)}</div>
+            <div class="ev2-pill sage">
+              <span>${info.isNew ? "+1 图鉴收录" : "图鉴已收录"}</span>
+            </div>
+            ${info.dexReward ? `<div class="ev2-pill gold"><span>🎁 解锁「${info.dexReward}」</span></div>` : ""}
           </div>
-          <div class="u-skill">${spark(12, "#FFD25A")} 成长奖励：首次闯关答对越多，获得的成长值越高</div>
-          ${info.dexReward ? `<div class="u-skill" style="border-top:0;padding-top:0.125rem">${I.gift(13)} 图鉴奖励：已解锁「${info.dexReward}」背景</div>` : ""}
-          <button class="btn yellow" data-action="home">太棒了，继续冒险 ${I.arrow(18)}</button>
+
+          <div class="ev2-compare">
+            <div class="ev2-avatars" aria-hidden="true">
+              <span class="ev2-ava from"><img src="${fromSrc}" alt=""></span>
+              <span class="ev2-ava-arr">→</span>
+              <span class="ev2-ava to"><img src="${toSrc}" alt=""></span>
+            </div>
+            <div class="ev2-desc">
+              ${subNote}
+              <small>首次闯关答对越多，成长值奖励越高</small>
+            </div>
+          </div>
+
+          <button type="button" class="ev2-cta" data-action="home">太棒了，继续冒险 ▶</button>
         </div>
       </div>
     </div>
