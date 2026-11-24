@@ -74,6 +74,16 @@ function loadState() {
       parsed.unlocked = [];
       parsed.words = 0;
     }
+    /* v9 → v10：进化止步完全体，究极体改为星星兑换；旧存档已解锁的究极体直接保留 */
+    if (prevVersion < 10) {
+      const owned = Array.isArray(parsed.ultraOwned) ? parsed.ultraOwned.slice() : [];
+      const hadUltra = parsed.stage === "ultra" || (Array.isArray(parsed.dex) && parsed.dex.includes("ultra"));
+      if (hadUltra && !owned.includes(1)) owned.push(1);
+      /* 上一版可能已切换到究极体图鉴里的形象，直接保留为已兑换 */
+      const prevSkin = Number(parsed.ultraSkin) || 1;
+      if (hadUltra && prevSkin > 4 && !owned.includes(prevSkin)) owned.push(prevSkin);
+      parsed.ultraOwned = owned;
+    }
     const unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
     const next = {
       ...initialState(),
@@ -88,7 +98,8 @@ function loadState() {
       /* 已学单词数始终与解锁列表保持一致 */
       words: unlocked.length,
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
-      ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
+      ultraSkin: Math.min(ULTRA_ART.length, Math.max(1, Number(parsed.ultraSkin) || 1)),
+      ultraOwned: Array.isArray(parsed.ultraOwned) ? [...new Set(parsed.ultraOwned.map(Number).filter((n) => n > 0))] : [],
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
     };
     /* 单元制后主题 tab 已移除：旧存档当前主题若已无可玩内容（如占位主题/脏值），回落到第一个可玩主题 */

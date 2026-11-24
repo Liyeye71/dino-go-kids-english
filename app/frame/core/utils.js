@@ -16,11 +16,32 @@ function isStandaloneMode() {
 
 function stageIndex(key) { return Math.max(0, STAGES.findIndex((s) => s.key === key)); }
 function stageMeta(key) { return STAGES[stageIndex(key)] || STAGES[0]; }
-function nextStage(key) { return STAGES[stageIndex(key) + 1] || null; }
+/* 自动进化只到完全体；究极体改为成长值达标后用星星兑换 */
+function nextStage(key) {
+  if (key === "super" || key === "ultra") return null;
+  return STAGES[stageIndex(key) + 1] || null;
+}
 function stageForGrowth(growth) {
   let out = STAGES[0];
-  for (const s of STAGES) if (growth >= s.min) out = s;
+  for (const s of STAGES) {
+    if (s.key === "ultra") break;
+    if (growth >= s.min) out = s;
+  }
   return out;
+}
+function ultraBaseOwned() {
+  return (state.ultraOwned || []).includes(1) || state.dex.includes("ultra");
+}
+function ultraSkinOwned(id) {
+  const n = Number(id);
+  if (n <= 4) return ultraBaseOwned();
+  return (state.ultraOwned || []).includes(n);
+}
+function ultraExchangeOpen() { return state.growth >= ULTRA_MIN; }
+function ultraFormMeta(id) {
+  const n = Number(id);
+  if (n <= 4) return { id: n, name: "超级霸王龙", sub: (ULTRA_SKINS[n - 1] || ULTRA_SKINS[0]).sub };
+  return ULTRA_DINOS.find((d) => d.id === n) || ULTRA_DINOS[0];
 }
 function fmt(n) { return Number(n).toLocaleString("en-US"); }
 function greeting() {

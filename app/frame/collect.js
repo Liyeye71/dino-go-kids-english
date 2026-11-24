@@ -92,3 +92,65 @@ function equipBg(id) {
   render();
   toast(`场景已切换为「${bgMeta(id).name}」`);
 }
+
+/* ------------------------------------------------ ultra exchange */
+let pendingUltraId = 0;
+
+function openBuyUltra(id) {
+  const n = Number(id);
+  const meta = ultraFormMeta(n);
+  if (ultraSkinOwned(n)) { equipUltra(n); return; }
+  if (!ultraExchangeOpen()) { toast(`成长值达到 ${ULTRA_MIN} 后开放究极体兑换`); return; }
+  if (state.stars < ULTRA_PRICE) { toast("星星不够啦，再去闯一关吧"); return; }
+  pendingUltraId = n;
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="dlg-dino">${dino("ultra", { skin: n })}</div>
+      <h3>兑换「${meta.name}」？</h3>
+      <p>将花费 ${ULTRA_PRICE} 星星，兑换后立即成为小诺的新形象，并收录进究极体图鉴。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">再想想</button>
+        <button class="btn" data-action="confirm-ultra">花 ${ULTRA_PRICE} 星星兑换</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+function confirmBuyUltra() {
+  const n = pendingUltraId;
+  if (!n) return;
+  const meta = ultraFormMeta(n);
+  if (ultraSkinOwned(n)) { pendingUltraId = 0; closeOverlay(); equipUltra(n); return; }
+  if (!ultraExchangeOpen()) { toast(`成长值达到 ${ULTRA_MIN} 后开放究极体兑换`); return; }
+  if (state.stars < ULTRA_PRICE) { toast("星星不够啦"); return; }
+  state.stars -= ULTRA_PRICE;
+  state.ultraOwned = [...new Set([...(state.ultraOwned || []), n])];
+  let gift = "";
+  /* 兑换超级霸王龙同样计入图鉴收录，补齐星空营地奖励 */
+  if (n === 1 && !state.dex.includes("ultra")) state.dex = [...state.dex, "ultra"];
+  if (state.dex.length >= 6 && !state.bgOwned.includes("night")) {
+    state.bgOwned.push("night");
+    gift = "，解锁「星空营地」背景";
+  }
+  state.stage = "ultra";
+  state.ultraSkin = n;
+  setUltraSkin(n);
+  sfx("coin");
+  toast(`已兑换「${meta.name}」${gift}`);
+  pendingUltraId = 0;
+  closeOverlay();
+  save();
+  render();
+}
+
+function equipUltra(id) {
+  const n = Number(id);
+  if (!ultraSkinOwned(n)) return;
+  state.stage = "ultra";
+  state.ultraSkin = n;
+  setUltraSkin(n);
+  sfx("tap");
+  toast(`已切换为「${ultraFormMeta(n).name}」`);
+  save();
+  render();
+}

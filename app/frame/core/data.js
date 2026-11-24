@@ -11,6 +11,11 @@ const STAGES = [
   { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 2000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
 ];
 
+/* 自动进化止步于完全体；成长值达到究极体额度后，改为在图鉴里用星星兑换 */
+const EVOLVE_MAX_INDEX = STAGES.findIndex((s) => s.key === "super");
+const ULTRA_MIN = STAGES.find((s) => s.key === "ultra").min;
+const ULTRA_PRICE = 10;
+
 const BACKGROUNDS = [
   { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
   { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 10,  cls: "sunset" },
@@ -25,8 +30,22 @@ const ULTRA_SKINS = [
   { id: 4, name: "红眼重装", sub: "重装机械臂甲" },
 ];
 
+/* 究极体图鉴：10 种机甲恐龙，解锁 ultra 后收录并可切换形象 */
+const ULTRA_DINOS = [
+  { id: 5,  name: "机甲剑龙",   sub: "青铜装甲 · 雷电骨板" },
+  { id: 6,  name: "机甲腕龙",   sub: "太阳能帆板 · 长颈侦察" },
+  { id: 7,  name: "冰晶三角龙", sub: "冰蓝能量罩 · 三重尖角" },
+  { id: 8,  name: "苍穹翼龙",   sub: "霓虹电路 · 高空滑翔" },
+  { id: 9,  name: "霓虹霸王龙", sub: "彩虹骨板 · 喷射尾环" },
+  { id: 10, name: "疾风迅猛龙", sub: "光刃爪 · 极速突袭" },
+  { id: 11, name: "磐石甲龙",   sub: "尾锤护盾 · 重装防御" },
+  { id: 12, name: "音波副栉龙", sub: "声波头冠 · 音浪冲击" },
+  { id: 13, name: "黄金三角龙", sub: "蒸汽齿轮 · 翡翠棱角" },
+  { id: 14, name: "黑曜霸王龙", sub: "暗红装甲 · 聚能炮" },
+];
+
 const DEFAULT_STATE = {
-  v: 9,
+  v: 10,
   name: "毛肚",
   stars: 0,
   /* 宝箱赠送的免费转盘机会，可累积并保留到下次 */
@@ -56,6 +75,8 @@ const DEFAULT_STATE = {
   bg: "jungle",
   bgOwned: ["jungle"],
   ultraSkin: 1,
+  /* 已兑换的究极体形态（1 = 超级霸王龙，5–14 = 究极体图鉴） */
+  ultraOwned: [],
   dex: ["egg"],
   sound: true,
   /* 英文读音风格：kids 童趣朗读（默认，更慢更亮）/ standard 标准朗读（教材发音） */

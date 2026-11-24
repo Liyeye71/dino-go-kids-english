@@ -18,7 +18,9 @@ function dexRewardInfo() {
 function dexBody() {
   const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["super", "完全体"], ["ultra", "究极体"]];
   const filterPhases = { baby: "幼年期", teen: "成长期", adult: "成熟期", super: "完全体", ultra: "究极体" };
-  const list = STAGES.filter((d) => dexFilter === "all" || d.phase === filterPhases[dexFilter]);
+  /* 究极体筛选下，超级霸王龙统一在下方「究极体图鉴」里展示，避免重复 */
+  const list = STAGES.filter((d) => (dexFilter === "all" || d.phase === filterPhases[dexFilter])
+    && !(dexFilter === "ultra" && d.key === "ultra"));
   const reward = dexRewardInfo();
   const pct = Math.round((state.dex.length / STAGES.length) * 100);
   return `<div class="dex-sum card">
@@ -32,22 +34,29 @@ function dexBody() {
 
     <div class="dex-filters">${filters.map(([id, label]) => `<button class="f ${dexFilter === id ? "on" : ""}" data-action="filter-dex" data-filter="${id}">${label}</button>`).join("")}</div>
 
-    <div class="dex-grid">
+    ${list.length ? `<div class="dex-grid">
       ${list.map((d) => {
-        const found = state.dex.includes(d.key);
-        const isNow = d.key === state.stage;
+        const isUltra = d.key === "ultra";
+        const found = isUltra ? ultraBaseOwned() : state.dex.includes(d.key);
+        const isNow = d.key === state.stage && (!isUltra || state.ultraSkin <= 4);
         const bgT = (STAGES.findIndex((x) => x.key === d.key) % 5) + 1;
-        return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
-          ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+        const action = isUltra ? (found ? "pick-ultra" : "buy-ultra") : "dex-detail";
+        const attr = isUltra ? ` data-id="1" data-skin="${state.ultraSkin <= 4 ? state.ultraSkin : 1}"` : ` data-key="${d.key}"`;
+        const ultraHint = ultraExchangeOpen() ? `${ULTRA_PRICE}★ 兑换` : `${ULTRA_MIN} 成长值开放`;
+        const nm = found || isUltra ? d.name : "未发现";
+        const stg = found ? d.phase : isUltra ? ultraHint : "???";
+        return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="${action}"${attr} aria-label="${found ? d.name : isUltra ? `${d.name} 兑换` : "未发现"}">
+          ${found ? `<span class="rare r${d.rarity}">★</span>` : isUltra && ultraExchangeOpen() ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+          ${!found && isUltra && ultraExchangeOpen() ? `<span class="buy-tag">${star(10)}${ULTRA_PRICE}</span>` : ""}
           ${isNow ? `<span class="now-tag">当前</span>` : ""}
           <div class="pic t${bgT}">${dino(d.key)}</div>
-          <div class="nm">${found ? d.name : "未发现"}</div>
-          <div class="stg">${found ? d.phase : "???"}</div>
+          <div class="nm">${nm}</div>
+          <div class="stg">${stg}</div>
         </button>`;
       }).join("")}
-    </div>
+    </div>` : ""}
 
-    ${dexFilter === "ultra" ? ultraSkinSection() : ""}
+    ${dexFilter === "ultra" ? ultraDexSection() : ""}
 
     <div class="dex-reward">
       <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"></div></div>
@@ -60,24 +69,39 @@ function dexBody() {
     </div>`;
 }
 
-/* 超级霸王龙的机甲形态：进化到究极体后可自由切换形象 */
-function ultraSkinSection() {
-  const unlocked = state.dex.includes("ultra");
-  return `<div class="skin-head">
-      <b>超级霸王龙形态</b><span>${unlocked ? "已解锁 · 点击切换" : "进化到究极体后解锁"}</span>
-    </div>
-    <div class="skin-grid">
-      ${ULTRA_SKINS.map((s) => {
-        const on = state.ultraSkin === s.id;
-        return `<button class="skin-card ${unlocked ? "" : "locked"} ${on && unlocked ? "on" : ""}" data-action="${unlocked ? "pick-ultra" : "locked-ultra"}" data-skin="${s.id}">
-          <div class="pic">${dino("ultra", { skin: s.id })}</div>
-          <div class="nm">${unlocked ? s.name : "???"}</div>
-          <div class="sub">${unlocked ? s.sub : "未解锁"}</div>
-          ${unlocked && on ? `<span class="cur">使用中</span>` : ""}
-          ${unlocked ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
-        </button>`;
-      }).join("")}
-    </div>`;
+/* 究极体图鉴：超级霸王龙的 4 种形态 + 10 种机甲恐龙，合并成一个板块展示 */
+function ultraDexSection() {
+  const open = ultraExchangeOpen();
+  const total = ULTRA_SKINS.length + ULTRA_DINOS.length;
+  const ownedCount = ULTRA_SKINS.filter(() => ultraBaseOwned()).length
+    + ULTRA_DINOS.filter((d) => ultraSkinOwned(d.id)).length;
+  const head = open
+    ? `${ULTRA_PRICE}★/只 · 已兑换 ${ownedCount}/${total}`
+    : `成长值达到 ${ULTRA_MIN} 后开放 · 还差 ${Math.max(0, ULTRA_MIN - state.growth)}`;
+  const skinCards = ULTRA_SKINS.map((s) => {
+    const owned = ultraBaseOwned();
+    const on = state.ultraSkin === s.id;
+    return `<button class="skin-card form-card ${owned ? "" : "locked"} ${on && owned ? "on" : ""}" data-action="${owned ? "pick-ultra" : "buy-ultra"}" data-id="1" data-skin="${s.id}">
+      <div class="pic">${dino("ultra", { skin: s.id })}</div>
+      <div class="nm">${s.name}</div>
+      <div class="sub">${owned ? s.sub : open ? "兑换超级霸王龙后解锁" : "未解锁"}</div>
+      ${owned && on ? `<span class="cur">使用中</span>` : ""}
+      ${owned ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+    </button>`;
+  }).join("");
+  const dinoCards = ULTRA_DINOS.map((d) => {
+    const owned = ultraSkinOwned(d.id);
+    const on = state.ultraSkin === d.id;
+    return `<button class="skin-card form-card ${owned ? "" : "locked"} ${on && owned ? "on" : ""}" data-action="${owned ? "pick-ultra" : "buy-ultra"}" data-id="${d.id}" data-skin="${d.id}">
+      <div class="pic">${dino("ultra", { skin: d.id })}</div>
+      <div class="nm">${d.name}</div>
+      <div class="sub">${owned ? d.sub : open ? `${ULTRA_PRICE}★ 兑换` : "未解锁"}</div>
+      ${owned && on ? `<span class="cur">使用中</span>` : ""}
+      ${owned ? "" : open ? `<span class="buy-tag">${star(10)}${ULTRA_PRICE}</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+    </button>`;
+  }).join("");
+  return `<div class="skin-head"><b>究极体图鉴</b><span>${head}</span></div>
+    <div class="skin-grid">${skinCards}${dinoCards}</div>`;
 }
 
 /* ------------------------------------------------ words */

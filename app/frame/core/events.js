@@ -106,13 +106,20 @@ document.addEventListener("click", (e) => {
   } else if (action === "dex-detail") {
     openDexDetail(el.dataset.key);
   } else if (action === "pick-ultra") {
-    state.ultraSkin = Math.min(4, Math.max(1, Number(el.dataset.skin) || 1));
-    setUltraSkin(state.ultraSkin);
-    save();
-    sfx("tap");
-    render();
+    const skin = Math.min(ULTRA_ART.length, Math.max(1, Number(el.dataset.skin) || 1));
+    if (!ultraSkinOwned(skin)) { toast("先在图鉴里兑换这只究极体吧"); return; }
+    equipUltra(skin);
+  } else if (action === "buy-ultra") {
+    openBuyUltra(el.dataset.id || el.dataset.skin);
+  } else if (action === "confirm-ultra") {
+    confirmBuyUltra();
   } else if (action === "locked-ultra") {
-    toast("进化成超级霸王龙后，就能切换这几种机甲形态");
+    toast(`成长值达到 ${ULTRA_MIN} 后，用 ${ULTRA_PRICE} 星星兑换究极体`);
+  } else if (action === "open-ultra-dex") {
+    collectTab = "dex";
+    dexFilter = "ultra";
+    sfx("tap");
+    go("collect", { replace: true });
   } else if (action === "filter-dex") {
     dexFilter = el.dataset.filter;
     sfx("tap");
@@ -151,17 +158,20 @@ document.addEventListener("click", (e) => {
     /* 🦁 路线弹框里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
     const prog = sceneProgress("animal", "zoo");
+    const best = (prog.stars && prog.stars[level]) || 0;
+    const cleared = Boolean(prog.cleared && prog.cleared[level]);
     if (level > prog.level) {
       toast(`先通过第 ${prog.level} 关，才能解锁这一关`);
       return;
     }
-    if (level < prog.level || (prog.cleared && prog.cleared[level])) {
-      toast("这一关已经通关啦，去挑战下一关吧");
+    /* 满星后不再提供重玩，只能往下一关 */
+    if (cleared && best >= 3) {
+      toast("这一关已经满星啦，去挑战下一关吧");
       return;
     }
     sfx("tap");
     closeOverlay();
-    startQuiz(level);
+    startQuiz(level, { replay: cleared || level < prog.level });
   } else if (action === "zoo-zoom-in") {
     sfx("tap");
     if (window.ZooRouteView) ZooRouteView.zoomIn();
@@ -225,6 +235,8 @@ document.addEventListener("click", (e) => {
     LuckyWheel.open();
   } else if (action === "wheel-spin") {
     LuckyWheel.spin();
+  } else if (action === "wheel-win-ok") {
+    LuckyWheel.closeWinPop();
   } else if (action === "coupon-ask") {
     /* 家长核销第一步：进入二次确认，避免宝宝误点 */
     LuckyWheel.askRedeem(Number(el.dataset.index));

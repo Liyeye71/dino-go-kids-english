@@ -642,6 +642,7 @@
 .quiz-page[data-enlighten="1"] .ref-action-options,
 .quiz-page[data-enlighten="1"] .ref-zoom-options,
 .quiz-page[data-enlighten="1"] .ref-cmp-options,
+.quiz-page[data-enlighten="1"] .ref-listen-grid,
 .quiz-page[data-enlighten="1"] .fd-foods,
 .quiz-page[data-enlighten="1"] .ref-dialog-options {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

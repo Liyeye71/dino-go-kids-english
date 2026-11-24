@@ -440,23 +440,27 @@ function renderZooRouteSheet(scene, prog) {
 
   const nodes = scene.levels.map((s) => {
     const locked = s.level > level;
-    /* 已通关节点不再可点：顺序解锁后只能挑战当前关 */
     const done = s.level < level || Boolean(prog.cleared && prog.cleared[s.level]);
+    /* 已满星的关卡不能再点，只能往下一关；未满星则允许重复学习 */
+    const best = (prog.stars && prog.stars[s.level]) || 0;
+    const full = done && best >= 3;
     const isCurrent = s.level === level && !done;
     const cls = [
       "animal-route-node", "zoo-step",
       done ? "done" : "",
+      full ? "full" : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
       s.step === LEVELS_PER_VENUE ? "venue-boss" : "",
     ].filter(Boolean).join(" ");
     return `<button type="button" class="${cls}" style="left:${s.x}%;top:${s.y}%"
         data-action="zoo-node" data-level="${s.level}"
-        title="${s.venue.zh} · 第 ${s.level} 关"
-        aria-label="${s.venue.zh}第 ${s.step} 关${done ? "，已通关" : isCurrent ? "，当前关卡" : "，未解锁"}"
-        ${locked || done ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
+        title="${s.venue.zh} · 第 ${s.level} 关${done ? ` · ★${best}` : ""}"
+        aria-label="${s.venue.zh}第 ${s.step} 关${full ? "，已满星" : done ? `，已通关，${best} 星，可复习` : isCurrent ? "，当前关卡" : "，未解锁"}"
+        ${locked || full ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
   }).join("");
-  const allDone = Boolean(prog.cleared && prog.cleared[level]);
+  const lastBest = (prog.stars && prog.stars[level]) || 0;
+  const allDone = Boolean(prog.cleared && prog.cleared[level] && lastBest >= 3);
 
   return `<div class="overlay">
     <section class="sheet animal-route-sheet zoo-route-sheet" role="dialog" aria-modal="true" aria-label="陆地动物园闯关路线">

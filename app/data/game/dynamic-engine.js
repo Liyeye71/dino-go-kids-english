@@ -119,13 +119,18 @@
 
   /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重
      familiarSet 存在时（BOSS 关）严格按「错题库 → 已解锁词 → 其他词」优先抽词 */
-  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet) {
+  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool) {
     const rule = RULE_BY_KEY[type];
     if (!rule) return null;
 
     let candidates = pool.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
     if (!candidates.length) candidates = pool.filter((w) => fitsRule(w, rule));
     if (!candidates.length) return null;
+    /* 重玩关卡：目标词只从错词库抽，错词不够时自然回落到正常词补足 */
+    if (targetPool && targetPool.size) {
+      const wrongOnly = candidates.filter((w) => targetPool.has(w.word));
+      if (wrongOnly.length) candidates = wrongOnly;
+    }
 
     let target;
     if (familiarSet) {
@@ -143,7 +148,7 @@
   }
 
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
-  function buildSession(level, pool, sceneId, familiarSet) {
+  function buildSession(level, pool, sceneId, familiarSet, targetPool) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
     const isBoss = step === LEVELS_PER_VENUE;
     const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
@@ -164,7 +169,7 @@
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "verb") type = verbType();
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet);
+        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
         if (question) questions.push(question);
       }
     }
@@ -229,7 +234,7 @@
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
   const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool, targetPool) {
     const types = withoutToddlerBlocked(allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES);
     const usedWords = new Set(tasks.map((task) => task.word));
     const primary = primaryPool && primaryPool.length ? primaryPool : allWords;
@@ -242,6 +247,11 @@
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
       if (!candidates.length) break;
+      /* 重玩关卡：补题也优先只抽错词库里的词 */
+      if (targetPool && targetPool.size) {
+        const wrongOnly = candidates.filter((w) => targetPool.has(w.word));
+        if (wrongOnly.length) candidates = wrongOnly;
+      }
       const w = candidates[Math.floor(Math.random() * candidates.length)];
       usedWords.add(w.word);
       tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId, primary));
@@ -255,7 +265,7 @@
     return plans[level] || plans[10];
   }
 
-  function buildTasks(level) {
+  function buildTasks(level, opts = {}) {
     const theme = currentTheme();
     const pool = themeWords();
     const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
@@ -285,14 +295,22 @@
         }
       }
 
-      const questions = buildSession(level, buildPool, sceneId, familiarSet);
+      /* 重玩未满星关卡：目标词只从错词库抽，错词不够时再用正常词补足 */
+      let targetPool = null;
+      if (opts.replay) {
+        const prefix = `${sceneId}_`;
+        const wrongWords = new Set(WrongBank.listInScene(sceneId).map((id) => id.slice(prefix.length)));
+        targetPool = new Set(allSceneWords.filter((w) => wrongWords.has(w.word)).map((w) => w.word));
+      }
+
+      const questions = buildSession(level, buildPool, sceneId, familiarSet, targetPool);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
       /* 启蒙模式补题只允许图片选项题型，避免补进看图/连线/动作这类单词选项 */
       const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
-      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool, targetPool).slice(0, size);
       /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音选图能显示动词图片 */
       return filled.map((task) => attachOptionArt(task, allSceneWords));
     }
@@ -554,8 +572,8 @@
         title: "把单词和图片连起来",
         prompt: "Match the words with the pictures.",
         build(task, pool) {
-          /* 只连同类词，避免连线题里混进动词/形容词；启蒙模式只连 2 组 */
-          const pairTotal = enlightenOn() ? 2 : 3;
+          /* 只连同类词，避免连线题里混进动词/形容词；固定 3 组配对 */
+          const pairTotal = 3;
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
           /* 歧义过滤：同义/易混词不能同时出现在连线里（如 sleep 与 nap 都画着睡觉） */
           const picked = [];
@@ -587,9 +605,21 @@
             .map((x) => ({ word: x.word, art: x.art, img: x.img || "", zh: x.zh || "", phon: x.phon || "" }))
             .concat(shuffle(foods).slice(0, foodCount));
 
+          /* 启蒙模式：左列固定单词、右列固定图片；其余模式左右随机混搭 */
+          const mixed = !enlightenOn();
+          const leftItems = [];
+          const rightItems = [];
+          pairs.forEach((p) => {
+            const wordOnLeft = !mixed || Math.random() < 0.5;
+            const wordItem = { kind: "word", word: p.word };
+            const artItem = { kind: "art", word: p.word, art: p.art, img: p.img || "" };
+            leftItems.push(wordOnLeft ? wordItem : artItem);
+            rightItems.push(wordOnLeft ? artItem : wordItem);
+          });
+
           task.pairs = pairs;
-          task.words = shuffle(pairs.map((p) => p.word));
-          task.arts = shuffle(pairs.map((p) => ({ word: p.word, art: p.art, img: p.img || "" })));
+          task.leftItems = shuffle(leftItems);
+          task.rightItems = shuffle(rightItems);
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
@@ -599,26 +629,29 @@
           const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
           const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
           const selected = quiz.pickWord;
-          /* 左列英文单词、右列图片：点单词卡片会抖动并朗读 */
-          const leftCol = q.words.map((w) => {
-            const isDone = solved.has(w);
-            const isWrong = wrongWords.has(w);
-            /* 单词框可复用：连过后仍可继续选，不锁定 */
-            const isSel = selected === w;
-            return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <div class="ref-match-word-card">${w}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+          /* 圆点永远朝向中线：左列点靠右、右列点靠左 */
+          const dotHtml = (word, side, state) =>
+            `<button class="ref-match-dot" data-match-dot data-match-side="${side}" data-word="${word}" aria-label="选择 ${word}">${state}</button>`;
+          const rowHtml = (item, col) => {
+            const word = item.word;
+            const isDone = solved.has(word);
+            const isWrong = item.kind === "word" ? wrongWords.has(word) : wrongArts.has(word);
+            const isSel = item.kind === "word"
+              ? selected === word
+              : selected === word && !isDone && !isWrong;
+            const mark = isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : "";
+            /* 单词框可复用：连过后仍可继续选，不锁定（marked 保持不透明度） */
+            const cls = `ref-match-row${item.kind === "word" ? " marked" : ""}${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}`;
+            const card = item.kind === "word"
+              ? `<div class="ref-match-word-card">${word}</div>`
+              : `<div class="ref-match-art-card">${artWithImage(item.img, "ref-match-img", item.art())}</div>`;
+            const dot = dotHtml(word, item.kind, mark);
+            return `<div class="${cls}" data-match-row data-word="${word}" data-match-side="${item.kind}">
+              ${col === "left" ? card + dot : dot + card}
             </div>`;
-          }).join("");
-          const rightCol = q.arts.map((p) => {
-            const isDone = solved.has(p.word);
-            const isWrong = wrongArts.has(p.word);
-            const isSel = selected === p.word && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
-              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-            </div>`;
-          }).join("");
+          };
+          const leftCol = (q.leftItems || []).map((item) => rowHtml(item, "left")).join("");
+          const rightCol = (q.rightItems || []).map((item) => rowHtml(item, "right")).join("");
           return {
             body: `<div class="ref-match-wrap">
                 <div class="ref-match-area" data-match-area>
@@ -662,6 +695,8 @@
             /* 启蒙模式：连错不记错、不扣心，短暂标红后自动恢复，可继续尝试 */
             if (enlightenOn()) {
               quiz.matchFlash = { art: word, word: pickedWord };
+              /* 首答就配错：本题之后连对也不给星 */
+              quiz.matchFirstTry = false;
               quiz.pickWord = null;
               quiz.pickWordSide = null;
               sfx("tap");
@@ -684,7 +719,7 @@
             quiz.revealed = true;
             quiz.choiceCorrect = wrongPairs.length === 0;
             if (quiz.choiceCorrect) {
-              quiz.correct++;
+              if (typeof firstTryClean !== "function" || firstTryClean()) quiz.correct++;
               q.pairs.forEach((p) => {
                 quiz.words.push(p.word);
                 /* 连线全部正确：把配对的单词一并解锁 */

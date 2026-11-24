@@ -273,8 +273,9 @@
 .dcc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.1875rem}
 .dcc-tx b{font-size:0.9375rem;font-weight:var(--w-black);color:#4E3C22}
 .dcc-tx em{font-style:normal;font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);line-height:1.45}
-.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:2.875rem;height:2.875rem;
+.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:2.875rem;height:2.875rem;
   border-radius:0.9375rem;background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
   font-size:0.9375rem;font-weight:var(--w-black);line-height:1;box-shadow:0 0.125rem 0 #2F6B3F}
-.dcc-count small{margin-top:0.1875rem;font-size:0.53125rem;font-weight:var(--w-bold);opacity:.85}
+.dcc-count b{font-size:0.875rem;line-height:1;letter-spacing:-0.02rem}
+.dcc-count small{margin-top:0.125rem;font-size:0.5rem;font-weight:var(--w-bold);opacity:.85;line-height:1}
 .daily-challenge-card.is-empty .dcc-count{background:#C9BFAA;box-shadow:0 0.125rem 0 #B3A88F}

@@ -9,6 +9,12 @@ let artMap = null;
 function enlightenOn() {
   return Boolean(state && state.enlighten);
 }
+/* 启蒙模式：首次就答错的题仍可继续答到正确，但不再计入星星 */
+function firstTryClean() {
+  if (!enlightenOn()) return true;
+  if (!quiz) return true;
+  return !(quiz.triedWrong && quiz.triedWrong.length) && quiz.matchFirstTry !== false;
+}
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
   const theme = currentTheme();
@@ -19,12 +25,19 @@ function artOf(word) {
   return artMap.map.get(word) || (() => UNKNOWN_ART(word));
 }
 
-function startQuiz(level) {
+function startQuiz(level, opts = {}) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
-  /* 顺序解锁：已通关的关卡不再提供重玩入口 */
+  /* 未满星的关卡可以重复学习（只抽错词）；满星后只能继续下一关 */
   const prog = themeProgress();
-  if (lvl < prog.level || (prog.cleared && prog.cleared[lvl])) {
-    toast("这一关已经通关啦，去挑战下一关吧");
+  const best = (prog.stars && prog.stars[lvl]) || 0;
+  const cleared = Boolean(prog.cleared && prog.cleared[lvl]);
+  const replay = Boolean(opts.replay) || cleared || lvl < prog.level;
+  if (lvl > prog.level) {
+    toast("先通过前面的关卡吧");
+    return;
+  }
+  if (replay && best >= 3) {
+    toast("这一关已经满星啦，去挑战下一关吧");
     return;
   }
   quiz = {
@@ -45,7 +58,7 @@ function startQuiz(level) {
     startedAt: Date.now(),
     words: [],
     newWords: [],
-    order: DynamicEngine.buildTasks(lvl),
+    order: DynamicEngine.buildTasks(lvl, { replay }),
   };
   lastResult = null;
   levelCue(currentTheme().id);
@@ -174,7 +187,7 @@ function screenQuiz() {
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
   const statusTitle = ok
-    ? (isMatch ? "三组全连对啦！" : "答对了，你真棒！")
+    ? (isMatch ? `${q.pairs && q.pairs.length === 2 ? "两" : "三"}组全连对啦！` : "答对了，你真棒！")
     : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
@@ -390,7 +403,8 @@ function feedCheck() {
   }
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
-    quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    if (firstTryClean()) quiz.correct++;
+    quiz.words.push(q.word); sfx("excellent");
     markDailyStar();
     /* 答对后弹框自动朗读正确的食物单词 */
     setTimer(() => speak(q.correctFood), 600);
@@ -435,7 +449,7 @@ function checkAnswer() {
   quiz.choiceCorrect = ok;
   const wordOption = isWordOptionTask(q);
   if (ok) {
-    quiz.correct++;
+    if (firstTryClean()) quiz.correct++;
     quiz.words.push(q.word);
     markDailyStar();
     if (wordOption) {
@@ -472,6 +486,7 @@ function nextQuestion() {
   quiz.pickWord = null;
   quiz.pickWordSide = null;
   quiz.matchWrong = 0;
+  quiz.matchFirstTry = true;
   quiz.triedWrong = [];
   quiz.matchFlash = null;
   render();

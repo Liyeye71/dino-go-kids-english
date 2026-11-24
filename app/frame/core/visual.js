@@ -384,12 +384,22 @@ const DINO_ART = {
   super: { src: "images/dino/super.webp", k: 1 },
 };
 
-/* 究极体的四种机甲形态，索引 = ultraSkin - 1 */
+/* 究极体形态：索引 = ultraSkin - 1（前 4 种为超级霸王龙机甲，后 10 种为究极体图鉴） */
 const ULTRA_ART = [
   { src: "images/dino/ultra-1.webp", k: 1 },
   { src: "images/dino/ultra-2.webp", k: 1 },
   { src: "images/dino/ultra-3.webp", k: 1 },
   { src: "images/dino/ultra-4.webp", k: 1 },
+  { src: "images/dino/ultra-5.webp", k: 1 },
+  { src: "images/dino/ultra-6.webp", k: 1 },
+  { src: "images/dino/ultra-7.webp", k: 1 },
+  { src: "images/dino/ultra-8.webp", k: 1 },
+  { src: "images/dino/ultra-9.webp", k: 1 },
+  { src: "images/dino/ultra-10.webp", k: 1 },
+  { src: "images/dino/ultra-11.webp", k: 1 },
+  { src: "images/dino/ultra-12.webp", k: 1 },
+  { src: "images/dino/ultra-13.webp", k: 1 },
+  { src: "images/dino/ultra-14.webp", k: 1 },
 ];
 let ultraSkin = 1;
 function setUltraSkin(n) {

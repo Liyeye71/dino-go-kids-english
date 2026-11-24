@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "0.88";
+const VERSION = "0.89";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,6 +16,16 @@ const ASSETS = [
   "./images/dino/ultra-2.webp",
   "./images/dino/ultra-3.webp",
   "./images/dino/ultra-4.webp",
+  "./images/dino/ultra-5.webp",
+  "./images/dino/ultra-6.webp",
+  "./images/dino/ultra-7.webp",
+  "./images/dino/ultra-8.webp",
+  "./images/dino/ultra-9.webp",
+  "./images/dino/ultra-10.webp",
+  "./images/dino/ultra-11.webp",
+  "./images/dino/ultra-12.webp",
+  "./images/dino/ultra-13.webp",
+  "./images/dino/ultra-14.webp",
   "./images/background/jungle.webp",
   "./images/background/sunset.webp",
   "./images/background/night.webp",
@@ -37,14 +47,7 @@ const ASSETS = [
   "./data/sounds/action/dig.wav",
   "./data/sounds/action/walk.wav",
   "./data/sounds/action/drink.wav",
-  "./data/sounds/action/sniff.wav",
-  "./data/sounds/action/laugh.wav",
-  "./data/sounds/action/cry.wav",
-  "./data/sounds/action/dance.wav",
-  "./data/sounds/action/climb.wav",
-  "./data/sounds/action/wag.wav",
-  "./data/sounds/action/catch.wav",
-  "./data/sounds/action/stretch.wav"
+  "./data/sounds/action/sniff.wav"
 ];
 
 self.addEventListener("install", (event) => {

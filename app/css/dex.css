@@ -34,7 +34,8 @@
 .dex-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
 .dex-card .stg{font-size:0.625rem;font-weight:var(--w-mid);color:#A0AE9F;margin-top:0.0625rem;letter-spacing:0.01875rem}
 .dex-card.locked .pic{background:#F4EFE3}
-.dex-card.locked .pic svg{opacity:.2;filter:grayscale(1)}
+/* 未解锁形态用剪影展示，保留神秘感与收集欲 */
+.dex-card.locked .pic svg{opacity:.22;filter:brightness(0)}
 .dex-card.locked .nm{color:#B3AC9B}
 .dex-card .rare{position:absolute;right:0.5rem;top:0.5rem;width:1rem;height:1rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:0.625rem;font-weight:var(--w-black);z-index:4;box-shadow:0 0.1875rem 0.375rem rgba(94,70,30,.18)}
 .dex-card .rare.r3{background:#7FB4E8}
@@ -63,15 +64,18 @@
 .skin-card:active{transform:scale(.97)}
 .skin-card .pic{height:5.75rem;border-radius:0.75rem;background:#E8EEF9;overflow:hidden;display:grid;place-items:center}
 .skin-card .pic svg{width:100%;height:100%;transform:scale(1.18) translateY(-3%)}
+/* 究极体图鉴：完整展示整只恐龙，不放大裁切 */
+.skin-card.form-card .pic svg{transform:none}
 .skin-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
 .skin-card .sub{font-size:0.59375rem;font-weight:var(--w-read);color:#A0AE9F;margin-top:0.0625rem}
 .skin-card.on{border-color:rgba(46,139,87,.5);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.13)}
 .skin-card .cur{position:absolute;left:0.5rem;top:0.5rem;font-size:0.59375rem;font-weight:var(--w-black);color:#fff;
   background:var(--green);padding:0.125rem 0.3125rem;border-radius:0.3125rem;z-index:4}
 .skin-card.locked .pic{background:#F4EFE3}
-.skin-card.locked .pic svg{opacity:.22;filter:grayscale(1)}
+.skin-card.locked .pic svg{opacity:.22;filter:brightness(0)}
 .skin-card.locked .nm,.skin-card.locked .sub{color:#B3AC9B}
 .skin-card .lock-ic{position:absolute;right:0.5625rem;top:0.5625rem;color:#C6BDAA;z-index:4}
+.buy-tag{position:absolute;right:0.5625rem;top:0.5625rem;display:inline-flex;align-items:center;gap:0.125rem;background:#FFF4CE;color:#B4811C;font-size:0.59375rem;font-weight:var(--w-black);padding:0.125rem 0.3125rem;border-radius:0.375rem;line-height:1;z-index:4}
 
 /* ------------------------------------------------ words */
 .words-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.625rem}

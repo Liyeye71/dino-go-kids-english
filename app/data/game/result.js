@@ -52,11 +52,13 @@
     const correct = Math.min(quiz.correct, total);
     const accuracy = correct / total;
     const enlighten = Boolean(state.enlighten);
-    /* 考核关按答对题数发 1~3 星；启蒙模式下普通关也按答对题数发星，关闭后普通关恢复 0 星 */
+    /* 每关都按答对题数发 1~3 星：普通关 3 题答对 1/2/3 → 1/2/3 星；
+       考核关 5 题答对 3/4/5 → 1/2/3 星 */
     const stars = assessment
       ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
-      : (enlighten ? correct : 0);
-    const passed = assessment ? correct >= 4 : correct >= 1;
+      : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
+    /* 启蒙模式可以一直答到正确，只要完成本题就算过关；星星只按首答正确数发放 */
+    const passed = enlighten ? true : (assessment ? correct >= 4 : correct >= 1);
     const prog = themeProgress();
     const completedLevel = quiz.level;
     const prevBest = prog.stars[completedLevel] || 0;
@@ -66,21 +68,21 @@
     /* 已通关判定：末关通过后 prog.level 不再增长，靠 cleared 标记区分首通与重玩 */
     const alreadyCleared = Boolean(prog.cleared && prog.cleared[completedLevel]);
     const isReplay = alreadyCleared || completedLevel < prog.level;
-    /* 重玩已通关卡只做练习，不再发放星星与成长值 */
-    const starGain = isReplay ? 0 : bestGain;
+    /* 重玩未满星关卡：只发放星级增量，可把这一关补到满星；成长值仍不重复发放 */
+    const starGain = bestGain;
     const growthGain = isReplay ? 0 : (passed ? correct * 24 : Math.round(correct * 12));
     const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
     state.growth += growthGain;
     state.stars += starGain;
-    if (!isReplay && best > 0) prog.stars[completedLevel] = best;
+    if (best > 0) prog.stars[completedLevel] = best;
     /* 只有挑战当前关卡且达到过关线才推进进度，重玩旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     if (passed) prog.cleared[completedLevel] = true;
     /* 单词数由解锁列表决定，同一单词答对多次不会重复计数 */
     state.words = Array.isArray(state.unlocked) ? state.unlocked.length : 0;
     const newUnlocked = [...new Set(quiz.newWords || [])];
-    /* 三星收藏只在首次拿到 3 星时 +1，重玩满分不再计入 */
-    if (!isReplay && stars === 3 && prevBest < 3) state.threeStars += 1;
+    /* 三星收藏只在首次拿到 3 星时 +1，重玩补到满星同样计入 */
+    if (stars === 3 && prevBest < 3) state.threeStars += 1;
     state.tasks.level = true;
     /* 学习日志记录本次实际获得的星星，重玩不虚增 */
     recordLevel(starGain);
@@ -90,7 +92,7 @@
       level: completedLevel,
       replay: isReplay,
       prevBest,
-      best: isReplay ? prevBest : best,
+      best,
       correct: quiz.correct,
       total,
       assessment,
@@ -221,6 +223,33 @@
     const pending = r.canEvolve && r.targetStage;
     const target = pending ? stageMeta(r.targetStage) : null;
     const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+    const atMax = st.key === "super";
+    const isUltra = st.key === "ultra";
+    const ultraOpen = ultraExchangeOpen();
+    const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
+    const growPct = isUltra ? 1 : atMax ? ultraPct : pending ? 1 : pct;
+    const growMax = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
+    const growKicker = atMax || isUltra ? "ULTRA · 究极体兑换" : "EVOLUTION · 进化进度";
+    const growTitle = isUltra
+      ? `究极体形态已解锁<span>去图鉴切换喜欢的机甲恐龙</span>`
+      : atMax
+        ? (ultraOpen
+            ? `究极体兑换已开放<span><b>${ULTRA_PRICE}★/只</b> · 去图鉴兑换</span>`
+            : `再获得 <b>${Math.max(0, ULTRA_MIN - state.growth)}</b> 成长值<span>开放究极体兑换</span>`)
+        : pending
+          ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>`
+          : next
+            ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>`
+            : "已经达到最高形态";
+    const growNote = isUltra
+      ? "<b>究极体形态真威风！</b>去图鉴用星星兑换更多机甲恐龙吧"
+      : atMax
+        ? (ultraOpen
+            ? "<b>收集图鉴的时间到啦！</b>用星星把喜欢的机甲恐龙带回家"
+            : "<b>小诺今天也很开心！</b>继续积累成长值，就能开启究极体兑换")
+        : pending
+          ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化"
+          : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大";
     const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
     const ss = String(r.seconds % 60).padStart(2, "0");
     /* 顺序解锁：通过后前往下一关，未通过留在本关重试；已无新关卡时只回地图 */
@@ -230,10 +259,10 @@
     const nextCleared = nextLevel < progNow.level || Boolean(progNow.cleared && progNow.cleared[nextLevel]);
     const canNext = !(r.passed && nextCleared);
     const isBase = !r.assessment;
-    /* 星星展示：考核关始终按星结算；启蒙模式下普通关也参与结算 */
-    const showStars = r.assessment || r.enlighten;
-    /* 重玩已通关卡只做练习，不再发放奖励 */
-    const replaySub = "已通关卡 · 重玩只做练习，不再发放星星和成长值";
+    /* 星星展示：所有关卡都按答对题数发 1~3 星 */
+    const showStars = true;
+    /* 重玩未满星关卡：只复习错词，星级可补，成长值不重复发放 */
+    const replaySub = "复习模式 · 优先抽取错词 · 星级可提升，成长值不重复发放";
     /* 手绘风对勾 / 叉号：粗圆头描边，比字体图标更有贴纸感 */
     const markOk = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8.5 21.2c3.1 3.5 5.4 6.4 7.2 8.8 4.7-8.4 9.8-14.3 15.8-18.6"/></svg>`;
     const markNo = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 11.2c5.1 4.6 10.3 9.5 15.4 15.1"/><path d="M26.1 11.5c-5.1 5.1-10.1 10.1-14.9 14.8"/></svg>`;
@@ -258,9 +287,7 @@
         ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
         ${showStars ? `<div class="result-stars">${starRow}</div>` : ""}
         <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay ? replaySub : isBase
-          ? r.enlighten
-            ? `启蒙模式 · 每关都有星星 · 本关 ${r.stars}★（满 3★）`
-            : `继续努力哦 · 还剩 <b class="remain">${5 - (r.level % 5)}</b> 关考核通过有星星奖励`
+          ? `每关最多 3★ · 本关最好 ${r.best}★${r.best < 3 ? " · 没满星可以重玩复习错词" : ""}`
           : `考核关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}`}</div>
       </div>
 
@@ -294,17 +321,17 @@
             <span class="gc-phase">${pending ? "可进化" : st.phase}</span>
           </div>
           <div class="gc-main">
-            <div class="gc-kicker"><span class="lb">EVOLUTION · 进化进度</span><span class="val num">${state.growth}<i> / ${next ? next.min : "MAX"}</i></span></div>
-            <div class="gc-title">${pending ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>` : next ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>` : "已经达到最高形态"}</div>
-            <div class="gc-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
+            <div class="gc-kicker"><span class="lb">${growKicker}</span><span class="val num">${state.growth}<i> / ${growMax}</i></span></div>
+            <div class="gc-title">${growTitle}</div>
+            <div class="gc-bar"><i style="width:${Math.round(growPct * 100)}%"></i></div>
           </div>
         </div>
-        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${pending ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化" : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大"}</p></div>
+        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${growNote}</p></div>
       </section>
     </div>
 
     <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : canNext ? `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>` : `<button class="btn" data-action="close-quiz">全部通关啦，回地图看看 ${I.arrow(18)}</button>`}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : canNext ? `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>` : `<button class="btn" data-action="close-quiz">回地图看看 ${I.arrow(18)}</button>`}
     </div>
   </section>`;
   }
@@ -314,6 +341,12 @@
      ============================================================ */
   function beginEvolution() {
     const from = stageMeta(state.stage);
+    /* 自动进化止步完全体，究极体改为图鉴星星兑换 */
+    if (from.key === "super" || from.key === "ultra") {
+      toast("已经进化到完全体啦，去图鉴用星星兑换究极体吧");
+      go("home", { replace: true });
+      return;
+    }
     const to = stageForGrowth(state.growth);
     if (stageIndex(to.key) <= stageIndex(from.key)) {
       toast("成长值还不够，再去闯一关吧");
@@ -355,7 +388,7 @@
       <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
       <div class="evo-inner">
         <div class="evo-top">
-          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / 05</div>
+          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / ${String(EVOLVE_MAX_INDEX).padStart(2, "0")}</div>
           <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
         </div>
         <div class="evo-title">

@@ -680,10 +680,11 @@ h1,h2,h3,h4,p{margin:0}
 .dcc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.1875rem}
 .dcc-tx b{font-size:0.9375rem;font-weight:var(--w-black);color:#4E3C22}
 .dcc-tx em{font-style:normal;font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);line-height:1.45}
-.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:2.875rem;height:2.875rem;
+.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:2.875rem;height:2.875rem;
   border-radius:0.9375rem;background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
   font-size:0.9375rem;font-weight:var(--w-black);line-height:1;box-shadow:0 0.125rem 0 #2F6B3F}
-.dcc-count small{margin-top:0.1875rem;font-size:0.53125rem;font-weight:var(--w-bold);opacity:.85}
+.dcc-count b{font-size:0.875rem;line-height:1;letter-spacing:-0.02rem}
+.dcc-count small{margin-top:0.125rem;font-size:0.5rem;font-weight:var(--w-bold);opacity:.85;line-height:1}
 .daily-challenge-card.is-empty .dcc-count{background:#C9BFAA;box-shadow:0 0.125rem 0 #B3A88F}
 
 /* ============================================================
@@ -1447,14 +1448,14 @@ h1,h2,h3,h4,p{margin:0}
 .ref-match-row{display:flex;align-items:center;gap:0.625rem;transition:opacity .18s ease}
 .ref-match-row.done{opacity:.55}
 .ref-match-row.wrong{opacity:.8}
-/* 单词框可复用，连过之后仍保持可点观感，不做灰化 */
-.ref-match-col-left .ref-match-row.marked{opacity:1}
+/* 单词框可复用，连过之后仍保持可点观感，不做灰化（混搭时任意列都可能出现词卡） */
+.ref-match-row.marked{opacity:1}
 .ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
 .ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
 .ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
 /* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
 .ref-match-col-left .ref-match-row{flex-direction:row;min-height:var(--match-card)}
-.ref-match-col-right .ref-match-row{flex-direction:row}
+.ref-match-col-right .ref-match-row{flex-direction:row;min-height:var(--match-card)}
 .ref-match-art-card{display:flex;align-items:center;justify-content:center;width:var(--match-card);height:var(--match-card);flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
 .ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
@@ -1628,7 +1629,8 @@ h1,h2,h3,h4,p{margin:0}
 .dex-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
 .dex-card .stg{font-size:0.625rem;font-weight:var(--w-mid);color:#A0AE9F;margin-top:0.0625rem;letter-spacing:0.01875rem}
 .dex-card.locked .pic{background:#F4EFE3}
-.dex-card.locked .pic svg{opacity:.2;filter:grayscale(1)}
+/* 未解锁形态用剪影展示，保留神秘感与收集欲 */
+.dex-card.locked .pic svg{opacity:.22;filter:brightness(0)}
 .dex-card.locked .nm{color:#B3AC9B}
 .dex-card .rare{position:absolute;right:0.5rem;top:0.5rem;width:1rem;height:1rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:0.625rem;font-weight:var(--w-black);z-index:4;box-shadow:0 0.1875rem 0.375rem rgba(94,70,30,.18)}
 .dex-card .rare.r3{background:#7FB4E8}
@@ -1657,15 +1659,18 @@ h1,h2,h3,h4,p{margin:0}
 .skin-card:active{transform:scale(.97)}
 .skin-card .pic{height:5.75rem;border-radius:0.75rem;background:#E8EEF9;overflow:hidden;display:grid;place-items:center}
 .skin-card .pic svg{width:100%;height:100%;transform:scale(1.18) translateY(-3%)}
+/* 究极体图鉴：完整展示整只恐龙，不放大裁切 */
+.skin-card.form-card .pic svg{transform:none}
 .skin-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
 .skin-card .sub{font-size:0.59375rem;font-weight:var(--w-read);color:#A0AE9F;margin-top:0.0625rem}
 .skin-card.on{border-color:rgba(46,139,87,.5);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.13)}
 .skin-card .cur{position:absolute;left:0.5rem;top:0.5rem;font-size:0.59375rem;font-weight:var(--w-black);color:#fff;
   background:var(--green);padding:0.125rem 0.3125rem;border-radius:0.3125rem;z-index:4}
 .skin-card.locked .pic{background:#F4EFE3}
-.skin-card.locked .pic svg{opacity:.22;filter:grayscale(1)}
+.skin-card.locked .pic svg{opacity:.22;filter:brightness(0)}
 .skin-card.locked .nm,.skin-card.locked .sub{color:#B3AC9B}
 .skin-card .lock-ic{position:absolute;right:0.5625rem;top:0.5625rem;color:#C6BDAA;z-index:4}
+.buy-tag{position:absolute;right:0.5625rem;top:0.5625rem;display:inline-flex;align-items:center;gap:0.125rem;background:#FFF4CE;color:#B4811C;font-size:0.59375rem;font-weight:var(--w-black);padding:0.125rem 0.3125rem;border-radius:0.375rem;line-height:1;z-index:4}
 
 /* ------------------------------------------------ words */
 .words-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.625rem}
@@ -1778,6 +1783,8 @@ h1,h2,h3,h4,p{margin:0}
 .dialog{width:calc(100% - 2.75rem);max-width:23.75rem;border-radius:1.625rem;background:#FFFBF3;padding:1.375rem 1.25rem 1.125rem;
   box-shadow:0 1.5rem 3.75rem rgba(20,40,30,.25);animation:pop .25s cubic-bezier(.2,1.4,.4,1) both;margin:auto}
 .dialog .d-ico{width:3.25rem;height:3.25rem;border-radius:1rem;background:#FFF4CE;display:grid;place-items:center;margin:0 auto}
+.dialog .dlg-dino{width:100%;height:8.5rem;border-radius:1rem;background:#E8EEF9;overflow:hidden;display:grid;place-items:center}
+.dialog .dlg-dino svg{width:100%;height:100%}
 .dialog h3{font-size:1.125rem;font-weight:var(--w-black);text-align:center;margin-top:0.625rem}
 .dialog p{font-size:0.71875rem;color:var(--muted);font-weight:var(--w-read);text-align:center;line-height:1.65;margin-top:0.375rem}
 .dialog .d-actions{display:flex;gap:0.5rem;margin-top:1rem}
@@ -1822,83 +1829,147 @@ h1,h2,h3,h4,p{margin:0}
 .toast.out{animation:toastOut .25s ease both}
 
 /* ============================================================
-   ★ 星星幸运大转盘（奶油卡通风）
+   ★ Dingo 恐龙转盘（DINO SPIN 抽屉升级版）
    ============================================================ */
-.lucky-wheel-sheet{position:relative;max-width:26rem;text-align:center;padding:0.875rem 1rem 1.125rem;
-  background:linear-gradient(180deg,#FFFCF4 0%,#FFF1D9 100%)}
-.lucky-wheel-sheet::before{content:"";position:absolute;inset:0.5rem;border-radius:1.5rem;
-  border:0.09375rem dashed #F1DDB6;pointer-events:none}
+.lucky-wheel-sheet{position:relative;max-width:26.5rem;text-align:center;padding:0.45rem 0.45rem calc(0.45rem + var(--safe-bottom));
+  background:linear-gradient(180deg,#F3FAEF 0%,#FFFDF7 48%,#FBF3E3 100%);overflow-x:hidden}
+/* 内层虚线纸框：贴在内容上一起滚动，始终完整包住转盘、按钮和记录 */
+.lw-paper{position:relative;padding:0.35rem 0.55rem 0.85rem;border:0.125rem dashed #E4CFA9;border-radius:1.45rem}
 
-/* 标题 */
-.lw-head{position:relative;padding-top:0.25rem}
-.lw-head h2{font-size:1.5rem;color:#3D5A3D;letter-spacing:0.03125rem}
-.lw-head p{font-size:0.71875rem;color:#A98F63;font-weight:var(--w-read);line-height:1.55;margin-top:0.25rem}
-.lw-deco{position:absolute;color:#FFC84D;line-height:1;text-shadow:0 0.0625rem 0 #fff}
-.lw-deco.d1{left:7%;top:-0.125rem;font-size:0.9375rem;transform:rotate(-12deg)}
-.lw-deco.d2{right:8%;top:0.5rem;font-size:0.6875rem;transform:rotate(14deg)}
+/* 右上角关闭 */
+.lw-close{position:absolute;right:0.75rem;top:0.75rem;z-index:12;width:1.95rem;height:1.95rem;border-radius:50%;
+  display:grid;place-items:center;background:#FFFDF7;border:0.125rem solid #5C411D;
+  box-shadow:0 0.15rem 0 #5C411D;padding:0}
+.lw-close:active{transform:translateY(0.1rem);box-shadow:0 0.05rem 0 #5C411D}
 
-/* 星星 / 免费机会 */
-.lw-chips{display:flex;justify-content:center;gap:0.5rem;margin-top:0.625rem}
-.lw-chip{display:inline-flex;align-items:center;gap:0.25rem;height:1.75rem;padding:0 0.6875rem;border-radius:6.1875rem;
-  background:#fff;border:0.0625rem solid #F0E2C8;box-shadow:0 0.1875rem 0.5rem rgba(94,70,30,.06);
-  font-size:0.71875rem;font-weight:var(--w-bold);color:#8A7550}
-.lw-chip i{font-style:normal;font-size:0.8125rem;color:#F0AE22}
-.lw-chip b{font-size:0.875rem;color:var(--ink);font-weight:var(--w-black)}
-.lw-chip.free{background:#FFF3CC;border-color:#F5DFA4;color:#9A6E13}
-.lw-chip.free i{color:inherit}
+/* 顶部标题与胶囊 */
+.lw-head{position:relative;padding-top:0.125rem}
+.lw-head h2{font-size:1.5rem;font-weight:var(--w-black);color:var(--ink);letter-spacing:0.04rem;
+  text-shadow:0 0.125rem 0 rgba(255,255,255,.9)}
+/* Dingo 使用站酷快乐体，字号略大，做出标识感 */
+.lw-brand{font-family:var(--font-brand);font-size:1.85rem;letter-spacing:0.03rem;
+  color:var(--green);text-shadow:0 0.125rem 0 #E9F7D9,0 0.2rem 0 rgba(30,107,71,.16)}
+.lw-head p{font-size:0.71875rem;color:var(--ink-2);font-weight:var(--w-mid);line-height:1.5;margin-top:0.2rem}
+.lw-deco{position:absolute;color:#E8A23C;line-height:1}
+.lw-deco.d1{left:5%;top:0;font-size:1rem;transform:rotate(-12deg)}
+.lw-deco.d2{right:6%;top:0.35rem;font-size:0.85rem;transform:rotate(14deg)}
 
-/* 转盘 */
-.lw-stage{position:relative;width:15rem;height:15rem;margin:1.0625rem auto 0.875rem}
-.lw-rim{position:absolute;inset:-0.5rem;border-radius:50%;background:linear-gradient(180deg,#FFE9BC,#FFD98F);
-  box-shadow:0 0.5rem 1.125rem rgba(197,143,44,.25),inset 0 0 0 0.125rem rgba(255,255,255,.65)}
-.lw-rim::after{content:"";position:absolute;inset:0.375rem;border-radius:50%;border:0.09375rem dashed rgba(255,255,255,.9)}
-.lw-pointer{position:absolute;left:50%;top:-0.8125rem;z-index:4;width:1.625rem;height:1.625rem;transform:translateX(-50%);
-  border-radius:50%;border:0.1875rem solid #FFFBF3;background:linear-gradient(180deg,#FFA26B,#FF7F3F);
-  box-shadow:0 0.25rem 0.5rem rgba(190,90,30,.35)}
-.lw-pointer::after{content:"";position:absolute;left:50%;bottom:-0.4375rem;transform:translateX(-50%);
-  border-left:0.3rem solid transparent;border-right:0.3rem solid transparent;border-top:0.45rem solid #FF7F3F}
-.lw-disc{position:relative;width:100%;height:100%;border-radius:50%;border:0.375rem solid #fff;
-  box-shadow:0 0.375rem 1rem rgba(94,70,30,.16),inset 0 0 0 0.125rem rgba(255,255,255,.45);
-  transition:transform 3.8s cubic-bezier(.17,.67,.12,.99)}
-.lw-label{position:absolute;left:50%;top:50%;width:2.6rem;margin:-0.6875rem 0 0 -1.3rem;
-  font-size:0.59375rem;font-weight:var(--w-black);line-height:1.15;color:#6B5327;text-align:center;
-  text-shadow:0 0.0625rem 0 rgba(255,255,255,.55)}
-.lw-label i{display:block;font-style:normal}
-.lw-hub{position:absolute;left:50%;top:50%;width:3.25rem;height:3.25rem;margin:-1.625rem 0 0 -1.625rem;border-radius:50%;
-  display:grid;place-items:center;background:linear-gradient(180deg,#FFFDF6,#FFEFC9);font-size:1.5rem;
-  border:0.1875rem solid #fff;box-shadow:inset 0 0 0 0.0625rem #F3DCA8,0 0.1875rem 0.5rem rgba(94,70,30,.18)}
+.lw-chips{display:flex;justify-content:center;gap:0.5rem;margin-top:0.55rem}
+.lw-chip{display:inline-flex;align-items:center;gap:0.25rem;height:1.85rem;padding:0 0.75rem;border-radius:6.1875rem;
+  background:#FFFDF7;border:0.125rem solid #E4CFA9;box-shadow:0 0.1875rem 0 #E4CFA9;
+  font-size:0.75rem;font-weight:var(--w-bold);color:var(--ink)}
+.lw-chip i{font-style:normal;font-size:0.85rem;color:#E8A23C}
+.lw-chip b{font-size:0.92rem;color:var(--green-d);font-weight:var(--w-black)}
+.lw-chip.free{background:#E9F7D9}
 
-/* 抽奖按钮 */
-.lw-spin-btn{min-height:3.125rem;font-size:1.0625rem;letter-spacing:0.025rem;
-  background:linear-gradient(180deg,#FFDE7A,#FFC247);color:#5A3C05;
-  box-shadow:0 0.3125rem 0 #D99A26,0 0.625rem 1rem rgba(217,154,38,.22)}
-.lw-spin-btn:active{box-shadow:0 0.125rem 0 #D99A26}
+/* 萌趣恐龙大转盘舞台（加宽比例：82vw / 19.5rem）
+   底部留白 = 底座溢出 1.25rem + 1rem，与按钮到抽奖记录的间距保持一致 */
+.lw-stage{position:relative;width:min(82vw,19.5rem);height:min(82vw,19.5rem);margin:1rem auto 2.25rem;
+  display:flex;align-items:center;justify-content:center}
+.lw-stand{position:absolute;bottom:-1.25rem;width:6.25rem;height:2.5rem;z-index:1;
+  background:linear-gradient(180deg,#C9A06B 0%,#AC8350 100%);
+  border:0.1875rem solid #5C411D;border-radius:0.75rem 0.75rem 1.25rem 1.25rem;
+  box-shadow:inset 0 0.25rem 0 rgba(255,255,255,.25),0 0.35rem 0.7rem rgba(92,65,29,.2)}
+.lw-rim{position:relative;width:100%;height:100%;border-radius:50%;padding:0.875rem;z-index:2;
+  background:radial-gradient(circle at 30% 30%,#FFF8E6,#F0DCB6 62%,#DCC196 100%);
+  border:0.25rem solid #5C411D;
+  box-shadow:0 0.45rem 0 #C2A578,0 0.85rem 1.35rem rgba(92,65,29,.2),inset 0 0.2rem 0.4rem rgba(255,255,255,.8)}
+
+/* 16 颗跑马灯灯泡（SVG 定位，无 resize 监听） */
+.lw-bulbs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.lw-bulb-a{animation:lwBulbA .9s infinite alternate}
+.lw-bulb-b{animation:lwBulbB .9s infinite alternate}
+.lw-rim.spinning-fast .lw-bulb-a,.lw-rim.spinning-fast .lw-bulb-b{animation-duration:.22s}
+@keyframes lwBulbA{0%{fill:#FFFDF7;opacity:1}100%{fill:#F4D9A0;opacity:.5}}
+@keyframes lwBulbB{0%{fill:#F6E4C0;opacity:.5}100%{fill:#FFFDF7;opacity:1}}
+
+/* 旋转盘面 */
+.lw-disc{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  border:0.1875rem solid #5C411D;background:#FFFDF7;will-change:transform;
+  box-shadow:inset 0 0 0.7rem rgba(92,65,29,.16)}
+.lw-disc svg{width:100%;height:100%;display:block}
+
+/* 顶部卡通红指针 + 跨扇区弹跳 */
+.lw-pointer{position:absolute;left:50%;top:-0.85rem;z-index:6;width:2.35rem;height:2.85rem;
+  transform:translateX(-50%);transform-origin:50% 0.9rem;
+  filter:drop-shadow(0 0.25rem 0.2rem rgba(0,0,0,.3))}
+.lw-pointer.ticking{animation:lwPtrTick .16s ease-out}
+@keyframes lwPtrTick{
+  0%{transform:translateX(-50%) rotate(0deg)}
+  35%{transform:translateX(-50%) rotate(-24deg)}
+  70%{transform:translateX(-50%) rotate(8deg)}
+  100%{transform:translateX(-50%) rotate(0deg)}
+}
+
+/* 中心恐龙尾巴徽章 */
+.lw-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;
+  width:3.35rem;height:3.35rem;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#FFFDF7,#E9F7D9);
+  border:0.1875rem solid #5C411D;
+  box-shadow:0 0.2rem 0.45rem rgba(92,65,29,.2),inset 0 0.15rem 0.2rem rgba(255,255,255,.85)}
+
+/* 3D 果冻 SPIN 按钮 */
+.lw-spin-btn{position:relative;min-height:3.25rem;border-radius:1.4rem;
+  background:linear-gradient(180deg,#3FA46A 0%,#2E8B57 55%,#26794C 100%);
+  border:0.1875rem solid #1E6B47;color:#FFF;font-size:1.125rem;font-weight:var(--w-black);
+  letter-spacing:0.03rem;text-shadow:0 0.0625rem 0 rgba(23,76,53,.45);
+  box-shadow:0 0.35rem 0 #1E6B47,0 0.5rem 0 #16543A,0 0.75rem 1.1rem rgba(30,107,71,.22),inset 0 0.2rem 0.3rem rgba(255,255,255,.35)}
+.lw-spin-btn:active:not(:disabled){transform:translateY(0.22rem);
+  box-shadow:0 0.125rem 0 #1E6B47,0 0.28rem 0 #16543A}
+.lw-spin-btn:disabled{filter:grayscale(.35);opacity:.8}
+
+/* 抽屉内中奖喜报浮层 */
+.lw-win-mask{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:1rem;
+  background:rgba(29,58,46,.5);backdrop-filter:blur(0.1875rem)}
+.lw-win-card{width:min(100%,19.5rem);padding:1.25rem 1rem 1rem;text-align:center;border-radius:1.4rem;
+  background:linear-gradient(180deg,#FFFDF7 0%,#FBF3E3 100%);
+  border:0.2rem solid #5C411D;box-shadow:0 0.45rem 0 #E4CFA9;
+  animation:pop .32s cubic-bezier(.34,1.56,.64,1) both}
+.lw-win-ribbon{display:inline-block;margin:-2.1rem 0 0.5rem;padding:0.25rem 1rem;border-radius:999px;
+  background:linear-gradient(180deg,#3FA46A,#2E8B57);color:#FFF;font-size:0.95rem;font-weight:var(--w-black);
+  border:0.15rem solid #1E6B47;box-shadow:0 0.2rem 0 #16543A}
+.lw-win-ico{width:4.5rem;height:4.5rem;margin:0.25rem auto;border-radius:1rem;background:#FBF3E3;
+  border:0.15rem solid #E4CFA9;display:grid;place-items:center;font-size:2.4rem}
+.lw-win-card h3{font-size:1.35rem;color:var(--ink);margin-top:0.35rem}
+.lw-win-card p{font-size:0.78rem;color:var(--ink-2);font-weight:var(--w-mid);margin-top:0.2rem}
+.lw-win-ok{margin-top:0.85rem;min-height:2.75rem;border-radius:0.95rem;border:0.15rem solid #1E6B47;
+  background:linear-gradient(180deg,#3FA46A,#2E8B57);color:#FFF;font-size:0.95rem;font-weight:var(--w-black);
+  box-shadow:0 0.25rem 0 #16543A}
+
+/* 礼花纸屑 */
+.lw-confetti{position:fixed;width:10px;height:10px;z-index:999;pointer-events:none;
+  border:1.5px solid rgba(92,65,29,.75);animation:lwConfettiFall linear forwards}
+@keyframes lwConfettiFall{
+  0%{transform:translate3d(0,-10vh,0) rotate(0deg);opacity:1}
+  85%{opacity:1}
+  100%{transform:translate3d(var(--tx),105vh,0) rotate(var(--rot));opacity:0}
+}
 
 /* 抽奖记录 */
-.lw-history{margin-top:0.875rem;padding:0.625rem 0.75rem 0.5rem;text-align:left;
-  background:rgba(255,255,255,.75);border:0.0625rem solid #F2E5CE;border-radius:1.125rem}
+.lw-history{margin-top:1rem;padding:0.625rem 0.75rem 0.5rem;text-align:left;
+  background:rgba(255,253,247,.9);border:0.125rem solid #E4CFA9;border-radius:1.125rem}
 .lw-history-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:0.375rem}
-.lw-history-head h3{font-size:0.8125rem;font-weight:var(--w-black);color:#5F5138}
-.lw-history-head span{font-size:0.625rem;color:#B3A186;font-weight:var(--w-mid)}
-.lw-history-list{list-style:none;max-height:8.25rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.375rem;
+.lw-history-head h3{font-size:0.8125rem;font-weight:var(--w-black);color:var(--ink)}
+.lw-history-head span{font-size:0.625rem;color:var(--muted);font-weight:var(--w-mid)}
+.lw-history-list{list-style:none;margin:0;padding:0;max-height:8.25rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.375rem;
   -webkit-overflow-scrolling:touch}
-.lw-record{display:flex;align-items:center;gap:0.5rem;padding:0.4375rem 0.5rem;border-radius:0.75rem;background:#fff;
-  box-shadow:0 0.09375rem 0.25rem rgba(94,70,30,.05)}
-.lw-record.used{opacity:.72}
-.lw-record .ico{width:1.75rem;height:1.75rem;border-radius:0.5625rem;background:#FFF6DD;
+.lw-record{display:flex;align-items:center;gap:0.5rem;padding:0.4375rem 0.5rem;border-radius:0.75rem;background:#FFF;
+  border:0.0625rem solid #F0E4CE}
+.lw-record.used{opacity:.68}
+.lw-record .ico{width:1.75rem;height:1.75rem;border-radius:0.5625rem;background:#FBF3E3;
   display:grid;place-items:center;font-size:0.9375rem;flex:none}
 .lw-record-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:0.0625rem}
-.lw-record-main b{font-size:0.75rem;color:#4E4431;font-weight:var(--w-bold)}
-.lw-record-main time{font-size:0.5625rem;color:#B3A186;font-weight:var(--w-read);white-space:nowrap}
-.lw-redeem{flex:none;font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#9A6E13;
-  background:#FFF4CE;border:0.0625rem solid #F2DCA0;border-radius:6.1875rem;padding:0.25rem 0.4375rem;cursor:pointer}
+.lw-record-main b{font-size:0.75rem;color:#3E5548;font-weight:var(--w-bold)}
+.lw-record-main time{font-size:0.5625rem;color:#91A095;font-weight:var(--w-read);white-space:nowrap}
+.lw-redeem{flex:none;font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#6B4E1E;
+  background:#FBE3B6;border:0.09375rem solid #E8A23C;border-radius:6.1875rem;padding:0.2rem 0.48rem;cursor:pointer}
 .lw-redeem:active{transform:scale(.94)}
-.lw-used{flex:none;font-size:0.5625rem;font-weight:var(--w-mid);color:#B3A186}
+.lw-used{flex:none;font-size:0.5625rem;font-weight:var(--w-mid);color:#97A69B}
 .lw-confirm{display:flex;gap:0.1875rem;flex:none}
-.lw-mini{font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#fff;background:#E8A23C;
+.lw-mini{font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#FFF;background:#3FA46A;
   border:0;border-radius:0.4375rem;padding:0.25rem 0.375rem;cursor:pointer}
 .lw-mini.ghost{background:#F2EBDF;color:#8A7550}
-.lw-history-empty{padding:0.625rem 0;font-size:0.6875rem;color:#B3A186;text-align:center;font-weight:var(--w-read)}
+.lw-history-empty{padding:0.625rem 0;font-size:0.6875rem;color:#91A095;text-align:center;font-weight:var(--w-read)}
 
 /* ============================================================
    zoo 主题：只覆盖视觉参数与位置，结构与题型引擎复用 game.css
@@ -2602,6 +2673,7 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-page[data-enlighten="1"] .ref-action-options,
 .quiz-page[data-enlighten="1"] .ref-zoom-options,
 .quiz-page[data-enlighten="1"] .ref-cmp-options,
+.quiz-page[data-enlighten="1"] .ref-listen-grid,
 .quiz-page[data-enlighten="1"] .fd-foods,
 .quiz-page[data-enlighten="1"] .ref-dialog-options {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -3761,13 +3833,18 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 
   /* 生成一道题：按题型筛词 + 错题库加权 + 同局去重
      familiarSet 存在时（BOSS 关）严格按「错题库 → 已解锁词 → 其他词」优先抽词 */
-  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet) {
+  function makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool) {
     const rule = RULE_BY_KEY[type];
     if (!rule) return null;
 
     let candidates = pool.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
     if (!candidates.length) candidates = pool.filter((w) => fitsRule(w, rule));
     if (!candidates.length) return null;
+    /* 重玩关卡：目标词只从错词库抽，错词不够时自然回落到正常词补足 */
+    if (targetPool && targetPool.size) {
+      const wrongOnly = candidates.filter((w) => targetPool.has(w.word));
+      if (wrongOnly.length) candidates = wrongOnly;
+    }
 
     let target;
     if (familiarSet) {
@@ -3785,7 +3862,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
   }
 
   /* 按固定配比组卷：普通关 3 题，BOSS 关 5 题 */
-  function buildSession(level, pool, sceneId, familiarSet) {
+  function buildSession(level, pool, sceneId, familiarSet, targetPool) {
     const step = ((Number(level) - 1) % LEVELS_PER_VENUE) + 1;
     const isBoss = step === LEVELS_PER_VENUE;
     const mix = isBoss ? BOSS_MIX : NORMAL_MIX;
@@ -3806,7 +3883,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         } else if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
         else if (slot.role === "verb") type = verbType();
         else if (slot.role === "partOrAdj") type = pickPartOrAdjType(step);
-        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet);
+        const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
         if (question) questions.push(question);
       }
     }
@@ -3871,7 +3948,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
   /* 兜底补题：部位特写暂时关闭，情景对话只允许出现在 BOSS 关 */
   const IMPLEMENTED_TYPES = ["pic", "listen", "word_puzzle", "match", "dialog", "feed_animal", "action"];
   const NORMAL_TYPES = ["pic", "listen", "word_puzzle", "match", "feed_animal", "action"];
-  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool) {
+  function fillTasks(tasks, size, allWords, dlg, sceneId, allowedTypes, primaryPool, targetPool) {
     const types = withoutToddlerBlocked(allowedTypes && allowedTypes.length ? allowedTypes : IMPLEMENTED_TYPES);
     const usedWords = new Set(tasks.map((task) => task.word));
     const primary = primaryPool && primaryPool.length ? primaryPool : allWords;
@@ -3884,6 +3961,11 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule) && !usedWords.has(w.word));
       if (!candidates.length) candidates = allWords.filter((w) => fitsRule(w, rule));
       if (!candidates.length) break;
+      /* 重玩关卡：补题也优先只抽错词库里的词 */
+      if (targetPool && targetPool.size) {
+        const wrongOnly = candidates.filter((w) => targetPool.has(w.word));
+        if (wrongOnly.length) candidates = wrongOnly;
+      }
       const w = candidates[Math.floor(Math.random() * candidates.length)];
       usedWords.add(w.word);
       tasks.push(toTask({ gameType: type, recordWrong: rule.recordWrong, targetWord: w }, allWords, dlg, sceneId, primary));
@@ -3897,7 +3979,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     return plans[level] || plans[10];
   }
 
-  function buildTasks(level) {
+  function buildTasks(level, opts = {}) {
     const theme = currentTheme();
     const pool = themeWords();
     const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
@@ -3927,14 +4009,22 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         }
       }
 
-      const questions = buildSession(level, buildPool, sceneId, familiarSet);
+      /* 重玩未满星关卡：目标词只从错词库抽，错词不够时再用正常词补足 */
+      let targetPool = null;
+      if (opts.replay) {
+        const prefix = `${sceneId}_`;
+        const wrongWords = new Set(WrongBank.listInScene(sceneId).map((id) => id.slice(prefix.length)));
+        targetPool = new Set(allSceneWords.filter((w) => wrongWords.has(w.word)).map((w) => w.word));
+      }
+
+      const questions = buildSession(level, buildPool, sceneId, familiarSet, targetPool);
       let tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
         .map((q) => toTask(q, allSceneWords, dlg, sceneId, buildPool));
 
       /* 启蒙模式补题只允许图片选项题型，避免补进看图/连线/动作这类单词选项 */
       const allowed = withoutToddlerBlocked(boss ? BOSS_TYPES : NORMAL_TYPES);
-      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool).slice(0, size);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, buildPool, targetPool).slice(0, size);
       /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音选图能显示动词图片 */
       return filled.map((task) => attachOptionArt(task, allSceneWords));
     }
@@ -4196,8 +4286,8 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         title: "把单词和图片连起来",
         prompt: "Match the words with the pictures.",
         build(task, pool) {
-          /* 只连同类词，避免连线题里混进动词/形容词；启蒙模式只连 2 组 */
-          const pairTotal = enlightenOn() ? 2 : 3;
+          /* 只连同类词，避免连线题里混进动词/形容词；固定 3 组配对 */
+          const pairTotal = 3;
           const trioPool = pool.filter((x) => !task.category || x.category === task.category);
           /* 歧义过滤：同义/易混词不能同时出现在连线里（如 sleep 与 nap 都画着睡觉） */
           const picked = [];
@@ -4229,9 +4319,21 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
             .map((x) => ({ word: x.word, art: x.art, img: x.img || "", zh: x.zh || "", phon: x.phon || "" }))
             .concat(shuffle(foods).slice(0, foodCount));
 
+          /* 启蒙模式：左列固定单词、右列固定图片；其余模式左右随机混搭 */
+          const mixed = !enlightenOn();
+          const leftItems = [];
+          const rightItems = [];
+          pairs.forEach((p) => {
+            const wordOnLeft = !mixed || Math.random() < 0.5;
+            const wordItem = { kind: "word", word: p.word };
+            const artItem = { kind: "art", word: p.word, art: p.art, img: p.img || "" };
+            leftItems.push(wordOnLeft ? wordItem : artItem);
+            rightItems.push(wordOnLeft ? artItem : wordItem);
+          });
+
           task.pairs = pairs;
-          task.words = shuffle(pairs.map((p) => p.word));
-          task.arts = shuffle(pairs.map((p) => ({ word: p.word, art: p.art, img: p.img || "" })));
+          task.leftItems = shuffle(leftItems);
+          task.rightItems = shuffle(rightItems);
         },
         render({ q, quiz }) {
           const solved = new Set(quiz.matched || []);
@@ -4241,26 +4343,29 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
           const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
           const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
           const selected = quiz.pickWord;
-          /* 左列英文单词、右列图片：点单词卡片会抖动并朗读 */
-          const leftCol = q.words.map((w) => {
-            const isDone = solved.has(w);
-            const isWrong = wrongWords.has(w);
-            /* 单词框可复用：连过后仍可继续选，不锁定 */
-            const isSel = selected === w;
-            return `<div class="ref-match-row marked${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${w}" data-match-side="word">
-              <div class="ref-match-word-card">${w}</div>
-              <button class="ref-match-dot" data-match-dot data-match-side="word" data-word="${w}" aria-label="选择 ${w}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
+          /* 圆点永远朝向中线：左列点靠右、右列点靠左 */
+          const dotHtml = (word, side, state) =>
+            `<button class="ref-match-dot" data-match-dot data-match-side="${side}" data-word="${word}" aria-label="选择 ${word}">${state}</button>`;
+          const rowHtml = (item, col) => {
+            const word = item.word;
+            const isDone = solved.has(word);
+            const isWrong = item.kind === "word" ? wrongWords.has(word) : wrongArts.has(word);
+            const isSel = item.kind === "word"
+              ? selected === word
+              : selected === word && !isDone && !isWrong;
+            const mark = isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : "";
+            /* 单词框可复用：连过后仍可继续选，不锁定（marked 保持不透明度） */
+            const cls = `ref-match-row${item.kind === "word" ? " marked" : ""}${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}`;
+            const card = item.kind === "word"
+              ? `<div class="ref-match-word-card">${word}</div>`
+              : `<div class="ref-match-art-card">${artWithImage(item.img, "ref-match-img", item.art())}</div>`;
+            const dot = dotHtml(word, item.kind, mark);
+            return `<div class="${cls}" data-match-row data-word="${word}" data-match-side="${item.kind}">
+              ${col === "left" ? card + dot : dot + card}
             </div>`;
-          }).join("");
-          const rightCol = q.arts.map((p) => {
-            const isDone = solved.has(p.word);
-            const isWrong = wrongArts.has(p.word);
-            const isSel = selected === p.word && !isDone && !isWrong;
-            return `<div class="ref-match-row${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}" data-match-row data-word="${p.word}" data-match-side="art">
-              <button class="ref-match-dot" data-match-dot data-match-side="art" data-word="${p.word}" aria-label="选择 ${p.word}">${isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : ""}</button>
-              <div class="ref-match-art-card">${artWithImage(p.img, "ref-match-img", p.art())}</div>
-            </div>`;
-          }).join("");
+          };
+          const leftCol = (q.leftItems || []).map((item) => rowHtml(item, "left")).join("");
+          const rightCol = (q.rightItems || []).map((item) => rowHtml(item, "right")).join("");
           return {
             body: `<div class="ref-match-wrap">
                 <div class="ref-match-area" data-match-area>
@@ -4304,6 +4409,8 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
             /* 启蒙模式：连错不记错、不扣心，短暂标红后自动恢复，可继续尝试 */
             if (enlightenOn()) {
               quiz.matchFlash = { art: word, word: pickedWord };
+              /* 首答就配错：本题之后连对也不给星 */
+              quiz.matchFirstTry = false;
               quiz.pickWord = null;
               quiz.pickWordSide = null;
               sfx("tap");
@@ -4326,7 +4433,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
             quiz.revealed = true;
             quiz.choiceCorrect = wrongPairs.length === 0;
             if (quiz.choiceCorrect) {
-              quiz.correct++;
+              if (typeof firstTryClean !== "function" || firstTryClean()) quiz.correct++;
               q.pairs.forEach((p) => {
                 quiz.words.push(p.word);
                 /* 连线全部正确：把配对的单词一并解锁 */
@@ -5371,23 +5478,27 @@ function renderZooRouteSheet(scene, prog) {
 
   const nodes = scene.levels.map((s) => {
     const locked = s.level > level;
-    /* 已通关节点不再可点：顺序解锁后只能挑战当前关 */
     const done = s.level < level || Boolean(prog.cleared && prog.cleared[s.level]);
+    /* 已满星的关卡不能再点，只能往下一关；未满星则允许重复学习 */
+    const best = (prog.stars && prog.stars[s.level]) || 0;
+    const full = done && best >= 3;
     const isCurrent = s.level === level && !done;
     const cls = [
       "animal-route-node", "zoo-step",
       done ? "done" : "",
+      full ? "full" : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
       s.step === LEVELS_PER_VENUE ? "venue-boss" : "",
     ].filter(Boolean).join(" ");
     return `<button type="button" class="${cls}" style="left:${s.x}%;top:${s.y}%"
         data-action="zoo-node" data-level="${s.level}"
-        title="${s.venue.zh} · 第 ${s.level} 关"
-        aria-label="${s.venue.zh}第 ${s.step} 关${done ? "，已通关" : isCurrent ? "，当前关卡" : "，未解锁"}"
-        ${locked || done ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
+        title="${s.venue.zh} · 第 ${s.level} 关${done ? ` · ★${best}` : ""}"
+        aria-label="${s.venue.zh}第 ${s.step} 关${full ? "，已满星" : done ? `，已通关，${best} 星，可复习` : isCurrent ? "，当前关卡" : "，未解锁"}"
+        ${locked || full ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
   }).join("");
-  const allDone = Boolean(prog.cleared && prog.cleared[level]);
+  const lastBest = (prog.stars && prog.stars[level]) || 0;
+  const allDone = Boolean(prog.cleared && prog.cleared[level] && lastBest >= 3);
 
   return `<div class="overlay">
     <section class="sheet animal-route-sheet zoo-route-sheet" role="dialog" aria-modal="true" aria-label="陆地动物园闯关路线">
@@ -5746,11 +5857,32 @@ function isStandaloneMode() {
 
 function stageIndex(key) { return Math.max(0, STAGES.findIndex((s) => s.key === key)); }
 function stageMeta(key) { return STAGES[stageIndex(key)] || STAGES[0]; }
-function nextStage(key) { return STAGES[stageIndex(key) + 1] || null; }
+/* 自动进化只到完全体；究极体改为成长值达标后用星星兑换 */
+function nextStage(key) {
+  if (key === "super" || key === "ultra") return null;
+  return STAGES[stageIndex(key) + 1] || null;
+}
 function stageForGrowth(growth) {
   let out = STAGES[0];
-  for (const s of STAGES) if (growth >= s.min) out = s;
+  for (const s of STAGES) {
+    if (s.key === "ultra") break;
+    if (growth >= s.min) out = s;
+  }
   return out;
+}
+function ultraBaseOwned() {
+  return (state.ultraOwned || []).includes(1) || state.dex.includes("ultra");
+}
+function ultraSkinOwned(id) {
+  const n = Number(id);
+  if (n <= 4) return ultraBaseOwned();
+  return (state.ultraOwned || []).includes(n);
+}
+function ultraExchangeOpen() { return state.growth >= ULTRA_MIN; }
+function ultraFormMeta(id) {
+  const n = Number(id);
+  if (n <= 4) return { id: n, name: "超级霸王龙", sub: (ULTRA_SKINS[n - 1] || ULTRA_SKINS[0]).sub };
+  return ULTRA_DINOS.find((d) => d.id === n) || ULTRA_DINOS[0];
 }
 function fmt(n) { return Number(n).toLocaleString("en-US"); }
 function greeting() {
@@ -6159,12 +6291,22 @@ const DINO_ART = {
   super: { src: "images/dino/super.webp", k: 1 },
 };
 
-/* 究极体的四种机甲形态，索引 = ultraSkin - 1 */
+/* 究极体形态：索引 = ultraSkin - 1（前 4 种为超级霸王龙机甲，后 10 种为究极体图鉴） */
 const ULTRA_ART = [
   { src: "images/dino/ultra-1.webp", k: 1 },
   { src: "images/dino/ultra-2.webp", k: 1 },
   { src: "images/dino/ultra-3.webp", k: 1 },
   { src: "images/dino/ultra-4.webp", k: 1 },
+  { src: "images/dino/ultra-5.webp", k: 1 },
+  { src: "images/dino/ultra-6.webp", k: 1 },
+  { src: "images/dino/ultra-7.webp", k: 1 },
+  { src: "images/dino/ultra-8.webp", k: 1 },
+  { src: "images/dino/ultra-9.webp", k: 1 },
+  { src: "images/dino/ultra-10.webp", k: 1 },
+  { src: "images/dino/ultra-11.webp", k: 1 },
+  { src: "images/dino/ultra-12.webp", k: 1 },
+  { src: "images/dino/ultra-13.webp", k: 1 },
+  { src: "images/dino/ultra-14.webp", k: 1 },
 ];
 let ultraSkin = 1;
 function setUltraSkin(n) {
@@ -6216,6 +6358,11 @@ const STAGES = [
   { key: "ultra", name: "超级霸王龙",   phase: "究极体", min: 2000, vocab: "pro",     rarity: 5, height: "5.0 m", weight: "2.4 t", skill: "星辉护佑", desc: "骨板燃起金红色的光，威风凛凛地站在山岗上。只有最坚持的小探险家才能遇见它。" },
 ];
 
+/* 自动进化止步于完全体；成长值达到究极体额度后，改为在图鉴里用星星兑换 */
+const EVOLVE_MAX_INDEX = STAGES.findIndex((s) => s.key === "super");
+const ULTRA_MIN = STAGES.find((s) => s.key === "ultra").min;
+const ULTRA_PRICE = 10;
+
 const BACKGROUNDS = [
   { id: "jungle", name: "丛林瀑布", sub: "默认场景",     price: 0,   cls: "jungle" },
   { id: "sunset", name: "静谧湖畔", sub: "背景 · 稀有",   price: 10,  cls: "sunset" },
@@ -6230,8 +6377,22 @@ const ULTRA_SKINS = [
   { id: 4, name: "红眼重装", sub: "重装机械臂甲" },
 ];
 
+/* 究极体图鉴：10 种机甲恐龙，解锁 ultra 后收录并可切换形象 */
+const ULTRA_DINOS = [
+  { id: 5,  name: "机甲剑龙",   sub: "青铜装甲 · 雷电骨板" },
+  { id: 6,  name: "机甲腕龙",   sub: "太阳能帆板 · 长颈侦察" },
+  { id: 7,  name: "冰晶三角龙", sub: "冰蓝能量罩 · 三重尖角" },
+  { id: 8,  name: "苍穹翼龙",   sub: "霓虹电路 · 高空滑翔" },
+  { id: 9,  name: "霓虹霸王龙", sub: "彩虹骨板 · 喷射尾环" },
+  { id: 10, name: "疾风迅猛龙", sub: "光刃爪 · 极速突袭" },
+  { id: 11, name: "磐石甲龙",   sub: "尾锤护盾 · 重装防御" },
+  { id: 12, name: "音波副栉龙", sub: "声波头冠 · 音浪冲击" },
+  { id: 13, name: "黄金三角龙", sub: "蒸汽齿轮 · 翡翠棱角" },
+  { id: 14, name: "黑曜霸王龙", sub: "暗红装甲 · 聚能炮" },
+];
+
 const DEFAULT_STATE = {
-  v: 9,
+  v: 10,
   name: "毛肚",
   stars: 0,
   /* 宝箱赠送的免费转盘机会，可累积并保留到下次 */
@@ -6261,6 +6422,8 @@ const DEFAULT_STATE = {
   bg: "jungle",
   bgOwned: ["jungle"],
   ultraSkin: 1,
+  /* 已兑换的究极体形态（1 = 超级霸王龙，5–14 = 究极体图鉴） */
+  ultraOwned: [],
   dex: ["egg"],
   sound: true,
   /* 英文读音风格：kids 童趣朗读（默认，更慢更亮）/ standard 标准朗读（教材发音） */
@@ -6539,6 +6702,16 @@ function loadState() {
       parsed.unlocked = [];
       parsed.words = 0;
     }
+    /* v9 → v10：进化止步完全体，究极体改为星星兑换；旧存档已解锁的究极体直接保留 */
+    if (prevVersion < 10) {
+      const owned = Array.isArray(parsed.ultraOwned) ? parsed.ultraOwned.slice() : [];
+      const hadUltra = parsed.stage === "ultra" || (Array.isArray(parsed.dex) && parsed.dex.includes("ultra"));
+      if (hadUltra && !owned.includes(1)) owned.push(1);
+      /* 上一版可能已切换到究极体图鉴里的形象，直接保留为已兑换 */
+      const prevSkin = Number(parsed.ultraSkin) || 1;
+      if (hadUltra && prevSkin > 4 && !owned.includes(prevSkin)) owned.push(prevSkin);
+      parsed.ultraOwned = owned;
+    }
     const unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
     const next = {
       ...initialState(),
@@ -6553,7 +6726,8 @@ function loadState() {
       /* 已学单词数始终与解锁列表保持一致 */
       words: unlocked.length,
       bgOwned: Array.isArray(parsed.bgOwned) ? parsed.bgOwned : [...DEFAULT_STATE.bgOwned],
-      ultraSkin: Math.min(4, Math.max(1, Number(parsed.ultraSkin) || 1)),
+      ultraSkin: Math.min(ULTRA_ART.length, Math.max(1, Number(parsed.ultraSkin) || 1)),
+      ultraOwned: Array.isArray(parsed.ultraOwned) ? [...new Set(parsed.ultraOwned.map(Number).filter((n) => n > 0))] : [],
       dex: Array.isArray(parsed.dex) ? parsed.dex : [...DEFAULT_STATE.dex],
     };
     /* 单元制后主题 tab 已移除：旧存档当前主题若已无可玩内容（如占位主题/脏值），回落到第一个可玩主题 */
@@ -6674,6 +6848,7 @@ function starPill() {
   return `<button class="star-pill" data-action="wheel-open" aria-label="星星幸运大转盘">${star(22)}<span class="num">${fmt(starBalance())}</span></button>`;
 }
 function stageChip() {
+  if (state.stage === "ultra") return `${I.leaf(11)} 究极体 · ${ultraFormMeta(state.ultraSkin).name}`;
   const st = stageMeta(state.stage);
   return `${I.leaf(11)} ${st.phase} · ${st.name}`;
 }
@@ -6900,13 +7075,20 @@ document.addEventListener("click", (e) => {
   } else if (action === "dex-detail") {
     openDexDetail(el.dataset.key);
   } else if (action === "pick-ultra") {
-    state.ultraSkin = Math.min(4, Math.max(1, Number(el.dataset.skin) || 1));
-    setUltraSkin(state.ultraSkin);
-    save();
-    sfx("tap");
-    render();
+    const skin = Math.min(ULTRA_ART.length, Math.max(1, Number(el.dataset.skin) || 1));
+    if (!ultraSkinOwned(skin)) { toast("先在图鉴里兑换这只究极体吧"); return; }
+    equipUltra(skin);
+  } else if (action === "buy-ultra") {
+    openBuyUltra(el.dataset.id || el.dataset.skin);
+  } else if (action === "confirm-ultra") {
+    confirmBuyUltra();
   } else if (action === "locked-ultra") {
-    toast("进化成超级霸王龙后，就能切换这几种机甲形态");
+    toast(`成长值达到 ${ULTRA_MIN} 后，用 ${ULTRA_PRICE} 星星兑换究极体`);
+  } else if (action === "open-ultra-dex") {
+    collectTab = "dex";
+    dexFilter = "ultra";
+    sfx("tap");
+    go("collect", { replace: true });
   } else if (action === "filter-dex") {
     dexFilter = el.dataset.filter;
     sfx("tap");
@@ -6945,17 +7127,20 @@ document.addEventListener("click", (e) => {
     /* 🦁 路线弹框里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
     const prog = sceneProgress("animal", "zoo");
+    const best = (prog.stars && prog.stars[level]) || 0;
+    const cleared = Boolean(prog.cleared && prog.cleared[level]);
     if (level > prog.level) {
       toast(`先通过第 ${prog.level} 关，才能解锁这一关`);
       return;
     }
-    if (level < prog.level || (prog.cleared && prog.cleared[level])) {
-      toast("这一关已经通关啦，去挑战下一关吧");
+    /* 满星后不再提供重玩，只能往下一关 */
+    if (cleared && best >= 3) {
+      toast("这一关已经满星啦，去挑战下一关吧");
       return;
     }
     sfx("tap");
     closeOverlay();
-    startQuiz(level);
+    startQuiz(level, { replay: cleared || level < prog.level });
   } else if (action === "zoo-zoom-in") {
     sfx("tap");
     if (window.ZooRouteView) ZooRouteView.zoomIn();
@@ -7019,6 +7204,8 @@ document.addEventListener("click", (e) => {
     LuckyWheel.open();
   } else if (action === "wheel-spin") {
     LuckyWheel.spin();
+  } else if (action === "wheel-win-ok") {
+    LuckyWheel.closeWinPop();
   } else if (action === "coupon-ask") {
     /* 家长核销第一步：进入二次确认，避免宝宝误点 */
     LuckyWheel.askRedeem(Number(el.dataset.index));
@@ -7397,11 +7584,11 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   };
 
   /* ============================================================
-     LuckyWheel · 星星幸运大转盘
+     LuckyWheel · DINO SPIN 萌趣恐龙大转盘（抽屉版）
      - 宝箱开启后自动进入；优先消耗免费机会，其次花 6 ★
      ============================================================ */
   const WHEEL_COST = 6;
-  const DAILY_LIMIT = 3;
+  const DAILY_LIMIT = 2;
   /* 今天的日期键，用于每日转盘次数限制 */
   function todayKey() {
     const d = new Date();
@@ -7411,18 +7598,19 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const s = _state();
     return s.spinDay === todayKey() ? Math.max(0, Number(s.spinCount) || 0) : 0;
   }
-  /* 统一奖励池：weight 越大越常出现，买玩具仅 5%（低概率大奖） */
+  /* 统一奖励池：weight 越大越常出现，买玩具仅 5%（低概率大奖）
+     配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，贴合全站视觉 */
   const REWARD_POOL = [
-    { id: "cartoon", label: "看动画片15分", short: "动画15分", color: "#FFE082", weight: 20, icon: "📺" },
-    { id: "story",   label: "多讲1个故事",  short: "讲故事",   color: "#B9F6CA", weight: 20, icon: "📚" },
-    { id: "sticker", label: "恐龙贴纸1张",  short: "贴纸1张",  color: "#E1BEE7", weight: 15, icon: "🌈" },
-    { id: "snack",   label: "选1个小零食",  short: "小零食",   color: "#FFCCBC", weight: 10, icon: "🍪" },
-    { id: "game",    label: "一起玩20分钟", short: "玩游戏",   color: "#D5CCF6", weight: 8,  icon: "🎲" },
-    { id: "park",    label: "去公园玩耍",   short: "去公园",   color: "#B3E5FC", weight: 8,  icon: "🌳" },
-    { id: "book",    label: "挑一本新绘本", short: "新绘本",   color: "#FFF1A8", weight: 5,  icon: "📖" },
-    { id: "zoo",     label: "周末去动物园", short: "动物园",   color: "#CFE8A8", weight: 5,  icon: "🦁" },
-    { id: "toy",     label: "买个小玩具",   short: "小玩具",   color: "#FFAB91", weight: 5,  icon: "🧸" },
-    { id: "icecream", label: "全家吃冰淇淋", short: "冰淇淋",  color: "#F9CFE0", weight: 4,  icon: "🍦" },
+    { id: "cartoon",  label: "看动画片15分", short: "动画15分", color: "#FBEBC8", ink: "#6B4E1E", weight: 20, icon: "📺" },
+    { id: "story",    label: "多讲1个故事",  short: "讲故事",   color: "#CFE9C8", ink: "#2F5B3A", weight: 20, icon: "📚" },
+    { id: "sticker",  label: "恐龙贴纸1张",  short: "贴纸1张",  color: "#E7D9F3", ink: "#51406E", weight: 15, icon: "🌈" },
+    { id: "snack",    label: "选1个小零食",  short: "小零食",   color: "#FAD9C2", ink: "#7A4526", weight: 10, icon: "🍪" },
+    { id: "game",     label: "一起玩20分钟", short: "玩游戏",   color: "#D4E4F2", ink: "#31536E", weight: 8,  icon: "🎲" },
+    { id: "park",     label: "去公园玩耍",   short: "去公园",   color: "#CFE9DE", ink: "#2A5747", weight: 8,  icon: "🌳" },
+    { id: "book",     label: "挑一本新绘本", short: "新绘本",   color: "#F7EBC0", ink: "#6C5A20", weight: 5,  icon: "📖" },
+    { id: "zoo",      label: "周末去动物园", short: "动物园",   color: "#DFEAC8", ink: "#46603A", weight: 5,  icon: "🦁" },
+    { id: "toy",      label: "买个小玩具",   short: "小玩具",   color: "#F5CFC7", ink: "#7A3A31", weight: 5,  icon: "🧸" },
+    { id: "icecream", label: "全家吃冰淇淋", short: "冰淇淋",   color: "#F8DDE4", ink: "#7A4052", weight: 4,  icon: "🍦" },
   ];
   const PRIZE_ICON = {};
   REWARD_POOL.forEach((p) => { PRIZE_ICON[p.id] = p.icon; });
@@ -7438,32 +7626,81 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     return 0;
   }
 
-  function buildOverlay(fromChest) {
-    const segAngle = 360 / REWARD_POOL.length;
-    const gradient = REWARD_POOL.map((p, i) =>
-      `${p.color} ${i * segAngle}deg ${(i + 1) * segAngle}deg`).join(",");
-    const labels = REWARD_POOL.map((p, i) => {
-      const deg = i * segAngle + segAngle / 2;
-      return `<span class="lw-label" style="transform:rotate(${deg}deg) translateY(-5.5rem)">
-        <i style="transform:rotate(${-deg}deg)">${p.short || p.label}</i></span>`;
+  /* 构建 10 扇区 SVG 盘面（0 号扇区正对顶部指针） */
+  function buildWheelSVG() {
+    const cx = 200, cy = 200, r = 196;
+    const sliceDeg = 360 / REWARD_POOL.length;
+    const slices = REWARD_POOL.map((p, i) => {
+      const a1 = (-90 - sliceDeg / 2 + i * sliceDeg) * Math.PI / 180;
+      const a2 = (-90 + sliceDeg / 2 + i * sliceDeg) * Math.PI / 180;
+      const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+      return `<g>
+        <path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z"
+          fill="${p.color}" stroke="#5C411D" stroke-width="2.6" stroke-linejoin="round" stroke-opacity=".55"/>
+        <g transform="translate(${cx},${cy}) rotate(${i * sliceDeg})">
+          <text x="0" y="-146" text-anchor="middle" fill="${p.ink}" font-size="14" font-weight="800">${p.short}</text>
+          <text x="0" y="-114" text-anchor="middle" font-size="24">${p.icon}</text>
+        </g>
+      </g>`;
     }).join("");
+    return `<svg viewBox="0 0 400 400">${slices}</svg>`;
+  }
+
+  /* 构建外圈 16 颗跑马灯灯泡 */
+  function buildBulbsSVG() {
+    const cx = 180, cy = 180, r = 171;
+    let dots = "";
+    for (let i = 0; i < 16; i++) {
+      const rad = ((i * 360) / 16 - 90) * Math.PI / 180;
+      dots += `<circle cx="${(cx + r * Math.cos(rad)).toFixed(1)}" cy="${(cy + r * Math.sin(rad)).toFixed(1)}"
+        r="5.5" class="${i % 2 === 0 ? "lw-bulb-a" : "lw-bulb-b"}" stroke="#B08E5C" stroke-width="1.5"/>`;
+    }
+    return `<svg class="lw-bulbs" viewBox="0 0 360 360" aria-hidden="true">${dots}</svg>`;
+  }
+
+  /* 礼花纸屑喷射 */
+  function launchConfetti() {
+    const colors = ["#2E8B57", "#E8A23C", "#FF8A4C", "#FF6F61", "#9BC98A", "#7FA8C9", "#C9A6D8", "#F2C6CE"];
+    for (let i = 0; i < 36; i++) {
+      const el = document.createElement("div");
+      el.className = "lw-confetti";
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.backgroundColor = colors[i % colors.length];
+      el.style.borderRadius = i % 2 === 0 ? "50%" : "3px";
+      el.style.setProperty("--tx", (Math.random() - 0.5) * 200 + "px");
+      el.style.setProperty("--rot", (Math.random() * 720 - 360) + "deg");
+      el.style.animationDuration = (1.5 + Math.random() * 1.3).toFixed(2) + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+  }
+
+  let spinning = false;
+  let confirmAsk = -1;
+  let lastWon = null;
+  let currentDeg = 0;
+
+  function buildOverlay(fromChest) {
     const free = pendingSpins();
     const balance = starBalance();
     const coupons = Array.isArray(state.coupons) ? state.coupons : [];
-    const today = spinsToday();
-    const dailyLeft = Math.max(0, DAILY_LIMIT - today);
+    const dailyLeft = Math.max(0, DAILY_LIMIT - spinsToday());
+
     let btnText;
     let disabled = false;
     if (dailyLeft <= 0) { btnText = `今天转满 ${DAILY_LIMIT} 次啦，明天再来`; disabled = true; }
-    else if (free > 0) btnText = free > 1 ? `免费转一次（剩 ${free} 次）` : "免费转一次";
-    else if (balance >= WHEEL_COST) btnText = `花 ${WHEEL_COST} ★ 转一次`;
+    else if (free > 0) btnText = free > 1 ? `开始抽奖！免费转（剩 ${free} 次）` : "开始抽奖！免费转一次";
+    else if (balance >= WHEEL_COST) btnText = `开始抽奖！花 ${WHEEL_COST} ★ SPIN!`;
     else { btnText = `还差 ${WHEEL_COST - balance} ★ 才能转哦`; disabled = true; }
+
     const baseHint = fromChest
       ? "宝箱开启成功！送你 1 次免费转盘机会"
       : free > 0
         ? "免费机会不消耗星星，未使用会保留到下次"
         : `每 ${WHEEL_COST} ★ 转一次，抽中的奖励找爸爸妈妈兑换`;
-    const hint = `${baseHint}；每天最多 ${DAILY_LIMIT} 次，今天还剩 ${dailyLeft} 次`;
+    const hint = `${baseHint}；今天还剩 ${dailyLeft}/${DAILY_LIMIT} 次`;
+
     const records = coupons.length
       ? coupons.map((c, i) => {
         const action = c.used
@@ -7473,8 +7710,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
                 <button class="lw-mini ghost" data-action="coupon-cancel">取消</button>
                 <button class="lw-mini" data-action="coupon-redeem" data-index="${i}">确认</button>
               </span>`
-            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}"
-                title="请爸爸妈妈亲手点击确认兑现">家长核销</button>`;
+            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}">家长核销</button>`;
         return `<li class="lw-record${c.used ? " used" : ""}">
           <span class="ico">${PRIZE_ICON[c.id] || "🎁"}</span>
           <span class="lw-record-main"><b>${c.label}</b><time>${c.date || ""}</time></span>
@@ -7482,35 +7718,70 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
         </li>`;
       }).join("")
       : `<li class="lw-history-empty">还没有抽奖记录，转一转试试手气吧</li>`;
+
+    const winPop = lastWon ? `<div class="lw-win-mask">
+      <div class="lw-win-card">
+        <div class="lw-win-ribbon">🎉 恭喜中奖啦！ 🎉</div>
+        <div class="lw-win-ico">${lastWon.icon}</div>
+        <h3>${lastWon.label}</h3>
+        <p>已放入下方抽奖记录，快找爸爸妈妈兑换吧~</p>
+        <button type="button" class="btn lw-win-ok" data-action="wheel-win-ok">开心收下！</button>
+      </div>
+    </div>` : "";
+
     return `<div class="overlay"><div class="sheet lucky-wheel-sheet">
+      <div class="lw-paper">
       <div class="grab"></div>
+      <button type="button" class="lw-close" data-action="close-overlay" aria-label="关闭转盘">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#5C411D" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </button>
       <header class="lw-head">
         <span class="lw-deco d1">✦</span><span class="lw-deco d2">✦</span>
-        <h2>星星幸运大转盘</h2>
+        <h2><span class="lw-brand">Dingo</span> 恐龙转盘</h2>
         <p>${hint}</p>
       </header>
       <div class="lw-chips">
-        <span class="lw-chip"><i>★</i>星星 <b>${fmt(balance)}</b></span>
-        <span class="lw-chip free"><i>🎁</i>免费机会 <b>${free}</b></span>
+        <span class="lw-chip"><i>★</i>星星 <b id="lw-star-val">${fmt(balance)}</b></span>
+        <span class="lw-chip free"><i>🎁</i>免费机会 <b id="lw-free-val">${free}</b></span>
       </div>
       <div class="lw-stage">
-        <div class="lw-rim" aria-hidden="true"></div>
-        <div class="lw-pointer" aria-hidden="true"></div>
-        <div class="lw-disc" id="lucky-wheel-disc" style="background:conic-gradient(${gradient})">${labels}<span class="lw-hub">🦖</span></div>
+        <div class="lw-stand" aria-hidden="true"></div>
+        <div class="lw-pointer" id="lw-pointer" aria-hidden="true">
+          <svg viewBox="0 0 60 72" width="100%" height="100%">
+            <path d="M30,68 L8,26 A22,22 0 1,1 52,26 Z" fill="#FF6F61" stroke="#5C411D" stroke-width="4.5" stroke-linejoin="round"/>
+            <circle cx="30" cy="24" r="10" fill="#FFF6E0" stroke="#5C411D" stroke-width="3.5"/>
+            <circle cx="27" cy="21" r="3" fill="#FFF"/>
+          </svg>
+        </div>
+        <div class="lw-rim" id="lw-rim">
+          ${buildBulbsSVG()}
+          <div class="lw-disc" id="lucky-wheel-disc" style="transform:rotate(${currentDeg}deg)">${buildWheelSVG()}</div>
+          <span class="lw-hub" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 64 64">
+              <path d="M18,52 C14,34 22,14 42,10 C38,24 42,38 48,48 C38,54 26,55 18,52 Z" fill="#2E8B57" stroke="#5C411D" stroke-width="3.5" stroke-linejoin="round"/>
+              <polygon points="22,26 14,22 20,33" fill="#E8A23C" stroke="#5C411D" stroke-width="2.5"/>
+              <polygon points="28,16 21,10 25,22" fill="#E8A23C" stroke="#5C411D" stroke-width="2.5"/>
+              <polygon points="36,11 32,4 33,15" fill="#E8A23C" stroke="#5C411D" stroke-width="2.5"/>
+            </svg>
+          </span>
+        </div>
       </div>
-      <button class="btn lw-spin-btn" data-action="wheel-spin" ${disabled ? "disabled" : ""}>${btnText}</button>
+      <button class="btn lw-spin-btn" id="lw-spin-btn" data-action="wheel-spin" ${disabled ? "disabled" : ""}>${btnText}</button>
       <section class="lw-history">
         <div class="lw-history-head"><h3>抽奖记录</h3><span>已抽 ${coupons.length} 次 · 兑换请家长核销</span></div>
         <ul class="lw-history-list">${records}</ul>
       </section>
+      </div>
+      ${winPop}
     </div></div>`;
   }
 
-  let spinning = false;
-  let confirmAsk = -1;
-
   function open(opts) {
     confirmAsk = -1;
+    lastWon = null;
+    currentDeg = 0;
     sfx("tap");
     openOverlay(buildOverlay(Boolean(opts && opts.fromChest)));
   }
@@ -7528,40 +7799,95 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       toast(`还需要 ${WHEEL_COST - balance} ★ 才能转转盘哦！`);
       return;
     }
+
+    ensureAudio();
+    sfx("coin");
     spinning = true;
+    lastWon = null;
+
+    /* 1. 扣费 + 抽取中奖扇区 + 立刻写入存档（防中途刷新丢星星） */
     if (free > 0) state.spins = free - 1;
     else state.stars = balance - WHEEL_COST;
     if (state.spinDay !== todayKey()) { state.spinDay = todayKey(); state.spinCount = 0; }
     state.spinCount = (Number(state.spinCount) || 0) + 1;
-    save();
 
     const winIdx = pickWeightedIndex(REWARD_POOL);
-    const segAngle = 360 / REWARD_POOL.length;
-    /* 转 5 圈，让中奖扇区中心停在顶部指针下 */
-    const stopDeg = 360 * 5 + (360 - winIdx * segAngle - segAngle / 2);
-    const disc = document.getElementById("lucky-wheel-disc");
-    if (disc) disc.style.transform = `rotate(${stopDeg}deg)`;
-    sfx("coin");
+    const prize = REWARD_POOL[winIdx];
+    if (!Array.isArray(state.coupons)) state.coupons = [];
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    state.coupons.unshift({
+      id: prize.id,
+      label: prize.label,
+      date: `${now.getMonth() + 1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+      used: false,
+    });
+    save();
 
-    setTimeout(() => {
-      const prize = REWARD_POOL[winIdx];
-      if (!Array.isArray(state.coupons)) state.coupons = [];
-      const now = new Date();
-      const pad = (n) => String(n).padStart(2, "0");
-      state.coupons.unshift({
-        id: prize.id,
-        label: prize.label,
-        date: `${now.getMonth() + 1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}`,
-        used: false,
-      });
-      save();
-      spinning = false;
-      sfx("win");
-      toast(`🎉 恭喜抽中：【${prize.label}】！快找爸爸妈妈兑换吧~`);
-      const root = document.getElementById("overlay-root");
-      if (root && root.querySelector(".lucky-wheel-sheet")) openOverlay(buildOverlay(false));
-      render();
-    }, 3900);
+    /* 2. 更新顶部数字与按钮禁用态（不整页重绘，保持转盘流畅） */
+    const starEl = document.getElementById("lw-star-val");
+    const freeEl = document.getElementById("lw-free-val");
+    const btnEl = document.getElementById("lw-spin-btn");
+    const rimEl = document.getElementById("lw-rim");
+    const discEl = document.getElementById("lucky-wheel-disc");
+    const ptrEl = document.getElementById("lw-pointer");
+    if (starEl) starEl.textContent = fmt(starBalance());
+    if (freeEl) freeEl.textContent = pendingSpins();
+    if (btnEl) btnEl.disabled = true;
+    if (rimEl) rimEl.classList.add("spinning-fast");
+
+    /* 3. requestAnimationFrame 物理缓动 + 跨扇区指针滴答声 */
+    const sliceDeg = 360 / REWARD_POOL.length;
+    const targetMod = (360 - winIdx * sliceDeg) % 360;
+    const jitter = (Math.random() - 0.5) * (sliceDeg * 0.55);
+    const curMod = ((currentDeg % 360) + 360) % 360;
+    let delta = (targetMod - curMod + jitter + 360) % 360;
+    if (delta < 60) delta += 360;
+
+    const startRot = currentDeg;
+    const targetRot = startRot + 6 * 360 + delta;
+    const startTime = performance.now();
+    const duration = 4200;
+    let lastStep = Math.floor((startRot + sliceDeg / 2) / sliceDeg);
+
+    function frame(ts) {
+      const p = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 4.2);
+      const deg = startRot + (targetRot - startRot) * eased;
+      if (discEl) discEl.style.transform = `rotate(${deg}deg)`;
+
+      const step = Math.floor((deg + sliceDeg / 2) / sliceDeg);
+      if (step !== lastStep) {
+        lastStep = step;
+        if (ptrEl) {
+          ptrEl.classList.remove("ticking");
+          void ptrEl.offsetWidth;
+          ptrEl.classList.add("ticking");
+        }
+        if (state.sound && typeof tone === "function") tone(680, 0.04, "triangle", 0.055);
+      }
+
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        currentDeg = targetRot;
+        spinning = false;
+        lastWon = prize;
+        if (rimEl) rimEl.classList.remove("spinning-fast");
+        sfx("win");
+        launchConfetti();
+        const root = document.getElementById("overlay-root");
+        if (root && root.querySelector(".lucky-wheel-sheet")) openOverlay(buildOverlay(false));
+        render();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function closeWinPop() {
+    lastWon = null;
+    sfx("tap");
+    openOverlay(buildOverlay(false));
   }
 
   /* 家长核销：先点「家长核销」进入确认，再由家长点「确认」 */
@@ -7587,7 +7913,15 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     openOverlay(buildOverlay(false));
   }
 
-  window.LuckyWheel = { open, spin, askRedeem, cancelRedeem, redeem };
+  window.LuckyWheel = {
+    open,
+    spin,
+    closeWinPop,
+    askRedeem,
+    cancelRedeem,
+    redeem,
+    isSpinning: () => spinning,
+  };
 })();
 
 </script>
@@ -7646,11 +7980,13 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const correct = Math.min(quiz.correct, total);
     const accuracy = correct / total;
     const enlighten = Boolean(state.enlighten);
-    /* 考核关按答对题数发 1~3 星；启蒙模式下普通关也按答对题数发星，关闭后普通关恢复 0 星 */
+    /* 每关都按答对题数发 1~3 星：普通关 3 题答对 1/2/3 → 1/2/3 星；
+       考核关 5 题答对 3/4/5 → 1/2/3 星 */
     const stars = assessment
       ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
-      : (enlighten ? correct : 0);
-    const passed = assessment ? correct >= 4 : correct >= 1;
+      : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
+    /* 启蒙模式可以一直答到正确，只要完成本题就算过关；星星只按首答正确数发放 */
+    const passed = enlighten ? true : (assessment ? correct >= 4 : correct >= 1);
     const prog = themeProgress();
     const completedLevel = quiz.level;
     const prevBest = prog.stars[completedLevel] || 0;
@@ -7660,21 +7996,21 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     /* 已通关判定：末关通过后 prog.level 不再增长，靠 cleared 标记区分首通与重玩 */
     const alreadyCleared = Boolean(prog.cleared && prog.cleared[completedLevel]);
     const isReplay = alreadyCleared || completedLevel < prog.level;
-    /* 重玩已通关卡只做练习，不再发放星星与成长值 */
-    const starGain = isReplay ? 0 : bestGain;
+    /* 重玩未满星关卡：只发放星级增量，可把这一关补到满星；成长值仍不重复发放 */
+    const starGain = bestGain;
     const growthGain = isReplay ? 0 : (passed ? correct * 24 : Math.round(correct * 12));
     const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
     state.growth += growthGain;
     state.stars += starGain;
-    if (!isReplay && best > 0) prog.stars[completedLevel] = best;
+    if (best > 0) prog.stars[completedLevel] = best;
     /* 只有挑战当前关卡且达到过关线才推进进度，重玩旧关卡不影响进度 */
     if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
     if (passed) prog.cleared[completedLevel] = true;
     /* 单词数由解锁列表决定，同一单词答对多次不会重复计数 */
     state.words = Array.isArray(state.unlocked) ? state.unlocked.length : 0;
     const newUnlocked = [...new Set(quiz.newWords || [])];
-    /* 三星收藏只在首次拿到 3 星时 +1，重玩满分不再计入 */
-    if (!isReplay && stars === 3 && prevBest < 3) state.threeStars += 1;
+    /* 三星收藏只在首次拿到 3 星时 +1，重玩补到满星同样计入 */
+    if (stars === 3 && prevBest < 3) state.threeStars += 1;
     state.tasks.level = true;
     /* 学习日志记录本次实际获得的星星，重玩不虚增 */
     recordLevel(starGain);
@@ -7684,7 +8020,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       level: completedLevel,
       replay: isReplay,
       prevBest,
-      best: isReplay ? prevBest : best,
+      best,
       correct: quiz.correct,
       total,
       assessment,
@@ -7815,6 +8151,33 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const pending = r.canEvolve && r.targetStage;
     const target = pending ? stageMeta(r.targetStage) : null;
     const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+    const atMax = st.key === "super";
+    const isUltra = st.key === "ultra";
+    const ultraOpen = ultraExchangeOpen();
+    const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
+    const growPct = isUltra ? 1 : atMax ? ultraPct : pending ? 1 : pct;
+    const growMax = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
+    const growKicker = atMax || isUltra ? "ULTRA · 究极体兑换" : "EVOLUTION · 进化进度";
+    const growTitle = isUltra
+      ? `究极体形态已解锁<span>去图鉴切换喜欢的机甲恐龙</span>`
+      : atMax
+        ? (ultraOpen
+            ? `究极体兑换已开放<span><b>${ULTRA_PRICE}★/只</b> · 去图鉴兑换</span>`
+            : `再获得 <b>${Math.max(0, ULTRA_MIN - state.growth)}</b> 成长值<span>开放究极体兑换</span>`)
+        : pending
+          ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>`
+          : next
+            ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>`
+            : "已经达到最高形态";
+    const growNote = isUltra
+      ? "<b>究极体形态真威风！</b>去图鉴用星星兑换更多机甲恐龙吧"
+      : atMax
+        ? (ultraOpen
+            ? "<b>收集图鉴的时间到啦！</b>用星星把喜欢的机甲恐龙带回家"
+            : "<b>小诺今天也很开心！</b>继续积累成长值，就能开启究极体兑换")
+        : pending
+          ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化"
+          : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大";
     const mm = String(Math.floor(r.seconds / 60)).padStart(1, "0");
     const ss = String(r.seconds % 60).padStart(2, "0");
     /* 顺序解锁：通过后前往下一关，未通过留在本关重试；已无新关卡时只回地图 */
@@ -7824,10 +8187,10 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const nextCleared = nextLevel < progNow.level || Boolean(progNow.cleared && progNow.cleared[nextLevel]);
     const canNext = !(r.passed && nextCleared);
     const isBase = !r.assessment;
-    /* 星星展示：考核关始终按星结算；启蒙模式下普通关也参与结算 */
-    const showStars = r.assessment || r.enlighten;
-    /* 重玩已通关卡只做练习，不再发放奖励 */
-    const replaySub = "已通关卡 · 重玩只做练习，不再发放星星和成长值";
+    /* 星星展示：所有关卡都按答对题数发 1~3 星 */
+    const showStars = true;
+    /* 重玩未满星关卡：只复习错词，星级可补，成长值不重复发放 */
+    const replaySub = "复习模式 · 优先抽取错词 · 星级可提升，成长值不重复发放";
     /* 手绘风对勾 / 叉号：粗圆头描边，比字体图标更有贴纸感 */
     const markOk = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8.5 21.2c3.1 3.5 5.4 6.4 7.2 8.8 4.7-8.4 9.8-14.3 15.8-18.6"/></svg>`;
     const markNo = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 11.2c5.1 4.6 10.3 9.5 15.4 15.1"/><path d="M26.1 11.5c-5.1 5.1-10.1 10.1-14.9 14.8"/></svg>`;
@@ -7852,9 +8215,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
         ${r.bossClear && r.bossChests ? `<div class="boss-chest-reward"><span>🎁</span> 额外奖励 <b>${r.bossChests}</b> 个神秘宝箱<span>✨</span></div>` : ""}
         ${showStars ? `<div class="result-stars">${starRow}</div>` : ""}
         <div class="result-sub">${r.bossClear ? "动物园的所有动物都为你欢呼！去地图上开宝箱吧" : r.replay ? replaySub : isBase
-          ? r.enlighten
-            ? `启蒙模式 · 每关都有星星 · 本关 ${r.stars}★（满 3★）`
-            : `继续努力哦 · 还剩 <b class="remain">${5 - (r.level % 5)}</b> 关考核通过有星星奖励`
+          ? `每关最多 3★ · 本关最好 ${r.best}★${r.best < 3 ? " · 没满星可以重玩复习错词" : ""}`
           : `考核关 · 答对 ${r.correct}/5${r.passed ? " · 成功过关" : " · 需答对 4 题才能过关"}`}</div>
       </div>
 
@@ -7888,17 +8249,17 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
             <span class="gc-phase">${pending ? "可进化" : st.phase}</span>
           </div>
           <div class="gc-main">
-            <div class="gc-kicker"><span class="lb">EVOLUTION · 进化进度</span><span class="val num">${state.growth}<i> / ${next ? next.min : "MAX"}</i></span></div>
-            <div class="gc-title">${pending ? `${st.name} <b>→</b> ${target.name}<span><b>可以进化啦！</b></span>` : next ? `再获得 <b>${Math.max(0, next.min - state.growth)}</b> 成长值<span>进化为 <b>${next.name}</b></span>` : "已经达到最高形态"}</div>
-            <div class="gc-bar"><i style="width:${pending ? 100 : Math.round(pct * 100)}%"></i></div>
+            <div class="gc-kicker"><span class="lb">${growKicker}</span><span class="val num">${state.growth}<i> / ${growMax}</i></span></div>
+            <div class="gc-title">${growTitle}</div>
+            <div class="gc-bar"><i style="width:${Math.round(growPct * 100)}%"></i></div>
           </div>
         </div>
-        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${pending ? "<b>小诺已经等不及啦！</b>点下面的按钮见证进化" : "<b>小诺今天也很开心！</b>再闯一关，就能继续长大"}</p></div>
+        <div class="gc-note"><span class="ic">${spark(11, pending ? "#D79A2B" : "#6E9A52")}</span><p>${growNote}</p></div>
       </section>
     </div>
 
     <div class="result-foot">
-      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : canNext ? `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>` : `<button class="btn" data-action="close-quiz">全部通关啦，回地图看看 ${I.arrow(18)}</button>`}
+      ${pending && r.passed ? `<button class="btn" data-action="evolve">见证进化 ${I.arrow(18)}</button>` : canNext ? `<button class="btn" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "再闯一关" : "再试一次"} ${I.arrow(18)}</button>` : `<button class="btn" data-action="close-quiz">回地图看看 ${I.arrow(18)}</button>`}
     </div>
   </section>`;
   }
@@ -7908,6 +8269,12 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
      ============================================================ */
   function beginEvolution() {
     const from = stageMeta(state.stage);
+    /* 自动进化止步完全体，究极体改为图鉴星星兑换 */
+    if (from.key === "super" || from.key === "ultra") {
+      toast("已经进化到完全体啦，去图鉴用星星兑换究极体吧");
+      go("home", { replace: true });
+      return;
+    }
     const to = stageForGrowth(state.growth);
     if (stageIndex(to.key) <= stageIndex(from.key)) {
       toast("成长值还不够，再去闯一关吧");
@@ -7949,7 +8316,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
       <div class="evo-inner">
         <div class="evo-top">
-          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / 05</div>
+          <div class="tag">${spark(11, "#FFD25A")} MILESTONE ${String(stageIndex(info.to.key)).padStart(2, "0")} / ${String(EVOLVE_MAX_INDEX).padStart(2, "0")}</div>
           <button class="close" data-action="home" aria-label="回到乐园">${I.close(16)}</button>
         </div>
         <div class="evo-title">
@@ -8008,6 +8375,12 @@ let artMap = null;
 function enlightenOn() {
   return Boolean(state && state.enlighten);
 }
+/* 启蒙模式：首次就答错的题仍可继续答到正确，但不再计入星星 */
+function firstTryClean() {
+  if (!enlightenOn()) return true;
+  if (!quiz) return true;
+  return !(quiz.triedWrong && quiz.triedWrong.length) && quiz.matchFirstTry !== false;
+}
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
   const theme = currentTheme();
@@ -8018,12 +8391,19 @@ function artOf(word) {
   return artMap.map.get(word) || (() => UNKNOWN_ART(word));
 }
 
-function startQuiz(level) {
+function startQuiz(level, opts = {}) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
-  /* 顺序解锁：已通关的关卡不再提供重玩入口 */
+  /* 未满星的关卡可以重复学习（只抽错词）；满星后只能继续下一关 */
   const prog = themeProgress();
-  if (lvl < prog.level || (prog.cleared && prog.cleared[lvl])) {
-    toast("这一关已经通关啦，去挑战下一关吧");
+  const best = (prog.stars && prog.stars[lvl]) || 0;
+  const cleared = Boolean(prog.cleared && prog.cleared[lvl]);
+  const replay = Boolean(opts.replay) || cleared || lvl < prog.level;
+  if (lvl > prog.level) {
+    toast("先通过前面的关卡吧");
+    return;
+  }
+  if (replay && best >= 3) {
+    toast("这一关已经满星啦，去挑战下一关吧");
     return;
   }
   quiz = {
@@ -8044,7 +8424,7 @@ function startQuiz(level) {
     startedAt: Date.now(),
     words: [],
     newWords: [],
-    order: DynamicEngine.buildTasks(lvl),
+    order: DynamicEngine.buildTasks(lvl, { replay }),
   };
   lastResult = null;
   levelCue(currentTheme().id);
@@ -8173,7 +8553,7 @@ function screenQuiz() {
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
   const statusTitle = ok
-    ? (isMatch ? "三组全连对啦！" : "答对了，你真棒！")
+    ? (isMatch ? `${q.pairs && q.pairs.length === 2 ? "两" : "三"}组全连对啦！` : "答对了，你真棒！")
     : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
   const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
     ? "Result" : "Next";
@@ -8389,7 +8769,8 @@ function feedCheck() {
   }
   quiz.revealed = true; quiz.choiceCorrect = ok;
   if (ok) {
-    quiz.correct++; quiz.words.push(q.word); sfx("excellent");
+    if (firstTryClean()) quiz.correct++;
+    quiz.words.push(q.word); sfx("excellent");
     markDailyStar();
     /* 答对后弹框自动朗读正确的食物单词 */
     setTimer(() => speak(q.correctFood), 600);
@@ -8434,7 +8815,7 @@ function checkAnswer() {
   quiz.choiceCorrect = ok;
   const wordOption = isWordOptionTask(q);
   if (ok) {
-    quiz.correct++;
+    if (firstTryClean()) quiz.correct++;
     quiz.words.push(q.word);
     markDailyStar();
     if (wordOption) {
@@ -8471,6 +8852,7 @@ function nextQuestion() {
   quiz.pickWord = null;
   quiz.pickWordSide = null;
   quiz.matchWrong = 0;
+  quiz.matchFirstTry = true;
   quiz.triedWrong = [];
   quiz.matchFlash = null;
   render();
@@ -8824,7 +9206,7 @@ let voiceTimer = null;
 /* 头像图标：直接用恐龙大图 + CSS 裁切头部，与 hero 完全一致 */
 function avatarArtSrc() {
   if (state.stage === "ultra") {
-    const skin = Math.min(4, Math.max(1, Number(state.ultraSkin) || 1));
+    const skin = Math.min(ULTRA_ART.length, Math.max(1, Number(state.ultraSkin) || 1));
     return `images/dino/ultra-${skin}.webp`;
   }
   return `images/dino/${state.stage}.webp`;
@@ -8966,6 +9348,12 @@ function screenHome() {
   const next = nextStage(st.key);
   const pending = next && state.growth >= next.min;
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+  const atMax = st.key === "super";
+  const isUltra = st.key === "ultra";
+  const ultraOpen = ultraExchangeOpen();
+  const ultraLeft = Math.max(0, ULTRA_MIN - state.growth);
+  const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
+  const barPct = isUltra ? 1 : atMax ? ultraPct : pct;
   const lv = todayLevels();
   const streak = streakDays();
   const tasks = tasksData(lv, streak);
@@ -8974,6 +9362,14 @@ function screenHome() {
   const example = generateExample(word);
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  const growthVal = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
+  const growthText = isUltra
+    ? "究极体形态已解锁 · 可在图鉴切换"
+    : atMax
+      ? (ultraOpen ? `究极体兑换已开放 <b>${ULTRA_PRICE}★/只</b>` : `距究极体兑换还差 <b>${ultraLeft}</b>`)
+      : !next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`;
+  const growthAction = isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "start-quiz";
+  const growthIcon = isUltra ? I.bag(19) : atMax && ultraOpen ? I.crownMini(22, "#4A3206") : pending ? I.crownMini(22, "#4A3206") : I.arrow(19);
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
@@ -8996,15 +9392,15 @@ function screenHome() {
 
       <div class="growth-panel">
         <div class="g-main">
-          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
-          <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
+          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${growthVal}</em></span></div>
+          <div class="bar g-bar"><i style="width:${Math.round(barPct * 100)}%"></i></div>
           <div class="g-next">
-            <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
-            <span>${Math.round(pct * 100)}%</span>
+            <span>${growthText}</span>
+            <span>${Math.round(barPct * 100)}%</span>
           </div>
         </div>
-        <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
-          ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
+        <button class="go-btn ${pending || (atMax && ultraOpen) ? "evolve" : ""}" data-action="${growthAction}" aria-label="${isUltra || (atMax && ultraOpen) ? "去兑换究极体" : pending ? "去进化" : "开始闯关"}">
+          ${growthIcon}
         </button>
       </div>
 
@@ -9209,13 +9605,13 @@ function screenMap() {
     return `<section class="map-card" style="background:${tcfg.bg || "#FBF3E3"};border-color:${tcfg.border || "#E7DAC3"};box-shadow:0 0.375rem 0 ${(tcfg.border || "#E7DAC3")}48">
       ${mapHtml}
       <span class="map-tag">${t.emoji} ${t.name}</span>
-      <div class="caption"><b>第 ${tLevel} 关 · ${t.name}</b><span>${QUIZ_SIZE} 道题 · 第 5 关考核得星星</span></div>
+      <div class="caption"><b>第 ${tLevel} 关 · ${t.name}</b><span>${QUIZ_SIZE} 道题 · 每关最多 3★</span></div>
     </section>
     <section class="next-card">
       <div class="nc-l">
         <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${tLevel} 关</div>
         <h3>${t.name}</h3>
-        <div class="nc-meta">${sceneWords(t, state.scene).length} 个词 · ${QUIZ_SIZE} 道题 · 第 5 关考核得星星</div>
+        <div class="nc-meta">${sceneWords(t, state.scene).length} 个词 · ${QUIZ_SIZE} 道题 · 每关最多 3★</div>
       </div>
       <button class="nc-btn" data-action="start-quiz" data-theme="${t.id}">开始闯关${I.arrow(14)}</button>
     </section>`;
@@ -9234,7 +9630,7 @@ function screenMap() {
             ? "启蒙 2 选项 · 答对 1 题得 1★ · 不计成长值"
             : "全主题混抽 5 题 · 答对 1 题得 1★ · 不计成长值"}</em>
         </span>
-        <span class="dcc-count">${dailyChallengeLeft()}<small>/ ${DAILY_CHALLENGE_LIMIT} 次</small></span>
+        <span class="dcc-count"><b>${dailyChallengeLeft()}/${DAILY_CHALLENGE_LIMIT}</b><small>次</small></span>
       </button>
 
       <div class="journey">
@@ -9316,7 +9712,9 @@ function dexRewardInfo() {
 function dexBody() {
   const filters = [["all", "全部"], ["baby", "幼年期"], ["teen", "成长期"], ["adult", "成熟期"], ["super", "完全体"], ["ultra", "究极体"]];
   const filterPhases = { baby: "幼年期", teen: "成长期", adult: "成熟期", super: "完全体", ultra: "究极体" };
-  const list = STAGES.filter((d) => dexFilter === "all" || d.phase === filterPhases[dexFilter]);
+  /* 究极体筛选下，超级霸王龙统一在下方「究极体图鉴」里展示，避免重复 */
+  const list = STAGES.filter((d) => (dexFilter === "all" || d.phase === filterPhases[dexFilter])
+    && !(dexFilter === "ultra" && d.key === "ultra"));
   const reward = dexRewardInfo();
   const pct = Math.round((state.dex.length / STAGES.length) * 100);
   return `<div class="dex-sum card">
@@ -9330,22 +9728,29 @@ function dexBody() {
 
     <div class="dex-filters">${filters.map(([id, label]) => `<button class="f ${dexFilter === id ? "on" : ""}" data-action="filter-dex" data-filter="${id}">${label}</button>`).join("")}</div>
 
-    <div class="dex-grid">
+    ${list.length ? `<div class="dex-grid">
       ${list.map((d) => {
-        const found = state.dex.includes(d.key);
-        const isNow = d.key === state.stage;
+        const isUltra = d.key === "ultra";
+        const found = isUltra ? ultraBaseOwned() : state.dex.includes(d.key);
+        const isNow = d.key === state.stage && (!isUltra || state.ultraSkin <= 4);
         const bgT = (STAGES.findIndex((x) => x.key === d.key) % 5) + 1;
-        return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="dex-detail" data-key="${d.key}" aria-label="${found ? d.name : "未发现"}">
-          ${found ? `<span class="rare r${d.rarity}">★</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+        const action = isUltra ? (found ? "pick-ultra" : "buy-ultra") : "dex-detail";
+        const attr = isUltra ? ` data-id="1" data-skin="${state.ultraSkin <= 4 ? state.ultraSkin : 1}"` : ` data-key="${d.key}"`;
+        const ultraHint = ultraExchangeOpen() ? `${ULTRA_PRICE}★ 兑换` : `${ULTRA_MIN} 成长值开放`;
+        const nm = found || isUltra ? d.name : "未发现";
+        const stg = found ? d.phase : isUltra ? ultraHint : "???";
+        return `<button class="dex-card ${found ? "" : "locked"} ${isNow ? "current" : ""}" data-action="${action}"${attr} aria-label="${found ? d.name : isUltra ? `${d.name} 兑换` : "未发现"}">
+          ${found ? `<span class="rare r${d.rarity}">★</span>` : isUltra && ultraExchangeOpen() ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+          ${!found && isUltra && ultraExchangeOpen() ? `<span class="buy-tag">${star(10)}${ULTRA_PRICE}</span>` : ""}
           ${isNow ? `<span class="now-tag">当前</span>` : ""}
           <div class="pic t${bgT}">${dino(d.key)}</div>
-          <div class="nm">${found ? d.name : "未发现"}</div>
-          <div class="stg">${found ? d.phase : "???"}</div>
+          <div class="nm">${nm}</div>
+          <div class="stg">${stg}</div>
         </button>`;
       }).join("")}
-    </div>
+    </div>` : ""}
 
-    ${dexFilter === "ultra" ? ultraSkinSection() : ""}
+    ${dexFilter === "ultra" ? ultraDexSection() : ""}
 
     <div class="dex-reward">
       <div class="dr-ic"><div class="bg-thumb ${state.dex.length >= 4 ? "sunset" : "jungle"}" style="width:100%;height:100%;border-radius:0"></div></div>
@@ -9358,24 +9763,39 @@ function dexBody() {
     </div>`;
 }
 
-/* 超级霸王龙的机甲形态：进化到究极体后可自由切换形象 */
-function ultraSkinSection() {
-  const unlocked = state.dex.includes("ultra");
-  return `<div class="skin-head">
-      <b>超级霸王龙形态</b><span>${unlocked ? "已解锁 · 点击切换" : "进化到究极体后解锁"}</span>
-    </div>
-    <div class="skin-grid">
-      ${ULTRA_SKINS.map((s) => {
-        const on = state.ultraSkin === s.id;
-        return `<button class="skin-card ${unlocked ? "" : "locked"} ${on && unlocked ? "on" : ""}" data-action="${unlocked ? "pick-ultra" : "locked-ultra"}" data-skin="${s.id}">
-          <div class="pic">${dino("ultra", { skin: s.id })}</div>
-          <div class="nm">${unlocked ? s.name : "???"}</div>
-          <div class="sub">${unlocked ? s.sub : "未解锁"}</div>
-          ${unlocked && on ? `<span class="cur">使用中</span>` : ""}
-          ${unlocked ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
-        </button>`;
-      }).join("")}
-    </div>`;
+/* 究极体图鉴：超级霸王龙的 4 种形态 + 10 种机甲恐龙，合并成一个板块展示 */
+function ultraDexSection() {
+  const open = ultraExchangeOpen();
+  const total = ULTRA_SKINS.length + ULTRA_DINOS.length;
+  const ownedCount = ULTRA_SKINS.filter(() => ultraBaseOwned()).length
+    + ULTRA_DINOS.filter((d) => ultraSkinOwned(d.id)).length;
+  const head = open
+    ? `${ULTRA_PRICE}★/只 · 已兑换 ${ownedCount}/${total}`
+    : `成长值达到 ${ULTRA_MIN} 后开放 · 还差 ${Math.max(0, ULTRA_MIN - state.growth)}`;
+  const skinCards = ULTRA_SKINS.map((s) => {
+    const owned = ultraBaseOwned();
+    const on = state.ultraSkin === s.id;
+    return `<button class="skin-card form-card ${owned ? "" : "locked"} ${on && owned ? "on" : ""}" data-action="${owned ? "pick-ultra" : "buy-ultra"}" data-id="1" data-skin="${s.id}">
+      <div class="pic">${dino("ultra", { skin: s.id })}</div>
+      <div class="nm">${s.name}</div>
+      <div class="sub">${owned ? s.sub : open ? "兑换超级霸王龙后解锁" : "未解锁"}</div>
+      ${owned && on ? `<span class="cur">使用中</span>` : ""}
+      ${owned ? "" : `<span class="lock-ic">${I.lock(13)}</span>`}
+    </button>`;
+  }).join("");
+  const dinoCards = ULTRA_DINOS.map((d) => {
+    const owned = ultraSkinOwned(d.id);
+    const on = state.ultraSkin === d.id;
+    return `<button class="skin-card form-card ${owned ? "" : "locked"} ${on && owned ? "on" : ""}" data-action="${owned ? "pick-ultra" : "buy-ultra"}" data-id="${d.id}" data-skin="${d.id}">
+      <div class="pic">${dino("ultra", { skin: d.id })}</div>
+      <div class="nm">${d.name}</div>
+      <div class="sub">${owned ? d.sub : open ? `${ULTRA_PRICE}★ 兑换` : "未解锁"}</div>
+      ${owned && on ? `<span class="cur">使用中</span>` : ""}
+      ${owned ? "" : open ? `<span class="buy-tag">${star(10)}${ULTRA_PRICE}</span>` : `<span class="lock-ic">${I.lock(13)}</span>`}
+    </button>`;
+  }).join("");
+  return `<div class="skin-head"><b>究极体图鉴</b><span>${head}</span></div>
+    <div class="skin-grid">${skinCards}${dinoCards}</div>`;
 }
 
 /* ------------------------------------------------ words */
@@ -9550,6 +9970,68 @@ function equipBg(id) {
   save();
   render();
   toast(`场景已切换为「${bgMeta(id).name}」`);
+}
+
+/* ------------------------------------------------ ultra exchange */
+let pendingUltraId = 0;
+
+function openBuyUltra(id) {
+  const n = Number(id);
+  const meta = ultraFormMeta(n);
+  if (ultraSkinOwned(n)) { equipUltra(n); return; }
+  if (!ultraExchangeOpen()) { toast(`成长值达到 ${ULTRA_MIN} 后开放究极体兑换`); return; }
+  if (state.stars < ULTRA_PRICE) { toast("星星不够啦，再去闯一关吧"); return; }
+  pendingUltraId = n;
+  openOverlay(`<div class="overlay dialog-wrap">
+    <div class="dialog">
+      <div class="dlg-dino">${dino("ultra", { skin: n })}</div>
+      <h3>兑换「${meta.name}」？</h3>
+      <p>将花费 ${ULTRA_PRICE} 星星，兑换后立即成为小诺的新形象，并收录进究极体图鉴。</p>
+      <div class="d-actions">
+        <button class="btn ghost" data-action="close-overlay">再想想</button>
+        <button class="btn" data-action="confirm-ultra">花 ${ULTRA_PRICE} 星星兑换</button>
+      </div>
+    </div>
+  </div>`);
+}
+
+function confirmBuyUltra() {
+  const n = pendingUltraId;
+  if (!n) return;
+  const meta = ultraFormMeta(n);
+  if (ultraSkinOwned(n)) { pendingUltraId = 0; closeOverlay(); equipUltra(n); return; }
+  if (!ultraExchangeOpen()) { toast(`成长值达到 ${ULTRA_MIN} 后开放究极体兑换`); return; }
+  if (state.stars < ULTRA_PRICE) { toast("星星不够啦"); return; }
+  state.stars -= ULTRA_PRICE;
+  state.ultraOwned = [...new Set([...(state.ultraOwned || []), n])];
+  let gift = "";
+  /* 兑换超级霸王龙同样计入图鉴收录，补齐星空营地奖励 */
+  if (n === 1 && !state.dex.includes("ultra")) state.dex = [...state.dex, "ultra"];
+  if (state.dex.length >= 6 && !state.bgOwned.includes("night")) {
+    state.bgOwned.push("night");
+    gift = "，解锁「星空营地」背景";
+  }
+  state.stage = "ultra";
+  state.ultraSkin = n;
+  setUltraSkin(n);
+  sfx("coin");
+  toast(`已兑换「${meta.name}」${gift}`);
+  pendingUltraId = 0;
+  closeOverlay();
+  save();
+  render();
+}
+
+function equipUltra(id) {
+  const n = Number(id);
+  if (!ultraSkinOwned(n)) return;
+  state.stage = "ultra";
+  state.ultraSkin = n;
+  setUltraSkin(n);
+  sfx("tap");
+  toast(`已切换为「${ultraFormMeta(n).name}」`);
+  save();
+  render();
 }
 
 </script>

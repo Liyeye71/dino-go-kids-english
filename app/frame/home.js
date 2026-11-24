@@ -13,7 +13,7 @@ let voiceTimer = null;
 /* 头像图标：直接用恐龙大图 + CSS 裁切头部，与 hero 完全一致 */
 function avatarArtSrc() {
   if (state.stage === "ultra") {
-    const skin = Math.min(4, Math.max(1, Number(state.ultraSkin) || 1));
+    const skin = Math.min(ULTRA_ART.length, Math.max(1, Number(state.ultraSkin) || 1));
     return `images/dino/ultra-${skin}.webp`;
   }
   return `images/dino/${state.stage}.webp`;
@@ -155,6 +155,12 @@ function screenHome() {
   const next = nextStage(st.key);
   const pending = next && state.growth >= next.min;
   const pct = next ? clamp((state.growth - st.min) / (next.min - st.min), 0, 1) : 1;
+  const atMax = st.key === "super";
+  const isUltra = st.key === "ultra";
+  const ultraOpen = ultraExchangeOpen();
+  const ultraLeft = Math.max(0, ULTRA_MIN - state.growth);
+  const ultraPct = clamp(state.growth / ULTRA_MIN, 0, 1);
+  const barPct = isUltra ? 1 : atMax ? ultraPct : pct;
   const lv = todayLevels();
   const streak = streakDays();
   const tasks = tasksData(lv, streak);
@@ -163,6 +169,14 @@ function screenHome() {
   const example = generateExample(word);
   const remain = next ? Math.max(0, next.min - state.growth) : 0;
   const dinoCls = state.stage === "ultra" ? "ultra" : "";
+  const growthVal = atMax || isUltra ? ULTRA_MIN : next ? next.min : "MAX";
+  const growthText = isUltra
+    ? "究极体形态已解锁 · 可在图鉴切换"
+    : atMax
+      ? (ultraOpen ? `究极体兑换已开放 <b>${ULTRA_PRICE}★/只</b>` : `距究极体兑换还差 <b>${ultraLeft}</b>`)
+      : !next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`;
+  const growthAction = isUltra || (atMax && ultraOpen) ? "open-ultra-dex" : pending ? "evolve" : "start-quiz";
+  const growthIcon = isUltra ? I.bag(19) : atMax && ultraOpen ? I.crownMini(22, "#4A3206") : pending ? I.crownMini(22, "#4A3206") : I.arrow(19);
   return `<section class="screen has-tab" data-screen="home">
     <div class="scroll">
       <div class="home-top">
@@ -185,15 +199,15 @@ function screenHome() {
 
       <div class="growth-panel">
         <div class="g-main">
-          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${next ? next.min : "MAX"}</em></span></div>
-          <div class="bar g-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>
+          <div class="g-row"><span class="lb">成长值</span><span class="val num">${state.growth} <em>/ ${growthVal}</em></span></div>
+          <div class="bar g-bar"><i style="width:${Math.round(barPct * 100)}%"></i></div>
           <div class="g-next">
-            <span>${!next ? "已达成最高形态" : pending ? "成长值已满，可以进化" : `距${next.name}还差 <b>${remain}</b>`}</span>
-            <span>${Math.round(pct * 100)}%</span>
+            <span>${growthText}</span>
+            <span>${Math.round(barPct * 100)}%</span>
           </div>
         </div>
-        <button class="go-btn ${pending ? "evolve" : ""}" data-action="${pending ? "evolve" : "start-quiz"}" aria-label="${pending ? "去进化" : "开始闯关"}">
-          ${pending ? I.crownMini(22, "#4A3206") : I.arrow(19)}
+        <button class="go-btn ${pending || (atMax && ultraOpen) ? "evolve" : ""}" data-action="${growthAction}" aria-label="${isUltra || (atMax && ultraOpen) ? "去兑换究极体" : pending ? "去进化" : "开始闯关"}">
+          ${growthIcon}
         </button>
       </div>
 

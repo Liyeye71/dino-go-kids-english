@@ -14,6 +14,7 @@ function starPill() {
   return `<button class="star-pill" data-action="wheel-open" aria-label="星星幸运大转盘">${star(22)}<span class="num">${fmt(starBalance())}</span></button>`;
 }
 function stageChip() {
+  if (state.stage === "ultra") return `${I.leaf(11)} 究极体 · ${ultraFormMeta(state.ultraSkin).name}`;
   const st = stageMeta(state.stage);
   return `${I.leaf(11)} ${st.phase} · ${st.name}`;
 }

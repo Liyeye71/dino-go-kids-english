@@ -71,13 +71,13 @@ function screenMap() {
     return `<section class="map-card" style="background:${tcfg.bg || "#FBF3E3"};border-color:${tcfg.border || "#E7DAC3"};box-shadow:0 0.375rem 0 ${(tcfg.border || "#E7DAC3")}48">
       ${mapHtml}
       <span class="map-tag">${t.emoji} ${t.name}</span>
-      <div class="caption"><b>第 ${tLevel} 关 · ${t.name}</b><span>${QUIZ_SIZE} 道题 · 第 5 关考核得星星</span></div>
+      <div class="caption"><b>第 ${tLevel} 关 · ${t.name}</b><span>${QUIZ_SIZE} 道题 · 每关最多 3★</span></div>
     </section>
     <section class="next-card">
       <div class="nc-l">
         <div class="nc-kicker">UP NEXT ${I.chevron(8)} 第 ${tLevel} 关</div>
         <h3>${t.name}</h3>
-        <div class="nc-meta">${sceneWords(t, state.scene).length} 个词 · ${QUIZ_SIZE} 道题 · 第 5 关考核得星星</div>
+        <div class="nc-meta">${sceneWords(t, state.scene).length} 个词 · ${QUIZ_SIZE} 道题 · 每关最多 3★</div>
       </div>
       <button class="nc-btn" data-action="start-quiz" data-theme="${t.id}">开始闯关${I.arrow(14)}</button>
     </section>`;
@@ -96,7 +96,7 @@ function screenMap() {
             ? "启蒙 2 选项 · 答对 1 题得 1★ · 不计成长值"
             : "全主题混抽 5 题 · 答对 1 题得 1★ · 不计成长值"}</em>
         </span>
-        <span class="dcc-count">${dailyChallengeLeft()}<small>/ ${DAILY_CHALLENGE_LIMIT} 次</small></span>
+        <span class="dcc-count"><b>${dailyChallengeLeft()}/${DAILY_CHALLENGE_LIMIT}</b><small>次</small></span>
       </button>
 
       <div class="journey">
