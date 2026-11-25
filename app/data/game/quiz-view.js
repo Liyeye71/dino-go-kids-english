@@ -1,6 +1,6 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 答题页视图层交互
-   由 main.js 拆出：单词连线画线、拖拽手势、渲染后绑定
+   由 main.js 拆出：单词连线点击配对、喇叭朗读、拖拽手势、渲染后绑定
    ============================================================ */
 
 /* 六题型的视图层交互，不参与题目生成与判分 */
@@ -8,6 +8,7 @@ window.QuizView = {
   abort: null,
   observer: null,
   drag: null,
+  matchAreaW: null,
 
   afterRender() {
     this.cleanup();
@@ -34,74 +35,50 @@ window.QuizView = {
     document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
   },
 
-  point(board, el, boardRect) {
-    const b = boardRect || board.getBoundingClientRect();
-    const r = el.getBoundingClientRect();
-    return { x: r.left + r.width / 2 - b.left, y: r.top + r.height / 2 - b.top };
-  },
-
-  curve(a, b) {
-    const direction = b.x >= a.x ? 1 : -1;
-    const bend = Math.max(2.5 * 16, Math.abs(b.x - a.x) * 0.45);
-    return `M ${a.x} ${a.y} C ${a.x + bend * direction} ${a.y}, ${b.x - bend * direction} ${b.y}, ${b.x} ${b.y}`;
-  },
-
-  /* 重绘已配对的连线 */
-  drawMatch() {
-    const area = document.querySelector("[data-match-area]");
-    if (!area || !quiz) return;
-    const svg = area.querySelector(".ref-match-svg");
-    const rect = area.getBoundingClientRect();
-    if (!svg || !rect.width || !rect.height) return;
-    svg.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
-    svg.innerHTML = "";
-    const dots = [...area.querySelectorAll("[data-match-dot]")];
-    const findDot = (side, word) => dots.find((d) => d.dataset.matchSide === side && d.dataset.word === word);
-    /* 错误配对先画红线，再叠加正确的绿线 */
-    (quiz.wrongPairs || []).forEach(({ art, word }) => {
-      const left = findDot("art", art);
-      const right = findDot("word", word);
-      if (!left || !right) return;
-      svg.appendChild(this.makeCurvedPath(this.point(area, left, rect), this.point(area, right, rect), "ref-match-path wrong"));
-    });
-    (quiz.matched || []).forEach((word) => {
-      const left = findDot("art", word);
-      const right = findDot("word", word);
-      if (!left || !right) return;
-      svg.appendChild(this.makeCurvedPath(this.point(area, left, rect), this.point(area, right, rect)));
-    });
-  },
-
-  makeCurvedPath(p1, p2, cls = "ref-match-path") {
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const midX = (p1.x + p2.x) / 2;
-    const d = `M ${p1.x} ${p1.y} C ${midX} ${p1.y}, ${midX} ${p2.y}, ${p2.x} ${p2.y}`;
-    path.setAttribute("d", d);
-    path.setAttribute("class", cls);
-    return path;
+  /* 单词框等宽：先按内容量出最长单词的自然宽度，再统一写入 --match-word-w */
+  syncMatchWordWidth(area) {
+    const cards = [...area.querySelectorAll(".ref-match-word-card")];
+    if (!cards.length) return;
+    cards.forEach((card) => { card.style.width = ""; });
+    area.style.removeProperty("--match-word-w");
+    const max = cards.reduce((w, card) => Math.max(w, card.getBoundingClientRect().width), 0);
+    if (max > 0) area.style.setProperty("--match-word-w", `${Math.ceil(max)}px`);
   },
 
   setupMatch(root) {
     const area = root.querySelector("[data-match-area]");
     if (!area) return;
-    this.drawMatch();
+    this.syncMatchWordWidth(area);
+    this.matchAreaW = Math.round(area.getBoundingClientRect().width);
     if (window.ResizeObserver) {
-      this.observer = new ResizeObserver(() => this.drawMatch());
+      this.observer = new ResizeObserver(() => {
+        /* 只有可用宽度真的变了才重新量单词框，避免自身写入宽度引起回调循环 */
+        const w = Math.round(area.getBoundingClientRect().width);
+        if (w === this.matchAreaW) return;
+        this.matchAreaW = w;
+        this.syncMatchWordWidth(area);
+      });
       this.observer.observe(area);
     }
     const options = { signal: this.abort.signal };
-    area.querySelectorAll("[data-match-dot]").forEach((dot) => {
-      dot.addEventListener("pointerdown", (e) => this.startMatchDrag(e, dot), options);
-    });
-    /* 点击整行（图片框 / 单词框）也能发起连线：以该行圆点作为拖拽起点 */
+    /* 点单词框 / 图片框：先选一方，再点另一侧完成配对 */
     area.querySelectorAll("[data-match-row]").forEach((row) => {
-      row.addEventListener("pointerdown", (e) => {
-        if (e.target.closest("[data-match-dot]")) return;
-        const dot = row.querySelector("[data-match-dot]");
-        if (dot) this.startMatchDrag(e, dot);
+      row.addEventListener("click", (e) => {
+        if (e.target.closest("[data-match-speaker]")) return;
+        matchSelect(row.dataset.matchSide, row.dataset.word);
       }, options);
     });
-    /* 点击英文单词卡片的朗读 + 抖动在 startMatchDrag 的点击分支里统一处理，避免重复朗读 */
+    /* 喇叭：抖动 + 朗读，不参与配对 */
+    area.querySelectorAll("[data-match-speaker]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        speak(btn.dataset.word);
+        btn.classList.remove("is-shaking");
+        void btn.offsetWidth;
+        btn.classList.add("is-shaking");
+        setTimeout(() => btn.classList.remove("is-shaking"), 400);
+      }, options);
+    });
   },
 
   /* 词汇拼图：点击提示图片朗读正确单词 */
@@ -115,145 +92,6 @@ window.QuizView = {
       void hint.offsetWidth;
       hint.classList.add("is-shaking");
     }, { signal: this.abort.signal });
-  },
-
-  /* 图片是否已连过（一张图只能连一次）；单词框可复用，始终返回 false */
-  isUsed(word, side) {
-    if (!quiz || side === "word") return false;
-    if ((quiz.matched || []).includes(word)) return true;
-    return (quiz.wrongPairs || []).some((p) => p.art === word);
-  },
-
-  /* 圆点按下：支持点击配对 + 拖拽连线两种模式 */
-  startMatchDrag(e, dot) {
-    if (!quiz || quiz.revealed || e.button !== 0) return;
-    const word = dot.dataset.word;
-    const side = dot.dataset.matchSide;
-    const area = dot.closest("[data-match-area]");
-    if (!area || this.isUsed(word, side)) return;
-    e.preventDefault();
-    e.stopPropagation();
-
-    const svg = area.querySelector(".ref-match-svg");
-    const start = this.point(area, dot);
-    const path = this.makeCurvedPath(start, start, "ref-match-path temp");
-    svg.appendChild(path);
-
-    const drag = { pointerId: e.pointerId, dot, area, path, startedAt: Date.now(), moved: false, start };
-    this.drag = drag;
-    try { dot.setPointerCapture(e.pointerId); } catch {}
-
-    const move = (ev) => {
-      if (ev.pointerId !== drag.pointerId) return;
-      const dx = ev.clientX - e.clientX;
-      const dy = ev.clientY - e.clientY;
-      if (!drag.moved && Math.hypot(dx, dy) > 6) drag.moved = true;
-      if (!drag.moved) return;
-      ev.preventDefault();
-      const rect = area.getBoundingClientRect();
-      const end = { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
-      const midX = (start.x + end.x) / 2;
-      path.setAttribute("d", `M ${start.x} ${start.y} C ${midX} ${start.y}, ${midX} ${end.y}, ${end.x} ${end.y}`);
-    };
-    const finish = (ev, cancelled) => {
-      if (ev.pointerId !== drag.pointerId) return;
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", up);
-      document.removeEventListener("pointercancel", cancel);
-      if (!cancelled) {
-        try { if (dot.hasPointerCapture(ev.pointerId)) dot.releasePointerCapture(ev.pointerId); } catch {}
-      }
-      path.remove();
-      this.drag = null;
-
-      if (cancelled) return;
-
-      if (drag.moved) {
-        /* 拖拽模式：释放到另一侧圆点或整行（图片框 / 单词框）都视为连线目标 */
-        const target = document.elementFromPoint(ev.clientX, ev.clientY);
-        const targetRow = target && target.closest("[data-match-row]");
-        const targetDot = (target && target.closest("[data-match-dot]")) ||
-          (targetRow && targetRow.querySelector("[data-match-dot]"));
-        if (targetDot && targetDot !== dot && targetDot.dataset.matchSide !== side) {
-          this.tryConnect(dot, targetDot);
-        }
-      } else {
-        /* 点击模式：点单词卡片先朗读 + 抖动，再切换选中点；若另一侧已有选中点则配对 */
-        if (side === "word") {
-          speak(word);
-          this.trySelectOrPair(dot);
-          this.shakeWordCard(word);
-          return;
-        }
-        this.trySelectOrPair(dot);
-      }
-    };
-    const up = (ev) => finish(ev, false);
-    const cancel = (ev) => finish(ev, true);
-    document.addEventListener("pointermove", move, { signal: this.abort.signal });
-    document.addEventListener("pointerup", up, { signal: this.abort.signal });
-    document.addEventListener("pointercancel", cancel, { signal: this.abort.signal });
-  },
-
-  /* 单词卡片抖动反馈：点击会触发重新渲染，需按单词定位新渲染出的卡片 */
-  shakeWordCard(word) {
-    const card = document.querySelector(
-      `[data-match-area] [data-match-row][data-match-side="word"][data-word="${word}"] .ref-match-word-card`
-    );
-    if (!card) return;
-    card.classList.remove("is-shaking");
-    void card.offsetWidth;
-    card.classList.add("is-shaking");
-    setTimeout(() => card.classList.remove("is-shaking"), 400);
-  },
-
-  /* 点击配对：参考 temp 的 tryConnect 逻辑 — 同侧切换、异侧配对 */
-  trySelectOrPair(dot) {
-    if (!quiz || quiz.revealed) return;
-    const word = dot.dataset.word;
-    const side = dot.dataset.matchSide;
-    if (this.isUsed(word, side)) return;
-
-    /* 如果 quiz.pickWord 已有值，表示另一侧已选中 */
-    if (quiz.pickWord && quiz.pickWordSide && quiz.pickWordSide !== side) {
-      /* 另一侧已选中 — 尝试配对 */
-      const pickedWord = quiz.pickWord;
-      if (side === "art") {
-        /* 当前点是 art（右），之前 pickWord 是 word（左） */
-        matchPickWord(pickedWord);
-        matchPickArt(word);
-      } else {
-        /* 当前点是 word（左），之前 pickWord 是 art（右） */
-        matchPickWord(word);
-        matchPickArt(pickedWord);
-      }
-      return;
-    }
-
-    /* 同侧或首次点击 — 设置当前选中点 */
-    matchPickWord(word);
-    quiz.pickWordSide = side;
-    render();
-  },
-
-  /* 拖拽到另一个圆点：直接配对 */
-  tryConnect(dotA, dotB) {
-    if (!quiz || quiz.revealed) return;
-    const a = { word: dotA.dataset.word, side: dotA.dataset.matchSide };
-    const b = { word: dotB.dataset.word, side: dotB.dataset.matchSide };
-    if (a.side === b.side) return;
-    if (this.isUsed(a.word, a.side) || this.isUsed(b.word, b.side)) return;
-
-    quiz.pickWordSide = a.side;
-    quiz.pickWord = a.word;
-
-    if (a.side === "art") {
-      matchPickWord(b.word);
-      matchPickArt(a.word);
-    } else {
-      matchPickWord(a.word);
-      matchPickArt(b.word);
-    }
   },
 
   setupDragging(root) {

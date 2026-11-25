@@ -27,24 +27,18 @@ function artOf(word) {
 
 function startQuiz(level, opts = {}) {
   const lvl = Math.min(levelsPerTheme(), Math.max(1, Number(level) || themeProgress().level));
-  /* 未满星的关卡可以重复学习（只抽错词）；满星后只能继续下一关 */
+  /* 关卡按顺序解锁：完成结算一次即可进入下一关，已通关关卡可复习 */
   const prog = themeProgress();
-  const best = (prog.stars && prog.stars[lvl]) || 0;
   const cleared = Boolean(prog.cleared && prog.cleared[lvl]);
   const replay = Boolean(opts.replay) || cleared || lvl < prog.level;
   if (lvl > prog.level) {
-    toast("先通过前面的关卡吧");
-    return;
-  }
-  if (replay && best >= 3) {
-    toast("这一关已经满星啦，去挑战下一关吧");
+    toast("先完成前面的关卡吧");
     return;
   }
   quiz = {
     level: lvl,
     index: 0,
     correct: 0,
-    hearts: 3,
     selected: null,
     revealed: false,
     choiceCorrect: null,
@@ -83,7 +77,6 @@ function startDailyQuiz() {
     level: 0,
     index: 0,
     correct: 0,
-    hearts: order.length,
     selected: null,
     revealed: false,
     choiceCorrect: null,
@@ -125,7 +118,7 @@ function correctFx() {
 /* 答完题后统一的手动“下一题”按钮 */
 function quizNextButton() {
   if (!quiz) return "";
-  const label = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0 ? "See results" : "Next";
+  const label = quiz.index >= quiz.order.length - 1 ? "See results" : "Next";
   return `<button class="btn" data-action="next">${label} ${I.arrow(18)}</button>`;
 }
 
@@ -139,7 +132,6 @@ function screenQuiz() {
   const game = currentTheme().games[q.type];
   const selected = quiz.selected;
   const revealed = quiz.revealed;
-  const hearts = [0, 1, 2].map((i) => I.heart(16, "#FF6F61", i < quiz.hearts ? 1 : 0.22)).join("");
   const letters = ["A", "B", "C", "D"];
   const optionClass = (opt, base = "option") => {
     if (revealed) {
@@ -187,7 +179,7 @@ function screenQuiz() {
   const statusTitle = ok
     ? (isMatch ? `${q.pairs && q.pairs.length === 2 ? "两" : "三"}组全连对啦！` : "答对了，你真棒！")
     : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
-  const nextLabel = quiz.index >= quiz.order.length - 1 || quiz.hearts <= 0
+  const nextLabel = quiz.index >= quiz.order.length - 1
     ? "Result" : "Next";
   const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
             <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
@@ -282,39 +274,27 @@ function screenQuiz() {
       <div><span class="ref-stage-kicker">${isDaily ? "每日随机挑战 · " : isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}${isDaily ? "" : `LEVEL ${String(quiz.level).padStart(2, "0")} · `}${game.label}</span>
       <h2>${game.title}</h2></div>
     </div>` : "";
+  const quizPrompt = refType ? "" : `<div class="quiz-prompt">
+        <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
+        <h2>${game.title}</h2>
+      </div>`;
   const frameTop = `<div class="quiz-top">
       <button class="circle-btn" data-action="close-quiz" aria-label="退出闯关">${I.close(16)}</button>
-      ${pebbleTrail(total, quiz.index, revealed)}
+      <div class="quiz-title">${refHead}</div>
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
-      ${isDaily ? `<div class="daily-run">🎲</div>` : `<div class="hearts">${hearts}</div>`}
+      ${isDaily ? `<div class="daily-run">🎲</div>` : ""}
     </div>`;
   return `<section class="screen quiz-page ${game.pageClass || ""}${refType ? " quiz-ref-page dino-stage-v2" : ""}" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
     ${fx}
     ${refType ? `<div class="ref-scene-bg">${QuizUiArt.scene()}</div>` : ""}
     ${frameTop}
     <div class="quiz-body${refType ? " ref-quiz-body" : ""}">
-      ${refType ? refHead : `<div class="quiz-prompt">
-        <div class="chip ${isAnimalBossLevel(quiz.level) ? "boss-chip" : ""}">${isAnimalBossLevel(quiz.level) ? "🔥 BOSS · " : ""}LEVEL ${String(quiz.level).padStart(2, "0")} · ${game.label}</div>
-        <h2>${game.title}</h2>
-      </div>`}
+      ${quizPrompt}
       ${view.body}
     </div>
     ${resultPop}
     <div class="quiz-foot">${revealed ? "" : view.btn}</div>
-    ${refType ? QuizUiArt.logoBanner() : ""}
   </section>`;
-}
-
-/* 石子路进度：走过的石子点亮，小恐龙站在当前石子上，最后一块是金蛋 */
-function pebbleTrail(total, index, revealed) {
-  const step = Math.min(total, index + (revealed ? 1 : 0));
-  const items = Array.from({ length: total }, (_, i) => {
-    const state = i < step ? " done" : i === step ? " cur" : "";
-    const goal = i === total - 1 ? " goal" : "";
-    const runner = i === step ? `<b class="peb-runner" aria-hidden="true">🦖</b>` : "";
-    return `<i class="peb${state}${goal}">${runner}</i>`;
-  }).join("");
-  return `<div class="peb-track" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${step}" aria-label="闯关进度">${items}</div>`;
 }
 
 function speakTask() {
@@ -368,8 +348,11 @@ function callGameAction(action, value) {
   const game = q && currentTheme().games[q.type];
   if (game && game[action]) game[action](value);
 }
-function matchPickWord(word) { callGameAction("onPickWord", word); }
-function matchPickArt(word) { callGameAction("onPickArt", word); }
+function matchSelect(side, word) {
+  const q = quiz && quiz.order[quiz.index];
+  const game = q && currentTheme().games[q.type];
+  if (game && game.onSelect) game.onSelect(side, word);
+}
 
 /* 拼图和喂食的共享动作：点击与拖拽走同一条状态、计分路径 */
 function puzzlePlace(letterId, slotId = null) {
@@ -428,7 +411,7 @@ function feedCheck() {
       WrongBank.applyResult(q, true);
     }
   } else {
-    quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+    sfx("wrong");
     if (quiz.mode !== "daily") WrongBank.applyResult(q, false);
   }
   render();
@@ -480,7 +463,6 @@ function checkAnswer() {
       WrongBank.applyResult(q, true);
     }
   } else {
-    quiz.hearts = Math.max(0, quiz.hearts - 1);
     sfx(wordOption ? "answer-wrong" : "wrong");
     /* 🦁 动物园场景：答错 → 自动收录错题库（每日随机挑战不入库） */
     if (quiz.mode !== "daily") WrongBank.applyResult(q, false);
@@ -491,7 +473,7 @@ function nextQuestion() {
   if (!quiz) return;
   clearTimers();
   const atEnd = quiz.index >= quiz.order.length - 1;
-  if (atEnd || quiz.hearts <= 0) { finishQuiz(); return; }
+  if (atEnd) { finishQuiz(); return; }
   quiz.index++;
   quiz.selected = null;
   quiz.revealed = false;

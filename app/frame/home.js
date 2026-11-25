@@ -188,6 +188,91 @@ function pokeDinoInteraction(btn) {
   }
 }
 
+/* 首页 CTA 按钮专用品牌 Logo（仅此一处使用，不再抽公共组件） */
+const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
+  <defs>
+    <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
+    </filter>
+    <!-- 小恐龙外轮廓（破壳版） -->
+    <g id="dinogo-dino-shape" transform="translate(268.8 -3.6) scale(1.2556)">
+      <path d="M78 24 Q88 18 87 30 Z"/>
+      <path d="M86 38 Q97 35 93 47 Z"/>
+      <path d="M36 62 C30 44 38 22 59 20 C79 18 90 36 86 62 Z"/>
+      <path d="M24 62 L37 72 L49 58 L61 71 L74 58 L86 70 L96 62 C97 89 82 108 60 108 C38 108 23 89 24 62 Z"/>
+      <ellipse cx="42" cy="64" rx="7" ry="4.5"/>
+      <ellipse cx="78" cy="64" rx="7" ry="4.5"/>
+    </g>
+    <!-- 逐字歪头排版：DinoGo -->
+    <g id="dinogo-text-en" text-anchor="middle" font-weight="400"
+       font-family="'ZCOOL KuaiLe', ui-rounded, 'SF Pro Rounded', sans-serif">
+      <text x="58"  y="89" font-size="68" transform="rotate(-8 58 89)">D</text>
+      <text x="103" y="83" font-size="64" transform="rotate(6 103 83)">i</text>
+      <text x="140" y="90" font-size="64" transform="rotate(-5 140 90)">n</text>
+      <text x="186" y="84" font-size="64" transform="rotate(7 186 84)">o</text>
+      <text x="236" y="90" font-size="68" transform="rotate(-6 236 90)">G</text>
+      <text x="285" y="84" font-size="64" transform="rotate(6 285 84)">o</text>
+    </g>
+    <!-- 逐字歪头排版：恐龙英语 -->
+    <g id="dinogo-text-zh" text-anchor="middle" font-weight="400"
+       font-family="'ZCOOL KuaiLe', 'Hiragino Maru Gothic ProN', 'Yuanti SC', 'YouYuan', sans-serif">
+      <text x="358" y="89" font-size="64" transform="rotate(-6 358 89)">恐</text>
+      <text x="424" y="82" font-size="64" transform="rotate(5 424 82)">龙</text>
+      <text x="490" y="90" font-size="64" transform="rotate(-5 490 90)">英</text>
+      <text x="556" y="83" font-size="64" transform="rotate(6 556 83)">语</text>
+    </g>
+  </defs>
+
+  <!-- 第 1 层：白色模切贴纸外描边 -->
+  <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+    <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
+    <use href="#dinogo-text-en"/>
+    <use href="#dinogo-text-zh"/>
+  </g>
+
+  <!-- 第 2 层：右侧卡通小绿恐龙 -->
+  <g transform="translate(375 4) scale(0.84)">
+    <g transform="translate(268.8 -3.6) scale(1.2556)" stroke="#6A401D" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M78 24 Q88 18 87 30 Z" fill="#F8C284"/>
+      <path d="M86 38 Q97 35 93 47 Z" fill="#F8C284"/>
+      <path d="M36 62 C30 44 38 22 59 20 C79 18 90 36 86 62 Z" fill="#B2DC8E"/>
+      <circle cx="49" cy="43" r="3.2" fill="#5D3718" stroke="none"/>
+      <circle cx="71" cy="43" r="3.2" fill="#5D3718" stroke="none"/>
+      <path d="M55 50 Q60 55 65 50" fill="none" stroke="#5D3718" stroke-width="2.8"/>
+      <ellipse cx="41" cy="49" rx="4.5" ry="2.8" fill="#F4A595" stroke="none" opacity=".85"/>
+      <ellipse cx="79" cy="49" rx="4.5" ry="2.8" fill="#F4A595" stroke="none" opacity=".85"/>
+      <path d="M24 62 L37 72 L49 58 L61 71 L74 58 L86 70 L96 62 C97 89 82 108 60 108 C38 108 23 89 24 62 Z" fill="#FFF7DF"/>
+      <circle cx="42" cy="86" r="5.5" fill="#F7C77E" stroke="none" opacity=".75"/>
+      <circle cx="77" cy="83" r="6" fill="#C7E49E" stroke="none" opacity=".8"/>
+      <circle cx="60" cy="96" r="4" fill="#F4B09B" stroke="none" opacity=".75"/>
+      <ellipse cx="42" cy="64" rx="7" ry="4.5" fill="#B2DC8E"/>
+      <ellipse cx="78" cy="64" rx="7" ry="4.5" fill="#B2DC8E"/>
+    </g>
+  </g>
+
+  <!-- 第 3 层：立体底厚（英文深巧克力棕，中文浅焦糖棕） -->
+  <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+    <use href="#dinogo-text-en"/>
+  </g>
+  <g transform="translate(0 5)" fill="#BE8255" stroke="#BE8255" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+    <use href="#dinogo-text-zh"/>
+  </g>
+
+  <!-- 第 4 层：白色主字 + 描边（绿色按钮上的反色版本） -->
+  <use href="#dinogo-text-en" fill="#FFFFFF" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+  <use href="#dinogo-text-zh" fill="#FFFFFF" stroke="#BE8255" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+
+  <!-- 第 5 层：糖果高光点与童趣小星星 -->
+  <g fill="#FFFFFF" opacity="0.82">
+    <ellipse cx="44" cy="48" rx="6" ry="3" transform="rotate(-24 44 48)"/>
+    <ellipse cx="222" cy="48" rx="7" ry="3" transform="rotate(-22 222 48)"/>
+    <ellipse cx="344" cy="46" rx="6" ry="3" transform="rotate(-20 344 46)"/>
+    <ellipse cx="478" cy="46" rx="6" ry="3" transform="rotate(-18 478 46)"/>
+  </g>
+  <path d="M18 38 L21 45 L28 47 L21 50 L18 57 L15 50 L8 47 L15 45 Z" fill="#FFD36E" stroke="#764422" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="315" cy="34" r="4" fill="#A7D979" stroke="#764422" stroke-width="2"/>
+</svg>`;
+
 function screenHome() {
   const st = stageMeta(state.stage);
   const next = nextStage(st.key);
@@ -309,10 +394,122 @@ function screenHome() {
 
     <div class="bc-cta-bar">
       <button class="bc-play-btn" data-action="tab" data-screen="map" aria-label="进入恐龙乐园闯关">
-        <span>▶</span><span>进入恐龙乐园闯关！</span>
+        <span>▶</span>${HOME_LOGO_SVG}
       </button>
     </div>
   </section>`;
+}
+
+
+/* ------------------------------------------------ achievements */
+/* 12 枚徽章全部由现有存档实时计算，不新增存档字段 */
+const ACH_CATS = [
+  { id: "streak", name: "坚持", tone: "gold" },
+  { id: "words", name: "学习", tone: "blue" },
+  { id: "level", name: "闯关", tone: "green" },
+  { id: "collect", name: "收集", tone: "purple" },
+];
+const ACH_TONE_INK = { gold: "#8A5A10", blue: "#265A80", green: "#2C7A4C", purple: "#5B3FA0" };
+function achTone(catId) {
+  return (ACH_CATS.find((c) => c.id === catId) || ACH_CATS[0]).tone;
+}
+function achievementList() {
+  const streak = streakDays();
+  const words = Number(state.words) || 0;
+  const levels = totalLevelsDone();
+  const three = Number(state.threeStars) || 0;
+  const dex = (state.dex || []).length;
+  const ultra = ultraBaseOwned() ? 1 : 0;
+  const raw = [
+    { id: "streak3", cat: "streak", name: "小小坚持", desc: "连续学习 3 天", goal: 3, value: streak, unit: "天", icon: (c) => I.flame(22, c) },
+    { id: "streak7", cat: "streak", name: "一周不落", desc: "连续学习 7 天", goal: 7, value: streak, unit: "天", icon: (c) => I.flame(22, c) },
+    { id: "streak14", cat: "streak", name: "习惯成自然", desc: "连续学习 14 天", goal: 14, value: streak, unit: "天", icon: (c) => I.flame(22, c) },
+    { id: "words10", cat: "words", name: "单词萌芽", desc: "累计学会 10 个单词", goal: 10, value: words, unit: "词", icon: (c) => I.book(22, c) },
+    { id: "words50", cat: "words", name: "单词小达人", desc: "累计学会 50 个单词", goal: 50, value: words, unit: "词", icon: (c) => I.book(22, c) },
+    { id: "words100", cat: "words", name: "百词斩", desc: "累计学会 100 个单词", goal: 100, value: words, unit: "词", icon: (c) => I.book(22, c) },
+    { id: "level1", cat: "level", name: "第一声吼", desc: "完成 1 次闯关", goal: 1, value: levels, unit: "次", icon: (c) => I.flag(22, c) },
+    { id: "level10", cat: "level", name: "闯关小能手", desc: "累计完成 10 次闯关", goal: 10, value: levels, unit: "次", icon: (c) => I.flag(22, c) },
+    { id: "level30", cat: "level", name: "关卡达人", desc: "累计完成 30 次闯关", goal: 30, value: levels, unit: "次", icon: (c) => I.flag(22, c) },
+    { id: "three1", cat: "collect", name: "满星初体验", desc: "首次拿到 3 星", goal: 1, value: three, unit: "次", icon: (c) => star(22, "#FFE7A0", c) },
+    { id: "dex4", cat: "collect", name: "图鉴新星", desc: "收集 4 种恐龙形态", goal: 4, value: dex, unit: "种", icon: (c) => I.bag(22, c) },
+    { id: "ultra", cat: "collect", name: "究极相逢", desc: "解锁究极体形态", goal: 1, value: ultra, unit: "", icon: (c) => I.crownMini(22, c) },
+  ];
+  return raw.map((a) => {
+    const value = Math.max(0, Number(a.value) || 0);
+    const done = value >= a.goal;
+    const pct = done ? 100 : clamp(Math.round((value / a.goal) * 100), 0, 99);
+    const sub = done ? "已点亮" : a.unit ? `${Math.min(value, a.goal)} / ${a.goal} ${a.unit}` : "未解锁";
+    return { ...a, value, done, pct, sub };
+  });
+}
+/* 首页卡片展示 4 枚：优先已点亮，再从不同分类里挑最接近达成的 */
+function featuredAchievements(list) {
+  const picked = list.filter((a) => a.done).slice(0, 4);
+  const rest = list.filter((a) => !a.done).sort((a, b) => b.pct - a.pct);
+  const cats = new Set(picked.map((a) => a.cat));
+  for (const a of rest) {
+    if (picked.length >= 4) break;
+    if (cats.has(a.cat)) continue;
+    picked.push(a);
+    cats.add(a.cat);
+  }
+  for (const a of rest) {
+    if (picked.length >= 4) break;
+    if (!picked.includes(a)) picked.push(a);
+  }
+  return picked.slice(0, 4);
+}
+function achBadge(a) {
+  const tone = achTone(a.cat);
+  return `<button class="ach ${a.done ? "is-done" : "is-locked"}" data-action="ach-detail" data-id="${a.id}" aria-label="${a.name}，${a.done ? "已点亮" : a.sub}">
+    <span class="medal tone-${tone}" style="--p:${a.pct}">
+      <span class="ach-face">${a.done ? a.icon(ACH_TONE_INK[tone]) : I.lock(16, "#B9AE99")}</span>
+      ${a.done ? `<span class="dot">${I.check(8)}</span>` : ""}
+    </span>
+    <b>${a.name}</b>
+    <span class="ach-sub">${a.sub}</span>
+  </button>`;
+}
+function achCard() {
+  const list = achievementList();
+  const done = list.filter((a) => a.done).length;
+  const pct = Math.round((done / list.length) * 100);
+  return `<div class="card ach-card">
+    <div class="ach-head">
+      <div class="ach-title"><span class="ach-title-ic">${I.crownMini(14, "#8A5A10")}</span><b>成就徽章</b></div>
+      <span class="ach-count"><b class="num">${done}</b> / ${list.length} 已点亮</span>
+    </div>
+    <div class="ach-track"><i style="width:${pct}%"></i></div>
+    <div class="ach-list">${featuredAchievements(list).map(achBadge).join("")}</div>
+    <button class="ach-all" data-action="open-achievements">查看全部 ${list.length} 枚成就 ${I.chevron(10)}</button>
+  </div>`;
+}
+function openAchievements() {
+  const list = achievementList();
+  const done = list.filter((a) => a.done).length;
+  const pct = Math.round((done / list.length) * 100);
+  const groups = ACH_CATS.map((cat) => {
+    const items = list.filter((a) => a.cat === cat.id);
+    const got = items.filter((a) => a.done).length;
+    return `<section class="achv-cat">
+      <div class="achv-cat-head"><span class="achv-dot tone-${cat.tone}"></span><b>${cat.name}</b><em>${got} / ${items.length}</em></div>
+      <div class="achv-grid">${items.map(achBadge).join("")}</div>
+    </section>`;
+  }).join("");
+  openOverlay(`<div class="overlay">
+    <div class="sheet achv-sheet">
+      <div class="grab"></div>
+      <button class="achv-close" data-action="close-overlay" aria-label="关闭">${I.close(15)}</button>
+      <div class="achv-hero">
+        <div class="achv-ring" style="--p:${pct}"><span>${done}<em>/${list.length}</em></span></div>
+        <div class="achv-hero-txt"><h2>成就徽章</h2><p>${done ? `已点亮 ${done} 枚，还差 ${list.length - done} 枚就集齐啦` : "每一次学习，都会点亮一枚新徽章"}</p></div>
+      </div>
+      <div class="achv-tip">${spark(11, "#F0B53B")} 完成条件会自动点亮，进度随学习实时更新</div>
+      <div class="achv-groups">${groups}</div>
+      <div class="sheet-actions"><button class="btn" data-action="close-overlay">继续加油</button></div>
+    </div>
+  </div>`);
+  sfx("tap");
 }
 
 
@@ -328,13 +525,6 @@ function screenProfile() {
     return [label, rec.levels * 2, Math.min(76, 12 + rec.levels * 24), i === dow];
   });
   const weekMin = days.reduce((n, d) => n + d[1], 0);
-  const streak = streakDays();
-  const ach = [
-    { cls: "a1", icon: I.flame(24, "#7A4E08"), name: "连续 7 天", done: streak >= 7, sub: streak >= 7 ? "已获得" : `还差 ${Math.max(1, 7 - streak)} 天` },
-    { cls: "a2", icon: I.book(24, "#265A80"), name: "单词达人", done: state.words >= 100, sub: `${state.words} / 100 词` },
-    { cls: "a3", icon: star(24, "#7A5BB8", "#6A4DA8"), name: "三星收藏", done: state.threeStars >= 1, sub: `${state.threeStars} 次` },
-    { cls: "lock", icon: I.lock(20, "#C0B7A4"), name: "待解锁", done: false, sub: "???" },
-  ];
   const wordsCount = state.words;
   return `<section class="screen" data-screen="profile">
     <div class="scroll profile-scroll">
@@ -371,13 +561,7 @@ function screenProfile() {
         </div>
       </div>
 
-      <div class="card ach-card">
-        <div class="ach-head"><b>成就徽章</b><span>${ach.filter((a) => a.done).length} / 12 已点亮</span></div>
-        <div class="ach-list">${ach.map((a) => `<div class="ach">
-          <div class="medal ${a.cls}">${a.icon}${a.done ? `<span class="dot">${I.check(8)}</span>` : ""}</div>
-          <b>${a.name}</b><span>${a.sub}</span>
-        </div>`).join("")}</div>
-      </div>
+      ${achCard()}
 
       <div class="quote-card">
         <div class="qi">${I.flame(18, "#E2A62E")}</div>

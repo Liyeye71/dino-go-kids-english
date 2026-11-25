@@ -3,7 +3,7 @@
    底部 Tab 2：闯关
    - 顶层单元切换（basic 开放 / advance 锁定）
    - 单元内每个主题一张整卡地图入口（如神奇动物园封面）
-   - 页面只保留一个单元大标题，旅程/宝箱跟随可玩主题
+   - 页面只保留一个单元大标题，旅程/宝箱跟随当前选中的主题岛（各主题独立进度）
    ============================================================ */
 
 
@@ -17,6 +17,7 @@ function mapIslandsData() {
   return [
     {
       id: "zoo",
+      themeId: "animal",
       name: "神奇动物园",
       sign: "🦁 神奇动物园 · 58 词",
       emoji: "🦁",
@@ -30,6 +31,7 @@ function mapIslandsData() {
     },
     {
       id: "school",
+      themeId: "school",
       name: "上学文具岛",
       sign: "🎒 上学文具岛 · 15 词",
       emoji: "🎒",
@@ -43,6 +45,7 @@ function mapIslandsData() {
     },
     {
       id: "travel",
+      themeId: "travel",
       name: "去旅行交通岛",
       sign: "✈️ 去旅行交通岛 · 19 词",
       emoji: "✈️",
@@ -122,10 +125,6 @@ function screenMap() {
     </section>`;
   }
 
-  const journeyTheme = unitThemes.find(themeHasContent) || currentTheme();
-  const jProg = themeProgress(journeyTheme.id);
-  const starTotal = themeStars(jProg);
-  const starMax = Math.floor(levelsPerTheme(journeyTheme.id) / 5) * 3;
   const dailyLeft = dailyChallengeLeft();
 
   const islands = mapIslandsData();
@@ -136,6 +135,13 @@ function screenMap() {
   const cur = islands[curIdx];
   const prev = islands[prevIdx];
   const next = islands[nextIdx];
+
+  /* 旅程进度跟随当前选中的主题岛：每个主题独立星星总数与进度，切换主题即切换 */
+  const journeyThemeId = cur.themeId || (unitThemes.find(themeHasContent) || currentTheme()).id;
+  const jProg = themeProgress(journeyThemeId);
+  const starTotal = themeStars(jProg);
+  const starMax = Math.max(1, Math.floor(levelsPerTheme(journeyThemeId) / 5)) * 3;
+  const journeyKey = activeProgressKey(journeyThemeId);
 
   const coverCls = "im-main-cover";
   const coverInner = `<img class="im-cover-full" src="${cur.cover}" alt="${cur.name}">${!cur.playable ? `<span class="im-cover-ribbon">${cur.mist}</span>` : ""}`;
@@ -198,7 +204,7 @@ function screenMap() {
         <span class="j-val num">${starTotal}<em>/${starMax}★</em></span>
         <span class="j-track">
           <span class="track"><i style="width:${Math.round((starTotal / starMax) * 100)}%"></i></span>
-          ${window.ChestManager ? ChestManager.renderJourneyChests(activeProgressKey(journeyTheme.id), starTotal, starMax) : ""}
+          ${window.ChestManager ? ChestManager.renderJourneyChests(journeyKey, starTotal, starMax, journeyThemeId) : ""}
         </span>
         ${window.ChestManager && ChestManager.available() > 0
           ? `<button type="button" class="j-chest bonus" data-action="chest-open" aria-label="开启额外宝箱，剩 ${ChestManager.available()} 个">🎁<b>${ChestManager.available()}</b></button>`

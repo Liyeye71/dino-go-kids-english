@@ -1,6 +1,6 @@
 /* ============================================================
    ChestManager · 神秘宝箱 + 星星幸运大转盘
-   - 旅程里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100%，各 1 个宝箱
+   - 旅程里程碑：当前主题星数上限的 30% / 60% / 100%，各 1 个宝箱（共 3 个）
    - 打开宝箱 = 获得 1 次免费转盘机会，并直接进入转盘页面；不消耗星星
    - 未使用的转盘机会存入 state.spins，可保留到下次
    - 奖励池统一：宝箱与转盘共用 REWARD_POOL，抽中的奖品券记入 state.coupons
@@ -9,16 +9,16 @@
 (function () {
   "use strict";
 
-  /* 里程碑：当前主题星数上限的 20% / 40% / 60% / 80% / 100% */
-  const MILESTONE_PCTS = [0.2, 0.4, 0.6, 0.8, 1];
+  /* 里程碑：当前主题星数上限的 30% / 60% / 100%，每个主题各 3 个宝箱 */
+  const MILESTONE_PCTS = [0.3, 0.6, 1];
   function milestonesFor(starMax) {
     const total = Number(starMax) || 30;
     const list = MILESTONE_PCTS.map((p) => Math.max(1, Math.round(total * p)));
     return list.filter((v, i) => list.indexOf(v) === i);
   }
-  function currentStarMax() {
+  function currentStarMax(themeId) {
     /* 只有考核关（第 5/10/15… 关）产出星星，每关最多 3 星 */
-    return Math.max(1, Math.floor(levelsPerTheme() / 5)) * 3;
+    return Math.max(1, Math.floor(levelsPerTheme(themeId) / 5)) * 3;
   }
 
   /* 安全获取 state（可能从模块内或 window） */
@@ -40,7 +40,7 @@
     s.spins = pendingSpins() + n;
   }
 
-  /* 某个进度键下，五个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
+  /* 某个进度键下，三个宝箱的状态：done 已领取 / ready 可领取 / locked 未解锁 */
   function milestoneStatus(key, starTotal, starMax) {
     ensureChests();
     const claimed = _state().chests.claimed[key] || [];
@@ -51,29 +51,31 @@
   }
 
   window.ChestManager = {
-    /* 旅程进度条上的宝箱节点：由地图页渲染，点击走 chest-claim */
-    renderJourneyChests(key, starTotal, starMax) {
-      const total = starMax || currentStarMax();
+    /* 旅程进度条上的宝箱节点：由地图页渲染，点击走 chest-claim；themeId 用于按主题领取 */
+    renderJourneyChests(key, starTotal, starMax, themeId) {
+      const total = starMax || currentStarMax(themeId);
+      const dataTheme = themeId ? ` data-theme="${themeId}"` : "";
       return milestoneStatus(key, starTotal, total).map((m) => {
         const pct = total ? Math.round((m.stars / total) * 100) : 0;
         const cls = m.done ? "done" : m.ready ? "ready" : "locked";
         const tip = m.done ? "已领取" : m.ready ? "点击开启" : `再获得 ${m.stars - starTotal} ★ 解锁`;
         return `<button type="button" class="j-chest ${cls}" style="left:${pct}%"
-          data-action="chest-claim" data-threshold="${m.stars}"
+          data-action="chest-claim" data-threshold="${m.stars}"${dataTheme}
           aria-label="${pct}% 宝箱，${tip}" title="${pct}% 宝箱 · ${tip}"
           ${m.ready ? "" : "disabled"}>${m.done ? "✓" : "🎁"}</button>`;
       }).join("");
     },
 
-    /* 领取旅程里程碑宝箱：成功后赠送 1 次免费转盘机会 */
-    claimJourney(threshold) {
+    /* 领取旅程里程碑宝箱：成功后赠送 1 次免费转盘机会；themeId 指定领取哪个主题的进度 */
+    claimJourney(threshold, themeId) {
       const s = _state();
       ensureChests();
-      const starMax = currentStarMax();
-      /* 只接受当前主题配置里的里程碑，防止无效入口 */
+      const tid = themeId || (s && s.theme);
+      const starMax = currentStarMax(tid);
+      /* 只接受该主题配置里的里程碑，防止无效入口 */
       if (milestonesFor(starMax).indexOf(threshold) < 0) return { status: "done", need: 0 };
-      const key = activeProgressKey();
-      const starTotal = themeStars(themeProgress());
+      const key = activeProgressKey(tid);
+      const starTotal = themeStars(themeProgress(tid));
       const claimed = s.chests.claimed[key] || (s.chests.claimed[key] = []);
       if (claimed.indexOf(threshold) >= 0) return { status: "done", need: 0 };
       if (starTotal < threshold) return { status: "locked", need: threshold - starTotal };

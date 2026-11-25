@@ -3,7 +3,7 @@
    ============================================================ */
 
 /* ------------------------------------------------ state */
-const STORE_KEY = "dinogo.v3";
+const STORE_KEY = "dinogo";
 try {
   if (new URLSearchParams(location.search).get("fresh") === "1") localStorage.removeItem(STORE_KEY);
 } catch (e) { /* private mode */ }
@@ -24,72 +24,20 @@ function loadState() {
     /* 装扮系统已移除，旧存档里的道具与穿戴字段一并丢弃 */
     delete parsed.owned;
     delete parsed.equipped;
-    /* v3 及以前每关发 5/10/15 星星，v4 起统一按关卡星级 1–3，旧余额同步除以 5 */
+    /* v1 起统一为干净的新存档结构；STORE_KEY 已重置，旧版本迁移链不再保留 */
     const prevVersion = Number(parsed.v) || 0;
-    const legacy = prevVersion < 4;
     const progress = { ...(parsed.progress || {}) };
-    /* 动物乐园改为「主题:场景」两套独立进度，旧存档统一迁入神奇动物园 */
+    /* 动物乐园改为「主题:场景」两套独立进度，脏数据统一迁入神奇动物园 */
     if (progress.animal) {
       if (!progress["animal:zoo"]) progress["animal:zoo"] = progress.animal;
       delete progress.animal;
-    }
-    /* v4 → v5：神奇动物园由 10 关扩展为 50 关，重置该场景关卡进度与宝箱里程碑 */
-    if (prevVersion < 5) {
-      delete progress["animal:zoo"];
-      if (parsed.chests && parsed.chests.claimed) delete parsed.chests.claimed["animal:zoo"];
-      parsed.allCleared = false;
-    }
-    /* v5 → v6：宝箱改为 20%~100% 五档里程碑并更换奖励池，清空旧的领取记录 */
-    if (prevVersion < 6 && parsed.chests && parsed.chests.claimed) {
-      parsed.chests.claimed = {};
-    }
-    /* v6 → v7：星星只由每 5 关的考核关产出，旧存档清算：清空全部关卡星级、星星余额与宝箱领取记录 */
-    if (prevVersion < 7) {
-      Object.keys(progress).forEach((key) => {
-        if (progress[key] && progress[key].stars) progress[key].stars = {};
-      });
-      parsed.stars = 0;
-      if (parsed.chests) parsed.chests.claimed = {};
-    }
-    /* v7 → v8：校验星星数据，只保留考核关（第 5/10/15… 关）的 1~3 星，清理旧门槛版遗留的异常值 */
-    if (prevVersion < 8) {
-      let earned = 0;
-      Object.keys(progress).forEach((key) => {
-        const p = progress[key];
-        if (!p || !p.stars) return;
-        const clean = {};
-        Object.keys(p.stars).forEach((lv) => {
-          const levelNo = Number(lv);
-          const n = Math.max(0, Math.min(3, Math.floor(Number(p.stars[lv]) || 0)));
-          if (levelNo > 0 && levelNo % 5 === 0 && n > 0) clean[lv] = n;
-        });
-        p.stars = clean;
-        earned += Object.values(clean).reduce((a, b) => a + b, 0);
-      });
-      /* 余额不能超过关卡累计星数，避免旧存档虚高 */
-      parsed.stars = Math.min(Number(parsed.stars) || 0, earned);
-    }
-    /* v8 → v9：单词改为「答对解锁」，旧存档只有计数无法映射到具体单词，从零重新解锁 */
-    if (prevVersion < 9) {
-      parsed.unlocked = [];
-      parsed.words = 0;
-    }
-    /* v9 → v10：进化止步完全体，究极体改为星星兑换；旧存档已解锁的究极体直接保留 */
-    if (prevVersion < 10) {
-      const owned = Array.isArray(parsed.ultraOwned) ? parsed.ultraOwned.slice() : [];
-      const hadUltra = parsed.stage === "ultra" || (Array.isArray(parsed.dex) && parsed.dex.includes("ultra"));
-      if (hadUltra && !owned.includes(1)) owned.push(1);
-      /* 上一版可能已切换到究极体图鉴里的形象，直接保留为已兑换 */
-      const prevSkin = Number(parsed.ultraSkin) || 1;
-      if (hadUltra && prevSkin > 4 && !owned.includes(prevSkin)) owned.push(prevSkin);
-      parsed.ultraOwned = owned;
     }
     const unlocked = Array.isArray(parsed.unlocked) ? parsed.unlocked : [];
     const next = {
       ...initialState(),
       ...parsed,
       v: DEFAULT_STATE.v,
-      stars: legacy ? Math.floor((Number(parsed.stars) || 0) / 5) : (Number(parsed.stars) || 0),
+      stars: Number(parsed.stars) || 0,
       tasks: { ...DEFAULT_STATE.tasks, ...(parsed.tasks || {}) },
       scene: parsed.scene || DEFAULT_STATE.scene,
       progress,

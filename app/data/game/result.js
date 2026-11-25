@@ -28,7 +28,6 @@
       growthGain: 0,
       accuracy: Math.round((correct / total) * 100),
       seconds,
-      passed: true,
       enlighten,
       dailyLeft: dailyChallengeLeft(),
       wordList,
@@ -43,8 +42,8 @@
     if (!quiz) return;
     if (quiz.mode === "daily") { finishDailyQuiz(); return; }
     /* 每 5 关一个循环：
-       前 4 关基础练习：3 题，0 星，答对 ≥1 题过关
-       第 5/10/15… 关考核关：5 题，答对 3/4/5 → 1/2/3 星，答对 ≥4 题（2 星）过关 */
+       前 4 关基础练习：3 题；第 5/10/15… 关考核关：5 题
+       星级只按答对题数计算，不作为是否过关的门槛 */
     const assessment = window.isAssessmentLevel
       ? isAssessmentLevel(quiz.level)
       : Number(quiz.level) % 5 === 0;
@@ -57,8 +56,6 @@
     const stars = assessment
       ? (correct >= 5 ? 3 : correct >= 4 ? 2 : correct >= 3 ? 1 : 0)
       : (correct >= 3 ? 3 : correct >= 2 ? 2 : correct >= 1 ? 1 : 0);
-    /* 启蒙模式可以一直答到正确，只要完成本题就算过关；星星只按首答正确数发放 */
-    const passed = enlighten ? true : (assessment ? correct >= 4 : correct >= 1);
     const prog = themeProgress();
     const completedLevel = quiz.level;
     const prevBest = prog.stars[completedLevel] || 0;
@@ -70,14 +67,14 @@
     const isReplay = alreadyCleared || completedLevel < prog.level;
     /* 重玩未满星关卡：只发放星级增量，可把这一关补到满星；成长值仍不重复发放 */
     const starGain = bestGain;
-    const growthGain = isReplay ? 0 : (passed ? correct * 24 : Math.round(correct * 12));
+    const growthGain = isReplay ? 0 : correct * 24;
     const elapsed = Math.max(5, Math.round((Date.now() - quiz.startedAt) / 1000));
     state.growth += growthGain;
     state.stars += starGain;
     if (best > 0) prog.stars[completedLevel] = best;
-    /* 只有挑战当前关卡且达到过关线才推进进度，重玩旧关卡不影响进度 */
-    if (passed && !isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
-    if (passed) prog.cleared[completedLevel] = true;
+    /* 完成结算即可推进到下一关，重玩旧关卡不影响进度 */
+    if (!isReplay) prog.level = Math.min(levelsPerTheme(), completedLevel + 1);
+    prog.cleared[completedLevel] = true;
     /* 单词数由解锁列表决定，同一单词答对多次不会重复计数 */
     state.words = Array.isArray(state.unlocked) ? state.unlocked.length : 0;
     const newUnlocked = [...new Set(quiz.newWords || [])];
@@ -99,7 +96,6 @@
       accuracy: Math.round(accuracy * 100),
       stars,
       enlighten,
-      passed,
       growthGain,
       starGain,
       seconds: elapsed,
@@ -113,7 +109,7 @@
     sfx(stars === 3 ? "win" : "coin");
 
     /* 🔥 总 BOSS 关（第 50 关 动物欢乐马戏团）通关额外奖励：仅首次全通关发放 */
-    if (isAnimalFinalBoss(completedLevel) && passed && window.ChestManager) {
+    if (isAnimalFinalBoss(completedLevel) && window.ChestManager) {
       lastResult.bossClear = true;
       if (!ChestManager.isAllCleared()) lastResult.bossChests = ChestManager.rewardBossClear();
       lastResult.allCleared = ChestManager.isAllCleared();
@@ -229,18 +225,17 @@
           ? `距 <b>${next.name}</b> 还差 <b>${Math.max(0, next.min - state.growth)}</b>`
           : "已达成最高形态";
 
-    /* 关卡进度与按钮逻辑：保持与原 startQuiz 满星保护一致 */
+    /* 关卡进度与按钮逻辑：完成结算即可进入下一关 */
     const progNow = themeProgress();
     const nextLevel = Math.min(progNow.level, r.level + 1);
-    const nextBtnLevel = r.passed ? nextLevel : r.level;
     const nextCleared = nextLevel < progNow.level || Boolean(progNow.cleared && progNow.cleared[nextLevel]);
-    const canNext = !(r.passed && nextCleared);
+    const canNext = !nextCleared;
     const canReplay = r.best < 3;
 
     /* 顶部主标题 */
     const titleText = r.bossClear
       ? `BOSS · 全部通关!`
-      : `LEVEL ${String(r.level).padStart(2, "0")} · ${r.replay ? "复习完成" : r.passed ? "闯关完成" : "再试一次"}`;
+      : `LEVEL ${String(r.level).padStart(2, "0")} · ${r.replay ? "复习完成" : "闯关完成"}`;
 
     /* 弧形三颗大星 */
     const starRow = [0, 1, 2].map((i) =>
@@ -284,10 +279,10 @@
       : `<button type="button" class="rs2-btn secondary" data-action="close-quiz">返回地图</button>`;
 
     /* 右侧主按钮：满足进化条件优先引导进化 */
-    const rightBtn = pending && r.passed
+    const rightBtn = pending
       ? `<button type="button" class="rs2-btn primary evolve" data-action="evolve">✨ 见证进化 ▶</button>`
       : canNext
-        ? `<button type="button" class="rs2-btn primary" data-action="start-quiz" data-level="${nextBtnLevel}">${r.passed ? "继续下一关 ▶" : "再试一次 ▶"}</button>`
+        ? `<button type="button" class="rs2-btn primary" data-action="start-quiz" data-level="${nextLevel}">继续下一关 ▶</button>`
         : `<button type="button" class="rs2-btn primary" data-action="close-quiz">回地图看看 ▶</button>`;
 
     return `<section class="screen result-page result-stage-v2" data-screen="result">

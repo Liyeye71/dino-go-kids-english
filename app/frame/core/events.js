@@ -68,6 +68,12 @@ document.addEventListener("click", (e) => {
   } else if (action === "profile") {
     go("profile");
     sfx("tap");
+  } else if (action === "open-achievements") {
+    openAchievements();
+  } else if (action === "ach-detail") {
+    const a = achievementList().find((x) => x.id === el.dataset.id);
+    if (a) toast(`${a.name}：${a.desc} · ${a.done ? "已点亮" : a.sub}`);
+    sfx("tap");
   } else if (action === "start-quiz") {
     closeOverlay();
     /* 从单元地图卡直接开闯：先切到卡片对应的主题 */
@@ -192,15 +198,9 @@ document.addEventListener("click", (e) => {
     /* 🦁 路线弹框里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
     const prog = sceneProgress("animal", "zoo");
-    const best = (prog.stars && prog.stars[level]) || 0;
     const cleared = Boolean(prog.cleared && prog.cleared[level]);
     if (level > prog.level) {
-      toast(`先通过第 ${prog.level} 关，才能解锁这一关`);
-      return;
-    }
-    /* 满星后不再提供重玩，只能往下一关 */
-    if (cleared && best >= 3) {
-      toast("这一关已经满星啦，去挑战下一关吧");
+      toast(`先完成第 ${prog.level} 关，才能解锁这一关`);
       return;
     }
     sfx("tap");
@@ -216,8 +216,8 @@ document.addEventListener("click", (e) => {
     sfx("tap");
     if (window.ZooRouteView) ZooRouteView.resetZoom();
   } else if (action === "chest-claim") {
-    /* 🎁 旅程进度条上的里程碑宝箱：开箱即送 1 次免费转盘 */
-    const res = ChestManager.claimJourney(Number(el.dataset.threshold) || 0);
+    /* 🎁 旅程进度条上的里程碑宝箱：开箱即送 1 次免费转盘；按按钮上的主题领取对应进度 */
+    const res = ChestManager.claimJourney(Number(el.dataset.threshold) || 0, el.dataset.theme);
     if (res.status === "locked") {
       toast(`再获得 ${res.need} 颗星就能开启这个宝箱`);
       return;
@@ -254,7 +254,7 @@ document.addEventListener("click", (e) => {
       unlockTaskWord(q);
       WrongBank.applyResult(q, true);
     } else {
-      quiz.hearts = Math.max(0, quiz.hearts - 1); sfx("wrong");
+      sfx("wrong");
       WrongBank.applyResult(q, false);
     }
     render();

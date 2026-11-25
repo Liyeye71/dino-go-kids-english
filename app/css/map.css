@@ -199,10 +199,10 @@
 @keyframes zoo-step-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
 
 /* ============================================================
-   🎁 旅程进度条上的宝箱节点（每 10 星一个）
+   🎁 旅程进度条上的宝箱节点（30% / 60% / 100% 各一个）
    ============================================================ */
 
-.journey .j-track{position:relative;flex:1;display:flex;align-items:center;min-width:0}
+.journey .j-track{position:relative;flex:1;display:flex;align-items:center;min-width:0;max-width:30rem;margin:0 auto}
 .j-chest{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:1.625rem;height:1.625rem;padding:0;
   transform:translate(-50%,-50%);border:0.125rem solid var(--sticker-paper);border-radius:50%;
   background:#F1E6D0;color:#9A8763;font-size:0.8125rem;line-height:1;cursor:pointer;font-family:inherit;

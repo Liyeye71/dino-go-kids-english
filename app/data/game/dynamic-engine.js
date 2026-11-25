@@ -608,21 +608,10 @@
       .map((x) => ({ word: x.word, art: x.art, img: x.img || "", zh: x.zh || "", phon: x.phon || "" }))
       .concat(shuffle(foods).slice(0, foodCount));
 
-    /* 启蒙模式：左列固定单词、右列固定图片；其余模式左右随机混搭 */
-    const mixed = !enlightenOn();
-    const leftItems = [];
-    const rightItems = [];
-    pairs.forEach((p) => {
-      const wordOnLeft = !mixed || Math.random() < 0.5;
-      const wordItem = { kind: "word", word: p.word };
-      const artItem = { kind: "art", word: p.word, art: p.art, img: p.img || "" };
-      leftItems.push(wordOnLeft ? wordItem : artItem);
-      rightItems.push(wordOnLeft ? artItem : wordItem);
-    });
-
+    /* 固定版式：左列单词、右列图片，各自打乱顺序 */
     task.pairs = pairs;
-    task.leftItems = shuffle(leftItems);
-    task.rightItems = shuffle(rightItems);
+    task.leftItems = shuffle(pairs.map((p) => ({ kind: "word", word: p.word })));
+    task.rightItems = shuffle(pairs.map((p) => ({ kind: "art", word: p.word, art: p.art, img: p.img || "" })));
   }
 
   function renderMatch({ q, quiz }) {
@@ -632,40 +621,83 @@
     const flash = quiz.matchFlash || null;
     const wrongArts = new Set(wrongPairs.map((p) => p.art).concat(flash ? [flash.art] : []));
     const wrongWords = new Set(wrongPairs.map((p) => p.word).concat(flash ? [flash.word] : []));
-    const selected = quiz.pickWord;
-    /* 圆点永远朝向中线：左列点靠右、右列点靠左 */
-    const dotHtml = (word, side, state) =>
-      `<button class="ref-match-dot" data-match-dot data-match-side="${side}" data-word="${word}" aria-label="选择 ${word}">${state}</button>`;
-    const rowHtml = (item, col) => {
+    /* 选中一侧后，另一侧整列呼吸高亮，提示可以点 */
+    const pickedSide = quiz.pickWord && quiz.pickWordSide ? quiz.pickWordSide : "";
+    const rowHtml = (item, side) => {
       const word = item.word;
       const isDone = solved.has(word);
-      const isWrong = item.kind === "word" ? wrongWords.has(word) : wrongArts.has(word);
-      const isSel = item.kind === "word"
-        ? selected === word
-        : selected === word && !isDone && !isWrong;
-      const mark = isDone ? "<i class='ok-check'>✓</i>" : isWrong ? "<i class='ok-check'>✕</i>" : "";
-      /* 单词框可复用：连过后仍可继续选，不锁定（marked 保持不透明度） */
-      const cls = `ref-match-row${item.kind === "word" ? " marked" : ""}${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${isSel ? " sel" : ""}`;
-      const card = item.kind === "word"
-        ? `<div class="ref-match-word-card">${word}</div>`
-        : `<div class="ref-match-art-card">${artWithImage(item.img, "ref-match-img", item.art())}</div>`;
-      const dot = dotHtml(word, item.kind, mark);
-      return `<div class="${cls}" data-match-row data-word="${word}" data-match-side="${item.kind}">
-              ${col === "left" ? card + dot : dot + card}
-            </div>`;
+      const isWrong = side === "word" ? wrongWords.has(word) : wrongArts.has(word);
+      const mark = isDone ? "<i class='ref-listen-mark'>✓</i>" : isWrong ? "<i class='ref-listen-mark bad'>✕</i>" : "";
+      const breath = pickedSide && pickedSide !== side && !isDone && !isWrong ? " breath" : "";
+      const cls = `ref-match-row ref-match-row-${side}${isDone ? " done" : ""}${isWrong ? " wrong" : ""}${breath}`;
+      const body = side === "word"
+        ? `<div class="ref-match-word-card">${word}${mark}</div>
+           <button type="button" class="ref-match-speaker" data-match-speaker data-word="${word}" aria-label="朗读 ${word}">${I.speaker(20, "#B4811C")}</button>`
+        : `<div class="ref-match-art-card">${artWithImage(item.img, "ref-match-img", item.art())}${mark}</div>`;
+      return `<div class="${cls}" data-match-row data-word="${word}" data-match-side="${side}">${body}</div>`;
     };
-    const leftCol = (q.leftItems || []).map((item) => rowHtml(item, "left")).join("");
-    const rightCol = (q.rightItems || []).map((item) => rowHtml(item, "right")).join("");
+    const leftCol = (q.leftItems || []).map((item) => rowHtml(item, "word")).join("");
+    const rightCol = (q.rightItems || []).map((item) => rowHtml(item, "art")).join("");
     return {
       body: `<div class="ref-match-wrap">
                 <div class="ref-match-area" data-match-area>
-                  <svg class="ref-match-svg" aria-hidden="true"></svg>
                   <div class="ref-match-col ref-match-col-left">${leftCol}</div>
                   <div class="ref-match-col ref-match-col-right">${rightCol}</div>
                 </div>
               </div>`,
       btn: quiz.revealed ? quizNextButton() : "",
     };
+  }
+
+  /* 配对判定：点两次完成配对，无连线视觉 */
+  function resolveMatch(pickSide, pickWord, side, word) {
+    const q = quiz.order[quiz.index];
+    const wordPart = pickSide === "word" ? pickWord : word;
+    const artPart = pickSide === "art" ? pickWord : word;
+    const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
+    /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
+    const sceneId = (state && state.scene) || "";
+    const makeWid = (w) => (window.WrongBank ? WrongBank.makeId(sceneId, w) : null);
+    quiz.pickWord = null;
+    quiz.pickWordSide = null;
+
+    if (wordPart === artPart) {
+      quiz.matched.push(wordPart);
+      sfx("correct");
+      /* 🦁 动物园：配对成功 → 尝试清除错题库 */
+      if (window.isZooScene && isZooScene() && makeWid(wordPart)) WrongBank.recordCorrect(makeWid(wordPart));
+    } else if (enlightenOn()) {
+      /* 启蒙模式：配错不记错、不扣心，短暂标红后自动恢复，可继续尝试 */
+      quiz.matchFlash = { art: artPart, word: wordPart };
+      /* 首答就配错：本题之后连对也不给星 */
+      quiz.matchFirstTry = false;
+      sfx("tap");
+      setTimer(() => { quiz.matchFlash = null; render(); }, 700);
+      render();
+      return;
+    } else {
+      quiz.matchWrong++;
+      wrongPairs.push({ art: artPart, word: wordPart });
+      sfx("wrong");
+      /* 🦁 动物园：配对失败 → 自动收录错题库 */
+      if (window.isZooScene && isZooScene() && makeWid(wordPart)) WrongBank.recordWrong(makeWid(wordPart));
+    }
+
+    /* 三组全部配完（含配错）后统一判题 */
+    if (quiz.matched.length + wrongPairs.length >= q.pairs.length) {
+      quiz.revealed = true;
+      quiz.choiceCorrect = wrongPairs.length === 0;
+      if (quiz.choiceCorrect) {
+        if (typeof firstTryClean !== "function" || firstTryClean()) quiz.correct++;
+        q.pairs.forEach((p) => {
+          quiz.words.push(p.word);
+          /* 连线全部正确：把配对的单词一并解锁 */
+          if (typeof unlockTaskWord === "function") unlockTaskWord({ word: p.word });
+        });
+        sfx("excellent");
+      }
+    }
+    render();
   }
 
   /* 情景对话 */
@@ -973,11 +1005,10 @@
     const foods = q.foods.map((f) => {
       const id = f.id || f.word;
       const art = f.img ? artWithImage(f.img, "ref-food-img", f.emoji || "🍎") : (f.emoji || artOf(id)());
-      /* 启蒙模式：已排除的伪选项灰化并禁用；食物选项不显示英文名，保持纯图片选项 */
+      /* 启蒙模式：已排除的伪选项灰化并禁用；所有模式都不再显示英文名，保持纯图片选项 */
       const tried = !revealed && (quiz.triedWrong || []).includes(id);
-      const foodLabel = enlightenOn() ? "" : `<small>${id}</small>`;
       return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""} ${tried ? "tried" : ""}"
-              data-action="fd-pick" data-drag="food" data-food="${id}"${tried ? " disabled" : ""}><span class="ref-food-art">${art}</span>${foodLabel}</button>`;
+              data-action="fd-pick" data-drag="food" data-food="${id}"${tried ? " disabled" : ""}><span class="ref-food-art">${art}</span></button>`;
     }).join("");
     const body = `
             <div class="fd-wrap ref-feed-wrap">
@@ -1093,73 +1124,20 @@
         prompt: "Match the words with the pictures.",
         build: buildMatch,
         render: renderMatch,
-        onPickWord(word) {
+        onSelect(side, word) {
           if (!quiz || quiz.revealed) return;
-          /* 一个单词框可连多张图，不做锁定 */
+          const matched = quiz.matched || [];
+          const wrongPairs = quiz.wrongPairs || [];
+          /* 已配对 / 已配错的框不再响应 */
+          if (matched.includes(word) || wrongPairs.some((p) => p.art === word || p.word === word)) return;
+          /* 另一侧已有选中项：本次点击完成配对 */
+          if (quiz.pickWord && quiz.pickWordSide && quiz.pickWordSide !== side) {
+            resolveMatch(quiz.pickWordSide, quiz.pickWord, side, word);
+            return;
+          }
           quiz.pickWord = word;
-          quiz.pickWordSide = "word";
+          quiz.pickWordSide = side;
           sfx("tap");
-          render();
-        },
-        onPickArt(word) {
-          if (!quiz || quiz.revealed || !quiz.pickWord) return;
-          const q = quiz.order[quiz.index];
-          const wrongPairs = quiz.wrongPairs || (quiz.wrongPairs = []);
-          /* 一张图只能连一次，连过即锁定；单词可以重复使用 */
-          if (quiz.matched.includes(word) || wrongPairs.some((p) => p.art === word)) {
-            quiz.pickWord = null;
-            quiz.pickWordSide = null;
-            render();
-            return;
-          }
-          const pickedWord = quiz.pickWord;
-          /* 构造错题库 wordId（match 题型的 q.pairs 里没有 wrongWordId） */
-          const _sceneId = (state && state.scene) || "";
-          const _makeWid = (w) => window.WrongBank ? WrongBank.makeId(_sceneId, w) : null;
-          if (word === pickedWord) {
-            quiz.matched.push(word);
-            sfx("correct");
-            /* 🦁 动物园：配对成功 → 尝试清除错题库 */
-            if (window.isZooScene && isZooScene() && _makeWid(word)) WrongBank.recordCorrect(_makeWid(word));
-          } else {
-            /* 启蒙模式：连错不记错、不扣心，短暂标红后自动恢复，可继续尝试 */
-            if (enlightenOn()) {
-              quiz.matchFlash = { art: word, word: pickedWord };
-              /* 首答就配错：本题之后连对也不给星 */
-              quiz.matchFirstTry = false;
-              quiz.pickWord = null;
-              quiz.pickWordSide = null;
-              sfx("tap");
-              setTimer(() => { quiz.matchFlash = null; render(); }, 700);
-              render();
-              return;
-            }
-            quiz.matchWrong++;
-            /* 错误连线保留红线，不会被后续配对覆盖或清除 */
-            wrongPairs.push({ art: word, word: pickedWord });
-            sfx("wrong");
-            /* 🦁 动物园：配对失败 → 自动收录错题库 */
-            if (window.isZooScene && isZooScene() && _makeWid(pickedWord)) WrongBank.recordWrong(_makeWid(pickedWord));
-          }
-          quiz.pickWord = null;
-          quiz.pickWordSide = null;
-
-          /* 三组全部连完后统一判题 */
-          if (quiz.matched.length + wrongPairs.length >= q.pairs.length) {
-            quiz.revealed = true;
-            quiz.choiceCorrect = wrongPairs.length === 0;
-            if (quiz.choiceCorrect) {
-              if (typeof firstTryClean !== "function" || firstTryClean()) quiz.correct++;
-              q.pairs.forEach((p) => {
-                quiz.words.push(p.word);
-                /* 连线全部正确：把配对的单词一并解锁 */
-                if (typeof unlockTaskWord === "function") unlockTaskWord({ word: p.word });
-              });
-              sfx("excellent");
-            }
-            render();
-            return;
-          }
           render();
         },
       },

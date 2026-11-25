@@ -45,7 +45,7 @@ const ULTRA_DINOS = [
 ];
 
 const DEFAULT_STATE = {
-  v: 10,
+  v: 1,
   name: "毛肚",
   stars: 0,
   /* 宝箱赠送的免费转盘机会，可累积并保留到下次 */

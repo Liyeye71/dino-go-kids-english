@@ -86,35 +86,48 @@
 .ref-drag-ghost svg{width:3.5rem;height:3.5rem;display:block}
 .quiz-ref-page .pz-slot.drop-ready{border-style:solid;border-color:#68A873;background:#EAF7E3}
 
+/* 统一图片框模板：看图 / 听音 / 拼图 / 喂食 / 进阶题共用同一外框 */
+.ref-picture-frame,
+.ref-listen-speaker,
+.ref-puzzle-hint .pz-art,
+.ref-feed-animal,
+.ref-action-stage,
+.ref-cmp-stage{
+  position:relative;width:min(100%,28rem);aspect-ratio:16/10;margin:0 auto;display:grid;place-items:center;
+  overflow:hidden;border:0.25rem solid var(--sticker-ink);border-radius:2rem;
+  background:linear-gradient(180deg,#DDF3F5 0%,#F6F4D9 62%,#C9DFA1 62%,#B5D18C 100%);
+  box-shadow:0 0.375rem 0 #D3B984,0 0.75rem 1.5rem rgba(92,65,29,.14)
+}
+
 /* 看图识词 */
 .ref-pic-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
-.ref-picture-frame{position:relative;flex:1;min-height:10rem;max-height:24rem;width:min(100%,28rem);margin:0 auto;display:grid;place-items:center;
-  overflow:hidden;border:0.25rem solid var(--sticker-ink);border-radius:2rem;background:linear-gradient(180deg,#DDF3F5 0%,#F6F4D9 62%,#C9DFA1 62%,#B5D18C 100%);
-  box-shadow:0 0.375rem 0 #D3B984,0 0.75rem 1.5rem rgba(92,65,29,.14)}
 .ref-picture-art{position:absolute;inset:0;display:grid;place-items:center;padding:0.5rem}
 .ref-picture-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
-.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);color:#4B3626}
+.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(1.1rem,3cqh,1.375rem);color:#4B3626;font-weight:var(--w-black)}
 
 /* 听音选图 */
-.ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
-.ref-listen-speaker{align-self:center;position:relative;display:flex;align-items:center;justify-content:center;flex:none;width:12rem;height:clamp(7.5rem,22vh,10.5rem);
-  padding:0;background:transparent;border:0;transition:transform .15s ease;cursor:pointer}
+.ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0;justify-content:center}
+.ref-listen-speaker{flex:none;align-self:center;padding:0;cursor:pointer;
+  /* 覆盖统一模板里的 place-items，改用 flex 居中 speaker 图标 */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;
+  background:linear-gradient(180deg,#FFF8DC 0%,#F6E4B5 100%)}
 .ref-listen-speaker:active{transform:scale(.94)}
-.ref-listen-speaker .ref-toast-art{width:100%;height:100%;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.15))}
-.ref-listen-speaker>span{position:absolute;bottom:-0.125rem;padding:0.25rem 0.625rem;border:0.09375rem solid var(--sticker-line);border-radius:6.1875rem;
-  background:#FFFDF6;color:#765733;font-size:0.6875rem;font-weight:var(--w-bold);white-space:nowrap}
-.ref-listen-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:min(100%,30rem);margin:0.75rem auto 0;flex:1;min-height:8rem}
+.ref-listen-speaker .ref-toast-art{width:4rem;height:4rem;filter:drop-shadow(0 0.375rem 0 rgba(92,65,29,.15))}
+.ref-listen-speaker>span{position:relative;bottom:auto;padding:0.375rem 0.875rem;border:0.09375rem solid var(--sticker-line);border-radius:6.1875rem;
+  background:#FFFDF6;color:#765733;font-size:0.6875rem;font-weight:var(--w-bold);white-space:nowrap;box-shadow:0 0.125rem 0 var(--sticker-shade)}
+.ref-listen-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:min(100%,30rem);margin:0.75rem auto 0;flex:none;
+  height:var(--q-opt-h,clamp(4.25rem,11cqh,5.75rem));min-height:0}
 .ref-listen-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.25rem;
   border:0.1875rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer;
-  padding:0.625rem 0.375rem;transition:transform .12s ease,box-shadow .12s ease}
+  padding:0.375rem 0.375rem;transition:transform .12s ease,box-shadow .12s ease}
 .ref-listen-card:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 var(--sticker-shade)}
 .ref-listen-card.sel{border-color:#D8A646;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.25),0 0.25rem 0 var(--sticker-shade);background:#FFF9E8}
 .ref-listen-card.ok{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-listen-card.wrong{border-color:#D87B68;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
-.ref-listen-card-art{width:clamp(4rem,13vw,5.5rem);height:clamp(4rem,13vw,5.5rem);display:grid;place-items:center}
+.ref-listen-card-art{width:clamp(2.25rem,7cqh,3.25rem);height:clamp(2.25rem,7cqh,3.25rem);display:grid;place-items:center}
 .ref-listen-card-art .listen-card-img{width:100%;height:100%;object-fit:contain;display:block}
 .ref-listen-card-art .listen-card-emoji{width:100%;height:100%;place-items:center}
 .ref-listen-mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;display:grid;place-items:center;
@@ -122,41 +135,48 @@
   box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2);z-index:2}
 .ref-listen-mark.bad{background:#E8604A;color:#fff}
 
-/* 单词连线 */
-.ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(2rem,9vw,4rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;
-  --match-card:clamp(4rem,13vw,5.25rem)}
-.ref-match-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3}
+/* 单词连线：固定左列单词 + 右列图片，无圆点无连线，点两次完成配对 */
+.ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(1.5rem,7vw,3rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;
+  --match-h:clamp(4rem,13vw,5.25rem)}
 .ref-match-col{display:flex;flex-direction:column;gap:1rem;z-index:1}
-.ref-match-row{display:flex;align-items:center;gap:0.625rem;transition:opacity .18s ease}
+.ref-match-row{display:flex;flex-direction:row;align-items:center;gap:0.5rem;min-height:var(--match-h);transition:opacity .18s ease}
 .ref-match-row.done{opacity:.55}
 .ref-match-row.wrong{opacity:.8}
-/* 单词框可复用，连过之后仍保持可点观感，不做灰化（混搭时任意列都可能出现词卡） */
-.ref-match-row.marked{opacity:1}
-.ref-match-row.wrong .ref-match-dot{background:#F6B3A6;border-color:#B4432F;box-shadow:0 0.1875rem 0 #B4432F}
-.ref-match-row.wrong .ref-match-dot .ok-check{color:#7B2A1D}
-.ref-match-row.sel .ref-match-dot{box-shadow:0 0 0 0.1875rem rgba(216,166,70,.45),0 0.1875rem 0 var(--sticker-shade)}
-/* 两列都是「内容 + 圆点」/「圆点 + 内容」，圆点分别贴内侧，且行高一致保证每组圆点水平 */
-.ref-match-col-left .ref-match-row{flex-direction:row;min-height:var(--match-card)}
-.ref-match-col-right .ref-match-row{flex-direction:row;min-height:var(--match-card)}
-.ref-match-art-card{display:flex;align-items:center;justify-content:center;width:var(--match-card);height:var(--match-card);flex:none;
+.ref-match-row.wrong .ref-match-word-card,
+.ref-match-row.wrong .ref-match-art-card{border-color:#B4432F;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
+.ref-match-art-card{position:relative;display:flex;align-items:center;justify-content:center;width:var(--match-h);height:var(--match-h);flex:none;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
 .ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
-.ref-match-word-card{min-width:clamp(4.5rem,15vw,6rem);padding:0.625rem 1rem;flex:none;text-align:center;
+/* 图片始终按原比例填满图片框，保持此前大小 */
+.ref-match-art-card > img,
+.ref-match-art-card > .art-fallback{width:100%;height:100%;object-fit:contain;display:block}
+.ref-match-art-card > .art-fallback{display:grid;place-items:center}
+/* 单词框的对错角标放在外侧，避开旁边喇叭 */
+.ref-match-word-card .ref-listen-mark{right:auto;left:-0.4rem}
+/* 同一题内所有单词框等宽：--match-word-w 由 QuizView 按最长单词量出后统一写入 */
+.ref-match-word-card{position:relative;display:flex;align-items:center;justify-content:center;
+  width:var(--match-word-w,auto);min-width:clamp(4.5rem,15vw,6rem);max-width:100%;padding:0.625rem 1rem;flex:none;text-align:center;
+  overflow-wrap:break-word;line-height:1.2;
   border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
   color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black);cursor:pointer}
-.ref-match-word-card.is-shaking{animation:shake .32s ease}
+/* 喇叭：高度为图片框的 40%，点击抖动并朗读 */
+.ref-match-speaker{display:grid;place-items:center;flex:none;width:calc(var(--match-h) * 0.4);height:calc(var(--match-h) * 0.4);
+  padding:0;border:0.125rem solid #D7B66E;border-radius:50%;background:#FFF6DC;color:#B4811C;
+  box-shadow:0 0.1875rem 0 #D7B66E;cursor:pointer;transition:transform .12s ease}
+.ref-match-speaker svg{width:60%;height:60%}
+.ref-match-speaker:active{transform:translateY(0.0625rem)}
+.ref-match-speaker.is-shaking{animation:shake .32s ease}
+/* 选中一侧后，另一侧只做“边框光圈”呼吸，不改卡片底色也不影响内部图片 */
+@keyframes matchBreath{
+  0%,100%{border-color:var(--sticker-ink);box-shadow:0 0.25rem 0 var(--sticker-shade),0 0 0 0 rgba(216,166,70,0)}
+  50%{border-color:#E0A63C;box-shadow:0 0.25rem 0 var(--sticker-shade),0 0 0 0.1875rem rgba(224,166,60,.5)}
+}
+.ref-match-row.breath .ref-match-word-card,
+.ref-match-row.breath .ref-match-art-card{animation:matchBreath 1.5s ease-in-out infinite}
+/* 喇叭不参与高亮呼吸 */
+.ref-match-row.breath .ref-match-speaker{animation:none}
 .pz-hint{cursor:pointer;touch-action:manipulation}
 .pz-hint.is-shaking{animation:shake .32s ease}
-.ref-match-dot{position:relative;display:grid;place-items:center;width:1.5rem;height:1.5rem;flex:none;
-  border:0.1875rem solid var(--sticker-ink);border-radius:50%;background:#F9D876;box-shadow:0 0.1875rem 0 var(--sticker-ink);
-  cursor:pointer;touch-action:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
-.ref-match-dot:hover{transform:scale(1.15)}
-.ref-match-dot:active{transform:scale(.95)}
-.ref-match-row.done .ref-match-dot{background:#9BE382;border-color:#3F8155;box-shadow:0 0.1875rem 0 #3F8155}
-.ref-match-dot .ok-check{font-size:0.75rem;font-style:normal;color:#243F2B;font-weight:var(--w-black)}
-.ref-match-path{fill:none;stroke:#4FA96B;stroke-width:0.375rem;stroke-linecap:round;stroke-dasharray:0.625rem 0.5rem}
-.ref-match-path.wrong{stroke:#E4573F}
-.ref-match-path.temp{stroke:#E4A14B;stroke-dasharray:none;opacity:.85}
 
 /* 情景对话：动物园贴纸对话框（角色头像 + 名字牌 + 气泡尾巴 + 场景小装饰） */
 .ref-dialog-card{position:relative;display:flex;flex-direction:column;gap:0.75rem;flex:none}
@@ -221,10 +241,10 @@
 
 /* 词汇拼图 */
 .quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
-.ref-puzzle-hint{padding:0.5rem 1rem;border:0.09375rem solid var(--sticker-line);border-radius:1.25rem;background:rgba(255,253,247,.88)}
-.ref-puzzle-hint .pz-art{width:6.5rem;height:6.5rem;display:grid;place-items:center;position:relative;overflow:hidden}
+.ref-puzzle-hint{padding:0;border:0;border-radius:0;background:transparent;display:flex;justify-content:center}
+.ref-puzzle-hint .pz-art{cursor:pointer;touch-action:manipulation}
 .ref-puzzle-hint .pic-img{filter:none}
-.ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(2.5rem,10vh,4.5rem)}
+.ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
 .quiz-ref-page .pz-slots{display:flex;justify-content:center;flex-wrap:nowrap;gap:0.375rem;width:100%;margin:0}
 .quiz-ref-page .pz-slot{width:auto;min-width:clamp(2.5rem,9vw,3.25rem);padding:0 0.375rem;height:clamp(2.75rem,8vw,3.5rem);border:0.125rem dashed #A78C61;border-radius:0.75rem;background:#F2E4C8;
   color:var(--sticker-ink);font-size:clamp(0.875rem,4vw,1.5rem);box-shadow:inset 0 0.1875rem 0.375rem rgba(92,65,29,.1)}
@@ -241,18 +261,19 @@
 
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
-.ref-feed-animal{width:min(100%,22rem);padding:0.75rem;border:0.125rem dashed #B69662;border-radius:2rem;background:rgba(255,253,247,.82);transition:background .15s ease,transform .15s ease}
+.ref-feed-animal{flex:none;padding:1rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;
+  cursor:pointer;transition:background .15s ease,transform .15s ease}
 .ref-feed-animal.drop-ready{background:#FFF0C9;transform:scale(1.03)}
-.ref-feed-animal .fd-art{width:8.5rem;height:8.5rem;display:grid;place-items:center}
-.ref-feed-animal .fd-name{color:var(--sticker-ink);font-size:1.375rem}
+.ref-feed-animal .fd-art{width:clamp(6rem,19.2vh,9rem);height:clamp(6rem,19.2vh,9rem);display:grid;place-items:center}
+.ref-feed-animal .fd-name{color:var(--sticker-ink);font-size:1.65rem;font-weight:var(--w-black)}
 .ref-hint{flex:none;margin:0;color:#806039;text-align:center;line-height:1.4;font-size:clamp(0.8125rem,2.8vw,0.9375rem)}
 .quiz-ref-page .fd-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin-top:0}
-.quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:6rem;padding:0.375rem;
+.quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:7.2rem;padding:0.375rem;
   border:0.125rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);touch-action:none;user-select:none}
 .quiz-ref-page .fd-food.selected{border-color:#D8A646;background:#FFF5D9;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.2),0 0.25rem 0 var(--sticker-shade)}
 .quiz-ref-page .fd-food.correct{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
-.ref-food-art{width:4.5rem;height:4.5rem;display:grid;place-items:center}
-.fd-food small{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#6A4C2D;font-size:0.6875rem;font-weight:var(--w-bold)}
+.ref-food-art{width:5.4rem;height:5.4rem;display:grid;place-items:center}
+.fd-food small{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#6A4C2D;font-size:0.825rem;font-weight:var(--w-bold)}
 
 @media (min-width:48rem){
   .ref-quiz-body{padding-left:2rem;padding-right:2rem}
@@ -264,13 +285,10 @@
   .ref-stage-badge{width:2.5rem;height:2.5rem}
   .ref-stage-head h2{font-size:1.0625rem}
   .ref-picture-art{padding:0.25rem}
-  .ref-listen-speaker{height:7rem}
-  .ref-dialog-person{width:3.5rem;height:4.5rem}
-  .ref-dialog-person.person--animal{width:3.25rem;height:3.25rem}
-  .ref-dialog-pic{width:2.5rem;height:2.5rem}
-  .ref-dialog-bubble{min-height:3.25rem;padding:0.85rem 0.5rem 0.5rem}
-  .ref-puzzle-hint .pz-art{width:4.5rem;height:4.5rem}
+  .ref-listen-speaker .ref-toast-art{width:3rem;height:3rem}
+  .ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(3.5rem,15vh,6rem)}
   .ref-feed-animal .fd-art{width:6rem;height:6rem}
-  .quiz-ref-page .fd-food{height:5rem}
-  .ref-food-art{width:3.75rem;height:3.75rem}
+  .ref-feed-animal .fd-name{font-size:1.35rem}
+  .quiz-ref-page .fd-food{height:6rem}
+  .ref-food-art{width:4.5rem;height:4.5rem}
 }

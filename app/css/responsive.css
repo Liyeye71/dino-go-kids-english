@@ -46,13 +46,16 @@
 
   /* 听音选图：卡片跟随可用高度缩放，不再被 flex 拉成长条 */
   .ref-listen-wrap{justify-content:space-between}
-  .quiz-ref-page .ref-listen-grid{flex:none;width:min(100%,26rem);height:clamp(8rem,22vh,11rem);min-height:0}
+  .quiz-ref-page .ref-listen-grid{flex:none;width:min(100%,26rem);height:var(--q-opt-h,clamp(4.25rem,11cqh,5.75rem));min-height:0}
 
   /* 其余题型的主容器 / 卡片也按同一视口比例收缩 */
-  .ref-picture-frame{width:min(100%,28rem,70vh)}
-  .ref-match-area{--match-card:clamp(3.75rem,min(13vw,8.5vh),5.25rem)}
+  .quiz-ref-page .ref-picture-frame,
+  .quiz-ref-page .ref-listen-speaker,
+  .quiz-ref-page .ref-puzzle-hint .pz-art,
+  .quiz-ref-page .ref-feed-animal,
   .quiz-ref-page .ref-action-stage,
-  .quiz-ref-page .ref-cmp-stage{min-height:clamp(7rem,20vh,11rem)}
+  .quiz-ref-page .ref-cmp-stage{width:min(100%,28rem,70vh)}
+  .ref-match-area{--match-h:clamp(3.75rem,min(13vw,8.5vh),5.25rem)}
   .ref-zoom-lens{width:clamp(8rem,min(27vh,32vw),13.5rem)}
 }
 
@@ -81,7 +84,7 @@
   /* 听音选图 图片卡：去掉 flex:1 让高度自适应，不让卡片被撑得又高又窄 */
   .ref-listen-grid{gap:0.375rem;flex:none;min-height:0}
   .ref-listen-card{padding:0.5rem 0.25rem}
-  .ref-listen-card-art{width:clamp(3rem,26vw,4.5rem);height:clamp(3rem,26vw,4.5rem)}
+  .ref-listen-card-art{width:clamp(2rem,7vh,2.75rem);height:clamp(2rem,7vh,2.75rem)}
 
   /* 进阶题型 选项容器：缩小 gap */
   .ref-action-options,.ref-zoom-options,.ref-cmp-options{gap:0.375rem}
@@ -172,7 +175,7 @@
   gap: clamp(0.5rem, 1.6cqh, 0.875rem) !important;
 }
 
-/* 单词连线：六项内容居中，单词列贴左、图片列贴右，两侧仅留少量空白 */
+/* 单词连线：左列单词（带喇叭）贴左、右列图片贴右，框体等高等宽 */
 .quiz-ref-page .ref-match-wrap .ref-match-area,
 .quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-area {
   flex: 1 1 0 !important;
@@ -184,7 +187,7 @@
   align-items: center;
   justify-content: space-between !important;
   gap: 0 !important;
-  --match-card: clamp(4.5rem, 15vw, 6rem);
+  --match-h: clamp(4.5rem, 15vw, 6rem);
 }
 .quiz-ref-page .ref-match-wrap .ref-match-word-card,
 .quiz-ref-page[data-scene="zoo"] .ref-match-wrap .ref-match-word-card {
@@ -195,12 +198,14 @@
 
 /* 7. 统一所有题型的“视觉展示区”高度（占中间弹性区，不撑破、不塌陷） */
 .quiz-ref-page .ref-picture-frame,
+.quiz-ref-page .ref-listen-speaker,
+.quiz-ref-page .ref-puzzle-hint .pz-art,
+.quiz-ref-page .ref-feed-animal,
 .quiz-ref-page .ref-action-stage,
 .quiz-ref-page .ref-cmp-stage {
-  flex: 1 1 0 !important;
-  min-height: 0 !important;
-  max-height: 52cqh !important;
-  width: min(100%, 30rem) !important;
+  flex: none !important;
+  width: min(100%, 28rem) !important;
+  aspect-ratio: 16/10 !important;
   margin: 0 auto !important;
 }
 
@@ -214,19 +219,27 @@
   margin-bottom: auto !important;
 }
 
-/* 听音选图：喇叭区固定比例，图片选项网格统一贴底且高度稳定 */
+/* 听音选图：喇叭区现在使用统一图片框，不再需要单独的 height */
 .quiz-ref-page .ref-listen-speaker {
   flex: none !important;
-  height: clamp(6.5rem, 21cqh, 9.75rem) !important;
-  margin: 0.25rem auto 0.875rem !important;
+  margin: 0 auto !important;
 }
 .quiz-ref-page .ref-listen-grid {
   flex: none !important;
   width: 100% !important;
   max-width: 34rem !important;
-  height: clamp(7.5rem, 24cqh, 11.5rem) !important;
+  height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
   min-height: 0 !important;
   margin: 0 auto !important;
+}
+.quiz-ref-page .ref-listen-grid .ref-listen-card-art {
+  width: clamp(2.25rem, 7cqh, 3.25rem) !important;
+  height: clamp(2.25rem, 7cqh, 3.25rem) !important;
+}
+/* 情景对话图片选项保持原尺寸，不随听音选图收缩 */
+.quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art {
+  width: clamp(3rem, 10cqh, 4.5rem) !important;
+  height: clamp(3rem, 10cqh, 4.5rem) !important;
 }
 
 /* 8. 统一所有文字选择题的“底部选项槽位”：永远钉在纸面最下方、等高对齐 */
@@ -247,9 +260,15 @@
 .quiz-ref-page .ref-action-options .option,
 .quiz-ref-page .ref-zoom-options .option,
 .quiz-ref-page .ref-cmp-options .option {
-  min-height: clamp(3.25rem, 8.5cqh, 4.5rem) !important;
-  padding: 0 clamp(0.375rem, 1.2cqw, 0.75rem) !important;
+  min-height: clamp(4.25rem, 11cqh, 5.75rem) !important;
+  padding: 0 clamp(0.5rem, 1.5cqw, 0.875rem) !important;
   justify-content: center;
+}
+.quiz-ref-page .ref-pic-options .option .word,
+.quiz-ref-page .ref-action-options .option .word,
+.quiz-ref-page .ref-zoom-options .option .word,
+.quiz-ref-page .ref-cmp-options .option .word {
+  font-size: clamp(1.1rem, 3cqh, 1.375rem);
 }
 
 /* 9. 进阶题型的小提示语统一紧凑排版 */
@@ -446,11 +465,13 @@
   gap: clamp(0.45rem, 1.5cqh, 0.85rem) !important;
 }
 
-/* 9. 统一各题型视觉舞台：温和木色相框 */
+/* 9. 统一各题型视觉舞台：温和木色相框，所有非连线/对话题型共用 */
 .quiz-ref-page[data-scene="zoo"] .ref-picture-frame,
+.quiz-ref-page[data-scene="zoo"] .ref-listen-speaker,
+.quiz-ref-page[data-scene="zoo"] .ref-puzzle-hint .pz-art,
+.quiz-ref-page[data-scene="zoo"] .ref-feed-animal,
 .quiz-ref-page[data-scene="zoo"] .ref-action-stage,
 .quiz-ref-page[data-scene="zoo"] .ref-cmp-stage {
-  max-height: 48cqh !important;
   width: min(100%, 28rem) !important;
   border-color: #C89B63 !important;
   box-shadow: 0 0.25rem 0 #E7CFA9, 0 0.625rem 1.25rem rgba(156, 112, 62, 0.1) !important;
@@ -462,11 +483,12 @@
 .quiz-ref-page[data-scene="zoo"] .ref-zoom-handle {
   background: #B68752 !important;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-listen-speaker {
-  height: clamp(6rem, 19.5cqh, 9.5rem) !important;
-}
 .quiz-ref-page[data-scene="zoo"] .ref-listen-grid {
-  height: clamp(7rem, 22cqh, 10.5rem) !important;
+  height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-listen-grid .ref-listen-card-art {
+  width: clamp(2.25rem, 7cqh, 3.25rem) !important;
+  height: clamp(2.25rem, 7cqh, 3.25rem) !important;
 }
 
 /* 10. 底部选项栏：统一靠近底部、等高三列 */
@@ -483,7 +505,13 @@
 .quiz-ref-page[data-scene="zoo"] .ref-action-options .option,
 .quiz-ref-page[data-scene="zoo"] .ref-zoom-options .option,
 .quiz-ref-page[data-scene="zoo"] .ref-cmp-options .option {
-  min-height: clamp(3.125rem, 8cqh, 4.25rem) !important;
+  min-height: clamp(4.25rem, 11cqh, 5.75rem) !important;
+}
+.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option .word,
+.quiz-ref-page[data-scene="zoo"] .ref-action-options .option .word,
+.quiz-ref-page[data-scene="zoo"] .ref-zoom-options .option .word,
+.quiz-ref-page[data-scene="zoo"] .ref-cmp-options .option .word {
+  font-size: clamp(1.1rem, 3cqh, 1.375rem);
 }
 .quiz-ref-page[data-scene="zoo"] .ref-action-tip,
 .quiz-ref-page[data-scene="zoo"] .ref-zoom-tip,
@@ -525,11 +553,7 @@
   }
 }
 
-/* ============================================================
-   Logo：透明容器只保留文字 + 小恐龙，与答题框相邻，
-   独立于背景切片，任意屏幕尺寸 / 横竖屏下都完整显示、不裁剪
-   ============================================================ */
-
+/* 空答题底栏不占位 */
 .quiz-ref-page .quiz-foot:empty {
   height: 0 !important;
   min-height: 0 !important;
@@ -537,57 +561,30 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-/* Logo 外框：任何页面放入 .ref-logo 即可复用 */
-.ref-logo {
-  position: relative;
-  z-index: 1;
-  flex: none;
-  width: min(calc(100% - 2.5rem), 22rem);
-  margin: 0.375rem auto calc(0.25rem + var(--safe-bottom));
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ref-logo-art {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-/* 具备容器查询上下文的页面，再按可用高度收一档 */
-.quiz-ref-page .ref-logo,
-.screen[data-screen="home"] .ref-logo {
-  width: min(calc(100% - 2.5rem), 22rem, 44cqh);
-}
 
 /* ============================================================
-   词汇拼图：提示框保持固定方形尺寸，图片只能显示在框体内
+   词汇拼图：提示框使用统一图片框模板，居中显示
    ============================================================ */
 
 .quiz-ref-page .ref-puzzle-wrap,
 .quiz-ref-page[data-scene="zoo"] .ref-puzzle-wrap {
   justify-content: center !important;
-  gap: 0 !important;
+  gap: 0.875rem !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .ref-puzzle-hint {
   flex: 0 0 auto;
   justify-content: center;
-  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
+  margin-bottom: 0 !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-art {
-  flex: 0 0 auto;
-  width: clamp(6.5rem, 18cqh, 9.5rem);
-  height: clamp(6.5rem, 18cqh, 9.5rem);
-  max-height: none;
-  aspect-ratio: auto;
   overflow: hidden;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-slots {
-  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
+  margin-bottom: 0 !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-letters {
   margin-top: 0 !important;
-  margin-bottom: clamp(0.875rem, 2.5vw, 1.5rem) !important;
+  margin-bottom: 0 !important;
 }
 .quiz-ref-page .ref-puzzle-wrap .pz-check,
 .quiz-ref-page .ref-puzzle-wrap .pz-check-spacer {
@@ -672,6 +669,12 @@
 .bc-hud {
   position: relative; z-index: 12; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
   padding: calc(0.75rem + var(--safe-top)) clamp(0.875rem, 3.2cqw, 1.5rem) 0; flex: none;
+}
+/* 首页 CTA 按钮内的品牌 Logo：白色反色字，随按钮高度等比放大 */
+.bc-play-btn .bc-play-logo {
+  display: block; flex: 0 1 auto; min-width: 0; width: auto; height: auto; max-width: 100%;
+  max-height: clamp(2.9rem, 7.4cqh, 3.55rem);
+  filter: drop-shadow(0 0.15rem 0.2rem rgba(40, 20, 0, 0.22));
 }
 .bc-evo-hud {
   display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem 0.25rem 0.25rem;
@@ -819,8 +822,8 @@
   padding: 0.35rem clamp(1.25rem, 6cqw, 3rem) calc(1.05rem + var(--safe-bottom)); display: flex; justify-content: center;
 }
 .bc-play-btn {
-  position: relative; width: min(100%, 24rem); min-height: clamp(3.85rem, 9.5cqh, 4.65rem); padding: 0 1.5rem;
-  border-radius: 6.1875rem; display: flex; align-items: center; justify-content: center; gap: 0.625rem;
+  position: relative; width: min(100%, 24rem); min-height: clamp(4rem, 9.8cqh, 4.7rem); padding: 0 0.875rem;
+  border-radius: 6.1875rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
   background: linear-gradient(180deg,#42B372 0%,#2E8B57 62%,#247849 100%);
   border: 0.1875rem solid #fff; color: #fff; font-size: clamp(1.1875rem, 3.6cqw, 1.4375rem);
   font-weight: var(--w-black); letter-spacing: 0.05rem; text-shadow: 0 0.125rem 0 rgba(20,74,46,.45);
@@ -1028,8 +1031,13 @@
   width: min(100%, 46rem) !important; max-width: min(100%, 46rem) !important;
   padding: 0.35rem 1rem 0.25rem !important; gap: 0.625rem;
 }
-.quiz-ref-page.dino-stage-v2 .peb { height: 0.85rem; }
-.quiz-ref-page.dino-stage-v2 .peb-runner { font-size: 1.15rem; bottom: 38%; }
+/* 顶栏内的题型标题：锁死胶囊尺寸与垂直居中 */
+.quiz-ref-page.dino-stage-v2 .quiz-top .quiz-title .ref-stage-head {
+  margin: 0 !important;
+}
+.quiz-ref-page.dino-stage-v2 .quiz-top .quiz-title .ref-stage-head h2 {
+  white-space: nowrap;
+}
 
 /* 拆除 .ref-quiz-body 三层套娃粗木框 */
 .quiz-ref-page.dino-stage-v2 .ref-quiz-body {
@@ -1048,10 +1056,31 @@
 .quiz-ref-page.dino-stage-v2 .ref-stage-kicker { display: none; }
 .quiz-ref-page.dino-stage-v2 .ref-stage-head h2 { font-size: clamp(0.95rem, 2.5cqw, 1.25rem) !important; color: #5C411D !important; }
 
+/* 窄屏：压缩顶栏题型胶囊与两侧控件，保证同一行不溢出 */
+@media (max-width: 560px) {
+  .quiz-ref-page.dino-stage-v2 .quiz-top {
+    gap: 0.375rem !important;
+    padding: 0.3rem 0.625rem 0.2rem !important;
+  }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .circle-btn { width: 2.125rem; height: 2.125rem; }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .quiz-title .ref-stage-head {
+    min-height: 1.9rem !important;
+    gap: 0.375rem !important;
+    padding: 0.16rem 0.5rem 0.16rem 0.3rem !important;
+  }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .ref-stage-badge { width: 1.5rem !important; height: 1.5rem !important; }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .ref-stage-badge svg { width: 1rem; height: 1rem; }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .ref-stage-head h2 { font-size: 0.78rem !important; }
+  .quiz-ref-page.dino-stage-v2 .quiz-top .qcount { font-size: 0.625rem; padding: 0.125rem 0.375rem; }
+}
+
 .quiz-ref-page.dino-stage-v2 .ref-picture-frame,
+.quiz-ref-page.dino-stage-v2 .ref-listen-speaker,
+.quiz-ref-page.dino-stage-v2 .ref-puzzle-hint .pz-art,
+.quiz-ref-page.dino-stage-v2 .ref-feed-animal,
 .quiz-ref-page.dino-stage-v2 .ref-action-stage,
 .quiz-ref-page.dino-stage-v2 .ref-cmp-stage {
-  max-height: 54cqh !important; width: min(94%, 34rem) !important;
+  width: min(94%, 28rem) !important; aspect-ratio: 16/10 !important;
   border: 0.1875rem solid rgba(255,255,255,.92) !important; border-radius: 2rem !important;
   background: radial-gradient(circle at 50% 48%, rgba(255,255,255,.9) 0%, rgba(255,253,247,.52) 66%, rgba(255,253,247,.18) 100%) !important;
   box-shadow: 0 0.75rem 1.75rem rgba(92,65,29,.1) !important;
@@ -1099,12 +1128,11 @@
 .quiz-ref-page.dino-stage-v2 .ref-listen-card.wrong {
   background: linear-gradient(180deg,#FFF5F2 0%,#FFE4DC 100%) !important; border-color: #DC8470 !important;
 }
-.quiz-ref-page.dino-stage-v2 .ref-listen-grid { height: auto !important; min-height: clamp(8.5rem, 24cqh, 12rem) !important; }
-.quiz-ref-page.dino-stage-v2 .ref-listen-card { min-height: clamp(6.25rem, 18cqh, 9.25rem) !important; }
+.quiz-ref-page.dino-stage-v2 .ref-listen-grid { height: auto !important; min-height: 0 !important; }
+.quiz-ref-page.dino-stage-v2 .ref-listen-card { height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important; min-height: 0 !important; }
 .quiz-ref-page.dino-stage-v2 .ref-dialog-card { width: min(92%, 38rem) !important; margin: auto auto 0.5rem !important; }
 .quiz-ref-page.dino-stage-v2 .ref-match-wrap,
 .quiz-ref-page.dino-stage-v2 .ref-puzzle-wrap { padding: 0 1rem 1rem !important; }
-.quiz-ref-page.dino-stage-v2 .ref-logo { display: none !important; }
 .quiz-ref-page.dino-stage-v2 .zoo-feedback-card { width: min(88%, 28rem) !important; border-radius: 1.625rem !important; }
 
 @media (min-width:600px) {
@@ -1226,3 +1254,92 @@
   font-size: 0.84375rem; font-weight: var(--w-black); color: #6A4C2D; cursor: pointer;
 }
 .td-voice-bar:active { transform: translateY(0.125rem) scale(.96); }
+
+/* ============================================================
+   统一题面比例（单词连线 / 情景对话除外）
+   唯一基准：答题页容器高度 cqh（1cqh = 页面高度 1%）
+   · 文字选项框统一高 --q-opt-h，字用 --q-opt-font（与放大后的图片框同比例）
+   · 图片展示框统一 16:10 / 28rem 宽，框内图片固定占 88%
+   ============================================================ */
+.quiz-ref-page,
+.quiz-ref-page.dino-stage-v2{
+  --q-opt-h: clamp(4.25rem, 11cqh, 5.75rem);
+  --q-art-min: clamp(6.5rem, 24cqh, 9rem);
+  --q-art-max: clamp(9rem, 40cqh, 15rem);
+  --q-img-ratio: 88%;
+  --q-opt-font: clamp(1.1rem, 3cqh, 1.375rem);
+}
+
+/* 1. 文字选项：同高、同字号，文字单行不撑高 */
+.quiz-ref-page.dino-stage-v2 :is(.ref-pic-options,.ref-action-options,.ref-zoom-options,.ref-cmp-options) .option{
+  height: var(--q-opt-h) !important;
+  min-height: var(--q-opt-h) !important;
+  max-height: var(--q-opt-h) !important;
+}
+.quiz-ref-page.dino-stage-v2 :is(.ref-pic-options,.ref-action-options,.ref-zoom-options,.ref-cmp-options) .option .word{
+  font-size: var(--q-opt-font) !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 2. 图片展示框：看图 / 动作 / 对比 / 听音 / 拼图 / 喂食
+   所有题型使用统一的 16:10 比例和 28rem 宽度 */
+.quiz-ref-page.dino-stage-v2 .ref-picture-frame,
+.quiz-ref-page.dino-stage-v2 .ref-listen-speaker,
+.quiz-ref-page.dino-stage-v2 .ref-puzzle-hint .pz-art,
+.quiz-ref-page.dino-stage-v2 .ref-feed-animal,
+.quiz-ref-page.dino-stage-v2 .ref-action-stage,
+.quiz-ref-page.dino-stage-v2 .ref-cmp-stage{
+  flex: 0 1 auto !important;
+  width: min(94%, 28rem) !important;
+  aspect-ratio: 16/10 !important;
+  margin: 0 auto !important;
+}
+/* 听音选图网格＝底部托盘：高度自适应，卡片与文字选项框同高（--q-opt-h） */
+.quiz-ref-page.dino-stage-v2 .ref-listen-grid{
+  flex: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-listen-card{
+  height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+  min-height: 0 !important;
+}
+
+/* 3. 框内图片：保留各题型原始 object-fit / 尺寸策略 */
+.quiz-ref-page.dino-stage-v2 .ref-listen-card-art{
+  width: clamp(2.25rem,7cqh,3.25rem) !important; height: clamp(2.25rem,7cqh,3.25rem) !important;
+  aspect-ratio: 1; margin: 0 auto;
+}
+/* 看图选词：原始 padding 保留，emoji 按框高比例 */
+.quiz-ref-page.dino-stage-v2 .ref-picture-art{padding: 0.5rem !important}
+.quiz-ref-page.dino-stage-v2 .ref-picture-art .pic-emoji{font-size: clamp(5rem,20vh,9rem) !important}
+/* 动作猜猜：原始 padding 保留，图片 object-fit:contain 已经正确；emoji 跟随舞台 */
+.quiz-ref-page.dino-stage-v2 .ref-action-img{padding: 0.375rem !important}
+.quiz-ref-page.dino-stage-v2 .ref-action-animal{font-size: clamp(4.5rem,18vh,8rem) !important}
+/* 对比观察：emoji 用原始 clamp，badge 同理 */
+.quiz-ref-page.dino-stage-v2 .ref-cmp-item{font-size: clamp(3rem,12vh,5.5rem) !important}
+.quiz-ref-page.dino-stage-v2 .ref-cmp-badge{font-size: clamp(1.25rem,4.5vh,1.9rem) !important}
+/* 放大镜：原始 clamp 恢复 */
+.quiz-ref-page.dino-stage-v2 .ref-zoom-lens{
+  width: clamp(8.5rem, min(32cqh, 46cqw), 14rem) !important;
+  height: auto !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-zoom-art{font-size: clamp(3.5rem,12vh,6rem) !important}
+
+/* 4. 拼词 / 喂食：槽位与选项同高，插图按同一比例 */
+.quiz-ref-page.dino-stage-v2 .pz-slot,
+.quiz-ref-page.dino-stage-v2 .pz-letter{height: var(--q-opt-h) !important}
+.quiz-ref-page.dino-stage-v2 .ref-feed-animal .fd-art{width: calc(var(--q-art-max) * 0.672) !important;height: calc(var(--q-art-max) * 0.672) !important}
+.quiz-ref-page.dino-stage-v2 .fd-food{height: clamp(5.1rem, 14.4cqh, 6.9rem) !important}
+.quiz-ref-page.dino-stage-v2 .ref-food-art{width: 74% !important;height: 74% !important}
+
+/* 5. 动物喂食：整体高度 +20%（16:10 → 4:3），动物图、英文名与食物选项同步放大 */
+.quiz-ref-page .ref-feed-animal,
+.quiz-ref-page.dino-stage-v2 .ref-feed-animal{
+  aspect-ratio: 4/3 !important;
+}
+.quiz-ref-page .ref-feed-animal .fd-name{
+  font-size: 1.65rem !important;
+}
