@@ -3565,12 +3565,32 @@ h1,h2,h3,h4,p{margin:0}
   color: #8C663D;
 }
 
-/* 图片选项：保证素材不超出选项框 */
+/* 图片选项：保证素材完整显示，不被容器裁切 */
 .quiz-ref-page .ref-listen-grid .ref-listen-card-art,
 .quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art,
 .quiz-ref-page .fd-foods .ref-food-art,
 .quiz-ref-page .ref-match-art-card > * {
   overflow: hidden;
+}
+/* 食物选项图：绝对定位铺满容器，避免百分比高度失效导致只显示半截 */
+.quiz-ref-page .fd-foods .ref-food-art {
+  position: relative;
+}
+.quiz-ref-page .fd-foods .ref-food-art > img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+.quiz-ref-page .fd-foods .ref-food-art > .art-fallback {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  place-items: center;
 }
 .quiz-ref-page .ref-listen-card-art .listen-card-img,
 .quiz-ref-page .ref-food-art img,
@@ -3719,7 +3739,7 @@ h1,h2,h3,h4,p{margin:0}
 /* 首页 CTA 按钮内的品牌 Logo：白色反色字，随按钮高度等比放大 */
 .bc-play-btn .bc-play-logo {
   display: block; flex: 0 1 auto; min-width: 0; width: auto; height: auto; max-width: 100%;
-  max-height: clamp(2.9rem, 7.4cqh, 3.55rem);
+  max-height: clamp(3.1rem, 8cqh, 3.8rem);
   filter: drop-shadow(0 0.15rem 0.2rem rgba(40, 20, 0, 0.22));
 }
 .bc-evo-hud {
@@ -4294,6 +4314,34 @@ h1,h2,h3,h4,p{margin:0}
   font-size: clamp(1rem, 3cqw, 1.2rem); font-weight: var(--w-black); color: #5C411D; cursor: pointer;
 }
 .td-sdet-btn:active { transform: translateY(0.2rem) scale(.96); box-shadow: 0 0.15rem 0 #C88B22; }
+/* 声音侦探：选项卡片固定方形、图片铺满卡片，与其他题型图片选项一致 */
+.td-stage .ref-listen-grid {
+  display: flex !important; flex-wrap: nowrap; justify-content: center !important;
+  gap: clamp(0.75rem, 2.5cqw, 1.5rem) !important;
+  width: 100% !important; max-width: none !important; height: auto !important;
+}
+.td-stage .ref-listen-card {
+  flex: 0 0 auto;
+  width: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+  height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+}
+.td-stage .ref-listen-card-art,
+.quiz-ref-page .td-stage .ref-listen-card-art,
+.quiz-ref-page.dino-stage-v2 .td-stage .ref-listen-card-art {
+  position: relative;
+  width: 100% !important; height: 100% !important;
+  aspect-ratio: auto !important; margin: 0 !important;
+}
+.quiz-ref-page.dino-stage-v2 .td-stage .ref-listen-card {
+  width: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+  height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important;
+}
+.td-stage .ref-listen-card-art .listen-card-img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+}
+.td-stage .ref-listen-card-art .listen-card-emoji {
+  width: 100%; height: 100%; place-items: center; font-size: clamp(2.25rem, 8cqh, 3.25rem);
+}
 .td-voice-bar {
   display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 1.1rem; border-radius: 6rem;
   background: #FFFDF7; border: 0.125rem solid #E4CFA9; box-shadow: 0 0.22rem 0 #D4BC91;
@@ -4379,7 +4427,8 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page.dino-stage-v2 .pz-letter{height: var(--q-opt-h) !important}
 .quiz-ref-page.dino-stage-v2 .ref-feed-animal .fd-art{width: calc(var(--q-art-max) * 0.672) !important;height: calc(var(--q-art-max) * 0.672) !important}
 .quiz-ref-page.dino-stage-v2 .fd-food{height: clamp(5.1rem, 14.4cqh, 6.9rem) !important}
-.quiz-ref-page.dino-stage-v2 .ref-food-art{width: 74% !important;height: 74% !important}
+/* 食物图容器占满卡片内容区（不再用百分比高度，避免图片被裁切） */
+.quiz-ref-page.dino-stage-v2 .ref-food-art{width: 100% !important;height: auto !important;flex: 1 1 auto !important;min-height: 0 !important}
 
 /* 5. 动物喂食：整体高度 +20%（16:10 → 4:3），动物图、英文名与食物选项同步放大 */
 .quiz-ref-page .ref-feed-animal,
@@ -11033,11 +11082,9 @@ const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveA
     </g>
   </defs>
 
-  <!-- 第 1 层：白色模切贴纸外描边 -->
+  <!-- 第 1 层：蛋壳白色模切贴纸外描边（文字不再加白边，直接以棕描边贴底） -->
   <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
     <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
-    <use href="#dinogo-text-en"/>
-    <use href="#dinogo-text-zh"/>
   </g>
 
   <!-- 第 2 层：右侧卡通小绿恐龙 -->
@@ -11060,17 +11107,17 @@ const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveA
     </g>
   </g>
 
-  <!-- 第 3 层：立体底厚（英文深巧克力棕，中文浅焦糖棕） -->
+  <!-- 第 3 层：立体底厚（中英统一深棕，保证白字更干净） -->
   <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
     <use href="#dinogo-text-en"/>
   </g>
-  <g transform="translate(0 5)" fill="#BE8255" stroke="#BE8255" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+  <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
     <use href="#dinogo-text-zh"/>
   </g>
 
   <!-- 第 4 层：白色主字 + 描边（绿色按钮上的反色版本） -->
   <use href="#dinogo-text-en" fill="#FFFFFF" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
-  <use href="#dinogo-text-zh" fill="#FFFFFF" stroke="#BE8255" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+  <use href="#dinogo-text-zh" fill="#FFFFFF" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
 
   <!-- 第 5 层：糖果高光点与童趣小星星 -->
   <g fill="#FFFFFF" opacity="0.82">

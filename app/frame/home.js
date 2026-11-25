@@ -223,11 +223,9 @@ const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveA
     </g>
   </defs>
 
-  <!-- 第 1 层：白色模切贴纸外描边 -->
+  <!-- 第 1 层：蛋壳白色模切贴纸外描边（文字不再加白边，直接以棕描边贴底） -->
   <g filter="url(#dinogo-sticker-shadow)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
     <use href="#dinogo-dino-shape" transform="translate(375 4) scale(0.84)"/>
-    <use href="#dinogo-text-en"/>
-    <use href="#dinogo-text-zh"/>
   </g>
 
   <!-- 第 2 层：右侧卡通小绿恐龙 -->
@@ -250,17 +248,17 @@ const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveA
     </g>
   </g>
 
-  <!-- 第 3 层：立体底厚（英文深巧克力棕，中文浅焦糖棕） -->
+  <!-- 第 3 层：立体底厚（中英统一深棕，保证白字更干净） -->
   <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
     <use href="#dinogo-text-en"/>
   </g>
-  <g transform="translate(0 5)" fill="#BE8255" stroke="#BE8255" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
+  <g transform="translate(0 5)" fill="#6E3F1C" stroke="#6E3F1C" stroke-width="11" stroke-linejoin="round" paint-order="stroke fill">
     <use href="#dinogo-text-zh"/>
   </g>
 
   <!-- 第 4 层：白色主字 + 描边（绿色按钮上的反色版本） -->
   <use href="#dinogo-text-en" fill="#FFFFFF" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
-  <use href="#dinogo-text-zh" fill="#FFFFFF" stroke="#BE8255" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
+  <use href="#dinogo-text-zh" fill="#FFFFFF" stroke="#764422" stroke-width="10" stroke-linejoin="round" paint-order="stroke fill"/>
 
   <!-- 第 5 层：糖果高光点与童趣小星星 -->
   <g fill="#FFFFFF" opacity="0.82">
