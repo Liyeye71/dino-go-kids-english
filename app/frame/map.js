@@ -21,8 +21,6 @@ const MAP_LEFT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="tr
 const MAP_RIGHT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5 L16 12 L9 19" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function mapIslandsData() {
-  const zooProg = sceneProgress("animal", "zoo");
-  const curLv = zooProg.level || 1;
   return [
     {
       id: "zoo",
@@ -36,7 +34,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-animal.webp",
       action: "open-animal-scene",
       scene: "zoo",
-      btnText: `▶ 登岛闯关 · 第 ${curLv} 关`,
     },
     {
       id: "school",
@@ -50,7 +47,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-school.webp",
       action: "island-soon",
       scene: "",
-      btnText: "🚧 即将开放 · 敬请期待",
     },
     {
       id: "travel",
@@ -64,7 +60,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-travel.webp",
       action: "island-soon",
       scene: "",
-      btnText: "🚧 即将开放 · 敬请期待",
     },
   ];
 }
@@ -169,10 +164,6 @@ function screenMap() {
         <div class="im-main-body">
           <button type="button" class="im-main-cover" data-action="${cur.action}" data-scene="${cur.scene}" data-name="${cur.name}" aria-label="进入 ${cur.name}">
             ${coverInner}
-          </button>
-          <div class="im-main-base" aria-hidden="true"></div>
-          <button type="button" class="im-enter-btn${cur.playable ? "" : " is-soon"}" data-action="${cur.action}" data-scene="${cur.scene}" data-name="${cur.name}">
-            <span>${cur.btnText}</span>
           </button>
         </div>
         <div class="im-dots" role="tablist" aria-label="切换浮空岛主题">

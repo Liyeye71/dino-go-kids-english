@@ -105,7 +105,7 @@
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
-.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(1.1rem,3cqh,1.375rem);color:#4B3626;font-weight:var(--w-black)}
+.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.85rem,2.8cqh,1.05rem);color:#4B3626;font-weight:var(--w-black);line-height:1.25;overflow-wrap:anywhere;word-break:break-word}
 
 /* 听音戳泡泡 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0;justify-content:center}
@@ -230,7 +230,7 @@
 .quiz-ref-page .fd-food.selected{border-color:#D8A646;background:#FFF5D9;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.2),0 0.25rem 0 var(--sticker-shade)}
 .quiz-ref-page .fd-food.correct{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-food-art{width:5.4rem;height:5.4rem;display:grid;place-items:center}
-.fd-food small{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#6A4C2D;font-size:0.825rem;font-weight:var(--w-bold)}
+.fd-food small{max-width:100%;color:#6A4C2D;font-size:0.75rem;font-weight:var(--w-bold);line-height:1.2;overflow-wrap:anywhere;word-break:break-word;text-align:center}
 
 @media (min-width:48rem){
   .ref-quiz-body{padding-left:2rem;padding-right:2rem}

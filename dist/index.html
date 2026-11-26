@@ -555,20 +555,21 @@ h1,h2,h3,h4,p{margin:0}
 .zoo-zoom-bar button:active{transform:scale(.92)}
 .zoo-zoom-bar .zoo-zoom-val{width:3rem;border-radius:999rem;background:transparent;font-size:0.7rem;
   font-variant-numeric:tabular-nums;letter-spacing:.02em}
-/* 50 格棋盘节点：只绘制底色与通关状态，关号由路线图底图提供 */
+/* 50 格棋盘节点：未满三星的已通关节点纯白，满星居中盖章，保留当前关与锁定关状态 */
 .animal-route-map.has-map.zoo .zoo-step{width:5.8cqw;height:5.8cqw;padding:0;display:grid;place-items:center;
-  background:var(--sticker-paper);border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
+  background:#fff;border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
   font-weight:var(--w-black);font-variant-numeric:tabular-nums;
   box-shadow:0 0.16cqw 0.4cqw rgba(90,70,30,.14);transition:transform .12s ease}
 .animal-route-map.has-map.zoo .zoo-step::after{inset:-0.35cqw}
-.animal-route-map.has-map.zoo .zoo-step.done{background:#F2F8EE;border-color:#4E9459;color:#3F7A48}
-/* 已通关按星级从左到右填充绿色；满星纯绿且不可再点 */
-.animal-route-map.has-map.zoo .zoo-step.stars-1{
-  background:linear-gradient(90deg,#4E9459 0 33%,#F2F8EE 33% 100%)}
-.animal-route-map.has-map.zoo .zoo-step.stars-2{
-  background:linear-gradient(90deg,#4E9459 0 66%,#F2F8EE 66% 100%)}
-.animal-route-map.has-map.zoo .zoo-step.stars-3{
-  background:#4E9459;border-color:#3F7A48;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step.done{background:#fff;border-color:#E6DCC6;color:#7C6B4E}
+.animal-route-map.has-map.zoo .zoo-step.stars-3{background:#fff;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step.stars-3::before{
+  content:"★";position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;
+  width:76%;height:76%;display:grid;place-items:center;border:0.28cqw solid #E2A62E;border-radius:50%;
+  color:#F3C643;font-size:3.2cqw;line-height:1;font-weight:var(--w-black);
+  text-shadow:0 0.14cqw 0 #B97812;
+  box-shadow:inset 0 0 0 0.18cqw #fff,inset 0 0 0 0.38cqw #E2A62E;
+  opacity:.95;transform:translate(-50%,-50%) rotate(-12deg)}
 .animal-route-map.has-map.zoo .zoo-step.current{background:linear-gradient(180deg,#FFE082,#FFC24D);
   border-color:#E2A83C;color:#6B4A12;
   box-shadow:0 0.16cqw 0.4cqw rgba(120,80,20,.2),0 0 0 0.55cqw rgba(255,201,77,.3);
@@ -645,12 +646,6 @@ h1,h2,h3,h4,p{margin:0}
     0 0 0 0.55cqw rgba(255,201,77,.32),
     0 0.5cqw 1cqw rgba(120,80,20,.2);
 }
-/* done 节点：微立体绿底 */
-.animal-route-map.has-map.zoo .zoo-step.done{
-  box-shadow:inset 0 0.18cqw 0 rgba(255,255,255,.55),
-    0 0.3cqw 0 rgba(80,140,90,.25),
-    0 0.45cqw 0.9cqw rgba(60,90,40,.16);
-}
 
 /* ============================================================
    DinoGo · 恐龙英语 — 答题页：进度 / 题型容器 / 选项 / 动态反馈
@@ -681,7 +676,7 @@ h1,h2,h3,h4,p{margin:0}
   padding:0 0.75rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.05);position:relative;text-align:center;transition:all .15s ease}
 .option .key{width:1.625rem;height:1.625rem;border-radius:0.5625rem;background:#F3EFE4;display:grid;place-items:center;
   font-size:0.75rem;font-weight:var(--w-black);color:#A6987B;flex:none;transition:all .15s ease}
-.option .word{font-size:clamp(0.8125rem,3.9vw,1.125rem);font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2;min-width:0;white-space:nowrap}
+.option .word{font-size:clamp(0.8125rem,3.2vw,1rem);font-weight:var(--w-bold);letter-spacing:-0.00625rem;line-height:1.2;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 /* 答后勾叉：绝对定位到边框右上角，不参与文本排版 → 文本位置零位移 */
 .option .mark{position:absolute;top:-0.5rem;right:-0.5rem;width:1.375rem;height:1.375rem;border-radius:50%;background:#4FA55E;color:#fff;
   display:grid;place-items:center;z-index:2;box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2)}
@@ -710,49 +705,45 @@ h1,h2,h3,h4,p{margin:0}
 .fx-confetti{position:absolute;inset:0}
 .fx-confetti i{position:absolute;top:-8%;display:block;animation:fxFall linear both}
 
-/* 答后结果卡：森林奶油风，位于答题框正中 */
+/* 答后结果卡：森林奶油风，位于答题框正中（参考 DinoGo Demo 反馈卡） */
 .zoo-feedback-card{position:absolute;left:50%;top:50%;z-index:40;
-  width:75%;max-height:86dvh;overflow:visible;
-  display:flex;flex-direction:column;justify-content:center;gap:0.875rem;
-  min-height:clamp(9.5rem,26dvh,12rem);padding:1.375rem 1.375rem 1.5rem;border-radius:1.375rem;
-  background:#FFF8E6;border:0.15625rem solid #6B4A24;
-  box-shadow:0 0.3125rem 0 rgba(107,74,36,.32),inset 0 0.125rem 0 rgba(255,255,255,.75);
+  width:min(92%,27rem);max-height:86dvh;overflow:visible;
+  display:flex;flex-direction:column;gap:0.9rem;
+  padding:1.35rem 1.25rem;border-radius:1.6rem;
+  background:#FDFBEB;border:0.18rem solid #5C411D;
+  box-shadow:0 0.4rem 0 rgba(92,65,29,.3),0 1.2rem 2.5rem rgba(60,40,15,.22),inset 0 0.14rem 0 rgba(255,255,255,.85);
   animation:qrpIn .42s cubic-bezier(.2,1.45,.4,1) both}
 .zoo-feedback-card.is-correct{background:#FDFBEB}
 .zoo-feedback-card.is-wrong{background:#FFF6EC}
 /* 进阶题型有「纸面安全框」：弹框宽度取纸面宽度的 75%，而不是整屏的 75% */
 .quiz-ref-page .zoo-feedback-card{width:calc((var(--stage-max-w) - 0.75rem) * 0.75)}
-.zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.625rem}
-.zoo-status-badge{width:2.125rem;height:2.125rem;border-radius:50%;flex:none;display:grid;place-items:center;
-  background:#4FAE55;border:0.125rem solid #1E6B3B;box-shadow:0 0.125rem 0 rgba(30,107,59,.35)}
+.zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.6rem}
+.zoo-status-badge{width:2.2rem;height:2.2rem;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:#4FAE55;border:0.125rem solid #1E6B3B;box-shadow:0 0.14rem 0 rgba(30,107,59,.32)}
 .zoo-feedback-card.is-wrong .zoo-status-badge{background:#E8604A;border-color:#8F2D1F;
-  box-shadow:0 0.125rem 0 rgba(143,45,31,.35)}
+  box-shadow:0 0.14rem 0 rgba(143,45,31,.35)}
 .zoo-status-badge svg{width:1.3125rem;height:1.3125rem;display:block}
-.zoo-feedback-title{margin:0;font-size:1.4375rem;line-height:1.2;letter-spacing:-0.0125rem;
+.zoo-feedback-title{margin:0;font-size:1.28rem;line-height:1.2;letter-spacing:-0.0125rem;
   font-weight:var(--w-black);color:#2E7A4C;overflow-wrap:anywhere}
 .zoo-feedback-card.is-wrong .zoo-feedback-title{color:#B5452F}
-.zoo-feedback-body{position:relative;z-index:2;display:flex;align-items:center;gap:0.625rem}
-/* 答案条：英文 + 喇叭 + 音标 + 中文同排，空间不足时只有中文换到下一行 */
-.zoo-answer-box{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:0.375rem}
-.zoo-answer-label{flex:none;font-size:0.875rem;font-weight:var(--w-bold);color:#8A6B45;white-space:nowrap}
-.zoo-answer-word{flex:none;font-size:1.3125rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;white-space:nowrap}
-.zoo-answer-box .zoo-audio-btn{flex:none}
-.zoo-answer-meta{display:contents}
-.zoo-answer-phon{flex:none;font-size:0.875rem;font-weight:var(--w-bold);color:#957047;white-space:nowrap}
-.zoo-meaning-text{flex:0 1 auto;min-width:0;font-size:0.9375rem;font-weight:var(--w-bold);color:#8A6431;
+.zoo-feedback-body{position:relative;z-index:2;display:flex;flex-direction:column;gap:0.9rem}
+/* 答案条：英文 + 喇叭 + 音标同排，中文独占下一行 */
+.zoo-answer-box{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;
+  padding:0.72rem 0.85rem;border-radius:1rem;background:#FFF6DC;border:0.11rem solid #E4CFA9}
+.zoo-answer-word{flex:0 1 auto;min-width:0;font-size:1.32rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;overflow-wrap:anywhere;word-break:break-word}
+.zoo-answer-box .zoo-audio-btn{flex:none;width:2.3rem;height:2.3rem;background:#FFFDF7;border:0.125rem solid #C89B63;box-shadow:0 0.15rem 0 #D9C39B;color:#B47024}
+.zoo-answer-phon{flex:none;font-size:0.86rem;font-weight:var(--w-bold);color:#8E724D;white-space:nowrap}
+.zoo-meaning-text{flex:1 1 100%;min-width:0;font-size:0.95rem;font-weight:var(--w-black);color:#8A6431;
   white-space:normal;overflow-wrap:anywhere}
-.zoo-action-btn{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:0.3125rem;
-  min-height:3.625rem;padding:0 1.5rem;border-radius:1rem;border:0.125rem solid #6B4A24;
-  background:#FFD166;color:#5A3A12;font-size:1.25rem;line-height:1;font-weight:var(--w-black);white-space:nowrap;
-  box-shadow:0 0.1875rem 0 #DFAC3A;cursor:pointer}
-.zoo-action-btn:active{transform:translateY(0.125rem);box-shadow:0 0.0625rem 0 #DFAC3A}
-.zoo-btn-star{position:absolute;width:0.9375rem;height:0.9375rem}
-.zoo-btn-star.star-top{top:-0.35rem;right:-0.35rem}
-.zoo-btn-star.star-bottom{bottom:-0.35rem;left:-0.35rem}
-/* 角上的草叶 / 藤蔓 / 落叶装饰 */
-.zoo-decor-grass,.zoo-decor-vine,.zoo-decor-leaf{position:absolute;pointer-events:none;z-index:1}
-.zoo-decor-grass{left:0.75rem;top:-0.65rem;width:3.5rem;height:auto}
-.zoo-decor-vine{right:0;top:-0.45rem;width:4.25rem;height:auto}
+.zoo-action-btn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;gap:0.3125rem;
+  width:100%;min-height:3.3rem;padding:0 1.5rem;border-radius:1.15rem;border:0.16rem solid #5C411D;border-bottom-width:0.44rem;
+  background:linear-gradient(180deg,#FFE285 0%,#FFD766 100%);color:#5C411D;font-size:1.08rem;line-height:1;font-weight:var(--w-black);white-space:nowrap;
+  box-shadow:0 0.35rem 0.85rem rgba(120,75,40,.12),inset 0 0.16rem 0 rgba(255,255,255,.92);cursor:pointer;
+  transition:transform .14s cubic-bezier(.34,1.56,.64,1),border-bottom-width .1s ease}
+.zoo-action-btn:active{transform:translateY(0.24rem) scale(.96,.93);border-bottom-width:0.16rem;box-shadow:0 0.1rem 0.3rem rgba(120,75,40,.12)}
+/* 角上的草叶 / 落叶装饰 */
+.zoo-decor-grass,.zoo-decor-leaf{position:absolute;pointer-events:none;z-index:1}
+.zoo-decor-grass{left:0.9rem;top:-0.75rem;width:3.6rem;height:auto}
 .zoo-decor-leaf{right:0.75rem;top:-0.6rem;width:4.5rem;height:auto}
 
 @keyframes qrpIn{
@@ -1698,7 +1689,7 @@ h1,h2,h3,h4,p{margin:0}
   transition:transform .12s ease,box-shadow .12s ease,background .15s ease}
 .pic-page .option:active{transform:translateY(0.125rem);box-shadow:0 0.1875rem 0 rgba(150,100,20,.22)}
 .pic-page .option .key{width:1.75rem;height:1.75rem;border-radius:50%;background:#FBE7A6;color:#8A6415;font-size:0.75rem}
-.pic-page .option .word{font-size:clamp(0.8125rem,3.9vw,1.1875rem);font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem;min-width:0;white-space:nowrap}
+.pic-page .option .word{font-size:clamp(0.8125rem,3.2vw,1rem);font-weight:var(--w-black);color:#33502F;letter-spacing:-0.0125rem;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 .pic-page .option .mark{width:1.375rem;height:1.375rem;background:#4FA55E}
 .pic-page .option .mark.bad{background:#E8604A}
 .pic-page .option .mark.radio{border-color:#4FA55E}
@@ -1822,7 +1813,7 @@ h1,h2,h3,h4,p{margin:0}
 .ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
-.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(1.1rem,3cqh,1.375rem);color:#4B3626;font-weight:var(--w-black)}
+.quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.85rem,2.8cqh,1.05rem);color:#4B3626;font-weight:var(--w-black);line-height:1.25;overflow-wrap:anywhere;word-break:break-word}
 
 /* 听音戳泡泡 */
 .ref-listen-wrap{display:flex;flex-direction:column;flex:1;min-height:0;justify-content:center}
@@ -1947,7 +1938,7 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page .fd-food.selected{border-color:#D8A646;background:#FFF5D9;box-shadow:0 0 0 0.1875rem rgba(216,166,70,.2),0 0.25rem 0 var(--sticker-shade)}
 .quiz-ref-page .fd-food.correct{border-color:#68A873;background:#EAF7E3;box-shadow:0 0.25rem 0 #9AC78B}
 .ref-food-art{width:5.4rem;height:5.4rem;display:grid;place-items:center}
-.fd-food small{max-width:100%;overflow:hidden;text-overflow:ellipsis;color:#6A4C2D;font-size:0.825rem;font-weight:var(--w-bold)}
+.fd-food small{max-width:100%;color:#6A4C2D;font-size:0.75rem;font-weight:var(--w-bold);line-height:1.2;overflow-wrap:anywhere;word-break:break-word;text-align:center}
 
 @media (min-width:48rem){
   .ref-quiz-body{padding-left:2rem;padding-right:2rem}
@@ -2418,7 +2409,7 @@ h1,h2,h3,h4,p{margin:0}
   .task .t-title{font-size:0.875rem}
   .task .t-sub{font-size:0.71875rem}
   .option{min-height:4.875rem}
-  .option .word{font-size:1.125rem}
+  .option .word{font-size:clamp(0.9rem,1.6vw,1rem)}
   .chart .col .b{width:1.75rem}
   .collect-preview{height:18.125rem}
   .collect-preview > .dino{width:14.375rem;height:14.375rem;top:2.25rem}
@@ -2449,7 +2440,7 @@ h1,h2,h3,h4,p{margin:0}
   .ref-listen-card-art{width:clamp(2rem,7vh,2.75rem);height:clamp(2rem,7vh,2.75rem)}
   .option{padding:0 0.5rem;gap:0.375rem}
   .option .key{width:1.375rem;height:1.375rem;font-size:0.6875rem}
-  .option .word{font-size:0.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .option .word{font-size:clamp(0.75rem,3.5vw,0.9375rem);white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 }
 
 /* ------------------------------------------------ 宽屏（PC / 横屏 iPad） */
@@ -2992,11 +2983,11 @@ h1,h2,h3,h4,p{margin:0}
 .im-main-body {
   position: relative;
   /* 随屏幕高度放大主题框：优先吃满竖向空间，同时保留左右安全边距 */
-  width: clamp(16.25rem, min(70cqw, 68cqh), 30rem);
+  width: clamp(17rem, min(74cqw, 76cqh), 32rem);
   display: flex; flex-direction: column; align-items: center;
 }
 .im-main-cover {
-  position: relative; z-index: 3; width: 92%; aspect-ratio: 3 / 2; border-radius: 2rem; overflow: hidden;
+  position: relative; z-index: 3; width: 96%; aspect-ratio: 3 / 2; border-radius: 2rem; overflow: hidden;
   border: 0.3125rem solid #FFFFFF;
   background: linear-gradient(180deg, #E8F6E8 0%, #FFF9E8 100%);
   box-shadow: 0 0.5rem 0 #89BE67, 0 1.2rem 2.2rem rgba(46,107,62,.24);
@@ -3011,32 +3002,6 @@ h1,h2,h3,h4,p{margin:0}
   font-size: 0.75rem; font-weight: var(--w-black); color: #8A6415;
   box-shadow: 0 0.2rem 0.5rem rgba(92,65,29,.16);
 }
-.im-main-base {
-  width: 100%; height: clamp(4rem, 10.5cqh, 5.5rem); margin-top: -2rem; border-radius: 50%;
-  background: linear-gradient(180deg, #9DD17A 0%, #7BBF5E 54%, #C89B63 55%, #A67942 100%);
-  border: 0.1875rem solid #5C411D;
-  box-shadow: 0 0.95rem 2rem rgba(92,65,29,.22); z-index: 2;
-}
-.im-main-island.theme-school .im-main-base {
-  background: linear-gradient(180deg, #F6D89E 0%, #E5BC74 54%, #C89B63 55%, #A67942 100%);
-}
-.im-main-island.theme-travel .im-main-base {
-  background: linear-gradient(180deg, #B5D9F8 0%, #8BBCEB 54%, #C89B63 55%, #A67942 100%);
-}
-.im-enter-btn {
-  position: relative; z-index: 5; margin-top: -1.75rem; min-height: 3.55rem; padding: 0 2rem;
-  border-radius: 6rem; display: inline-flex; align-items: center; gap: 0.45rem;
-  background: linear-gradient(180deg,#42B372 0%,#2E8B57 100%); border: 0.1875rem solid #fff; color: #fff;
-  font-size: clamp(1.02rem, 3.2cqw, 1.22rem); font-weight: var(--w-black); letter-spacing: 0.03rem;
-  box-shadow: 0 0.375rem 0 #1B6140, 0 0.85rem 1.4rem rgba(24,86,52,.28);
-  transition: transform .14s var(--pop-ease), box-shadow .1s ease;
-}
-.im-enter-btn:active { transform: translateY(0.2rem) scale(.96); box-shadow: 0 0.15rem 0 #1B6140; }
-.im-enter-btn.is-soon {
-  background: linear-gradient(180deg, #FFE29A 0%, #F2C057 100%); color: #5C411D;
-  box-shadow: 0 0.375rem 0 #C89228, 0 0.75rem 1.25rem rgba(180,120,20,.22);
-}
-
 /* 轮播指示小圆点 */
 .im-dots {
   display: flex; align-items: center; justify-content: center; gap: 0.45rem;
@@ -3175,7 +3140,7 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page.dino-stage-v2 .ref-listen-card { height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important; min-height: 0 !important; }
 .quiz-ref-page.dino-stage-v2 .ref-dialog-card { width: min(92%, 38rem) !important; margin: auto auto 0.5rem !important; }
 .quiz-ref-page.dino-stage-v2 .ref-puzzle-wrap { padding: 0 1rem 1rem !important; }
-.quiz-ref-page.dino-stage-v2 .zoo-feedback-card { width: min(88%, 28rem) !important; border-radius: 1.625rem !important; }
+.quiz-ref-page.dino-stage-v2 .zoo-feedback-card { width: min(92%, 27rem) !important; border-radius: 1.6rem !important; }
 
 @media (min-width:600px) {
   .quiz-ref-page.dino-stage-v2[data-enlighten="1"] .option,
@@ -3261,15 +3226,18 @@ h1,h2,h3,h4,p{margin:0}
   --q-dock-pad-b: calc(0.95rem + var(--safe-bottom));
 }
 
-/* 1. 文字选项：同高、同字号，文字单行不撑高 */
+/* 1. 文字选项：同高、同字号；字号基于容器宽度自适应，避免长单词被截断 */
 .quiz-ref-page.dino-stage-v2 :is(.ref-pic-options,.ref-action-options) .option{
-  height: var(--q-dock-card-h) !important;
   min-height: var(--q-dock-card-h) !important;
-  max-height: var(--q-dock-card-h) !important;
+  max-height: none !important;
 }
 .quiz-ref-page.dino-stage-v2 :is(.ref-pic-options,.ref-action-options) .option .word{
-  font-size: clamp(1rem, calc(var(--q-dock-card-h) * 0.30), 2rem) !important;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* 字号按容器宽度比例 clamp，上限 1rem 保证长单词（elephant/polar-bear 等）完整显示 */
+  font-size: clamp(0.8rem, 2.5cqw, 1rem) !important;
+  line-height: 1.25 !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 
@@ -5135,9 +5103,13 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     return { body, btn: revealed ? quizNextButton() : "" };
   }
 
-  /* 动物喂食：干扰项按食性隔离，避免出现孩子以为正确的食物 */
+  /* 动物喂食：干扰项按「栖息地 + 食性」双维度隔离
+     - habitat 隔离：海洋动物只从海洋食物池挑干扰项，陆地动物只从陆地池挑
+       避免 shark 吃草、panda 吃 shellfish 这类跨域乱配
+     - diet 隔离：carnivore 只配 plant 类干扰，herbivore 只配 animal 类干扰
+       herbivore 额外排除 milk（奶牛产奶易误判）和 worm（鸟/爬行动物也吃） */
   function buildFeedAnimal(task, pool) {
-    /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
+    /* 1. 从 pool 里收集所有不重复的食物（自带 cls / habitat 字段） */
     const unique = [];
     const seenFood = new Set();
     pool.forEach((w) => {
@@ -5148,14 +5120,56 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     const need = optionCount();
     if (task.food && unique.length >= need) {
       const correct = task.food;
-      /* 食性安全：食肉动物只配植物干扰项，食草动物只配动物性干扰项 */
-      const FOOD_CLASS = { meat: "animal", fish: "animal", bone: "animal", worm: "animal", milk: "animal", shellfish: "animal", plankton: "animal" };
-      const foodClass = (id) => FOOD_CLASS[id] || "plant";
-      let safe = unique.filter((f) => f.id !== correct.id);
-      if (task.diet === "carnivore") safe = safe.filter((f) => foodClass(f.id) === "plant");
-      /* 食草动物：牛奶（奶牛产奶）和虫子（猴/松鼠也吃）都可能被孩子当成正确答案，排除 */
-      else if (task.diet === "herbivore") safe = safe.filter((f) => foodClass(f.id) === "animal" && f.id !== "milk" && f.id !== "worm");
-      const rest = shuffle(safe.length >= need - 1 ? safe : unique.filter((f) => f.id !== correct.id)).slice(0, need - 1);
+      const targetHabitat = task.habitat || "land"; /* 兜底陆地 */
+
+      /* 2. 先按 habitat 过滤同域食物（正确答案天然已在同域） */
+      let sameHabitat = unique.filter((f) => f.habitat === targetHabitat && f.id !== correct.id);
+
+      /* 3. 再按 diet 过滤：食性安全池 */
+      let safe;
+      if (task.diet === "carnivore") {
+        /* 肉食动物 → 植物类干扰 */
+        safe = sameHabitat.filter((f) => f.cls === "plant");
+      } else if (task.diet === "herbivore") {
+        /* 食草动物 → 动物类干扰，排除 milk/worm（孩子易误判为正确） */
+        safe = sameHabitat.filter((f) => f.cls === "animal" && f.id !== "milk" && f.id !== "worm");
+      } else {
+        /* omnivore（启蒙模式不出喂食题，这里兜底） */
+        safe = sameHabitat;
+      }
+
+      /* 4. 分层兜底：同域安全 → 同域不限食性 → 全域安全 → 全域不限 */
+      let rest = shuffle(safe).slice(0, need - 1);
+      if (rest.length < need - 1) {
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        /* 同域不限食性补齐 */
+        for (const f of sameHabitat) {
+          if (rest.length >= need - 1) break;
+          if (seenIds.has(f.id)) continue;
+          rest.push(f); seenIds.add(f.id);
+        }
+      }
+      if (rest.length < need - 1) {
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        /* 全域安全池补齐（仍保持食性安全，但允许跨域） */
+        let globalSafe = unique.filter((f) => f.id !== correct.id && !seenIds.has(f.id));
+        if (task.diet === "carnivore") globalSafe = globalSafe.filter((f) => f.cls === "plant");
+        else if (task.diet === "herbivore") globalSafe = globalSafe.filter((f) => f.cls === "animal" && f.id !== "milk" && f.id !== "worm");
+        for (const f of shuffle(globalSafe)) {
+          if (rest.length >= need - 1) break;
+          rest.push(f);
+        }
+      }
+      if (rest.length < need - 1) {
+        /* 最终兜底：全域不限 */
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        for (const f of shuffle(unique)) {
+          if (rest.length >= need - 1) break;
+          if (seenIds.has(f.id)) continue;
+          rest.push(f); seenIds.add(f.id);
+        }
+      }
+
       task.foods = shuffle([correct, ...rest]);
       task.correctFood = correct.id;
       task.correctZh = correct.zh || "";
@@ -5527,7 +5541,7 @@ const ANIMAL_ZOO_WORD_REFS = [
      fish 只作为食物词（ANIMAL_FOODS），不再作为动物园名词出题 */
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
-  "shrimp", "squid", "clownfish", "otter",
+  "shrimp", "squid", "clownfish",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -5594,33 +5608,69 @@ const ANIMAL_ZOO_WORDS = resolveWordRefs(ANIMAL_ZOO_WORD_REFS);
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
    - 食物图直接以单词命名放在 images/words/food/，动作图统一命名为 animal-xx.webp 放在 images/words/action/
    ============================================================ */
+/* 食性 + 栖息地双维度分类：
+   diet    → carnivore(肉食) / herbivore(草食) / omnivore(杂食)
+   habitat → land(陆地) / sea(海洋)
+   FOOD_CLASS 用于 buildFeedAnimal 的干扰项安全过滤（植物 vs 动物类） */
+const ANIMAL_FOOD_CLASS = {
+  /* —— 陆地食物 land —— */
+  meat:       { cls: "animal", habitat: "land" },
+  bamboo:     { cls: "plant",  habitat: "land" },
+  banana:     { cls: "plant",  habitat: "land" },
+  carrot:     { cls: "plant",  habitat: "land" },
+  grass:      { cls: "plant",  habitat: "land" },
+  nut:        { cls: "plant",  habitat: "land" },
+  bone:       { cls: "animal", habitat: "land" },
+  apple:      { cls: "plant",  habitat: "land" },
+  worm:       { cls: "animal", habitat: "land" },
+  leaves:     { cls: "plant",  habitat: "land" },
+  corn:       { cls: "plant",  habitat: "land" },
+  milk:       { cls: "animal", habitat: "land" },
+  honey:      { cls: "plant",  habitat: "land" }, /* 蜂蜜由花蜜酿成，草食动物也能吃 */
+  watermelon: { cls: "plant",  habitat: "land" },
+  /* —— 海洋食物 sea —— fish 同时是海/海鸟食物，归 sea 以减少跨域干扰 */
+  fish:       { cls: "animal", habitat: "sea"  },
+  seaweed:    { cls: "plant",  habitat: "sea"  },
+  kelp:       { cls: "plant",  habitat: "sea"  }, /* 海带：大型海藻，海鸟/海龟/海獭常吃 */
+  shellfish:  { cls: "animal", habitat: "sea"  },
+  plankton:   { cls: "animal", habitat: "sea"  },
+};
+
+/* 海洋动物集合：喂食题干扰项从海洋食物池挑，避免出现 banana/grass 跨域乱配 */
+const MARINE_ANIMALS = new Set([
+  "penguin", "shark", "seal", "whale",
+  "dolphin", "octopus", "crab", "starfish", "jellyfish",
+  "shrimp", "squid", "clownfish", "turtle",
+]);
+
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp" },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp" },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp" },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp" },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp" },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp", ...ANIMAL_FOOD_CLASS.meat },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp", ...ANIMAL_FOOD_CLASS.bamboo },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp", ...ANIMAL_FOOD_CLASS.banana },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp", ...ANIMAL_FOOD_CLASS.carrot },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp", ...ANIMAL_FOOD_CLASS.grass },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp", ...ANIMAL_FOOD_CLASS.fish },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp", ...ANIMAL_FOOD_CLASS.nut },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp", ...ANIMAL_FOOD_CLASS.bone },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp", ...ANIMAL_FOOD_CLASS.apple },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp", ...ANIMAL_FOOD_CLASS.worm },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp", ...ANIMAL_FOOD_CLASS.leaves },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp", ...ANIMAL_FOOD_CLASS.corn },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp", ...ANIMAL_FOOD_CLASS.milk },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp", ...ANIMAL_FOOD_CLASS.honey },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp", ...ANIMAL_FOOD_CLASS.watermelon },
   /* 海洋食物：暂无插画，直接用 emoji 呈现 */
-  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "" },
-  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "" },
-  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "" },
+  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "", ...ANIMAL_FOOD_CLASS.seaweed },
+  kelp: { id: "kelp", en: "kelp", zh: "海带", phon: "/kelp/", emoji: "🌊", img: "", ...ANIMAL_FOOD_CLASS.kelp },
+  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "", ...ANIMAL_FOOD_CLASS.shellfish },
+  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "", ...ANIMAL_FOOD_CLASS.plankton },
 };
 
 /* 57 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
-  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass",
   giraffe: "leaves", elephant: "leaves", hippo: "watermelon", koala: "leaves", sloth: "leaves",
   chicken: "corn", bird: "worm", peacock: "worm", crow: "worm", lizard: "worm",
   monkey: "banana", gorilla: "banana", baboon: "banana",
@@ -5631,8 +5681,11 @@ const ANIMAL_FEED_MAP = {
   panda: "bamboo",
   dog: "bone",
   flamingo: "fish", raccoon: "fish",
-  /* 海洋动物：按常识配置——鲸/水母/虾食浮游生物、海星/章鱼食贝类、鲨鱼食肉 */
-  penguin: "fish", shark: "meat", seal: "fish",
+  /* 海洋动物：按常识配置 + 栖息地约束——
+     海龟吃草/海藻、水母/小虾滤食浮游生物、鲸滤食浮游生物、
+     鲨鱼/海豹/海豚吃小鱼、章鱼/海星吃贝类、螃蟹吃鱼和藻类 */
+  turtle: "seaweed",
+  penguin: "fish", shark: "fish", seal: "fish",
   whale: "plankton", dolphin: "fish", octopus: "shellfish", crab: "fish",
   starfish: "shellfish", jellyfish: "plankton", shrimp: "plankton", squid: "fish",
   clownfish: "plankton", otter: "fish",
@@ -5648,11 +5701,13 @@ const ANIMAL_DIET = {
   /* 杂食动物在启蒙模式下不出喂食题，因为可吃食物太杂，容易误判 */
   bear: "omnivore", pig: "omnivore", chicken: "omnivore", duck: "omnivore", crow: "omnivore",
   raccoon: "omnivore",
-  /* 海洋动物统一按肉食处理，避免给孩子出「海豚吃竹子」这类错误搭配 */
-  penguin: "carnivore", shark: "carnivore", seal: "carnivore",
-  whale: "carnivore", dolphin: "carnivore", octopus: "carnivore", crab: "carnivore",
-  starfish: "carnivore", jellyfish: "carnivore", shrimp: "carnivore", squid: "carnivore",
-  clownfish: "carnivore", otter: "carnivore",
+  /* —— 海洋动物食性 ——
+     滤食型（鲸/水母/小虾/小丑鱼）和海龟归 herbivore → 干扰项从 sea animal 池挑
+     顶级捕食者（鲨/海豹/企鹅/海豚/章鱼/海星/螃蟹/乌贼/海獭）归 carnivore → 干扰项从 sea plant 池挑 */
+  whale: "herbivore", jellyfish: "herbivore", shrimp: "herbivore", clownfish: "herbivore",
+  turtle: "herbivore",
+  shark: "carnivore", seal: "carnivore", penguin: "carnivore", dolphin: "carnivore",
+  octopus: "carnivore", crab: "carnivore", starfish: "carnivore", squid: "carnivore", otter: "carnivore",
 };
 
 /* 19 个身体部位 → 宿主动物（用于词条插画与素材映射） */
@@ -5681,6 +5736,7 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
     w.food = ANIMAL_FOODS[foodId];
     w.eats = foodId;
     w.diet = ANIMAL_DIET[w.word] || "herbivore";
+    w.habitat = MARINE_ANIMALS.has(w.word) ? "sea" : "land";
     w.dialogueClue = w.example
       ? w.example.replace(new RegExp(`\\b${w.word}\\b`, "i"), "___")
       : "";
@@ -5712,7 +5768,7 @@ const ANIMAL_SCENES = [
    🦁 路线弹框（底部抽屉）
    - 点「开始闯关」后升起，使用原版海报地图（不重绘画面）
    - 50 个关卡点直接落在图上 1~50 号白色圆圈中心
-   - 节点只画状态底色：满星纯绿、1~2 星按 33%/66% 从左到右填充、当前关金色跳动、未解锁灰化
+   - 未满三星的已通关节点纯白，满星显示居中金色卡通星星印章；当前关金色填充跳动、未解锁灰化
    - 节点盖住底图原数字，不再显示关号；满星关卡置为只读
    - 抽屉内支持 100% / 150% / 200% / 250% 缩放，打开时自动定位当前关
    ============================================================ */
@@ -5782,7 +5838,7 @@ function renderZooRouteSheet(scene, prog) {
     const cls = [
       "animal-route-node", "zoo-step",
       done ? "done" : "",
-      done && best >= 1 ? `stars-${Math.min(3, best)}` : "",
+      full ? "stars-3" : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
     ].filter(Boolean).join(" ");
@@ -8742,48 +8798,27 @@ function screenQuiz() {
   const ok = !!quiz.choiceCorrect;
   const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1
-    ? "Result" : "Next";
+    ? "查看结果" : "下一题";
   const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
             <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
             <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
             <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
           </svg>`;
-  const answerHasMeta = !!(answerPhon || answerZh);
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
-        <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
           ${audioIcon}
         </button>
-        ${answerHasMeta ? `<span class="zoo-answer-meta">
-          ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
-          ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
-        </span>` : ""}
+        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
+        ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
       </div>`
     : "";
 
-  const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
-  const actionArea = `<button class="zoo-action-btn" data-action="next">
-        ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
-      </button>`;
+  const actionArea = `<button class="zoo-action-btn" data-action="next"><span>${nextLabel} ▶</span></button>`;
   const decor = ok
     ? `<svg class="zoo-decor-grass" viewBox="0 0 80 26" fill="none">
         <path d="M4 24 L14 6 L22 20 L34 2 L44 21 L56 7 L66 24 Z" fill="#63b848" stroke="#1e6b3b" stroke-width="3" stroke-linejoin="round"/>
-      </svg>
-      <svg class="zoo-decor-vine" viewBox="0 0 160 130" fill="none">
-        <path d="M10 12 Q70 25 135 18 Q145 65 138 115" stroke="#2d7a36" stroke-width="6" stroke-linecap="round"/>
-        <path d="M55 16 C45 2, 72 0, 74 16 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
-        <path d="M105 22 C110 38, 130 34, 124 18 Z" fill="#54a838" stroke="#1e6b3b" stroke-width="2.5"/>
-        <path d="M138 58 C154 52, 156 74, 138 74 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
-        <g transform="translate(126, 22)">
-          <circle cx="0" cy="-7" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="-4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="-7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="0" cy="0" r="4" fill="#ffe066"/>
-        </g>
       </svg>`
     : `<svg class="zoo-decor-leaf" viewBox="0 0 110 50" fill="none">
         <path d="M8 14 Q55 24 98 12" stroke="#9e4332" stroke-width="4.5" stroke-linecap="round"/>
@@ -9745,8 +9780,6 @@ const MAP_LEFT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="tr
 const MAP_RIGHT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5 L16 12 L9 19" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function mapIslandsData() {
-  const zooProg = sceneProgress("animal", "zoo");
-  const curLv = zooProg.level || 1;
   return [
     {
       id: "zoo",
@@ -9760,7 +9793,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-animal.webp",
       action: "open-animal-scene",
       scene: "zoo",
-      btnText: `▶ 登岛闯关 · 第 ${curLv} 关`,
     },
     {
       id: "school",
@@ -9774,7 +9806,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-school.webp",
       action: "island-soon",
       scene: "",
-      btnText: "🚧 即将开放 · 敬请期待",
     },
     {
       id: "travel",
@@ -9788,7 +9819,6 @@ function mapIslandsData() {
       cover: "./images/background/theme-travel.webp",
       action: "island-soon",
       scene: "",
-      btnText: "🚧 即将开放 · 敬请期待",
     },
   ];
 }
@@ -9893,10 +9923,6 @@ function screenMap() {
         <div class="im-main-body">
           <button type="button" class="im-main-cover" data-action="${cur.action}" data-scene="${cur.scene}" data-name="${cur.name}" aria-label="进入 ${cur.name}">
             ${coverInner}
-          </button>
-          <div class="im-main-base" aria-hidden="true"></div>
-          <button type="button" class="im-enter-btn${cur.playable ? "" : " is-soon"}" data-action="${cur.action}" data-scene="${cur.scene}" data-name="${cur.name}">
-            <span>${cur.btnText}</span>
           </button>
         </div>
         <div class="im-dots" role="tablist" aria-label="切换浮空岛主题">

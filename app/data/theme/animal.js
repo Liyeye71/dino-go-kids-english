@@ -91,7 +91,7 @@ const ANIMAL_ZOO_WORD_REFS = [
      fish 只作为食物词（ANIMAL_FOODS），不再作为动物园名词出题 */
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
-  "shrimp", "squid", "clownfish", "otter",
+  "shrimp", "squid", "clownfish",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -158,33 +158,69 @@ const ANIMAL_ZOO_WORDS = resolveWordRefs(ANIMAL_ZOO_WORD_REFS);
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
    - 食物图直接以单词命名放在 images/words/food/，动作图统一命名为 animal-xx.webp 放在 images/words/action/
    ============================================================ */
+/* 食性 + 栖息地双维度分类：
+   diet    → carnivore(肉食) / herbivore(草食) / omnivore(杂食)
+   habitat → land(陆地) / sea(海洋)
+   FOOD_CLASS 用于 buildFeedAnimal 的干扰项安全过滤（植物 vs 动物类） */
+const ANIMAL_FOOD_CLASS = {
+  /* —— 陆地食物 land —— */
+  meat:       { cls: "animal", habitat: "land" },
+  bamboo:     { cls: "plant",  habitat: "land" },
+  banana:     { cls: "plant",  habitat: "land" },
+  carrot:     { cls: "plant",  habitat: "land" },
+  grass:      { cls: "plant",  habitat: "land" },
+  nut:        { cls: "plant",  habitat: "land" },
+  bone:       { cls: "animal", habitat: "land" },
+  apple:      { cls: "plant",  habitat: "land" },
+  worm:       { cls: "animal", habitat: "land" },
+  leaves:     { cls: "plant",  habitat: "land" },
+  corn:       { cls: "plant",  habitat: "land" },
+  milk:       { cls: "animal", habitat: "land" },
+  honey:      { cls: "plant",  habitat: "land" }, /* 蜂蜜由花蜜酿成，草食动物也能吃 */
+  watermelon: { cls: "plant",  habitat: "land" },
+  /* —— 海洋食物 sea —— fish 同时是海/海鸟食物，归 sea 以减少跨域干扰 */
+  fish:       { cls: "animal", habitat: "sea"  },
+  seaweed:    { cls: "plant",  habitat: "sea"  },
+  kelp:       { cls: "plant",  habitat: "sea"  }, /* 海带：大型海藻，海鸟/海龟/海獭常吃 */
+  shellfish:  { cls: "animal", habitat: "sea"  },
+  plankton:   { cls: "animal", habitat: "sea"  },
+};
+
+/* 海洋动物集合：喂食题干扰项从海洋食物池挑，避免出现 banana/grass 跨域乱配 */
+const MARINE_ANIMALS = new Set([
+  "penguin", "shark", "seal", "whale",
+  "dolphin", "octopus", "crab", "starfish", "jellyfish",
+  "shrimp", "squid", "clownfish", "turtle",
+]);
+
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp" },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp" },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp" },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp" },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp" },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp" },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp" },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp" },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp" },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp" },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp" },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp" },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp" },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp" },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp" },
+  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp", ...ANIMAL_FOOD_CLASS.meat },
+  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp", ...ANIMAL_FOOD_CLASS.bamboo },
+  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp", ...ANIMAL_FOOD_CLASS.banana },
+  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp", ...ANIMAL_FOOD_CLASS.carrot },
+  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp", ...ANIMAL_FOOD_CLASS.grass },
+  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp", ...ANIMAL_FOOD_CLASS.fish },
+  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp", ...ANIMAL_FOOD_CLASS.nut },
+  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp", ...ANIMAL_FOOD_CLASS.bone },
+  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp", ...ANIMAL_FOOD_CLASS.apple },
+  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp", ...ANIMAL_FOOD_CLASS.worm },
+  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp", ...ANIMAL_FOOD_CLASS.leaves },
+  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp", ...ANIMAL_FOOD_CLASS.corn },
+  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp", ...ANIMAL_FOOD_CLASS.milk },
+  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp", ...ANIMAL_FOOD_CLASS.honey },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp", ...ANIMAL_FOOD_CLASS.watermelon },
   /* 海洋食物：暂无插画，直接用 emoji 呈现 */
-  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "" },
-  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "" },
-  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "" },
+  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "", ...ANIMAL_FOOD_CLASS.seaweed },
+  kelp: { id: "kelp", en: "kelp", zh: "海带", phon: "/kelp/", emoji: "🌊", img: "", ...ANIMAL_FOOD_CLASS.kelp },
+  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "", ...ANIMAL_FOOD_CLASS.shellfish },
+  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "", ...ANIMAL_FOOD_CLASS.plankton },
 };
 
 /* 57 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
-  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass", turtle: "grass",
+  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass",
   giraffe: "leaves", elephant: "leaves", hippo: "watermelon", koala: "leaves", sloth: "leaves",
   chicken: "corn", bird: "worm", peacock: "worm", crow: "worm", lizard: "worm",
   monkey: "banana", gorilla: "banana", baboon: "banana",
@@ -195,8 +231,11 @@ const ANIMAL_FEED_MAP = {
   panda: "bamboo",
   dog: "bone",
   flamingo: "fish", raccoon: "fish",
-  /* 海洋动物：按常识配置——鲸/水母/虾食浮游生物、海星/章鱼食贝类、鲨鱼食肉 */
-  penguin: "fish", shark: "meat", seal: "fish",
+  /* 海洋动物：按常识配置 + 栖息地约束——
+     海龟吃草/海藻、水母/小虾滤食浮游生物、鲸滤食浮游生物、
+     鲨鱼/海豹/海豚吃小鱼、章鱼/海星吃贝类、螃蟹吃鱼和藻类 */
+  turtle: "seaweed",
+  penguin: "fish", shark: "fish", seal: "fish",
   whale: "plankton", dolphin: "fish", octopus: "shellfish", crab: "fish",
   starfish: "shellfish", jellyfish: "plankton", shrimp: "plankton", squid: "fish",
   clownfish: "plankton", otter: "fish",
@@ -212,11 +251,13 @@ const ANIMAL_DIET = {
   /* 杂食动物在启蒙模式下不出喂食题，因为可吃食物太杂，容易误判 */
   bear: "omnivore", pig: "omnivore", chicken: "omnivore", duck: "omnivore", crow: "omnivore",
   raccoon: "omnivore",
-  /* 海洋动物统一按肉食处理，避免给孩子出「海豚吃竹子」这类错误搭配 */
-  penguin: "carnivore", shark: "carnivore", seal: "carnivore",
-  whale: "carnivore", dolphin: "carnivore", octopus: "carnivore", crab: "carnivore",
-  starfish: "carnivore", jellyfish: "carnivore", shrimp: "carnivore", squid: "carnivore",
-  clownfish: "carnivore", otter: "carnivore",
+  /* —— 海洋动物食性 ——
+     滤食型（鲸/水母/小虾/小丑鱼）和海龟归 herbivore → 干扰项从 sea animal 池挑
+     顶级捕食者（鲨/海豹/企鹅/海豚/章鱼/海星/螃蟹/乌贼/海獭）归 carnivore → 干扰项从 sea plant 池挑 */
+  whale: "herbivore", jellyfish: "herbivore", shrimp: "herbivore", clownfish: "herbivore",
+  turtle: "herbivore",
+  shark: "carnivore", seal: "carnivore", penguin: "carnivore", dolphin: "carnivore",
+  octopus: "carnivore", crab: "carnivore", starfish: "carnivore", squid: "carnivore", otter: "carnivore",
 };
 
 /* 19 个身体部位 → 宿主动物（用于词条插画与素材映射） */
@@ -245,6 +286,7 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
     w.food = ANIMAL_FOODS[foodId];
     w.eats = foodId;
     w.diet = ANIMAL_DIET[w.word] || "herbivore";
+    w.habitat = MARINE_ANIMALS.has(w.word) ? "sea" : "land";
     w.dialogueClue = w.example
       ? w.example.replace(new RegExp(`\\b${w.word}\\b`, "i"), "___")
       : "";
@@ -276,7 +318,7 @@ const ANIMAL_SCENES = [
    🦁 路线弹框（底部抽屉）
    - 点「开始闯关」后升起，使用原版海报地图（不重绘画面）
    - 50 个关卡点直接落在图上 1~50 号白色圆圈中心
-   - 节点只画状态底色：满星纯绿、1~2 星按 33%/66% 从左到右填充、当前关金色跳动、未解锁灰化
+   - 未满三星的已通关节点纯白，满星显示居中金色卡通星星印章；当前关金色填充跳动、未解锁灰化
    - 节点盖住底图原数字，不再显示关号；满星关卡置为只读
    - 抽屉内支持 100% / 150% / 200% / 250% 缩放，打开时自动定位当前关
    ============================================================ */
@@ -346,7 +388,7 @@ function renderZooRouteSheet(scene, prog) {
     const cls = [
       "animal-route-node", "zoo-step",
       done ? "done" : "",
-      done && best >= 1 ? `stars-${Math.min(3, best)}` : "",
+      full ? "stars-3" : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
     ].filter(Boolean).join(" ");

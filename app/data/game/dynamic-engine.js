@@ -775,9 +775,13 @@
     return { body, btn: revealed ? quizNextButton() : "" };
   }
 
-  /* 动物喂食：干扰项按食性隔离，避免出现孩子以为正确的食物 */
+  /* 动物喂食：干扰项按「栖息地 + 食性」双维度隔离
+     - habitat 隔离：海洋动物只从海洋食物池挑干扰项，陆地动物只从陆地池挑
+       避免 shark 吃草、panda 吃 shellfish 这类跨域乱配
+     - diet 隔离：carnivore 只配 plant 类干扰，herbivore 只配 animal 类干扰
+       herbivore 额外排除 milk（奶牛产奶易误判）和 worm（鸟/爬行动物也吃） */
   function buildFeedAnimal(task, pool) {
-    /* 动物乐园：直接使用数据层挂载的 food 映射，选项即真实食物图 */
+    /* 1. 从 pool 里收集所有不重复的食物（自带 cls / habitat 字段） */
     const unique = [];
     const seenFood = new Set();
     pool.forEach((w) => {
@@ -788,14 +792,56 @@
     const need = optionCount();
     if (task.food && unique.length >= need) {
       const correct = task.food;
-      /* 食性安全：食肉动物只配植物干扰项，食草动物只配动物性干扰项 */
-      const FOOD_CLASS = { meat: "animal", fish: "animal", bone: "animal", worm: "animal", milk: "animal", shellfish: "animal", plankton: "animal" };
-      const foodClass = (id) => FOOD_CLASS[id] || "plant";
-      let safe = unique.filter((f) => f.id !== correct.id);
-      if (task.diet === "carnivore") safe = safe.filter((f) => foodClass(f.id) === "plant");
-      /* 食草动物：牛奶（奶牛产奶）和虫子（猴/松鼠也吃）都可能被孩子当成正确答案，排除 */
-      else if (task.diet === "herbivore") safe = safe.filter((f) => foodClass(f.id) === "animal" && f.id !== "milk" && f.id !== "worm");
-      const rest = shuffle(safe.length >= need - 1 ? safe : unique.filter((f) => f.id !== correct.id)).slice(0, need - 1);
+      const targetHabitat = task.habitat || "land"; /* 兜底陆地 */
+
+      /* 2. 先按 habitat 过滤同域食物（正确答案天然已在同域） */
+      let sameHabitat = unique.filter((f) => f.habitat === targetHabitat && f.id !== correct.id);
+
+      /* 3. 再按 diet 过滤：食性安全池 */
+      let safe;
+      if (task.diet === "carnivore") {
+        /* 肉食动物 → 植物类干扰 */
+        safe = sameHabitat.filter((f) => f.cls === "plant");
+      } else if (task.diet === "herbivore") {
+        /* 食草动物 → 动物类干扰，排除 milk/worm（孩子易误判为正确） */
+        safe = sameHabitat.filter((f) => f.cls === "animal" && f.id !== "milk" && f.id !== "worm");
+      } else {
+        /* omnivore（启蒙模式不出喂食题，这里兜底） */
+        safe = sameHabitat;
+      }
+
+      /* 4. 分层兜底：同域安全 → 同域不限食性 → 全域安全 → 全域不限 */
+      let rest = shuffle(safe).slice(0, need - 1);
+      if (rest.length < need - 1) {
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        /* 同域不限食性补齐 */
+        for (const f of sameHabitat) {
+          if (rest.length >= need - 1) break;
+          if (seenIds.has(f.id)) continue;
+          rest.push(f); seenIds.add(f.id);
+        }
+      }
+      if (rest.length < need - 1) {
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        /* 全域安全池补齐（仍保持食性安全，但允许跨域） */
+        let globalSafe = unique.filter((f) => f.id !== correct.id && !seenIds.has(f.id));
+        if (task.diet === "carnivore") globalSafe = globalSafe.filter((f) => f.cls === "plant");
+        else if (task.diet === "herbivore") globalSafe = globalSafe.filter((f) => f.cls === "animal" && f.id !== "milk" && f.id !== "worm");
+        for (const f of shuffle(globalSafe)) {
+          if (rest.length >= need - 1) break;
+          rest.push(f);
+        }
+      }
+      if (rest.length < need - 1) {
+        /* 最终兜底：全域不限 */
+        const seenIds = new Set([correct.id, ...rest.map((f) => f.id)]);
+        for (const f of shuffle(unique)) {
+          if (rest.length >= need - 1) break;
+          if (seenIds.has(f.id)) continue;
+          rest.push(f); seenIds.add(f.id);
+        }
+      }
+
       task.foods = shuffle([correct, ...rest]);
       task.correctFood = correct.id;
       task.correctZh = correct.zh || "";

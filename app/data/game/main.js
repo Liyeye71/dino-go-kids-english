@@ -153,48 +153,27 @@ function screenQuiz() {
   const ok = !!quiz.choiceCorrect;
   const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1
-    ? "Result" : "Next";
+    ? "查看结果" : "下一题";
   const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
             <path d="M10 19 H18 L31 10 V38 L18 29 H10 C8.3 29 7 27.7 7 26 V22 C7 20.3 8.3 19 10 19 Z" fill="#d98a3c" stroke="#5c3412" stroke-width="3.5" stroke-linejoin="round"/>
             <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
             <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
           </svg>`;
-  const answerHasMeta = !!(answerPhon || answerZh);
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
-        <span class="zoo-answer-label">正确答案：</span>
         <span class="zoo-answer-word">${answerWord}</span>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
           ${audioIcon}
         </button>
-        ${answerHasMeta ? `<span class="zoo-answer-meta">
-          ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}，</span>` : ""}
-          ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
-        </span>` : ""}
+        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
+        ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
       </div>`
     : "";
 
-  const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
-  const actionArea = `<button class="zoo-action-btn" data-action="next">
-        ${ok ? star("star-top") : ""}<span>${nextLabel}</span>${ok ? star("star-bottom") : ""}
-      </button>`;
+  const actionArea = `<button class="zoo-action-btn" data-action="next"><span>${nextLabel} ▶</span></button>`;
   const decor = ok
     ? `<svg class="zoo-decor-grass" viewBox="0 0 80 26" fill="none">
         <path d="M4 24 L14 6 L22 20 L34 2 L44 21 L56 7 L66 24 Z" fill="#63b848" stroke="#1e6b3b" stroke-width="3" stroke-linejoin="round"/>
-      </svg>
-      <svg class="zoo-decor-vine" viewBox="0 0 160 130" fill="none">
-        <path d="M10 12 Q70 25 135 18 Q145 65 138 115" stroke="#2d7a36" stroke-width="6" stroke-linecap="round"/>
-        <path d="M55 16 C45 2, 72 0, 74 16 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
-        <path d="M105 22 C110 38, 130 34, 124 18 Z" fill="#54a838" stroke="#1e6b3b" stroke-width="2.5"/>
-        <path d="M138 58 C154 52, 156 74, 138 74 Z" fill="#68be47" stroke="#1e6b3b" stroke-width="2.5"/>
-        <g transform="translate(126, 22)">
-          <circle cx="0" cy="-7" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="-4" cy="6" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="-7" cy="-2" r="5.5" fill="#f79c65" stroke="#5c2d0c" stroke-width="2"/>
-          <circle cx="0" cy="0" r="4" fill="#ffe066"/>
-        </g>
       </svg>`
     : `<svg class="zoo-decor-leaf" viewBox="0 0 110 50" fill="none">
         <path d="M8 14 Q55 24 98 12" stroke="#9e4332" stroke-width="4.5" stroke-linecap="round"/>

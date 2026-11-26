@@ -181,20 +181,21 @@
 .zoo-zoom-bar button:active{transform:scale(.92)}
 .zoo-zoom-bar .zoo-zoom-val{width:3rem;border-radius:999rem;background:transparent;font-size:0.7rem;
   font-variant-numeric:tabular-nums;letter-spacing:.02em}
-/* 50 格棋盘节点：只绘制底色与通关状态，关号由路线图底图提供 */
+/* 50 格棋盘节点：未满三星的已通关节点纯白，满星居中盖章，保留当前关与锁定关状态 */
 .animal-route-map.has-map.zoo .zoo-step{width:5.8cqw;height:5.8cqw;padding:0;display:grid;place-items:center;
-  background:var(--sticker-paper);border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
+  background:#fff;border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
   font-weight:var(--w-black);font-variant-numeric:tabular-nums;
   box-shadow:0 0.16cqw 0.4cqw rgba(90,70,30,.14);transition:transform .12s ease}
 .animal-route-map.has-map.zoo .zoo-step::after{inset:-0.35cqw}
-.animal-route-map.has-map.zoo .zoo-step.done{background:#F2F8EE;border-color:#4E9459;color:#3F7A48}
-/* 已通关按星级从左到右填充绿色；满星纯绿且不可再点 */
-.animal-route-map.has-map.zoo .zoo-step.stars-1{
-  background:linear-gradient(90deg,#4E9459 0 33%,#F2F8EE 33% 100%)}
-.animal-route-map.has-map.zoo .zoo-step.stars-2{
-  background:linear-gradient(90deg,#4E9459 0 66%,#F2F8EE 66% 100%)}
-.animal-route-map.has-map.zoo .zoo-step.stars-3{
-  background:#4E9459;border-color:#3F7A48;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step.done{background:#fff;border-color:#E6DCC6;color:#7C6B4E}
+.animal-route-map.has-map.zoo .zoo-step.stars-3{background:#fff;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step.stars-3::before{
+  content:"★";position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;
+  width:76%;height:76%;display:grid;place-items:center;border:0.28cqw solid #E2A62E;border-radius:50%;
+  color:#F3C643;font-size:3.2cqw;line-height:1;font-weight:var(--w-black);
+  text-shadow:0 0.14cqw 0 #B97812;
+  box-shadow:inset 0 0 0 0.18cqw #fff,inset 0 0 0 0.38cqw #E2A62E;
+  opacity:.95;transform:translate(-50%,-50%) rotate(-12deg)}
 .animal-route-map.has-map.zoo .zoo-step.current{background:linear-gradient(180deg,#FFE082,#FFC24D);
   border-color:#E2A83C;color:#6B4A12;
   box-shadow:0 0.16cqw 0.4cqw rgba(120,80,20,.2),0 0 0 0.55cqw rgba(255,201,77,.3);
@@ -270,10 +271,4 @@
     0 0.32cqw 0 rgba(200,140,40,.3),
     0 0 0 0.55cqw rgba(255,201,77,.32),
     0 0.5cqw 1cqw rgba(120,80,20,.2);
-}
-/* done 节点：微立体绿底 */
-.animal-route-map.has-map.zoo .zoo-step.done{
-  box-shadow:inset 0 0.18cqw 0 rgba(255,255,255,.55),
-    0 0.3cqw 0 rgba(80,140,90,.25),
-    0 0.45cqw 0.9cqw rgba(60,90,40,.16);
 }
