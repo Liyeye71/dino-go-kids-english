@@ -1,0 +1,122 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — 主题注册与关卡上下文
+   题型实现统一放在 dynamic-engine.js，本文件只做主题注册
+   ============================================================ */
+(function () {
+  "use strict";
+
+  /* ---------------- 关卡 / 场景上下文（供出题、结算、错题库共用） ---------------- */
+  /* 判断当前是否为动物园场景（启用动态出题引擎） */
+  function isZooScene() {
+    return state.theme === "animal" && state.scene === "zoo";
+  }
+
+  /* 当前动物园场景对象 */
+  function zooScene() {
+    return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
+  }
+
+  /* 每 5 关的第 5 关为阶段 BOSS，最后一关为总 BOSS */
+  function isAnimalBossLevel(level) {
+    return isZooScene() && Number(level) % LEVELS_PER_STAGE === 0;
+  }
+  function isAnimalFinalBoss(level) {
+    const scene = zooScene();
+    return isZooScene() && !!scene && Number(level) === scene.levelCount;
+  }
+
+  window.isZooScene = isZooScene;
+  window.zooScene = zooScene;
+  window.isAnimalBossLevel = isAnimalBossLevel;
+  window.isAnimalFinalBoss = isAnimalFinalBoss;
+
+  /* 阶段划分：每 5 关为一组，第 5/10/15… 关为考核关（5 题，按答对题数发 1~3 星） */
+  const STAGE_SIZE = 5;
+  function isAssessmentLevel(level) {
+    const L = Number(level) || 0;
+    return L > 0 && L % STAGE_SIZE === 0;
+  }
+  window.STAGE_SIZE = STAGE_SIZE;
+  window.isAssessmentLevel = isAssessmentLevel;
+
+  /* 启蒙模式（3 岁）：全局唯一判定，供出题引擎、答题页与地图页共用 */
+  window.enlightenOn = function enlightenOn() {
+    return Boolean(typeof state !== "undefined" && state && state.enlighten);
+  };
+
+  /* 单词图片回退：webp 加载失败时依次回退同目录 .png 和 emoji */
+  window.wordArtFallback = function wordArtFallback(img) {
+    if (!img.dataset.fallback) {
+      img.dataset.fallback = "png";
+      img.src = img.src.replace(/\.webp$/i, ".png");
+      return;
+    }
+    img.style.display = "none";
+    if (img.nextElementSibling) img.nextElementSibling.style.display = "grid";
+  };
+
+  /* 统一生成带 webp → png → emoji 回退的图片标签 */
+  window.wordArtImg = function wordArtImg(src, imgCls, fallback, fallbackCls, loading = "eager") {
+    const fbCls = fallbackCls ? ` class="${fallbackCls}"` : "";
+    if (!src) return `<span${fbCls} style="display:grid">${fallback}</span>`;
+    return `<img class="${imgCls}" src="${src}" alt="" loading="${loading}" decoding="async" onerror="wordArtFallback(this)"><span${fbCls} style="display:none">${fallback}</span>`;
+  };
+
+  /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
+  window.definePlaceholderTheme = function definePlaceholderTheme(opts) {
+    const o = opts || {};
+    return window.defineDinoTheme({
+      id: o.id,
+      name: o.name,
+      chip: o.chip,
+      unit: o.unit,
+      emoji: o.emoji,
+      dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
+      /* 每日随机挑战混抽到该主题时，看图题的提示文案跟随主题 */
+      picHint: o.picHint || "",
+      picPrompt: o.picPrompt || "",
+      playable: false,
+      words: o.words || [],
+      scenes: [],
+      map: {
+        title: "敬请期待",
+        intro: o.mapIntro || `「${o.name}」主题正在筹备中…`,
+        sceneSelector: false,
+        render() {
+          return `<div style="text-align:center;padding:2rem 1rem;color:${o.color}">
+        <div style="font-size:3rem;margin-bottom:0.75rem">${o.emoji}</div>
+        <h3 style="margin:0 0 0.25rem;color:${o.accent}">${o.name} · 主题筹备中</h3>
+        <p style="font-size:0.8125rem;margin:0;color:${o.tip || o.color}">${o.plan}</p>
+      </div>`;
+        },
+      },
+    });
+  };
+
+  window.defineDinoTheme = function defineDinoTheme(config) {
+    /* 题型与关卡题序的唯一来源：dynamic-engine.js（需在本文件之后、主题文件之前加载） */
+    const levelGames = DynamicEngine.defaultLevelGames();
+    Object.keys(config.levelGames || {}).forEach((level) => {
+      const plan = config.levelGames[level];
+      levelGames[level] = Array.isArray(plan) ? [...plan] : plan;
+    });
+
+    const games = DynamicEngine.defaultGames();
+    Object.keys(config.games || {}).forEach((type) => {
+      games[type] = { ...games[type], ...config.games[type] };
+    });
+    /* 动物喂食仅属于 animal 主题，其他主题注册时直接移除 */
+    if (config.id !== "animal") delete games.feed_animal;
+
+    const theme = {
+      isTheme: true,
+      words: [],
+      ...config,
+      levelGames,
+      games,
+    };
+    window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
+    window.DINO_WORD_SETS.push(theme);
+    return theme;
+  };
+})();

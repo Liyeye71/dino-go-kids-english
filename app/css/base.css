@@ -1,0 +1,197 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — interactive iOS / iPad app
+   ============================================================ */
+
+/* 站酷快乐体（子集化：DinoGo/恐龙英语 + 完整英文字母），默认不启用，用时显式设 font-family:var(--font-brand) */
+@font-face{
+  font-family:"ZCOOL KuaiLe";
+  src:url("./font/ZCOOLKuaiLe.woff2") format("woff2");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --ink:#1D3A2E;
+  --ink-2:#4F665A;
+  --muted:#87988D;
+  --cream:#FBF3E3;
+  --paper:#FFFFFF;
+  --line:#EDDFC7;
+  --green:#2E8B57;
+  --green-d:#1E6B47;
+  --green-l:#E9F7D9;
+  --orange:#FF8A4C;
+  --coral:#FF6F61;
+  --shadow:0 0.625rem 1.5rem rgba(94,70,30,.08);
+  --safe-top:env(safe-area-inset-top,0);
+  --safe-bottom:env(safe-area-inset-bottom,0);
+  /* 正文默认：圆体链，不包含 ZCOOL KuaiLe */
+  --font-round:ui-rounded,"SF Pro Rounded","Hiragino Maru Gothic ProN",
+               "M PLUS Rounded 1c","PingFang SC","HarmonyOS Sans SC",
+               "MiSans","Microsoft YaHei UI","Microsoft YaHei",system-ui,sans-serif;
+  /* 品牌手写体（按需使用） */
+  --font-brand:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --w-read:500;
+  --w-mid:700;
+  --w-bold:800;
+  --w-black:900;
+  /* 动物园贴纸体系：从 game/map/overlays 中提取的高频色 */
+  --sticker-ink:#5C411D;
+  --sticker-paper:#FFFDF7;
+  --sticker-line:#E4CFA9;
+  --sticker-shade:#D9C39B;
+  /* 3D 玩具材质：统一暖棕投影、顶面高光与果冻回弹曲线 */
+  --warm-shadow:rgba(120,75,40,.14);
+  --warm-edge:#C9A878;
+  --pop-ease:cubic-bezier(.34,1.56,.64,1);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* 根字号随屏幕宽高微调：手机上略收紧，iPad / PC 上整体放大，所有 rem 尺寸随之等比缩放 */
+html{font-size:clamp(14.75px,min(calc(12px + .9vw),calc(10px + 1.3vh)),18px)}
+html,body{height:100%;margin:0;padding:0;overscroll-behavior:none}
+body{
+  font-family:var(--font-round);
+  font-synthesis:none;letter-spacing:0.00938rem;text-rendering:optimizeLegibility;
+  color:var(--ink);background:#EFE5D2;
+  -webkit-font-smoothing:antialiased;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
+input,textarea{font:inherit}
+svg{display:block}
+h1,h2,h3,h4,p{margin:0}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* ------------------------------------------------ app shell */
+.app{
+  position:relative;width:100%;max-width:51.25rem;height:100vh;height:100dvh;
+  margin:0 auto;background:var(--cream);overflow:hidden;isolation:isolate;
+}
+.view{position:absolute;inset:0}
+.screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:var(--cream);overflow:hidden;
+  animation:screenIn .3s cubic-bezier(.22,.9,.3,1) both;
+}
+.scroll{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:calc(0.875rem + var(--safe-top)) 1.25rem calc(1.875rem + var(--safe-bottom));
+}
+.has-tab .scroll{padding-bottom:calc(6.5rem + var(--safe-bottom))}
+
+@media (min-width:700px) and (min-height:600px){
+  body{
+    background:
+      radial-gradient(75rem 50rem at 10% -10%,#E4F1D2 0%,rgba(228,241,210,0) 60%),
+      radial-gradient(56.25rem 43.75rem at 110% 110%,#F8E3BE 0%,rgba(248,227,190,0) 60%),
+      #EFE5D2;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .app{
+    height:calc(100dvh - 3rem);max-height:70rem;
+    border-radius:2.25rem;border:0.0625rem solid rgba(255,255,255,.65);
+    box-shadow:0 2.5rem 5.625rem rgba(45,60,35,.22),0 0.125rem 0 rgba(255,255,255,.8) inset;
+  }
+  .scroll{padding:calc(1.625rem + var(--safe-top)) 2rem calc(2.125rem + var(--safe-bottom))}
+  .has-tab .scroll{padding-bottom:calc(7rem + var(--safe-bottom))}
+}
+
+@media (min-width:1000px){
+  .app{max-width:55rem}
+}
+
+/* ------------------------------------------------ status / tabbar */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:40;
+  height:calc(4.625rem + var(--safe-bottom));
+  padding:0.5rem 0.75rem calc(0.5rem + var(--safe-bottom));
+  display:flex;align-items:stretch;
+  background:rgba(255,251,243,.95);
+  border-top:0.09375rem solid #EFE2CB;
+  box-shadow:0 -0.625rem 1.5rem rgba(94,70,30,.05);
+  backdrop-filter:blur(1.125rem);-webkit-backdrop-filter:blur(1.125rem);
+}
+.tabbar .tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.1875rem;
+  font-size:0.75rem;font-weight:var(--w-mid);color:#97A69B;letter-spacing:0.03125rem;border-radius:0.875rem;
+}
+.tabbar .tab .ic{width:2.5rem;height:1.875rem;border-radius:0.75rem;display:grid;place-items:center;transition:background .18s ease}
+.tabbar .tab.on{color:var(--green-d)}
+.tabbar .tab.on .ic{background:#E4F6D5}
+.tabbar .tab:active .ic{transform:scale(.94)}
+
+/* ------------------------------------------------ shared atoms */
+/* 跨文件复用的原子规则：flex 子项省略布局 / 插画铺满 / 隐藏滚动条 */
+.collect-head .t,.bg-item .bg-info,.dex-sum .ds-main,.dex-reward .dr-main,.words-head .t,.gc-main,.evo-unlock .u-txt,.home-top .greet,.growth-panel .g-main,.task .t-body,.profile-head .t,.nc-l{flex:1;min-width:0}
+.wr-pic svg,.ref-listen-card-art svg,.ref-child-art,.ref-puzzle-hint .pz-art svg,.ref-feed-animal .fd-art svg,.ref-food-art svg{width:100%;height:100%;display:block}
+.scroll::-webkit-scrollbar,.dex-filters::-webkit-scrollbar,.quiz-body::-webkit-scrollbar,.result-scroll::-webkit-scrollbar,.evo-page::-webkit-scrollbar,.ref-quiz-body::-webkit-scrollbar{display:none}
+
+.eyebrow{font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.1125rem;color:var(--muted);text-transform:uppercase}
+.card{background:var(--paper);border:0.09375rem solid var(--line);border-radius:1.5rem;box-shadow:var(--shadow)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;min-height:3.5rem;
+  padding:0 1.125rem;border-radius:1.125rem;
+  background:linear-gradient(180deg,#3AA56B 0%,#28814F 100%);color:#fff;
+  font-size:1.125rem;font-weight:var(--w-bold);letter-spacing:0.0375rem;
+  box-shadow:inset 0 0.1875rem 0 rgba(255,255,255,.32),0 0.3125rem 0 #1B6140,0 0.875rem 1.5rem rgba(32,110,70,.24);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease;
+}
+.btn:active{transform:translateY(0.1875rem) scale(.985);box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.26),0 0.125rem 0 #1B6140,0 0.375rem 0.875rem rgba(32,110,70,.22)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn .hint{font-size:0.78125rem;font-weight:var(--w-mid);letter-spacing:0.01875rem;opacity:.85;background:rgba(255,255,255,.18);padding:0.1875rem 0.5rem;border-radius:6.1875rem}
+.btn.yellow{background:linear-gradient(180deg,#FFD766,#F5B62F);color:#4C3306;box-shadow:0 0.3125rem 0 #D6971C,0 0.875rem 1.5rem rgba(214,151,28,.3)}
+.btn.ghost{background:#fff;color:var(--green-d);border:0.125rem solid #DDEBD2;box-shadow:0 0.25rem 0 #E3EDD6}
+
+.bar{height:0.75rem;border-radius:6.1875rem;background:#EEE2CD;box-shadow:inset 0 0.125rem 0.25rem rgba(93,68,25,.08);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:6.1875rem;background:linear-gradient(90deg,#A9D84B,#3AA56B);position:relative;transition:width .6s cubic-bezier(.22,.9,.3,1)}
+.bar>i::after{content:"";position:absolute;left:0.3125rem;right:0.4375rem;top:0.125rem;height:0.1875rem;border-radius:0.5625rem;background:rgba(255,255,255,.55)}
+
+.star-pill{display:flex;align-items:center;gap:0.375rem;height:2.25rem;padding:0 0.75rem 0 0.5625rem;border-radius:6.1875rem;
+  background:#fff;border:0.09375rem solid #EFE1C8;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.07);
+  font-size:1rem;font-weight:var(--w-black);letter-spacing:0.01875rem;white-space:nowrap;flex:none;
+  font-family:inherit;color:var(--ink);cursor:pointer;transition:transform .12s ease}
+.star-pill:active{transform:scale(.94)}
+.circle-btn{width:2.375rem;height:2.375rem;border-radius:0.8125rem;background:#fff;border:0.09375rem solid var(--line);
+  display:grid;place-items:center;flex:none;color:var(--ink);
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.9),0 0.1875rem 0 rgba(201,168,120,.45),0 0.375rem 0.75rem var(--warm-shadow);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease}
+.circle-btn:active{transform:translateY(0.09375rem) scale(.94);box-shadow:inset 0 0.0625rem 0 rgba(255,255,255,.8),0 0.0625rem 0 rgba(201,168,120,.45)}
+
+.avatar{width:2.875rem;height:2.875rem;border-radius:1rem;background:#FFF6E2;border:0.125rem solid #fff;
+  box-shadow:0 0.3125rem 0.75rem rgba(70,50,20,.14);overflow:hidden;position:relative;flex:none}
+/* 头像从恐龙大图裁切头部区域，与 hero 视觉完全一致 */
+.avatar .ava-icon{width:100%;height:100%;display:block;object-fit:cover;object-position:center 28%}
+/* 环形进化 HUD：头像外圈成长进度环，满格时发暖金呼吸光 */
+.avatar.avatar-hud{overflow:visible;border-radius:50%}
+.avatar.avatar-hud .avatar-ring{position:absolute;inset:-0.1875rem;width:calc(100% + 0.375rem);height:calc(100% + 0.375rem);
+  transform:rotate(-90deg);pointer-events:none;z-index:2}
+.avatar.avatar-hud .avatar-ring circle{fill:none;stroke-width:0.1875rem}
+.avatar.avatar-hud .ring-bg{stroke:rgba(191,170,132,.38)}
+.avatar.avatar-hud .ring-fill{stroke:#7CBF5E;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.avatar.avatar-hud.is-ready .avatar-ring{animation:hudGlow 2.4s ease-in-out infinite}
+.avatar.avatar-hud.is-ready .ring-fill{stroke:#F2B53F}
+@keyframes hudGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,205,110,0))}50%{filter:drop-shadow(0 0 0.3125rem rgba(255,205,110,.85))}}
+
+/* ------------------------------------------------ animations */
+@keyframes screenIn{from{opacity:0;transform:translateY(0.5rem)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateY(0.5rem) scale(.96)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(0.375rem)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-0.3125rem)}}
+@keyframes evoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-0.4375rem)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes starPop{0%{opacity:0;transform:scale(.4) rotate(-20deg)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes dv2SlotRoll{from{transform:translateY(0)}to{transform:translateY(var(--dv2-slot-end))}}
+@keyframes dv2Sparkle{0%,100%{transform:scale(1) rotate(-6deg);opacity:.88}50%{transform:scale(1.18) rotate(6deg);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-0.3125rem)}40%{transform:translateX(0.25rem)}60%{transform:translateX(-0.1875rem)}80%{transform:translateX(0.125rem)}}
+@keyframes confettiFall{0%{opacity:0;transform:translateY(-1.875rem) rotate(0)}12%{opacity:.9}100%{opacity:.75;transform:translateY(10rem) rotate(240deg)}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}

@@ -1,0 +1,273 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — map：旅程进度 / 主题地图 / 下一关
+   ============================================================ */
+
+/* ------------------------------------------------ unit tabs */
+/* 顶层单元切换：basic 开放 / advance 锁定，位于主题 tab 之上 */
+.unit-tabs{display:flex;gap:0.375rem;width:max-content;max-width:100%;margin:0 auto 0.625rem;padding:0.25rem;
+  border-radius:6.1875rem;background:#F3EADA;border:0.09375rem solid #E7DAC3;
+  box-shadow:inset 0 0.1875rem 0.3125rem rgba(120,90,40,.08),0 0.25rem 0 var(--warm-edge),0 0.5rem 1rem var(--warm-shadow);
+  overflow-x:auto;scrollbar-width:none}
+.unit-tabs .ut{flex:none;display:flex;align-items:center;gap:0.4375rem;
+  padding:0.5625rem 0.875rem;border-radius:6.1875rem;white-space:nowrap;
+  background:transparent;border:0;box-shadow:none;font-size:0.875rem;font-weight:var(--w-bold);color:#8B7B5C;
+  transition:transform .14s var(--pop-ease),background .18s ease,color .18s ease,box-shadow .12s ease}
+.unit-tabs .ut:active{transform:scale(.96)}
+.unit-tabs .ut b{font-size:1.0625rem;font-weight:400;line-height:1}
+.unit-tabs .ut .ut-en{font-size:0.6875rem;font-weight:var(--w-bold);opacity:.72}
+.unit-tabs .ut i{font-style:normal;font-size:0.75rem;line-height:1}
+.unit-tabs .ut.on{background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.3),0 0.25rem 0 #1E6B47,0 0.5rem 0.875rem rgba(52,110,70,.28)}
+.unit-tabs .ut.locked{color:#B0A18A}
+@media (max-width:480px){
+  .unit-tabs{gap:0.25rem;padding:0.25rem;margin-bottom:0.5rem}
+  .unit-tabs .ut{gap:0.3125rem;padding:0.4375rem 0.6875rem;font-size:0.8125rem}
+  .unit-tabs .ut b{font-size:0.9375rem}
+}
+
+/* 锁定单元整卡占位 */
+.unit-locked-card{margin:1.5rem auto 0;max-width:22rem;text-align:center;padding:2rem 1.25rem}
+.unit-locked-card .ulc-emoji{font-size:3rem;line-height:1;margin-bottom:0.625rem}
+.unit-locked-card h3{margin:0 0 0.375rem;font-size:1.0625rem;font-weight:var(--w-black);color:#5C4A2E}
+.unit-locked-card p{margin:0;font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);line-height:1.7}
+
+/* 单元地图堆叠：每个主题一张整卡地图入口 */
+.unit-maps{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:0.25rem}
+.unit-maps .next-card{margin-top:0}
+.unit-map-card{display:flex;align-items:center;justify-content:center}
+
+/* ------------------------------------------------ hero */
+.map-hero{display:flex;align-items:center;justify-content:space-between;gap:0.625rem;flex-wrap:wrap;padding:0.125rem 0.125rem 0.75rem}
+.map-hero .eyebrow{display:inline-flex;align-items:center;gap:0.375rem;color:var(--green);
+  font-size:0.65625rem;font-weight:var(--w-black);letter-spacing:0.1125rem;text-transform:uppercase;margin-bottom:0.5rem}
+.map-hero .eyebrow i{width:0.375rem;height:0.375rem;border-radius:50%;background:#82A16C}
+.map-hero h1{font-size:1.875rem;line-height:1.2;font-weight:var(--w-black);letter-spacing:0.025rem}
+.map-hero h1 span{background:linear-gradient(transparent 64%,#FFE08A 64%);padding:0 0.125rem}
+.map-hero p{font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);line-height:1.7;margin-top:0.4375rem}
+
+/* 启蒙模式入口：糖果胶囊开关 */
+.enlighten-btn{display:flex;align-items:center;gap:0.4375rem;flex:none;margin-left:auto;
+  padding:0.25rem 0.5rem 0.25rem 0.3125rem;border-radius:6.1875rem;
+  background:#FFE3B0;border:0.1875rem solid #fff;
+  box-shadow:0 0.1875rem 0 #E8BE7A,0 0.375rem 0.75rem rgba(232,190,122,.18);
+  font-family:inherit;color:inherit;cursor:pointer;text-align:left}
+.enlighten-btn:active{transform:translateY(0.125rem);box-shadow:0 0.0625rem 0 #E8BE7A}
+.eb-ico{width:1.875rem;height:1.875rem;border-radius:50%;background:#FFF3D6;display:grid;place-items:center;font-size:0.9375rem;flex:none}
+.eb-txt{display:flex;flex-direction:column;gap:0.0625rem}
+.eb-txt b{font-size:0.8125rem;font-weight:var(--w-black);color:#7A4B12;line-height:1.15}
+.eb-txt em{font-style:normal;font-size:0.5625rem;font-weight:var(--w-read);color:#A77835;line-height:1.15}
+.eb-switch{position:relative;flex:none;width:2.4rem;height:1.4rem;border-radius:6.1875rem;background:#E4D9C2;transition:background .2s}
+.eb-switch i{position:absolute;left:0.125rem;top:0.125rem;width:1.15rem;height:1.15rem;border-radius:50%;background:#fff;
+  box-shadow:0 0.0625rem 0.1875rem rgba(122,75,18,.22);transition:transform .2s}
+.enlighten-btn.on .eb-switch{background:#FF9EB5}
+.enlighten-btn.on .eb-switch i{transform:translateX(1rem)}
+@media (max-width:22.5rem){.eb-txt em{display:none}}
+
+/* ------------------------------------------------ journey */
+.journey{display:flex;align-items:center;gap:0.625rem;padding:0.6875rem 0.875rem;margin:0.875rem 0;
+  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.125rem;
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.7),0 0.3125rem 0 #E3CFA8,0 0.625rem 1.25rem var(--warm-shadow)}
+.journey .j-lb{font-size:0.625rem;font-weight:var(--w-black);color:#947B5A;letter-spacing:0.075rem;white-space:nowrap}
+.journey .j-val{font-size:1rem;font-weight:var(--w-black);letter-spacing:0.0125rem;white-space:nowrap}
+.journey .j-val em{font-style:normal;font-size:0.65625rem;color:var(--muted);font-weight:var(--w-bold);margin-left:0.125rem}
+.journey .track{flex:1;height:0.4375rem;border-radius:6.1875rem;background:#EFE4CE;overflow:hidden}
+.journey .track i{display:block;height:100%;border-radius:6.1875rem;
+  background:linear-gradient(90deg,#9CCB58,#2E8B57);transition:width .5s cubic-bezier(.22,.9,.3,1)}
+
+/* ------------------------------------------------ map card */
+.map-card{position:relative;height:clamp(24.25rem,47vh,29.375rem);border-radius:1.875rem;overflow:hidden;isolation:isolate;
+  border:0.09375rem solid var(--line);
+  box-shadow:inset 0 0.1875rem 0 rgba(255,255,255,.45),0 0.5rem 0 0 var(--warm-edge),0 1rem 1.75rem var(--warm-shadow)}
+.map-card .deco{position:absolute;pointer-events:none;z-index:1}
+.map-card .route{position:absolute;inset:0;width:100%;height:100%;z-index:2}
+
+.map-tag{position:absolute;left:0.875rem;top:0.875rem;z-index:4;display:inline-flex;align-items:center;gap:0.3125rem;
+  padding:0.375rem 0.6875rem;border-radius:6.1875rem;font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.075rem;color:#8A7550;
+  background:rgba(255,253,247,.88);border:0.0625rem solid rgba(214,198,166,.8);
+  backdrop-filter:blur(0.25rem);-webkit-backdrop-filter:blur(0.25rem)}
+
+/* ------------------------------------------------ caption */
+.caption{position:absolute;z-index:4;left:8%;right:8%;bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;
+  padding:0.5rem 0.75rem;border-radius:0.875rem;
+  background:rgba(255,253,247,.9);border:0.0625rem solid rgba(214,198,166,.75);
+  backdrop-filter:blur(0.375rem);-webkit-backdrop-filter:blur(0.375rem)}
+.caption b{font-size:0.75rem;font-weight:var(--w-black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.caption span{font-size:0.65625rem;font-weight:var(--w-bold);color:#8A7550;margin-left:auto;white-space:nowrap}
+
+/* ------------------------------------------------ next card */
+.next-card{display:flex;align-items:center;gap:0.75rem;margin-top:0.875rem;padding:0.8125rem 0.875rem;
+  background:var(--sticker-paper);border:0.09375rem solid var(--line);border-radius:1.375rem;
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.7),0 0.3125rem 0 #E3CFA8,0 0.625rem 1.25rem var(--warm-shadow)}
+.nc-kicker{display:flex;align-items:center;gap:0.25rem;font-size:0.59375rem;font-weight:var(--w-black);
+  letter-spacing:0.09375rem;color:#B58A2E}
+.nc-kicker svg{width:0.5rem;height:0.5rem}
+.nc-l h3{font-size:1.0625rem;font-weight:var(--w-black);letter-spacing:0.0125rem;margin-top:0.1875rem}
+.nc-meta{font-size:0.65625rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem}
+.nc-btn{flex:none;display:inline-flex;align-items:center;gap:0.3125rem;padding:0.6875rem 0.9375rem;border-radius:0.9375rem;
+  background:var(--green);color:#fff;font-size:0.84375rem;font-weight:var(--w-bold);letter-spacing:0.01875rem;
+  box-shadow:0 0.25rem 0 var(--green-d);transition:transform .12s ease,box-shadow .12s ease}
+.nc-btn:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 var(--green-d)}
+.nc-btn svg{width:0.875rem;height:0.875rem}
+
+/* ------------------------------------------------ iPad */
+@media (min-width:700px) and (min-height:600px){
+  .map-hero h1{font-size:2.125rem}
+  .map-card{height:30rem}
+}
+
+/* ------------------------------------------------ animal static route sheet */
+/* 弹层只保留地图与开始按钮：地图宽度与按钮一致，高度按视口为按钮留出空间 */
+.animal-route-sheet{max-width:min(35rem,calc(88vh - 11rem));padding-top:0.5rem}
+.animal-route-sheet .grab{margin-bottom:0.5rem}
+.animal-route-map{position:relative;height:clamp(18rem,43vh,23rem);margin-top:1rem;overflow:hidden;border-radius:1.5rem;
+  border:0.09375rem solid #A9D8E0;background:
+    radial-gradient(circle at 88% 25%,transparent 0 0.4375rem,rgba(255,255,255,.38) 0.5rem 0.5625rem,transparent 0.625rem),
+    radial-gradient(circle at 12% 70%,transparent 0 0.3125rem,rgba(255,255,255,.35) 0.375rem 0.4375rem,transparent 0.5rem),
+    linear-gradient(180deg,#E9F9F8,#D5F0F2)}
+.animal-route-map.zoo{border-color:#D9D6A5;background:
+  radial-gradient(circle at 88% 25%,rgba(255,255,255,.5) 0 0.375rem,transparent 0.4375rem),
+  linear-gradient(180deg,#F2F4D8,#E5EDCB)}
+/* 真实路线图：画布比例与图片一致，保证百分比节点坐标严格对齐 */
+.animal-route-map.has-map{width:100%;max-width:none;height:auto;aspect-ratio:var(--arm-ratio,1/1);margin:0;
+  background:#F7ECD6;border-color:#E0CFAE;container-type:inline-size}
+.arm-bg{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+.animal-route-node{position:absolute;z-index:2;display:grid;place-items:center;width:2.875rem;height:2.875rem;padding:0;
+  transform:translate(-50%,-50%);border-radius:50%;background:var(--sticker-paper);border:0.1875rem solid #fff;
+  color:#6F8B91;font-size:0.875rem;font-weight:var(--w-black);box-shadow:0 0.25rem 0.625rem rgba(70,100,90,.14);
+  cursor:pointer;transition:transform .15s ease}
+.animal-route-node:active{transform:translate(-50%,-50%) scale(.94)}
+.animal-route-node.done{background:var(--green);color:#fff}
+.animal-route-node.current{background:#FFB64D;color:#fff;box-shadow:0 0 0 0.5rem rgba(255,214,143,.55),0 0.25rem 0.625rem rgba(130,90,30,.18)}
+/* 节点尺寸跟随地图容器宽度，右缘刚好盖住原编号并停在地名牌起点之前 */
+.animal-route-map.has-map .animal-route-node{width:5cqw;height:5cqw;font-size:max(0.5rem,2cqw);
+  border-width:0.2cqw;border-color:var(--sticker-paper);box-shadow:0 0.3cqw 0.9cqw rgba(60,45,20,.18)}
+/* 保持 44px 级别的可点击热区，视觉节点可以更小 */
+.animal-route-map.has-map .animal-route-node::after{content:"";position:absolute;inset:-0.85rem;border-radius:50%}
+.animal-route-map.has-map .animal-route-node.locked{background:rgba(245,237,222,.94);color:#A8997D}
+.animal-route-map.has-map .animal-route-node.current{box-shadow:0 0 0 0.7cqw rgba(255,214,143,.55),0 0.3cqw 0.9cqw rgba(130,90,30,.18)}
+
+/* ============================================================
+   🦁 Zoo 路线弹框（底部抽屉）
+   - 棋盘地图按 1505/1045 铺满，50 个节点落在图上 1~50 号圆点
+   - 支持 100%~250% 缩放，当前关自动滚入视口中央
+   ============================================================ */
+
+/* 抽屉宽度随屏幕自适应：大屏（iPad / 桌面）铺开到接近整屏，避免地图过窄 */
+.sheet.zoo-route-sheet{width:100%;max-width:min(64rem,calc(96vw - 1rem))}
+.zoo-route-head{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0 0.25rem 0.5rem}
+/* 主副标题同一行、底部对齐；窄屏时自动换行 */
+.zoo-route-title{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0.125rem 0.5rem;min-width:0}
+.zoo-route-title strong{font-size:1rem;line-height:1.2;font-weight:var(--w-black);color:#3D5A3D}
+.zoo-route-title small{font-size:0.6875rem;line-height:1.25;color:var(--muted)}
+.zoo-route-close{flex:none;display:grid;place-items:center;width:2rem;height:2rem;padding:0;border:0;border-radius:50%;
+  background:#FFF8E7;color:#6B5B45;font-size:1.25rem;line-height:1;cursor:pointer;
+  box-shadow:0 0.125rem 0.375rem rgba(80,60,25,.12);transition:transform .12s ease}
+.zoo-route-close:active{transform:scale(.94)}
+/* 地图视口：小图完整显示，放大后在抽屉内部滚动 */
+.zoo-board-frame{position:relative}
+.zoo-board-viewport{max-height:min(58vh,32rem);overflow:auto;border-radius:1rem;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:#F7EEDC}
+.zoo-board-viewport::-webkit-scrollbar{width:0.5rem;height:0.5rem}
+.zoo-board-viewport::-webkit-scrollbar-thumb{background:rgba(150,120,70,.35);border-radius:999rem}
+.zoo-board-inner{width:100%}
+.zoo-route-sheet .animal-route-map.has-map{margin:0 auto;border-color:#D9C79A;border-radius:0.9rem}
+/* 缩放控制：固定在视口右上角（避开右下角终点区域） */
+.zoo-zoom-bar{position:absolute;right:0.55rem;top:0.55rem;z-index:5;display:flex;align-items:center;gap:0.12rem;
+  padding:0.16rem;border-radius:999rem;background:rgba(255,253,247,.94);
+  box-shadow:0 0.2rem 0.6rem rgba(90,70,30,.22)}
+.zoo-zoom-bar button{display:grid;place-items:center;width:1.85rem;height:1.85rem;padding:0;border:0;border-radius:50%;
+  background:#F7EEDC;color:#6D5636;font-family:inherit;font-size:1rem;font-weight:var(--w-black);line-height:1;cursor:pointer;
+  transition:transform .12s ease,background .12s ease}
+.zoo-zoom-bar button:active{transform:scale(.92)}
+.zoo-zoom-bar .zoo-zoom-val{width:3rem;border-radius:999rem;background:transparent;font-size:0.7rem;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em}
+/* 50 格棋盘节点：自己绘制数字与底色，未到达关卡整体置灰 */
+.animal-route-map.has-map.zoo .zoo-step{width:5.8cqw;height:5.8cqw;padding:0;display:grid;place-items:center;
+  background:var(--sticker-paper);border:0.32cqw solid #E6DCC6;color:#7C6B4E;font-size:2.2cqw;line-height:1;
+  font-weight:var(--w-black);font-variant-numeric:tabular-nums;
+  box-shadow:0 0.16cqw 0.4cqw rgba(90,70,30,.14);transition:transform .12s ease}
+.zoo-step-num{position:relative;z-index:1;display:block;pointer-events:none}
+.animal-route-map.has-map.zoo .zoo-step::after{inset:-0.35cqw}
+.animal-route-map.has-map.zoo .zoo-step.done{background:#F2F8EE;border-color:#4E9459;color:#3F7A48}
+.animal-route-map.has-map.zoo .zoo-step.current{background:linear-gradient(180deg,#FFE082,#FFC24D);
+  border-color:#E2A83C;color:#6B4A12;
+  box-shadow:0 0.16cqw 0.4cqw rgba(120,80,20,.2),0 0 0 0.55cqw rgba(255,201,77,.3);
+  animation:zoo-step-bob 1.5s ease-in-out infinite}
+.animal-route-map.has-map.zoo .zoo-step.locked{background:#E7E3DA;border-color:#D0CABE;color:#9C968A;
+  box-shadow:none;cursor:default}
+.animal-route-map.has-map.zoo .zoo-step:not(.locked):active{transform:translate(-50%,-50%) scale(.9)}
+@keyframes zoo-step-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+
+/* ============================================================
+   🎁 旅程进度条上的宝箱节点（30% / 60% / 100% 各一个）
+   ============================================================ */
+
+.journey .j-track{position:relative;flex:1;display:flex;align-items:center;min-width:0;max-width:30rem;margin:0 auto}
+.j-chest{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:1.625rem;height:1.625rem;padding:0;
+  transform:translate(-50%,-50%);border:0.125rem solid var(--sticker-paper);border-radius:50%;
+  background:#F1E6D0;color:#9A8763;font-size:0.8125rem;line-height:1;cursor:pointer;font-family:inherit;
+  box-shadow:0 0.125rem 0.3125rem rgba(90,70,30,.2);transition:transform .12s ease}
+.j-chest:active{transform:translate(-50%,-50%) scale(.92)}
+.j-chest:disabled{cursor:default}
+.j-chest.locked{opacity:.55;background:#F3EADA;color:#B3A489;border-color:#F7F0E2;box-shadow:none}
+.j-chest.done{background:#E4EFD6;color:#4E7A45;font-weight:var(--w-black)}
+.j-chest.ready{background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);
+  box-shadow:0 0.125rem 0 #D89732,0 0 0 0.25rem rgba(255,200,77,.26);animation:j-chest-bob 1.6s ease-in-out infinite}
+@keyframes j-chest-bob{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.12)}}
+/* BOSS 额外奖励宝箱：作为独立按钮跟在进度条右侧 */
+.j-chest.bonus{position:relative;left:auto;top:auto;transform:none;flex:none;width:1.75rem;height:1.75rem;animation:none;
+  background:linear-gradient(180deg,#FFE477,#FFC84D);color:var(--sticker-ink);font-size:0.75rem}
+.j-chest.bonus:active{transform:scale(.92)}
+.j-chest.bonus b{position:absolute;right:-0.375rem;top:-0.375rem;min-width:0.875rem;height:0.875rem;padding:0 0.125rem;
+  border-radius:6.1875rem;background:#E2622F;color:#fff;font-size:0.5625rem;line-height:1;display:grid;place-items:center}
+
+/* ------------------------------------------------ 每日随机挑战入口 */
+.daily-challenge-card{display:flex;align-items:center;gap:0.75rem;width:100%;margin:0.875rem 0 0;padding:0.8125rem 0.9375rem;
+  border:0.09375rem solid #EDDFC7;border-radius:1.25rem;background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.8),0 0.3125rem 0 #E3CFA8,0 0.625rem 1.25rem var(--warm-shadow);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease}
+.daily-challenge-card:active{transform:translateY(0.125rem) scale(.985)}
+.daily-challenge-card.is-empty{opacity:.62}
+.dcc-ic{flex:none;display:grid;place-items:center;width:2.875rem;height:2.875rem;border-radius:0.9375rem;
+  background:#FFE9BC;font-size:1.375rem;line-height:1}
+.dcc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.1875rem}
+.dcc-tx b{font-size:0.9375rem;font-weight:var(--w-black);color:#4E3C22}
+.dcc-tx em{font-style:normal;font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);line-height:1.45}
+.dcc-count{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:2.875rem;height:2.875rem;
+  border-radius:0.9375rem;background:linear-gradient(180deg,#4F9E62,#3F8851);color:#fff;
+  font-size:0.9375rem;font-weight:var(--w-black);line-height:1;box-shadow:0 0.125rem 0 #2F6B3F}
+.dcc-count b{font-size:0.875rem;line-height:1;letter-spacing:-0.02rem}
+.dcc-count small{margin-top:0.125rem;font-size:0.5rem;font-weight:var(--w-bold);opacity:.85;line-height:1}
+.daily-challenge-card.is-empty .dcc-count{background:#C9BFAA;box-shadow:0 0.125rem 0 #B3A88F}
+
+/* ============================================================
+   浮空岛视觉：场景卡、地图节点、单元切换的立体质感
+   复用 base.css 的 --warm-shadow / --warm-edge / --pop-ease
+   ============================================================ */
+
+/* 50 关节点：立体贴纸 —— 顶面高光 + 加厚底面投影 + 果冻按压回弹（坐标不动） */
+.animal-route-map.has-map.zoo .zoo-step{
+  box-shadow:inset 0 0.18cqw 0 rgba(255,255,255,.6),
+    0 0.32cqw 0 rgba(150,115,70,.22),
+    0 0.5cqw 1cqw rgba(90,70,30,.18);
+  transition:transform .16s var(--pop-ease),box-shadow .12s ease;
+}
+.animal-route-map.has-map.zoo .zoo-step:not(.locked):active{
+  transform:translate(-50%,-50%) scale(.86);
+  box-shadow:inset 0 0.1cqw 0 rgba(255,255,255,.5),
+    0 0.12cqw 0 rgba(150,115,70,.2),
+    0 0.25cqw 0.5cqw rgba(90,70,30,.15);
+}
+/* current 节点：暖金呼吸光升级，保留原 bob 动画 */
+.animal-route-map.has-map.zoo .zoo-step.current{
+  box-shadow:inset 0 0.18cqw 0 rgba(255,255,255,.7),
+    0 0.32cqw 0 rgba(200,140,40,.3),
+    0 0 0 0.55cqw rgba(255,201,77,.32),
+    0 0.5cqw 1cqw rgba(120,80,20,.2);
+}
+/* done 节点：微立体绿底 */
+.animal-route-map.has-map.zoo .zoo-step.done{
+  box-shadow:inset 0 0.18cqw 0 rgba(255,255,255,.55),
+    0 0.3cqw 0 rgba(80,140,90,.25),
+    0 0.45cqw 0.9cqw rgba(60,90,40,.16);
+}

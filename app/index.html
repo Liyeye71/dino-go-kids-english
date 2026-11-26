@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#FBF3E3">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DinoGo">
+  <meta name="format-detection" content="telephone=no">
+  <title>DinoGo · 恐龙英语</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="data/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="data/icons/icon-192.png">
+  <!-- 样式按模块拆分，顺序即构建时的内联顺序（build.mjs 直接解析本文件） -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/quiz.css">
+  <link rel="stylesheet" href="css/result.css">
+  <link rel="stylesheet" href="css/game.css">
+  <link rel="stylesheet" href="css/quiz-types.css">
+  <link rel="stylesheet" href="css/dex.css">
+  <link rel="stylesheet" href="css/collect.css">
+  <link rel="stylesheet" href="css/overlays.css">
+  <link rel="stylesheet" href="css/theme/zoo.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <main class="view" id="view"></main>
+    <div id="overlay-root"></div>
+    <div class="toast-root" id="toast-root"></div>
+  </div>
+  <!-- 主题词汇、地图与玩法：下列 script 顺序即构建时的内联顺序（build.mjs 直接解析本文件） -->
+  <!-- 全局词库（唯一事实源）：含主题词与 9 个词性池，需在主题文件之前加载 -->
+  <script src="data/game/library.js?v=1"></script>
+  <!-- 主题注册器（defineDinoTheme）与题型实现，需在各主题文件之前加载 -->
+  <script src="data/game/shared.js?v=1"></script>
+  <script src="data/game/dialog-templates.js?v=1"></script>
+  <script src="data/game/dynamic-engine.js?v=1"></script>
+  <!-- 主题词库、地图与玩法；新增主题放入 theme 目录后，在此追加一行 script 即可 -->
+  <script src="data/theme/travel.js?v=1"></script>
+  <script src="data/theme/animal.js?v=1"></script>
+  <script src="data/theme/school.js?v=1"></script>
+  <!-- 声音：交互音效 / 单词朗读 / 关卡提示音 -->
+  <script src="data/sounds/sfx.js?v=1"></script>
+  <!-- 公共：工具 / 视觉 / 配置 / 词汇 / 状态 / 界面 / 事件 / 启动；四个 Tab 各自一个文件 -->
+  <script src="frame/core/utils.js?v=1"></script>
+  <script src="frame/core/visual.js?v=1"></script>
+  <script src="frame/core/data.js?v=1"></script>
+  <script src="frame/core/words.js?v=1"></script>
+  <script src="frame/core/state.js?v=1"></script>
+  <script src="frame/core/ui.js?v=1"></script>
+  <script src="frame/core/events.js?v=1"></script>
+  <script src="frame/core/boot.js?v=1"></script>
+  <script src="data/game/wrongbank.js?v=1"></script>
+  <script src="data/game/chest.js?v=1"></script>
+  <script src="data/game/result.js?v=1"></script>
+  <script src="data/game/main.js?v=1"></script>
+  <script src="data/game/quiz-view.js?v=1"></script>
+  <script src="frame/home.js?v=1"></script>
+  <script src="frame/map.js?v=1"></script>
+  <script src="frame/dex.js?v=1"></script>
+  <script src="frame/collect.js?v=1"></script>
+  <script>boot();</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — dex：恐龙图鉴
+   ============================================================ */
+
+/* ------------------------------------------------ dex */
+.dex-count{display:flex;align-items:baseline;gap:0.125rem;font-size:0.875rem;font-weight:var(--w-black);color:var(--green-d);
+  background:#fff;border:0.09375rem solid var(--line);border-radius:0.8125rem;padding:0.375rem 0.625rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.06);flex:none}
+.dex-count span{font-size:0.6875rem;color:var(--muted);font-weight:var(--w-mid)}
+.dex-sum{border-radius:1.375rem;padding:0.8125rem 0.9375rem;display:flex;align-items:center;gap:0.8125rem}
+.dex-sum .ds-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.4375rem}
+.dex-sum .ds-row b{font-size:0.75rem;font-weight:var(--w-bold)}
+.dex-sum .ds-row span{font-size:0.6875rem;font-weight:var(--w-black);color:var(--green-d)}
+.dex-sum .ds-foot{display:flex;align-items:center;gap:0.25rem;margin-top:0.4375rem;font-size:0.65625rem;font-weight:var(--w-mid);color:#A19278}
+.dex-sum .ds-badge{width:2.875rem;height:2.875rem;border-radius:0.9375rem;background:#FFF4CE;display:grid;place-items:center;flex:none;color:#B4811C}
+.dex-filters{display:flex;gap:0.375rem;margin-top:0.75rem;overflow-x:auto;scrollbar-width:none;padding-bottom:0.125rem}
+.dex-filters .f{height:1.875rem;padding:0 0.6875rem;border-radius:0.5625rem;background:#fff;border:0.09375rem solid #EEE2CD;
+  font-size:0.71875rem;font-weight:var(--w-mid);color:#8C9B8C;display:flex;align-items:center;white-space:nowrap;flex:none}
+.dex-filters .f.on{background:var(--ink);border-color:var(--ink);color:#FFF6DF}
+
+.dex-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5625rem;margin-top:0.75rem}
+@media (min-width:620px){.dex-grid{grid-template-columns:repeat(3,1fr)}}
+.dex-card{border-radius:1.125rem;background:#fff;border:0.09375rem solid var(--line);padding:0.4375rem;text-align:center;position:relative;
+  box-shadow:0 0.3125rem 0.75rem rgba(94,70,30,.05);transition:transform .15s ease}
+.dex-card:active{transform:scale(.97)}
+.dex-card .pic{height:6.75rem;border-radius:0.75rem;display:grid;place-items:center;position:relative;overflow:hidden}
+@media (min-width:620px){.dex-card .pic{height:5.25rem}}
+.dex-card .pic.t1{background:#EAF7DA}
+.dex-card .pic.t2{background:#E6F4FF}
+.dex-card .pic.t3{background:#FFF2D8}
+.dex-card .pic.t4{background:#F0EBFF}
+.dex-card .pic.t5{background:#FFF0E2}
+.dex-card .pic svg{width:7rem;height:7rem;margin-bottom:-0.5rem}
+@media (min-width:620px){.dex-card .pic svg{width:5.5rem;height:5.5rem}}
+.dex-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
+.dex-card .stg{font-size:0.625rem;font-weight:var(--w-mid);color:#A0AE9F;margin-top:0.0625rem;letter-spacing:0.01875rem}
+.dex-card.locked .pic{background:#F4EFE3}
+/* 未解锁形态用剪影展示，保留神秘感与收集欲 */
+.dex-card.locked .pic svg{opacity:.22;filter:brightness(0)}
+.dex-card.locked .nm{color:#B3AC9B}
+.dex-card .rare{position:absolute;right:0.5rem;top:0.5rem;width:1rem;height:1rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:0.625rem;font-weight:var(--w-black);z-index:4;box-shadow:0 0.1875rem 0.375rem rgba(94,70,30,.18)}
+.dex-card .rare.r3{background:#7FB4E8}
+.dex-card .rare.r4{background:#A78BFA}
+.dex-card .rare.r5{background:#F0A23B}
+.dex-card .lock-ic{position:absolute;right:0.5625rem;top:0.5625rem;color:#C6BDAA;z-index:4}
+.dex-card.current{outline:0.125rem solid rgba(46,139,87,.45);outline-offset:-0.125rem}
+.dex-card .now-tag{position:absolute;left:0.5rem;top:0.5rem;font-size:0.59375rem;font-weight:var(--w-black);color:#fff;background:var(--green);
+  padding:0.125rem 0.3125rem;border-radius:0.3125rem;z-index:4}
+.dex-reward{margin-top:0.875rem;border-radius:1.25rem;padding:0.625rem 0.8125rem;display:flex;align-items:center;gap:0.6875rem;
+  background:#fff;border:0.09375rem solid var(--line);box-shadow:0 0.5rem 1.125rem rgba(94,70,30,.07)}
+.dex-reward .dr-ic{width:3.25rem;height:3.25rem;border-radius:0.875rem;overflow:hidden;flex:none;position:relative;border:0.0625rem solid rgba(120,75,40,.10)}
+.dex-reward .dr-row{display:flex;justify-content:space-between;align-items:baseline;gap:0.5rem}
+.dex-reward .dr-row b{font-size:0.71875rem;font-weight:var(--w-black)}
+.dex-reward .dr-row span{font-size:0.6875rem;font-weight:var(--w-black);color:var(--green-d);white-space:nowrap}
+.dex-reward .bar{height:0.4375rem;margin-top:0.3125rem}
+.dex-reward .dr-note{font-size:0.625rem;font-weight:var(--w-read);color:#A19278;margin-top:0.25rem}
+.dex-reward .dr-lock{width:1.875rem;height:1.875rem;border-radius:0.625rem;background:#FFF4CE;display:grid;place-items:center;color:#B4811C;flex:none}
+
+/* 究极体机甲形态切换 */
+.skin-head{display:flex;align-items:baseline;justify-content:space-between;gap:0.5rem;margin-top:1rem;padding:0 0.125rem}
+.skin-head b{font-size:0.8125rem;font-weight:var(--w-black)}
+.skin-head span{font-size:0.625rem;font-weight:var(--w-read);color:#A19278;white-space:nowrap}
+.skin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5625rem;margin-top:0.5rem}
+.skin-card{position:relative;border-radius:1.125rem;background:#fff;border:0.09375rem solid var(--line);padding:0.4375rem;text-align:center}
+.skin-card:active{transform:scale(.97)}
+.skin-card .pic{height:5.75rem;border-radius:0.75rem;background:#E8EEF9;overflow:hidden;display:grid;place-items:center}
+.skin-card .pic svg{width:100%;height:100%;transform:scale(1.18) translateY(-3%)}
+/* 究极体图鉴：完整展示整只恐龙，不放大裁切 */
+.skin-card.form-card .pic svg{transform:none}
+.skin-card .nm{font-size:0.6875rem;font-weight:var(--w-bold);margin-top:0.3125rem}
+.skin-card .sub{font-size:0.59375rem;font-weight:var(--w-read);color:#A0AE9F;margin-top:0.0625rem}
+.skin-card.on{border-color:rgba(46,139,87,.5);box-shadow:0 0.375rem 0.875rem rgba(46,139,87,.13)}
+.skin-card .cur{position:absolute;left:0.5rem;top:0.5rem;font-size:0.59375rem;font-weight:var(--w-black);color:#fff;
+  background:var(--green);padding:0.125rem 0.3125rem;border-radius:0.3125rem;z-index:4}
+.skin-card.locked .pic{background:#F4EFE3}
+.skin-card.locked .pic svg{opacity:.22;filter:brightness(0)}
+.skin-card.locked .nm,.skin-card.locked .sub{color:#B3AC9B}
+.skin-card .lock-ic{position:absolute;right:0.5625rem;top:0.5625rem;color:#C6BDAA;z-index:4}
+.buy-tag{position:absolute;right:0.5625rem;top:0.5625rem;display:inline-flex;align-items:center;gap:0.125rem;background:#FFF4CE;color:#B4811C;font-size:0.59375rem;font-weight:var(--w-black);padding:0.125rem 0.3125rem;border-radius:0.375rem;line-height:1;z-index:4}
+
+/* ------------------------------------------------ words */
+.words-head{display:flex;align-items:flex-start;gap:0.625rem;margin-bottom:0.625rem}
+.words-head h1{font-size:clamp(1.5rem,4vw,1.875rem);font-weight:var(--w-black);letter-spacing:-0.0375rem;line-height:1.05}
+.words-head p{font-size:0.6875rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem}
+.words-count{flex:none;display:flex;align-items:baseline;gap:0.125rem;padding:0.375rem 0.625rem;border-radius:0.75rem;background:#E8F5D8;
+  font-size:0.9375rem;font-weight:var(--w-black);color:var(--green-d)}
+.words-count span{font-size:0.6875rem;color:var(--muted);font-weight:var(--w-bold)}
+.wl-bar{display:flex;flex-wrap:wrap;gap:0.25rem;position:sticky;top:0;z-index:3;
+  padding:0.375rem 0 0.5625rem;background:linear-gradient(180deg,var(--cream) 78%,rgba(251,243,227,0))}
+.wl{flex:none;width:1.5625rem;height:1.5625rem;border-radius:0.5rem;display:grid;place-items:center;
+  background:#fff;border:0.09375rem solid #EEE2CD;font-size:0.71875rem;font-weight:var(--w-black);color:#8B7B5C}
+.wl.all{width:auto;padding:0 0.625rem}
+.wl.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0.25rem 0.5rem rgba(46,139,87,.22)}
+.wl.off{opacity:.3}
+.word-group{margin-top:0.8125rem}
+.wg-letter{display:flex;align-items:center;gap:0.375rem;font-size:0.8125rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.03125rem}
+.wg-letter::after{content:"";flex:1;height:0.09375rem;border-radius:0.125rem;background:#EADFC9}
+.wg-letter span{font-size:0.625rem;font-weight:var(--w-black);color:#B3A184;background:#F4EFE3;border-radius:0.4375rem;padding:0.0625rem 0.375rem;letter-spacing:0}
+.wg-list{display:grid;grid-template-columns:1fr;gap:0.5rem;margin-top:0.4375rem}
+.word-row{position:relative;display:flex;align-items:center;gap:0.875rem;padding:0.625rem 0.625rem;min-height:5.125rem;text-align:left;
+  background:#fff;border:0.09375rem solid var(--line);border-radius:1rem;box-shadow:0 0.25rem 0.625rem rgba(94,70,30,.04)}
+.word-row:active{transform:scale(.985);background:#FBFDF6}
+/* 未解锁单词：灰化占位，保留卡片高度与排版 */
+.word-row.locked{background:#FAF7F0;border-color:#EDE6D8;box-shadow:none}
+.word-row.locked .wr-pic{background:#F1ECE1}
+.word-row.locked .wr-line b,.word-row.locked .wr-line i,.word-row.locked .wr-line.sub em{color:#B9AE99}
+.wr-pic{width:3rem;height:3rem;border-radius:0.8125rem;background:#F5F9EC;display:grid;place-items:center;overflow:hidden;flex:none}
+.wr-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0.375rem}
+.wr-line{display:flex;align-items:baseline;justify-content:flex-start;gap:0.25rem;min-width:0}
+.wr-line b{font-size:1.375rem;font-weight:var(--w-black);letter-spacing:-0.025rem;line-height:1.12;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
+.wr-line i{font-style:normal;font-size:0.84375rem;font-weight:var(--w-bold);color:var(--ink-2);white-space:nowrap;flex:none}
+.wr-line.sub{align-items:center}
+.wr-line.sub em{font-style:normal;font-size:0.6875rem;font-weight:var(--w-mid);color:#A19278;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:auto}
+.wr-tag{flex:none;font-size:0.625rem;font-weight:var(--w-black);padding:0.1875rem 0.375rem;border-radius:0.375rem;letter-spacing:0.0125rem}
+.wr-tag.pos{background:#F2EEE4;color:#8A7B62}
+.words-foot{display:flex;align-items:center;gap:0.3125rem;justify-content:center;margin:1rem 0 0.25rem;
+  font-size:0.65625rem;font-weight:var(--w-mid);color:#B3A184}
+.collect-dex{margin-top:0.125rem}
+.collect-dex .dex-sum{margin-top:0}

@@ -1,0 +1,151 @@
+/* ============================================================
+   DinoGo · 恐龙英语 — home：乐园首页 + 随机记单词 + 成长档案
+   ============================================================ */
+
+/* ------------------------------------------------ home */
+.home-top{display:flex;align-items:center;gap:0.6875rem;margin-top:0.125rem;margin-bottom:0.875rem}
+.home-top .greet{flex:1;min-width:0}
+.home-top .hi{font-size:1.25rem;font-weight:var(--w-black);letter-spacing:0.0125rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-top .hi b{color:var(--green)}
+.home-top .meta{display:flex;align-items:center;gap:0.25rem;font-size:0.75rem;font-weight:var(--w-read);color:var(--muted);margin-top:0.1875rem;letter-spacing:0.0125rem;white-space:nowrap;line-height:1;min-height:1rem}
+.home-top .meta .flame{color:var(--orange);display:flex;align-items:center;justify-content:center;height:1rem;flex:none}
+/* 家长角：右上角钥匙，长按 1.5 秒才进入成长档案，防止幼儿误触 */
+.parent-gate{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:0.25rem;height:2rem;padding:0 0.625rem;
+  border-radius:6.1875rem;background:rgba(255,255,255,.82);border:0.09375rem solid #EBDCC2;color:#7C6B52;
+  font-family:inherit;font-size:0.6875rem;font-weight:var(--w-bold);letter-spacing:0.01875rem;
+  box-shadow:0 0.125rem 0 rgba(201,168,120,.4),0 0.25rem 0.5rem rgba(120,75,40,.08);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  transition:transform .14s var(--pop-ease)}
+.parent-gate:active{transform:scale(.95)}
+.parent-gate svg{flex:none}
+
+.hero{
+  position:relative;height:clamp(18.75rem,36vh,24rem);border-radius:1.875rem;overflow:hidden;
+  border:0.09375rem solid #D9E8C2;
+  background-color:#DDF2CE;
+  /* 场景位图：中部留空给恐龙，前景草地承接恐龙站位 */
+  background-image:url("images/background/jungle.webp");
+  background-size:cover;background-position:center 82%;background-repeat:no-repeat;
+  transition:border-color .6s ease;
+  container-type:size;
+}
+.hero .dino-wrap{
+  position:absolute;left:50%;bottom:4cqh;
+  width:80cqh;height:80cqh;
+  transform:translateX(-50%);
+  filter:drop-shadow(0 3.6cqh 4.6cqh rgba(48,104,64,.16));
+  animation:bob 4.2s ease-in-out infinite;
+  z-index:2;
+}
+.hero .dino-wrap.ultra{filter:drop-shadow(0 0 7.8cqh rgba(255,210,90,.55)) drop-shadow(0 4.2cqh 5.4cqh rgba(48,104,64,.2))}
+.hero .hero-id{position:absolute;left:4.2cqh;top:4.2cqh;z-index:4;display:flex;flex-direction:column;align-items:flex-start;gap:1.5cqh}
+.hero .stage-tag{position:static;display:inline-flex;align-items:center;gap:0.375rem;height:7.8cqh;padding:0 0.625rem;
+  border-radius:6.1875rem;background:rgba(255,255,255,.86);border:0.09375rem solid rgba(255,255,255,.92);
+  font-size:0.75rem;font-weight:var(--w-bold);color:var(--green-d);letter-spacing:0.05rem;backdrop-filter:blur(0.25rem);
+  box-shadow:0 0.1875rem 0.5rem rgba(80,60,20,.08)}
+.hero .name{position:static;display:flex;align-items:center;gap:0.375rem}
+.hero .name b{display:block;font-size:2.0625rem;font-weight:var(--w-black);letter-spacing:0.0125rem;line-height:1.15;
+  text-shadow:0 0.0625rem 0 rgba(255,255,255,.45),0 0 0.625rem rgba(255,247,224,.85),0 0 1.375rem rgba(255,247,224,.5)}
+
+.growth-panel{
+  margin-top:0.75rem;border-radius:1.25rem;background:#fff;
+  border:0.09375rem solid #EDF2E3;box-shadow:0 0.375rem 1rem rgba(74,97,50,.08);
+  display:flex;align-items:center;gap:0.625rem;padding:0.625rem 0.625rem 0.5625rem 0.875rem;
+}
+.growth-panel .g-row{display:flex;align-items:baseline;gap:0.375rem;line-height:1.1}
+.growth-panel .lb{font-size:0.71875rem;font-weight:var(--w-bold);color:var(--muted);letter-spacing:0.0625rem}
+.growth-panel .val{font-size:1.125rem;font-weight:var(--w-black);color:var(--green-d);letter-spacing:0.0125rem}
+.growth-panel .val em{font-style:normal;font-size:0.6875rem;color:var(--muted);font-weight:var(--w-mid)}
+.growth-panel .g-next{font-size:0.6875rem;line-height:1.2;font-weight:var(--w-read);color:#8A9B8D;margin-top:0.25rem;letter-spacing:0.0125rem;display:flex;justify-content:space-between}
+.growth-panel .g-next b{color:var(--orange);font-weight:var(--w-black)}
+.growth-panel .g-bar{height:0.5rem;margin-top:0.375rem;background:#F2EEE3;box-shadow:inset 0 0.0625rem 0.1875rem rgba(93,68,25,.1)}
+.growth-panel .g-bar>i{background:linear-gradient(90deg,#9FDD4F,#3AA56B 65%,#2E8B57)}
+.growth-panel .g-bar>i::before{content:"";position:absolute;right:0.1875rem;top:0.0625rem;width:0.375rem;height:0.375rem;border-radius:50%;
+  background:#fff;box-shadow:0 0 0 0.125rem rgba(255,255,255,.45)}
+.go-btn{width:2.625rem;height:2.625rem;border-radius:0.875rem;flex:none;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(180deg,#3AA56B,#26804E);box-shadow:0 0.25rem 0 #1A5E3D,0 0.5rem 0.875rem rgba(31,107,74,.28)}
+.go-btn:active{transform:translateY(0.125rem);box-shadow:0 0.125rem 0 #1A5E3D}
+.go-btn.evolve{background:linear-gradient(180deg,#FFCF5C,#F0A92E);box-shadow:0 0.25rem 0 #C98A1C,0 0.5rem 0.875rem rgba(201,138,28,.3);color:#4A3206}
+
+.task{display:flex;align-items:center;gap:0.5625rem;height:2rem}
+.task .ico{width:1.8125rem;height:1.8125rem;border-radius:0.625rem;display:grid;place-items:center;flex:none}
+.task .ico.orange{background:#FFF0D2;color:#E69523}
+.task .ico.blue{background:#E6F4FF;color:#3D8FC4}
+.task .ico.coral{background:#FFE7DE;color:#E96A4B}
+.task .t-title{font-size:0.84375rem;font-weight:var(--w-mid);line-height:1.35}
+.task .t-sub{font-size:0.6875rem;font-weight:var(--w-read);color:#A0AFA3;margin-top:0.125rem;line-height:1.4}
+.task .reward{font-size:0.65625rem;font-weight:var(--w-black);color:#A98425;background:#FFF4CE;border-radius:6.1875rem;padding:0.1875rem 0.4375rem;letter-spacing:0.0125rem;white-space:nowrap}
+.task .check{width:1.25rem;height:1.25rem;border-radius:50%;border:0.125rem solid #E3D6BF;flex:none;display:grid;place-items:center;color:#fff}
+.task.done .check{background:var(--green);border-color:var(--green)}
+.task.done .t-title{color:#809184;text-decoration:line-through;text-decoration-thickness:0.09375rem}
+
+/* 今日单词木牌：木纹匾额 + 吊绳 + 顶面高光，玩法与排版保持不变 */
+.word-card{min-height:8.75rem;margin-top:0.75rem;border-radius:1.5rem;padding:0.8125rem 1rem;display:flex;align-items:center;gap:0.875rem;
+  background:
+    repeating-linear-gradient(92deg,rgba(122,82,36,.055) 0 0.09375rem,transparent 0.09375rem 1.375rem),
+    linear-gradient(160deg,#F9E3B4 0%,#F0CC8F 56%,#E2B472 100%);
+  border:0.1875rem solid #B98B52;
+  box-shadow:inset 0 0.1875rem 0 rgba(255,255,255,.55),inset 0 -0.1875rem 0 rgba(154,107,56,.18),
+    0 0.375rem 0 #A97B44,0 0.75rem 1.25rem rgba(120,75,40,.18);
+  position:relative;overflow:hidden;width:100%;text-align:left;transform:rotate(-0.5deg)}
+/* 顶部两条小吊绳 */
+.word-card::before,.word-card::after{content:"";position:absolute;top:0;width:0.125rem;height:1rem;border-radius:0.0625rem;
+  background:linear-gradient(180deg,#8A6540,rgba(199,154,95,0))}
+.word-card::before{left:1.25rem}
+.word-card::after{right:1.75rem;height:0.8125rem}
+.word-card .ring{display:none}
+.word-card .spk{width:3.625rem;height:3.625rem;border-radius:1.125rem;background:#FFF9EA;display:grid;place-items:center;color:#A9761F;
+  border:0.125rem solid #C9A26A;box-shadow:0 0.25rem 0 #C08F4C,inset 0 0.125rem 0 #fff;flex:none;position:relative}
+.word-card .w-main{flex:1;position:relative;min-width:0;text-align:left}
+.word-card .w-kicker{font-size:0.625rem;font-weight:var(--w-black);letter-spacing:0.09375rem;color:#8A5A22;white-space:nowrap}
+.word-card .w-word{font-size:2.25rem;font-weight:var(--w-black);letter-spacing:0.025rem;line-height:1.2;color:#4A3208;white-space:nowrap}
+.word-card .w-emoji{display:inline-block;margin-right:.25em;font-size:.95em;vertical-align:-.06em}
+.word-card .w-pron-row{display:flex;align-items:center;flex-wrap:wrap;column-gap:1.125rem;row-gap:0.25rem;margin-top:0.25rem}
+.word-card .w-phon{font-size:0.78125rem;font-weight:var(--w-read);color:#8F6B34;letter-spacing:0.0125rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
+@keyframes spk-shake{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(.94)}65%{transform:rotate(8deg) scale(.94)}}
+.word-card .spk:active{animation:spk-shake .24s ease}
+
+/* 恐龙蛋巢：今日任务 + 大转盘的合并入口 */
+.nest-entry{position:relative;display:flex;align-items:center;gap:0.75rem;width:100%;margin-top:1rem;padding:0.75rem 0.875rem;
+  border-radius:1.375rem;text-align:left;
+  background:linear-gradient(160deg,#FFF7E4,#FBE9C6);border:0.125rem solid #EAD3A8;
+  box-shadow:inset 0 0.1875rem 0 rgba(255,255,255,.8),0 0.3125rem 0 #E3C89A,0 0.875rem 1.25rem rgba(120,75,40,.12);
+  transition:transform .14s var(--pop-ease),box-shadow .12s ease}
+.nest-entry:active{transform:translateY(0.1875rem) scale(.99);
+  box-shadow:inset 0 0.125rem 0 rgba(255,255,255,.7),0 0.0625rem 0 #E3C89A}
+.nest-art{width:3.25rem;height:3.25rem;flex:none;display:grid;place-items:center}
+.nest-art svg{width:100%;height:100%;display:block}
+.nest-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0.1875rem}
+.nest-tx b{font-size:1.0625rem;font-weight:var(--w-black);color:#5C411D;letter-spacing:0.0125rem}
+.nest-tx em{font-style:normal;font-size:0.71875rem;font-weight:var(--w-read);color:#9A7C52;letter-spacing:0.0125rem}
+.nest-star{display:flex;align-items:center;gap:0.3125rem;flex:none;font-weight:var(--w-black);color:#8A5A22;font-size:1rem}
+.nest-badge{position:absolute;top:-0.375rem;right:-0.3125rem;min-width:1.375rem;height:1.375rem;padding:0 0.25rem;
+  border-radius:6.1875rem;background:var(--coral);color:#fff;font-size:0.6875rem;font-weight:var(--w-black);
+  display:grid;place-items:center;box-shadow:0 0.125rem 0 #D9543F}
+
+/* 蛋巢抽屉 */
+.nest-sheet{padding-bottom:calc(1rem + var(--safe-bottom))}
+.nest-sheet-head{display:flex;align-items:center;gap:0.5rem}
+.nest-sheet-head h2{font-size:1.375rem;font-weight:var(--w-black)}
+.nest-sheet-count{font-size:0.6875rem;font-weight:var(--w-black);color:var(--green-d);background:var(--green-l);
+  padding:0.125rem 0.4375rem;border-radius:6.1875rem;letter-spacing:0.01875rem}
+.nest-tasks{display:flex;flex-direction:column;gap:0.5rem;margin:0.875rem 0 1rem}
+.nest-wheel{margin-top:0.25rem}
+
+/* 成长路径抽屉 */
+.growth-list{display:flex;flex-direction:column;gap:0.375rem;margin:0.875rem 0 0.625rem}
+.growth-row{display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.625rem;border-radius:0.875rem;
+  background:#FFFDF7;border:0.0625rem solid var(--line)}
+.gr-dot{width:0.625rem;height:0.625rem;border-radius:50%;background:#DCCFB7;flex:none;
+  box-shadow:inset 0 -0.125rem 0 rgba(120,75,40,.12)}
+.growth-row.reached .gr-dot{background:#57AE6C}
+.growth-row.current{border-color:#F0C878;background:#FFF8E6;box-shadow:0 0.1875rem 0 #F3DCA6}
+.gr-name{flex:1;min-width:0;font-size:0.8125rem;font-weight:var(--w-black);color:var(--ink)}
+.gr-name em{font-style:normal;font-size:0.65625rem;font-weight:var(--w-read);color:#A19278;margin-left:0.3125rem}
+.gr-min{font-size:0.6875rem;color:#9A7C52;flex:none}
+.gr-state{font-size:0.625rem;font-weight:var(--w-black);color:#A19278;flex:none;min-width:2.75rem;text-align:right}
+.growth-row.current .gr-state{color:#C98B25}
+.ultra-note{margin-top:0.5rem;padding:0.5rem 0.625rem;border-radius:0.75rem;background:#FFF3D6;
+  font-size:0.6875rem;color:#8A6415;font-weight:var(--w-read);text-align:center;line-height:1.6}
+
+.home-note{margin:0.75rem 0.25rem 0;font-size:0.6875rem;font-weight:var(--w-read);color:#AC9C80;text-align:center;line-height:1.7;letter-spacing:0.0125rem}
