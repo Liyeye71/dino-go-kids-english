@@ -148,7 +148,7 @@
       <h1 class="rs2-title">${title}</h1>
       <div class="rs2-sub">DAILY · 答对 ${r.correct}/${r.total}</div>
       <div class="dv2-slot" role="img" aria-label="答对 ${r.correct} 题，获得 ${r.correct} 颗星星">
-        <span class="dv2-slot-emoji" aria-hidden="true">✨</span>
+        <span class="dv2-slot-emoji" aria-hidden="true">${star(24)}</span>
         <span class="dv2-slot-times" aria-hidden="true">*</span>
         <span class="dv2-slot-window" aria-hidden="true">
           <span class="dv2-slot-reel" style="--dv2-slot-end:${slotEnd}em">${slotReel}</span>

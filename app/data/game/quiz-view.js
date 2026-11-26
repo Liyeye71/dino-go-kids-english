@@ -1,14 +1,12 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 答题页视图层交互
-   由 main.js 拆出：单词连线点击配对、喇叭朗读、拖拽手势、渲染后绑定
+   由 main.js 拆出：喇叭朗读、拖拽手势、渲染后绑定
    ============================================================ */
 
-/* 六题型的视图层交互，不参与题目生成与判分 */
+/* 题型的视图层交互，不参与题目生成与判分 */
 window.QuizView = {
   abort: null,
-  observer: null,
   drag: null,
-  matchAreaW: null,
 
   afterRender() {
     this.cleanup();
@@ -16,16 +14,13 @@ window.QuizView = {
     if (!root || !quiz) return;
     const q = quiz.order[quiz.index];
     this.abort = new AbortController();
-    if (q.type === "match") this.setupMatch(root);
     if (q.type === "word_puzzle") this.setupPuzzle(root, q);
     if (q.type === "word_puzzle" || q.type === "feed_animal") this.setupDragging(root);
   },
 
   cleanup() {
     if (this.abort) this.abort.abort();
-    if (this.observer) this.observer.disconnect();
     this.abort = null;
-    this.observer = null;
     this.clearDragVisual();
     this.drag = null;
   },
@@ -33,49 +28,6 @@ window.QuizView = {
   clearDragVisual() {
     document.querySelectorAll(".ref-drag-ghost").forEach((el) => el.remove());
     document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
-  },
-
-  /* 单词框等宽：先按内容量出最长单词的自然宽度，再统一写入 --match-word-w */
-  syncMatchWordWidth(area) {
-    const cards = [...area.querySelectorAll(".ref-match-word-card")];
-    if (!cards.length) return;
-    cards.forEach((card) => { card.style.width = ""; });
-    area.style.removeProperty("--match-word-w");
-    const max = cards.reduce((w, card) => Math.max(w, card.getBoundingClientRect().width), 0);
-    if (max > 0) area.style.setProperty("--match-word-w", `${Math.ceil(max)}px`);
-  },
-
-  setupMatch(root) {
-    const area = root.querySelector("[data-match-area]");
-    if (!area) return;
-    this.syncMatchWordWidth(area);
-    this.matchAreaW = Math.round(area.getBoundingClientRect().width);
-    if (window.ResizeObserver) {
-      this.observer = new ResizeObserver(() => {
-        /* 只有可用宽度真的变了才重新量单词框，避免自身写入宽度引起回调循环 */
-        const w = Math.round(area.getBoundingClientRect().width);
-        if (w === this.matchAreaW) return;
-        this.matchAreaW = w;
-        this.syncMatchWordWidth(area);
-      });
-      this.observer.observe(area);
-    }
-    const options = { signal: this.abort.signal };
-    /* 点单词框 / 图片框：先选一方，再点另一侧完成配对 */
-    area.querySelectorAll("[data-match-row]").forEach((row) => {
-      row.addEventListener("click", (e) => {
-        if (e.target.closest("[data-match-speaker]")) return;
-        matchSelect(row.dataset.matchSide, row.dataset.word);
-      }, options);
-    });
-    /* 喇叭：抖动 + 朗读，不参与配对 */
-    area.querySelectorAll("[data-match-speaker]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        speak(btn.dataset.word);
-        if (typeof shakeBtn === "function") shakeBtn(btn);
-      }, options);
-    });
   },
 
   /* 词汇拼图：点击提示图片朗读正确单词 */

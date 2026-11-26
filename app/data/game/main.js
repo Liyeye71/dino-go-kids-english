@@ -34,11 +34,6 @@ function resetQuestionState(qState) {
   qState.selected = null;
   qState.revealed = false;
   qState.choiceCorrect = null;
-  qState.matched = [];
-  qState.wrongPairs = [];
-  qState.pickWord = null;
-  qState.pickWordSide = null;
-  qState.matchWrong = 0;
   qState.hatchHits = 0;
   return qState;
 }
@@ -141,26 +136,22 @@ function screenQuiz() {
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
 
-  const isMatch = q.type === "match";
   const isFeed = q.type === "feed_animal";
   const isDialog = q.type === "dialog";
   /* 情景对话整句选项展示正确句子，其余对话题展示目标单词 */
   const dialogSentence = isDialog && q.dialog && q.dialog.mode === "sentence";
-  /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物；连线题只说继续努力 */
+  /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物 */
   const answerWord = dialogSentence ? q.answerText
-    : isMatch ? null
-      : (isFeed ? q.correctFood
-        : (isDialog && q.dialog ? q.dialog.answerValue
-          : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
+    : (isFeed ? q.correctFood
+      : (isDialog && q.dialog ? q.dialog.answerValue
+        : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
   const answerZh = isFeed ? q.correctZh : (dialogSentence ? (q.answerZh || "") : q.zh);
   const answerPhon = isFeed
     ? (q.correctPhon || "")
     : (answerWord && answerWord === q.word ? (q.phon || "") : "");
   /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
-  const statusTitle = ok
-    ? (isMatch ? `${q.pairs && q.pairs.length === 2 ? "两" : "三"}组全连对啦！` : "答对了，你真棒！")
-    : (isMatch ? "有连错的，看看正确答案" : "回答错误，继续努力");
+  const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1
     ? "Result" : "Next";
   const audioIcon = `<svg viewBox="0 0 48 48" fill="none">
@@ -168,27 +159,6 @@ function screenQuiz() {
             <ellipse cx="32" cy="24" rx="5.5" ry="13.5" fill="#fce4a6" stroke="#5c3412" stroke-width="3.5"/>
             <ellipse cx="32" cy="24" rx="2.5" ry="7" fill="#7a491d"/>
           </svg>`;
-  /* 连线题答后展示完整配对表：图片 + 单词 + 喇叭 + 音标 + 中文，最右为对错标记 */
-  const wrongByArt = new Map((quiz.wrongPairs || []).map((p) => [p.art, p.word]));
-  const matchAnswerBox = isMatch && revealed
-    ? `<div class="zoo-match-list">
-        ${q.pairs.map((p) => {
-          const picked = wrongByArt.get(p.word);
-          const thumb = wordArtImg(p.img, "zoo-match-thumb-img", p.art(), "zoo-match-thumb-emoji", "lazy");
-          return `<div class="zoo-match-row${picked ? " is-wrong" : ""}">
-            <span class="zoo-match-thumb">${thumb}</span>
-            <span class="zoo-match-main">
-              <span class="zoo-match-word">${p.word}</span>
-              <button class="zoo-audio-btn" type="button" data-action="speak-word" data-word="${p.word}" aria-label="播放 ${p.word} 读音">${audioIcon}</button>
-              ${p.phon ? `<span class="zoo-match-phon">${p.phon}，</span>` : ""}
-              ${p.zh ? `<span class="zoo-match-zh">${p.zh}</span>` : ""}
-              ${picked ? `<span class="zoo-match-picked">你连成了 <b>${picked}</b></span>` : ""}
-            </span>
-            <span class="zoo-match-flag">${picked ? "✕" : "✓"}</span>
-          </div>`;
-        }).join("")}
-      </div>`
-    : "";
   const answerHasMeta = !!(answerPhon || answerZh);
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
@@ -202,7 +172,7 @@ function screenQuiz() {
           ${answerZh ? `<span class="zoo-meaning-text">${answerZh}</span>` : ""}
         </span>` : ""}
       </div>`
-    : matchAnswerBox;
+    : "";
 
   const star = (cls) => `<svg class="zoo-btn-star ${cls}" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#ffe066" stroke="#8a5a00" stroke-width="1.5"/></svg>`;
   const actionArea = `<button class="zoo-action-btn" data-action="next">
@@ -241,7 +211,7 @@ function screenQuiz() {
         </span>
         <h2 class="zoo-feedback-title">${statusTitle}</h2>
       </div>
-      <div class="zoo-feedback-body${isMatch ? " is-match" : ""}">
+      <div class="zoo-feedback-body">
         ${answerBox}
         ${actionArea}
       </div>
@@ -289,9 +259,7 @@ function speakTask() {
     lines.push(picPrompt || game.prompt);
   }
   /* 听音戳泡泡：先读题型说明，再读要听的目标单词 */
-  if (q.type === "voice_compare") {
-    lines.push(`Touch the ${q.word} one!`);
-  } else if (game && game.autoSpeak && q.word) lines.push(q.word);
+  if (game && game.autoSpeak && q.word) lines.push(q.word);
   if (lines.length) setTimer(() => speak(lines), 450);
 }
 function selectOption(word) {
@@ -308,14 +276,9 @@ function listenPill() {
 function listenSelected() {
   if (!quiz) return;
   const q = quiz.order[quiz.index];
-  const word = quiz.revealed ? q.word : quiz.selected || quiz.pickWord;
+  const word = quiz.revealed ? q.word : quiz.selected;
   if (!word) return;
   speak(word);
-}
-function matchSelect(side, word) {
-  const q = quiz && quiz.order[quiz.index];
-  const game = q && gameForTask(q);
-  if (game && game.onSelect) game.onSelect(side, word);
 }
 
 /* 拼图和喂食的共享动作：点击与拖拽走同一条状态、计分路径 */
@@ -349,7 +312,7 @@ function markDailyStar() {
   quiz.starIndex = quiz.starIndex || [];
   if (!quiz.starIndex.includes(quiz.index)) quiz.starIndex.push(quiz.index);
 }
-/* 统一单题结算副作用：供选择题、喂食题与连线题共用 */
+/* 统一单题结算副作用：供选择题与喂食题共用 */
 function finalizeTask(q, ok, opts = {}) {
   const {
     okSfx = "excellent",

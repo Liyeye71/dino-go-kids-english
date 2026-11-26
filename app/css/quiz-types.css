@@ -24,11 +24,11 @@
 @keyframes chest-reward-pop{0%{transform:translateY(-0.5rem);opacity:0}100%{transform:translateY(0);opacity:1}}
 
 /* ============================================================
-   DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 连线 / 对话 / 拼词 / 喂食）
+   DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 对话 / 拼词 / 喂食）
    ============================================================ */
 
 /* ============================================================
-   六个参考题型：场景背景 + 独立 UI + HTML 交互层
+   参考题型：场景背景 + 独立 UI + HTML 交互层
    ============================================================ */
 
 .quiz-ref-page{position:relative;isolation:isolate;background:#FFF7E4;color:#4B3626;
@@ -134,46 +134,6 @@
   box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2);z-index:2}
 .ref-listen-mark.bad{background:#E8604A;color:#fff}
 
-/* 单词连线：固定左列单词 + 右列图片，无圆点无连线，点两次完成配对 */
-.ref-match-area{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:clamp(1.5rem,7vw,3rem);width:min(100%,32rem);margin:0 auto;padding:0.5rem 0.25rem;
-  --match-h:clamp(4rem,13vw,5.25rem)}
-.ref-match-col{display:flex;flex-direction:column;gap:1rem;z-index:1}
-.ref-match-row{display:flex;flex-direction:row;align-items:center;gap:0.5rem;min-height:var(--match-h);transition:opacity .18s ease}
-.ref-match-row.done{opacity:.55}
-.ref-match-row.wrong{opacity:.8}
-.ref-match-row.wrong .ref-match-word-card,
-.ref-match-row.wrong .ref-match-art-card{border-color:#B4432F;background:#FFF0EA;box-shadow:0 0.25rem 0 #E5AA9B}
-.ref-match-art-card{position:relative;display:flex;align-items:center;justify-content:center;width:var(--match-h);height:var(--match-h);flex:none;
-  border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);cursor:pointer}
-.ref-match-art-card svg{width:2.5rem;height:2.5rem;display:block}
-/* 图片始终按原比例填满图片框，保持此前大小 */
-.ref-match-art-card > img,
-.ref-match-art-card > .art-fallback{width:100%;height:100%;object-fit:contain;display:block}
-.ref-match-art-card > .art-fallback{display:grid;place-items:center}
-/* 单词框的对错角标放在外侧，避开旁边喇叭 */
-.ref-match-word-card .ref-listen-mark{right:auto;left:-0.4rem}
-/* 同一题内所有单词框等宽：--match-word-w 由 QuizView 按最长单词量出后统一写入 */
-.ref-match-word-card{position:relative;display:flex;align-items:center;justify-content:center;
-  width:var(--match-word-w,auto);min-width:clamp(4.5rem,15vw,6rem);max-width:100%;padding:0.625rem 1rem;flex:none;text-align:center;
-  overflow-wrap:break-word;line-height:1.2;
-  border:0.1875rem solid var(--sticker-ink);border-radius:1rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);
-  color:#4B3626;font-size:clamp(0.9375rem,3.4vw,1.1875rem);font-weight:var(--w-black);cursor:pointer}
-/* 喇叭：高度为图片框的 40%，点击抖动并朗读 */
-.ref-match-speaker{display:grid;place-items:center;flex:none;width:calc(var(--match-h) * 0.4);height:calc(var(--match-h) * 0.4);
-  padding:0;border:0.125rem solid #D7B66E;border-radius:50%;background:#FFF6DC;color:#B4811C;
-  box-shadow:0 0.1875rem 0 #D7B66E;cursor:pointer;transition:transform .12s ease}
-.ref-match-speaker svg{width:60%;height:60%}
-.ref-match-speaker:active{transform:translateY(0.0625rem)}
-.ref-match-speaker.is-shaking{animation:shake .32s ease}
-/* 选中一侧后，另一侧只做“边框光圈”呼吸，不改卡片底色也不影响内部图片 */
-@keyframes matchBreath{
-  0%,100%{border-color:var(--sticker-ink);box-shadow:0 0.25rem 0 var(--sticker-shade),0 0 0 0 rgba(216,166,70,0)}
-  50%{border-color:#E0A63C;box-shadow:0 0.25rem 0 var(--sticker-shade),0 0 0 0.1875rem rgba(224,166,60,.5)}
-}
-.ref-match-row.breath .ref-match-word-card,
-.ref-match-row.breath .ref-match-art-card{animation:matchBreath 1.5s ease-in-out infinite}
-/* 喇叭不参与高亮呼吸 */
-.ref-match-row.breath .ref-match-speaker{animation:none}
 .pz-hint{cursor:pointer;touch-action:manipulation}
 .pz-hint.is-shaking{animation:shake .32s ease}
 
@@ -263,9 +223,7 @@
 .ref-feed-animal{flex:none;padding:1rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;
   cursor:pointer;transition:background .15s ease,transform .15s ease}
 .ref-feed-animal.drop-ready{background:#FFF0C9;transform:scale(1.03)}
-.ref-feed-animal .fd-art{width:clamp(6rem,19.2vh,9rem);height:clamp(6rem,19.2vh,9rem);display:grid;place-items:center}
-.ref-feed-animal .fd-name{color:var(--sticker-ink);font-size:1.65rem;font-weight:var(--w-black)}
-.ref-hint{flex:none;margin:0;color:#806039;text-align:center;line-height:1.4;font-size:clamp(0.8125rem,2.8vw,0.9375rem)}
+.ref-hint{flex:none;margin:0;min-height:2.75rem;display:flex;align-items:center;justify-content:center;color:#806039;text-align:center;line-height:1.4;font-size:clamp(0.8125rem,2.8vw,0.9375rem)}
 .quiz-ref-page .fd-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin-top:0}
 .quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:7.2rem;padding:0.375rem;
   border:0.125rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);touch-action:none;user-select:none}
@@ -277,7 +235,7 @@
 @media (min-width:48rem){
   .ref-quiz-body{padding-left:2rem;padding-right:2rem}
   .ref-pic-options,.ref-listen-grid,.ref-dialog-options{width:min(100%,38rem);align-self:center}
-  .ref-match-area,.ref-dialog-card{width:min(100%,38rem);align-self:center}
+  .ref-dialog-card{width:min(100%,38rem);align-self:center}
 }
 @media (max-height:45rem){
   .ref-stage-head{margin-top:0.5rem;margin-bottom:0.375rem}
@@ -286,8 +244,6 @@
   .ref-picture-art{padding:0.25rem}
   .ref-listen-speaker .ref-toast-art{width:3rem;height:3rem}
   .ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(3.5rem,15vh,6rem)}
-  .ref-feed-animal .fd-art{width:6rem;height:6rem}
-  .ref-feed-animal .fd-name{font-size:1.35rem}
   .quiz-ref-page .fd-food{height:6rem}
   .ref-food-art{width:4.5rem;height:4.5rem}
 }

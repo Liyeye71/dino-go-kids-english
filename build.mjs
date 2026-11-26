@@ -74,8 +74,6 @@ function collectOutputs(inlinedHtml) {
   const materialDir = path.join(appDir, "data", "images", "material");
   /* 图标：目录内文件全部保留 */
   collectFiles(outputs, path.join(appDir, "data", "images", "icons"), "data/icons", () => true);
-  /* 动作猜猜拟声音效：仅在点击喇叭时播放 */
-  collectFiles(outputs, path.join(appDir, "data", "sounds", "action"), "data/sounds/action", (f) => /\.wav$/i.test(f));
   /* 恐龙素材、场景背景：仅拷贝 webp */
   collectFiles(outputs, path.join(materialDir, "dino"), "images/dino", (f) => f.endsWith(".webp"));
   collectFiles(outputs, path.join(materialDir, "background"), "images/background", (f) => f.endsWith(".webp"));
@@ -158,6 +156,38 @@ function pruneStale(outputs) {
 }
 
 /* ---------------- 执行 ---------------- */
+/* 动作题：主题词表里的动作词必须与 images/words/action/<theme>-<action>.webp 双向一致 */
+function validateActionAssets() {
+  const actionDir = path.join(appDir, "data", "images", "material", "words", "action");
+  const themeDir = path.join(appDir, "data", "theme");
+  const images = {};
+  if (fs.existsSync(actionDir)) {
+    for (const file of fs.readdirSync(actionDir)) {
+      if (!/\.(webp|png)$/i.test(file)) continue;
+      const m = /^([a-z0-9]+)-(.+)\.(?:webp|png)$/i.exec(file);
+      if (!m) throw new Error(`build.mjs: 动作素材命名不符合 <theme>-<action>.(webp|png)：${file}`);
+      const theme = m[1].toLowerCase();
+      if (!images[theme]) images[theme] = new Set();
+      images[theme].add(m[2]);
+    }
+  }
+  const problems = [];
+  for (const file of fs.readdirSync(themeDir).filter((f) => f.endsWith(".js"))) {
+    const id = file.replace(/\.js$/, "");
+    const text = fs.readFileSync(path.join(themeDir, file), "utf8");
+    const verbs = new Set(Array.from(text.matchAll(/\{\s*word:\s*"([a-z]+)",\s*actor:/g), (m) => m[1]));
+    const assets = images[id] || new Set();
+    for (const word of verbs) if (!assets.has(word)) problems.push(`${id}: 词表有动作 "${word}"，但缺少 images/words/action/${id}-${word}.webp`);
+    for (const word of assets) if (!verbs.has(word)) problems.push(`${id}: 图片 ${id}-${word}.webp 没有对应动作词条`);
+  }
+  for (const id of Object.keys(images)) {
+    if (!fs.existsSync(path.join(themeDir, `${id}.js`))) problems.push(`images/words/action 中存在未知主题 "${id}"`);
+  }
+  if (problems.length) {
+    throw new Error("build.mjs: 动作词表与素材目录不一致\n  - " + problems.join("\n  - "));
+  }
+}
+validateActionAssets();
 const inlined = inlineAssets(readPageManifest());
 const outputs = collectOutputs(inlined);
 fs.mkdirSync(distDir, { recursive: true });

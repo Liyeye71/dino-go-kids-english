@@ -121,11 +121,6 @@ const ACTIONS = {
   "daily-start"() { closeOverlay(); startDailyQuiz(); },
   select(el) { selectOption(el.dataset.word); },
   "listen-selected"(el) { shakeBtn(el); listenSelected(); },
-  "action-sound"(el) {
-    /* 无论该动作是否配置拟声音效，点击都给出抖动反馈 */
-    shakeBtn(el);
-    playActionSound(el.dataset.sound, el);
-  },
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读与动作拟声音效 */
@@ -213,6 +208,11 @@ const ACTIONS = {
     const level = Number(el.dataset.level) || 1;
     const prog = sceneProgress("animal", "zoo");
     const cleared = Boolean(prog.cleared && prog.cleared[level]);
+    const best = (prog.stars && prog.stars[level]) || 0;
+    if (cleared && best >= 3) {
+      toast("这一关已经满星啦");
+      return;
+    }
     if (level > prog.level) {
       toast(`先完成第 ${prog.level} 关，才能解锁这一关`);
       return;
@@ -336,3 +336,8 @@ window.addEventListener("popstate", (e) => {
 });
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());
+/* 兜底：阻止任何图片被原生拖拽（长按图片拖出框） */
+document.addEventListener("dragstart", (e) => {
+  const t = e.target;
+  if (t && t.tagName === "IMG") e.preventDefault();
+}, true);

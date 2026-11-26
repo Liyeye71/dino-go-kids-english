@@ -395,10 +395,17 @@
   margin-top: 0.35rem;
 }
 .dv2-slot-emoji {
-  font-size: clamp(1.5rem, 4.4cqw, 2rem);
+  display: flex;
+  align-items: center;
   line-height: 1;
   filter: drop-shadow(0 0.25rem 0.3rem rgba(180, 120, 20, 0.25));
   animation: dv2Sparkle 1.4s ease-in-out 0.5s infinite;
+}
+/* 与首页星星同款 SVG，尺寸略大于原 emoji，和后面的数字比例更协调 */
+.dv2-slot-emoji svg {
+  display: block;
+  width: clamp(1.75rem, 5cqw, 2.35rem);
+  height: auto;
 }
 .dv2-slot-times {
   font-size: clamp(1.05rem, 3cqw, 1.4rem);

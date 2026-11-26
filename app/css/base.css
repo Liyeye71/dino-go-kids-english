@@ -62,6 +62,12 @@ body{
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
 input,textarea{font:inherit}
 svg{display:block}
+/* 题面图片禁止浏览器原生拖拽：长按 / 鼠标拖动时不会把图片拖出容器 */
+.quiz-ref-page img{
+  -webkit-user-drag:none;user-drag:none;
+  pointer-events:none;
+  -webkit-touch-callout:none;
+}
 h1,h2,h3,h4,p{margin:0}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 

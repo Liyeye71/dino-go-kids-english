@@ -1,7 +1,7 @@
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    神奇动物园：50 关，共用一张连续路线图
-   题库共 146 词（仅神奇动物园）：核心动物名词 58 + 动作动词 49 + 身体部位 19 + 特征形容词 20
+   题库共 125 词（仅神奇动物园）：核心动物名词 57 + 动作动词 49 + 身体部位 19
    每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
@@ -65,11 +65,10 @@ const ANIMAL_ZOO_NODES = [
 
 /* 关卡编号 1~50，按固定顺序连续排列 */
 /* ============================================================
-   动物乐园题库（146 词，仅神奇动物园）
-   1. 核心动物名词 58 个（含 15 个海洋动物）：看图选词 / 听音戳泡泡 / 词汇拼图
+   动物乐园题库（125 词，仅神奇动物园）
+   1. 核心动物名词 57 个（含 14 个海洋动物）：看图选词 / 听音戳泡泡 / 词汇拼图
    2. 动作动词 49 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 19 个：身体部位词汇与宿主动物插画
-   4. 特征形容词 20 个：听音比大小（同框对照 + 语音指令）
    ============================================================ */
 /* 词表：引用全局词库（data/game/library.js），不再自带词表
    - 字符串引用 = 整条取库；动词对象 = 库条目 + 地图动画参数（actor/motion）
@@ -88,8 +87,9 @@ const ANIMAL_ZOO_WORD_REFS = [
   "pig", "chicken", "bird", "owl",
   "eagle", "crow", "baboon",
   "flamingo", "koala", "lizard", "raccoon", "sloth",
-  /* 海洋动物 14 个（turtle 已包含在上方陆地名单，合计 15 种） */
-  "penguin", "fish", "shark", "seal", "whale",
+  /* 海洋动物 13 个（turtle 已包含在上方陆地名单，合计 14 种）
+     fish 只作为食物词（ANIMAL_FOODS），不再作为动物园名词出题 */
+  "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish", "otter",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
@@ -148,40 +148,12 @@ const ANIMAL_ZOO_WORD_REFS = [
   "paw", "fur", "horn", "claw",
   "feather", "beak", "neck", "tooth",
   "tongue", "leg", "belly",
-  /* ---------------- 4. 特征形容词 20 个 ---------------- */
-  "big", "small", "tall", "short",
-  "long", "fast", "slow", "fat",
-  "thin", "strong", "quiet", "noisy",
-  "cute", "clean", "heavy", "light",
-  "hungry", "full", "angry", "scared",
 ];
 const ANIMAL_ZOO_WORDS = resolveWordRefs(ANIMAL_ZOO_WORD_REFS);
 
-/* 素材键（assetKey）：题目与图片解耦
-   - 普通词默认用单词本身作为素材键
-   - 成对形容词共用同一个素材键，只通过前端高亮框（target）切换考察对象
-     例如 big / small 共用 "elephant-mouse" 底图，不必重复绘制 */
-const ANIMAL_ADJ_ASSET_KEYS = {
-  big: "elephant-mouse",     small: "elephant-mouse",
-  tall: "giraffe-rabbit",    short: "giraffe-rabbit",
-  long: "snake-rabbit",
-  fast: "cheetah-turtle",    slow: "cheetah-turtle",
-  fat: "pig-monkey",         thin: "pig-monkey",
-  strong: "gorilla-mouse",
-  quiet: "rabbit-lion",      noisy: "rabbit-lion",
-  heavy: "elephant-feather", light: "elephant-feather",
-  hungry: "wolf-meal",       full: "wolf-meal",
-  angry: "monkey-mood",      scared: "monkey-mood",
-};
+/* 素材键（assetKey）：普通词默认用单词本身作为素材键，题目与图片解耦 */
 
-/* 仅为声音线索明确的动作配置本地拟声音效；其余动作点击喇叭不播放 */
-const ANIMAL_ACTION_SOUND_WORDS = new Set([
-  "eat", "sleep", "jump", "run", "swim", "roar", "fly", "bark",
-  "lick", "bite", "sing", "splash", "dig", "walk", "drink", "sniff",
-  "laugh", "cry", "dance", "climb", "wag", "catch", "stretch",
-]);
-
-/* ============================================================
+/* ------------------------------------------------ 素材挂载 *//* ============================================================
    素材挂载：食物、宿主动物、图片与对话线索
    - 数据层只补字段，渲染层按字段取图，缺图时回退 emoji
    - 食物图直接以单词命名放在 images/words/food/，动作图统一命名为 animal-xx.webp 放在 images/words/action/
@@ -204,12 +176,11 @@ const ANIMAL_FOODS = {
   watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp" },
   /* 海洋食物：暂无插画，直接用 emoji 呈现 */
   seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "" },
-  shrimp: { id: "shrimp", en: "shrimp", zh: "虾", phon: "/ʃrɪmp/", emoji: "🦐", img: "" },
   shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "" },
   plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "" },
 };
 
-/* 58 种动物各自爱吃的食物 */
+/* 57 种动物各自爱吃的食物 */
 const ANIMAL_FEED_MAP = {
   lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
   cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
@@ -224,8 +195,8 @@ const ANIMAL_FEED_MAP = {
   panda: "bamboo",
   dog: "bone",
   flamingo: "fish", raccoon: "fish",
-  /* 海洋动物：按常识配置——鱼食藻、鲸/水母/虾食浮游生物、海星/章鱼食贝类、鲨鱼食肉 */
-  penguin: "fish", fish: "seaweed", shark: "meat", seal: "fish",
+  /* 海洋动物：按常识配置——鲸/水母/虾食浮游生物、海星/章鱼食贝类、鲨鱼食肉 */
+  penguin: "fish", shark: "meat", seal: "fish",
   whale: "plankton", dolphin: "fish", octopus: "shellfish", crab: "fish",
   starfish: "shellfish", jellyfish: "plankton", shrimp: "plankton", squid: "fish",
   clownfish: "plankton", otter: "fish",
@@ -242,7 +213,7 @@ const ANIMAL_DIET = {
   bear: "omnivore", pig: "omnivore", chicken: "omnivore", duck: "omnivore", crow: "omnivore",
   raccoon: "omnivore",
   /* 海洋动物统一按肉食处理，避免给孩子出「海豚吃竹子」这类错误搭配 */
-  penguin: "carnivore", fish: "carnivore", shark: "carnivore", seal: "carnivore",
+  penguin: "carnivore", shark: "carnivore", seal: "carnivore",
   whale: "carnivore", dolphin: "carnivore", octopus: "carnivore", crab: "carnivore",
   starfish: "carnivore", jellyfish: "carnivore", shrimp: "carnivore", squid: "carnivore",
   clownfish: "carnivore", otter: "carnivore",
@@ -262,13 +233,10 @@ ANIMAL_ZOO_WORDS.forEach((w) => {
     /* 动作题统一用 animal-{word} 素材键，便于后续主题动作词汇区分 */
     if (!w.assetKey || w.assetKey.indexOf("animal-") !== 0) w.assetKey = `animal-${w.word}`;
     w.img = w.img || `images/words/action/${w.assetKey}.webp`;
-    w.actionSound = ANIMAL_ACTION_SOUND_WORDS.has(w.word) ? w.word : "";
   } else if (w.category === "part") {
     w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
     w.assetKey = w.assetKey || w.ownerWord;
     w.img = w.img || `images/words/animal/${w.ownerWord}.webp`;
-  } else if (w.category === "adj") {
-    w.assetKey = w.assetKey || ANIMAL_ADJ_ASSET_KEYS[w.word] || w.word;
   } else {
     w.assetKey = w.assetKey || w.word;
     w.img = w.img || `images/words/animal/${w.word}.webp`;
@@ -290,7 +258,7 @@ const ANIMAL_ZOO_LEVELS = ANIMAL_ZOO_NODES.map((node, i) => ({
   y: node.y,
 }));
 
-/* 全场景词池：50 关共用同一套 146 词题库（仅神奇动物园） */
+/* 全场景词池：50 关共用同一套 125 词题库（仅神奇动物园） */
 
 const ANIMAL_SCENES = [
   {
@@ -308,7 +276,8 @@ const ANIMAL_SCENES = [
    🦁 路线弹框（底部抽屉）
    - 点「开始闯关」后升起，使用原版海报地图（不重绘画面）
    - 50 个关卡点直接落在图上 1~50 号白色圆圈中心
-   - 节点只画状态环：已通关绿色、当前关金色跳动、未解锁灰化，保留底图原数字
+   - 节点只画状态底色：满星纯绿、1~2 星按 33%/66% 从左到右填充、当前关金色跳动、未解锁灰化
+   - 节点盖住底图原数字，不再显示关号；满星关卡置为只读
    - 抽屉内支持 100% / 150% / 200% / 250% 缩放，打开时自动定位当前关
    ============================================================ */
 const ZOO_ZOOM_STEPS = [1, 1.5, 2, 2.5];
@@ -372,17 +341,23 @@ function renderZooRouteSheet(scene, prog) {
     const done = s.level < level || Boolean(prog.cleared && prog.cleared[s.level]);
     const best = (prog.stars && prog.stars[s.level]) || 0;
     const isCurrent = s.level === level && !done;
+    /* 满星关卡只读：不再允许点击重玩 */
+    const full = done && best >= 3;
     const cls = [
       "animal-route-node", "zoo-step",
       done ? "done" : "",
+      done && best >= 1 ? `stars-${Math.min(3, best)}` : "",
       isCurrent ? "current" : "",
       locked ? "locked" : "",
     ].filter(Boolean).join(" ");
+    const stateText = done
+      ? (full ? "，已通关，已满星" : `，已通关，${best} 星，可复习`)
+      : (isCurrent ? "，当前关卡" : "，未解锁");
     return `<button type="button" class="${cls}" style="left:${s.x}%;top:${s.y}%"
         data-action="zoo-node" data-level="${s.level}"
-        title="第 ${s.level} 关${done ? ` · ★${best}` : ""}"
-        aria-label="第 ${s.level} 关${done ? `，已通关，${best} 星，可复习` : isCurrent ? "，当前关卡" : "，未解锁"}"
-        ${locked ? "disabled" : ""}><span class="zoo-step-num">${s.level}</span></button>`;
+        title="第 ${s.level} 关${done ? ` · ★${best}${full ? " · 已满星" : ""}` : ""}"
+        aria-label="第 ${s.level} 关${stateText}"
+        ${(locked || full) ? "disabled" : ""}></button>`;
   }).join("");
   /* 完成结算即视为通关，最后一关也不再要求满星 */
   const allDone = Boolean(prog.cleared && prog.cleared[level]);
