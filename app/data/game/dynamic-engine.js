@@ -23,12 +23,12 @@
     { role: "feed", count: 1 },
   ];
 
-  /* 启蒙模式（3 岁）：2 选项，屏蔽词汇拼图与情景对话（enlightenOn 由 shared.js 统一提供） */
+  /* 启蒙模式（3 岁）：2 选项，屏蔽情景对话（enlightenOn 由 shared.js 统一提供） */
   function optionCount() {
     return enlightenOn() ? 2 : 3;
   }
-  /* 普通与启蒙共用题型池；启蒙仅屏蔽词汇拼图和情景对话 */
-  const ENLIGHTEN_BLOCKED_TYPES = new Set(["word_puzzle", "dialog"]);
+  /* 普通与启蒙共用题型池；启蒙仅屏蔽情景对话 */
+  const ENLIGHTEN_BLOCKED_TYPES = new Set(["dialog"]);
   function typesForMode(types) {
     return enlightenOn() ? types.filter((type) => !ENLIGHTEN_BLOCKED_TYPES.has(type)) : types;
   }
@@ -45,12 +45,11 @@
   const CATEGORIES = ["noun", "verb", "part", "adj"];
 
   /* 题型规则
-     basic    = 保底基础认知题（看图 / 听音 / 拼词）
+     basic    = 保底基础认知题（看图 / 听音）
      advanced = 互动进阶题（动作） */
   const GAME_RULES = [
     { key: "pic",         label: "看图选词", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "listen",      label: "听音戳泡泡", group: "basic",  cats: ["noun"], recordWrong: true },
-    { key: "word_puzzle", label: "词汇拼图", group: "basic",    cats: ["noun"], recordWrong: true, maxLetters: 8 },
     { key: "feed_animal", label: "动物喂食", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "dialog",      label: "情景对话", group: "basic",    cats: ["noun"], recordWrong: true },
     { key: "action",      label: "动作猜猜", group: "advanced", cats: ["verb"], recordWrong: true },
@@ -61,12 +60,9 @@
   }, {});
   const IMPLEMENTED_TYPES = GAME_RULES.map((rule) => rule.key);
 
-  /* 名词题型按阶段递进，所有互动题型与启蒙共用同一池 */
-  function nounTypesForStep(step) {
-    let types;
-    if (step <= 2) types = ["pic", "listen", "feed_animal"];
-    else types = ["pic", "listen", "word_puzzle", "feed_animal"];
-    return typesForCurrentTheme(types);
+  /* 名词题型：所有互动题型与启蒙共用同一池 */
+  function nounTypesForStep() {
+    return typesForCurrentTheme(["pic", "listen", "feed_animal"]);
   }
 
   /* 单词是否符合某个题型：标签匹配 + 特殊资源（动作图 / 食物）齐备 */
@@ -75,7 +71,6 @@
     const catOk = rule.cats.includes(w && w.category)
       || (rule.key === "listen" && enlightenOn() && w && w.category === "verb");
     if (!w || !catOk) return false;
-    if (rule.maxLetters && String(w.word).length > rule.maxLetters) return false;
     if (rule.key === "action" && !w.img) return false;
     if (rule.key === "feed_animal" && !w.food) return false;
     /* 启蒙模式：杂食动物可吃食物太杂，2 选项容易误伤，改出其他题型 */
@@ -123,7 +118,6 @@
 
   /* 按固定配比组卷：3 题关卡 1n+1v+1p，5 题关卡再加 2 道进阶题 */
   function buildSession(level, pool, sceneId, familiarSet, targetPool) {
-    const step = ((Number(level) - 1) % LEVELS_PER_STAGE) + 1;
     const size = quizSize(level);
     const usedWords = new Set();
     const usedTypes = new Set();
@@ -133,16 +127,16 @@
     for (const slot of NORMAL_MIX) {
       for (let i = 0; i < slot.count; i++) {
         let type = "action";
-        if (slot.role === "noun") type = pickType(nounTypesForStep(step), usedTypes);
+        if (slot.role === "noun") type = pickType(nounTypesForStep(), usedTypes);
         else if (slot.role === "verb") {
           type = verbType();
           /* 当前主题词表没有可用动作词时改出名词题，保证题量不缩水 */
-          if (!pool.some((w) => w.category === "verb" && w.img)) type = pickType(nounTypesForStep(step), usedTypes);
+          if (!pool.some((w) => w.category === "verb" && w.img)) type = pickType(nounTypesForStep(), usedTypes);
         }
         else if (slot.role === "feed") {
           /* 名词槽已抽到喂食时改抽其他名词题型，保证同一关题型不重复 */
           type = usedTypes.has("feed_animal")
-            ? pickType(nounTypesForStep(step), usedTypes)
+            ? pickType(nounTypesForStep(), usedTypes)
             : "feed_animal";
         }
         const question = makeQuestion(type, pool, sceneId, usedWords, usedTypes, familiarSet, targetPool);
@@ -477,21 +471,59 @@
 
   /* 泡泡位置：从图片框内的安全槽位随机抽取（带轻微抖动），每次新题都不同 */
   function bubbleLayout(count) {
-    const slots = shuffle([
-      { x: 16, y: 28 }, { x: 50, y: 28 }, { x: 84, y: 28 },
-      { x: 16, y: 70 }, { x: 50, y: 70 }, { x: 84, y: 70 },
-    ]).slice(0, count);
-    return slots.map((s) => ({
-      x: `${(s.x + Math.random() * 4 - 2).toFixed(1)}%`,
-      y: `${(s.y + Math.random() * 4 - 2).toFixed(1)}%`,
-      dx: `${(Math.random() * 0.8 - 0.4).toFixed(2)}rem`,
-      dy: `${(Math.random() * 0.8 - 0.4).toFixed(2)}rem`,
+    /* 斜向错落布局：每颗泡泡 x 各不相同（避免同列）、y 也错开（避免平行），
+       且任意两颗中心距 > 30% 舞台宽（泡泡直径约占 21%~24%），确保不重叠
+       同时避开左下角小恐龙与底部草坪 */
+    const triA = [{ x: 28, y: 22 }, { x: 72, y: 38 }, { x: 48, y: 60 }];
+    const triB = [{ x: 72, y: 22 }, { x: 28, y: 38 }, { x: 52, y: 60 }];
+    const duoA = [{ x: 30, y: 26 }, { x: 68, y: 56 }];
+    const duoB = [{ x: 68, y: 26 }, { x: 30, y: 56 }];
+    const sets = count >= 3 ? [triA, triB] : [duoA, duoB];
+    const base = sets[Math.floor(Math.random() * sets.length)].slice(0, count);
+    return base.map((s) => ({
+      /* 抖动收窄到 ±1%，不会把安全间距吃掉 */
+      x: `${(s.x + Math.random() * 2 - 1).toFixed(1)}%`,
+      y: `${(s.y + Math.random() * 2 - 1).toFixed(1)}%`,
+      /* 只保留上下浮动，取消水平漂移 */
+      dx: "0rem",
+      dy: `${(-(0.8 + Math.random() * 0.6)).toFixed(2)}rem`,
       duration: +(3.8 + Math.random() * 1.2).toFixed(1),
       delay: -+(Math.random() * 3).toFixed(1),
     }));
   }
 
-  /* 听音戳泡泡：在原展示框内浮动，保留纸面与底部托盘 */
+  /* 听音戳泡泡：答对即时特效（不触发整页重绘），延时结算前先播爆裂 + 救援 */
+  function playBubbleRescue({ el }) {
+    const stage = el && el.closest ? el.closest(".listen-bubble-stage") : null;
+    if (!stage) return;
+    if (typeof sfx === "function") sfx("pop");
+    const rect = el.getBoundingClientRect();
+    const sRect = stage.getBoundingClientRect();
+    const cx = rect.left - sRect.left + rect.width / 2;
+    const cy = rect.top - sRect.top + rect.height / 2;
+    const colors = ["#9CE3F2", "#FFE49A", "#FFB5C8", "#B6E39A"];
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement("i");
+      const rad = (i / 8) * Math.PI * 2 + (Math.random() * 0.25 - 0.125);
+      const dist = 38 + Math.random() * 14;
+      p.className = "bubble-spark";
+      p.style.cssText =
+        `left:${cx}px;top:${cy}px;` +
+        `--tx:${(Math.cos(rad) * dist).toFixed(1)}px;` +
+        `--ty:${(Math.sin(rad) * dist).toFixed(1)}px;` +
+        `background:${colors[i % colors.length]};`;
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 560);
+    }
+    el.classList.add("is-rescued");
+    const dino = stage.querySelector(".bubble-dino");
+    if (dino) {
+      dino.classList.remove("is-blowing");
+      dino.classList.add("is-cheering");
+    }
+  }
+
+  /* 听音戳泡泡：在原展示框内浮动，答对后内部动物落到草坪 */
   function renderListen({ q, quiz, artOf }) {
     const revealed = quiz.revealed;
     const selected = quiz.selected;
@@ -505,20 +537,24 @@
       const cls = ["listen-bubble"]
         .concat(isCorrect ? ["ok"] : [])
         .concat(isWrong ? ["wrong"] : [])
+        .concat(revealed && isCorrect ? ["is-rescued"] : [])
         .join(" ");
-      return `<button type="button" class="${cls}" style="--bubble-x:${p.x};--bubble-y:${p.y};--bubble-dx:${p.dx};--bubble-dy:${p.dy};--bubble-duration:${p.duration}s;--bubble-delay:${p.delay}s"
+      return `<button type="button" class="${cls}" style="--bubble-x:${p.x};--bubble-y:${p.y};--bubble-dx:${p.dx};--bubble-dy:${p.dy};--bubble-duration:${p.duration}s;--bubble-delay:${p.delay}s;--blow-delay:${(i * 0.11).toFixed(2)}s"
               data-action="select" data-word="${opt}" aria-label="戳破 ${opt} 泡泡"${revealed ? " disabled" : ""}>
               <span class="listen-bubble-art">${wordArtImg((q.optionImgs && q.optionImgs[opt]) || `images/words/animal/${opt}.webp`, "listen-card-img", (q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)(), "listen-card-emoji")}</span>
               ${isCorrect ? `<i class="ref-listen-mark">✓</i>` : ""}
               ${isWrong ? `<i class="ref-listen-mark bad">✕</i>` : ""}
             </button>`;
     }).join("");
+    const dinoSvg = typeof bubbleDinoSvg === "function" ? bubbleDinoSvg() : "";
     return {
       body: `<div class="ref-listen-wrap listen-bubble-wrap">
                 <div class="ref-listen-speaker listen-bubble-stage${revealed ? " is-revealed" : ""}" data-count="${q.options.length}">
                   ${bubbles}
+                  <div class="bubble-grass" aria-hidden="true"></div>
+                  <div class="bubble-dino${revealed ? " is-cheering" : " is-blowing"}" aria-hidden="true">${dinoSvg}</div>
                 </div>
-                <p class="ref-hint" aria-hidden="true"></p>
+                <p class="ref-hint">小恐龙，快救出小动物！</p>
                 <div class="ref-listen-grid listen-bubble-hint">
                   <button type="button" class="listen-bubble-replay" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">
                     ${I.speaker(18, "#5C411D")}<span>点我，再听一遍</span>
@@ -650,9 +686,12 @@
     } else if (d.mode === "sentence") {
       optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
         const state = optionState(o.value);
-        return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
-                <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
-              </button>`;
+        return `<div class="ref-dialog-opt-row">
+                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${escAttr(o.label)}" aria-label="朗读这句">${I.speaker(16, "#5C411D")}</button>
+                <button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
+                  <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
+                </button>
+              </div>`;
       }).join("")}</div>`;
     } else if (d.mode === "image") {
       optionHtml = `<div class="ref-dialog-image-grid">${d.options.map((o) => {
@@ -666,113 +705,22 @@
               </button>`;
       }).join("")}</div>`;
     } else {
-      optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
+      optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-opt-rows">${q.options.map((w) => `<div class="ref-dialog-opt-row">
+                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${escAttr(w)}" aria-label="朗读">${I.speaker(16, "#5C411D")}</button>
+                ${options([w])}
+              </div>`).join("")}</div>`;
     }
     return {
       body: `<div class="ref-dialog-card">
                 ${zooDeco}
                 <div class="ref-dialog-row">${person(cast && cast.ask, "boy")}
                   <div class="ref-dialog-bubble ref-dialog-ask" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="点击朗读 A 的句子">${nameTag(cast && cast.ask, "A")}<p>${askText}</p>${askPic}</div></div>
-                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble">${nameTag(cast && cast.reply, "B")}${replyHtml}</div>
-                  ${person(cast && cast.reply, "girl")}</div>
+                <div class="ref-dialog-row reply"><div class="ref-dialog-bubble">${replyHtml}</div>
+                  <div class="ref-dialog-person person--player"><img class="ref-dialog-dino" src="${dinoArtSrc(state.stage, state.ultraSkin)}" alt=""></div></div>
               </div>
               ${optionHtml}`,
       btn: choiceButton("选一个答案"),
     };
-  }
-
-  /* 词汇拼图：按词长随机留 1~3 个空槽，连续缺失字母可合并成整块 */
-  function buildWordPuzzle(task) {
-    const letters = task.word.toUpperCase().split("");
-    const blankCount = Math.min(letters.length, 1 + Math.floor(Math.random() * 3));
-    const blankIdx = new Set(
-      shuffle(letters.map((_, i) => i)).slice(0, blankCount)
-    );
-    const hinted = new Set(letters.map((_, i) => i).filter((i) => !blankIdx.has(i)));
-    const missing = letters.map((ch, i) => ({ ch, i })).filter((m) => !hinted.has(m.i));
-
-    /* 连续缺失字母分段，段内相邻字母才能合并成一块（提示字母把词隔断） */
-    const runs = [];
-    for (const m of missing) {
-      const last = runs[runs.length - 1];
-      if (last && last[last.length - 1].i + 1 === m.i) last.push(m);
-      else runs.push([m]);
-    }
-    const blocks = runs.map((run) => run.map((m) => ({ ch: m.ch, positions: [m.i] })));
-    let slotCount = blocks.reduce((n, run) => n + run.length, 0);
-    while (slotCount > 5) {
-      const pairs = [];
-      blocks.forEach((run) => {
-        for (let i = 0; i < run.length - 1; i++) pairs.push([run, i]);
-      });
-      if (!pairs.length) break;
-      const [run, i] = pairs[Math.floor(Math.random() * pairs.length)];
-      run[i] = { ch: run[i].ch + run[i + 1].ch, positions: run[i].positions.concat(run[i + 1].positions) };
-      run.splice(i + 1, 1);
-      slotCount -= 1;
-    }
-
-    const posToSlot = new Map();
-    const chunks = [];
-    let slotId = 0;
-    blocks.forEach((run) => {
-      run.forEach((b) => {
-        b.positions.forEach((p) => posToSlot.set(p, slotId));
-        chunks.push({ ch: b.ch, id: slotId });
-        slotId += 1;
-      });
-    });
-    /* 展示行：提示字母单独成格，合并拼块只占一格 */
-    const cells = [];
-    letters.forEach((ch, i) => {
-      if (hinted.has(i)) {
-        cells.push({ hint: ch });
-        return;
-      }
-      const id = posToSlot.get(i);
-      const prev = cells[cells.length - 1];
-      if (!prev || prev.slot !== id) cells.push({ slot: id });
-    });
-    task.puzzleCells = cells;
-    const origOrder = chunks.map((c) => c.ch).join("");
-    const hasDistinct = new Set(chunks.map((c) => c.ch)).size > 1;
-    let shuffled = shuffle(chunks);
-    let guard = 0;
-    while (hasDistinct && shuffled.map((c) => c.ch).join("") === origOrder && guard++ < 10) {
-      shuffled = shuffle(chunks);
-    }
-    task.puzzleLetters = shuffled.map((c) => ({ ch: c.ch, id: c.id, placed: false }));
-    task.puzzleSlots = chunks.map((c) => ({ id: c.id, filled: null }));
-  }
-
-  function renderWordPuzzle({ q, quiz, artOf }) {
-    const revealed = quiz.revealed;
-    const lettersById = new Map(q.puzzleLetters.map((l) => [l.id, l]));
-    const slotsById = new Map(q.puzzleSlots.map((s) => [s.id, s]));
-    const slotsHtml = q.puzzleCells.map((cell) => {
-      if (cell.hint) return `<div class="pz-slot hint">${cell.hint}</div>`;
-      const s = slotsById.get(cell.slot);
-      const letter = s.filled !== null ? lettersById.get(s.filled) : null;
-      return `<div class="pz-slot ${letter ? "filled" : ""}" data-slot="${s.id}">${letter ? letter.ch : ""}</div>`;
-    }).join("");
-    const filledSet = new Set(q.puzzleSlots.map((s) => s.filled));
-    const lettersHtml = q.puzzleLetters.map((l) => {
-      const used = filledSet.has(l.id);
-      return `<button type="button" class="pz-letter ${used ? "used" : ""}" data-action="pz-letter" data-drag="puzzle" data-letter="${l.id}" ${used ? "disabled" : ""}>${l.ch}</button>`;
-    }).join("");
-    const allFilled = q.puzzleSlots.every((s) => s.filled !== null);
-    const body = `
-            <div class="pz-wrap ref-puzzle-wrap">
-              <div class="pz-hint ref-puzzle-hint">
-                <div class="pz-art">${wordHeroArt(q)}</div>
-              </div>
-              <div class="pz-slots">${slotsHtml}</div>
-              <div class="pz-letters">${lettersHtml}</div>
-              ${!revealed
-                ? `<button type="button" class="btn pz-check" data-action="pz-check" ${allFilled ? "" : "disabled"}>检查答案 ${I.arrow(16)}</button>`
-                : `<span class="pz-check-spacer" aria-hidden="true"></span>`}
-            </div>`;
-    return { body, btn: revealed ? quizNextButton() : "" };
   }
 
   /* 动物喂食：干扰项按「栖息地 + 食性」双维度隔离
@@ -915,6 +863,63 @@
     });
   }
 
+  /* 动物喂食答对：咬一口的“咔嚓”声 + 咀嚼回弹 + Yummy!/爱心飘出（不触发重绘） */
+  function playFeedChew() {
+    sfx("crunch");
+    const box = document.querySelector(".ref-feed-animal");
+    if (!box) return;
+    box.classList.remove("is-chewing");
+    /* 强制回流，保证连续答对时动画能重复播放 */
+    void box.offsetWidth;
+    box.classList.add("is-chewing");
+    box.querySelectorAll(".feed-yummy, .feed-heart").forEach((n) => n.remove());
+    const yummy = document.createElement("span");
+    yummy.className = "feed-yummy";
+    yummy.textContent = "Yummy!";
+    const h1 = document.createElement("span");
+    h1.className = "feed-heart h1";
+    h1.textContent = "❤";
+    const h2 = document.createElement("span");
+    h2.className = "feed-heart h2";
+    h2.textContent = "💛";
+    box.append(yummy, h1, h2);
+  }
+
+  /* 情景对话 eat 类答对：食物从选项飞到提问动物身上，并朗读小恐龙的回答（单一音源） */
+  function playDialogReply({ q, el }) {
+    const d = q && q.dialog;
+    if (!d) return;
+    const askBox = document.querySelector(".ref-dialog-ask");
+    if (d.foodImg && el && askBox) {
+      sfx("pop");
+      const from = el.getBoundingClientRect();
+      const to = askBox.getBoundingClientRect();
+      const fly = document.createElement("img");
+      fly.className = "dialog-food";
+      fly.src = d.foodImg;
+      fly.alt = "";
+      fly.style.left = `${from.left + from.width / 2}px`;
+      fly.style.top = `${from.top + from.height / 2}px`;
+      document.body.appendChild(fly);
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      requestAnimationFrame(() => {
+        fly.style.transform = `translate(${dx}px, ${dy}px) scale(.55)`;
+        fly.style.opacity = "0.15";
+      });
+      setTimer(() => {
+        fly.remove();
+        /* 食物抵达：动物轻点头“开吃”，随后随重绘消失 */
+        askBox.classList.remove("is-eating");
+        void askBox.offsetWidth;
+        askBox.classList.add("is-eating");
+        setTimer(() => askBox.classList.remove("is-eating"), 900);
+      }, 520);
+    }
+    /* 单一音源：先朗读回答句，弹卡在 settleDelay 后发生 */
+    if (d.answerText) speak(d.answerText);
+  }
+
   function defaultGames() {
     return {
       pic: {
@@ -932,20 +937,23 @@
         autoSpeak: true,
         build: threeChoiceBuild,
         render: renderListen,
+        /* 答对后先播爆裂救援特效，延迟 650ms 再走统一结算（见 main.js beginSettlement） */
+        settleDelay: 650,
+        onCorrectFx: playBubbleRescue,
       },
       dialog: {
         label: "情景对话",
         title: "读对话，选出正确的答案",
         build: buildDialog,
         render: renderDialog,
-      },
-      /* 🧩 词汇拼图 Word Puzzle（纯 DOM 拖拽排序） */
-      word_puzzle: {
-        label: "词汇拼图",
-        title: "拖动字母块，拼出单词！",
-        prompt: "Spell the word with the letters.",
-        build: buildWordPuzzle,
-        render: renderWordPuzzle,
+        /* 仅 eat 类整句题：飞食物 + 读回复，按句长估算弹卡时机 */
+        settleDelay: (q) => {
+          const d = q && q.dialog;
+          if (!d || d.mode !== "sentence" || !d.foodImg) return 0;
+          const words = String(d.answerText || "").trim().split(/\s+/).filter(Boolean).length;
+          return 800 + words * 200;
+        },
+        onCorrectFx: playDialogReply,
       },
       /* 🍎 动物喂食 Feed the Animal（emoji 拖拽 + 选卡） */
       feed_animal: {
@@ -954,6 +962,8 @@
         prompt: "What does this animal like to eat?",
         build: buildFeedAnimal,
         render: renderFeedAnimal,
+        settleDelay: 720,
+        onCorrectFx: playFeedChew,
       },
       /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
       action: {

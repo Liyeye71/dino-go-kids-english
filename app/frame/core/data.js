@@ -56,7 +56,7 @@ const DEFAULT_STATE = {
   /* 每日随机挑战（全主题共享）：dailyDay 记录日期键，dailyCount 为当天已完成次数 */
   dailyDay: "",
   dailyCount: 0,
-  /* 启蒙模式：开启后 2 选项，屏蔽词汇拼图与情景对话 */
+  /* 启蒙模式：开启后 2 选项，屏蔽情景对话 */
   enlighten: false,
   growth: 0,
   stage: "egg",

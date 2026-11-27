@@ -43,10 +43,9 @@
 .quiz-ref-page[data-scene="zoo"]{container-type:size;--quiz-w:100%;--pic-w:min(100%,28rem,58cqh)}
 .quiz-ref-page[data-scene="zoo"] .ref-quiz-body,
 .quiz-ref-page[data-scene="zoo"] .quiz-foot{width:var(--quiz-w);max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
-/* 统一图片框宽度：看图 / 听音 / 拼图 / 喂食 / 进阶题共用 --pic-w */
+/* 统一图片框宽度：看图 / 听音 / 喂食 / 进阶题共用 --pic-w */
 .quiz-ref-page[data-scene="zoo"] .ref-picture-frame,
 .quiz-ref-page[data-scene="zoo"] .ref-listen-speaker,
-.quiz-ref-page[data-scene="zoo"] .ref-puzzle-hint .pz-art,
 .quiz-ref-page[data-scene="zoo"] .ref-feed-animal,
 .quiz-ref-page[data-scene="zoo"] .ref-action-stage{width:var(--pic-w)}
 .quiz-ref-page[data-scene="zoo"] .ref-quiz-body{padding-top:1.25rem}

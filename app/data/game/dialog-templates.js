@@ -165,6 +165,7 @@
         answerValue: correct,
         answerText: correct,
         answerZh: `它吃${foodZh}。`,
+        foodImg: (w.food && w.food.img) || "",
       };
     }
 
@@ -188,6 +189,7 @@
         answerValue: correct,
         answerText: correct,
         answerZh: isRight ? "是的，它吃。" : `不，它不吃。它吃${foodZh}。`,
+        foodImg: (w.food && w.food.img) || "",
       };
     }
 

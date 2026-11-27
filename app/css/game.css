@@ -213,23 +213,6 @@
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
 
 /* ============================================================
-   🧩 词汇拼图 Word Puzzle
-   ============================================================ */
-
-.pz-wrap{display:flex;flex-direction:column;align-items:center;gap:0.75rem}
-.pz-hint{display:flex;flex-direction:column;align-items:center;gap:0.25rem}
-.pz-art{position:relative;font-size:2.5rem;line-height:1}
-.pz-slots{display:flex;gap:0.25rem;margin:0.25rem 0}
-.pz-slot{width:1.6875rem;height:2rem;border-radius:0.3125rem;background:#F4E5C6;border:0.125rem dashed #C4A673;display:grid;place-items:center;font-size:1.125rem;font-weight:var(--w-black);color:var(--sticker-ink);transition:background .15s}
-.pz-slot.filled{background:#FFE477;border-style:solid}
-.pz-letters{display:flex;flex-wrap:wrap;gap:0.25rem;justify-content:center;margin-top:0.5rem}
-.pz-letter{width:2rem;height:2.25rem;border:0;border-radius:0.375rem;background:#3D5A3D;color:#fff;font-size:1rem;font-weight:var(--w-black);cursor:pointer;transition:transform .12s}
-.pz-letter:active{transform:scale(.9)}
-.pz-letter.used{opacity:.3;pointer-events:none}
-.pz-check{margin-top:0.75rem;width:100%;min-height:2.75rem}
-.pz-check:disabled{opacity:.5;cursor:not-allowed}
-
-/* ============================================================
    🍎 动物喂食 Feed Animal
    ============================================================ */
 

@@ -48,6 +48,26 @@ function sfx(name) {
     }
     /* 答错：柔和三角波低音下滑，不刺耳、不吓低龄孩子 */
     else if (name === "wrong") { tone(240, 0.16, "triangle", 0.045); tone(185, 0.22, "triangle", 0.032, 0.1); }
+    /* 听音戳泡泡：戳破正确泡泡的清脆“啵！”上扬水泡音（频率滑音需直接操作 AudioParam） */
+    else if (name === "pop") {
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(340, t);
+      osc.frequency.exponentialRampToValueAtTime(1080, t + 0.085);
+      g.gain.setValueAtTime(0.11, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+      osc.connect(g).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.12);
+    }
+    /* 动物喂食：咬一口的“咔嚓”咀嚼声（短促中频颗粒感） */
+    else if (name === "crunch") {
+      tone(196, 0.06, "square", 0.035);
+      tone(233, 0.06, "square", 0.03, 0.07);
+      tone(175, 0.07, "triangle", 0.028, 0.14);
+    }
     /* 纯单词选项题型答后弹框：正确 / 错误各自的专属结果音效 */
     else if (name === "answer-right") {
       [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.18, "triangle", 0.05, i * 0.09));

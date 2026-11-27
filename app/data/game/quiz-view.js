@@ -14,8 +14,7 @@ window.QuizView = {
     if (!root || !quiz) return;
     const q = quiz.order[quiz.index];
     this.abort = new AbortController();
-    if (q.type === "word_puzzle") this.setupPuzzle(root, q);
-    if (q.type === "word_puzzle" || q.type === "feed_animal") this.setupDragging(root);
+    if (q.type === "feed_animal") this.setupDragging(root);
   },
 
   cleanup() {
@@ -30,17 +29,7 @@ window.QuizView = {
     document.querySelectorAll(".drop-ready").forEach((el) => el.classList.remove("drop-ready"));
   },
 
-  /* 词汇拼图：点击提示图片朗读正确单词 */
-  setupPuzzle(root, q) {
-    const hint = root.querySelector(".pz-hint");
-    if (!hint) return;
-    hint.addEventListener("click", () => {
-      if (!quiz) return;
-      speak(q.word);
-      if (typeof shakeBtn === "function") shakeBtn(hint);
-    }, { signal: this.abort.signal });
-  },
-
+  /* 动物喂食：拖拽食物到动物嘴里 */
   setupDragging(root) {
     const options = { signal: this.abort.signal };
     root.querySelectorAll("[data-drag]").forEach((source) => {
@@ -52,7 +41,7 @@ window.QuizView = {
     if (!quiz || quiz.revealed || e.button !== 0 || source.disabled) return;
     const drag = {
       pointerId: e.pointerId, source, kind: source.dataset.drag,
-      value: source.dataset.drag === "puzzle" ? Number(source.dataset.letter) : source.dataset.food,
+      value: source.dataset.food,
       x: e.clientX, y: e.clientY, moved: false, ghost: null, overTarget: null,
     };
     this.drag = drag;
@@ -74,7 +63,7 @@ window.QuizView = {
       drag.ghost.style.left = `${ev.clientX}px`;
       drag.ghost.style.top = `${ev.clientY}px`;
       const hit = document.elementFromPoint(ev.clientX, ev.clientY);
-      const target = hit && (drag.kind === "food" ? hit.closest("[data-feed-drop]") : hit.closest(".pz-slot"));
+      const target = hit && hit.closest("[data-feed-drop]");
       if (target !== drag.overTarget) {
         if (drag.overTarget) drag.overTarget.classList.remove("drop-ready");
         if (target) target.classList.add("drop-ready");
@@ -92,13 +81,8 @@ window.QuizView = {
       try { if (source.hasPointerCapture(ev.pointerId)) source.releasePointerCapture(ev.pointerId); } catch {}
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
-      if (drag.kind === "puzzle") {
-        const slot = hit && hit.closest(".pz-slot[data-slot]");
-        if (slot) puzzlePlace(drag.value, Number(slot.dataset.slot));
-      } else {
-        const target = hit && hit.closest("[data-feed-drop]");
-        if (target) feedPick(drag.value);
-      }
+      const target = hit && hit.closest("[data-feed-drop]");
+      if (target) feedPick(drag.value);
     };
     const up = (ev) => finish(ev, false);
     const cancel = (ev) => finish(ev, true);

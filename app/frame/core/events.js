@@ -119,13 +119,14 @@ const ACTIONS = {
     startQuiz(el.dataset.level);
   },
   "daily-start"() { closeOverlay(); startDailyQuiz(); },
-  select(el) { selectOption(el.dataset.word); },
+  select(el) { selectOption(el.dataset.word, el); },
   "listen-selected"(el) { shakeBtn(el); listenSelected(); },
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读与动作拟声音效 */
     stopSpeak();
     stopActionSound();
+    settleLock = false;
     quiz = null;
     const prevTheme = state.theme;
     const prevScene = state.scene;
@@ -183,7 +184,7 @@ const ACTIONS = {
   "filter-word"(el) { wordsLetter = el.dataset.letter; sfx("tap"); renderAndResetScroll(); },
   theme(el) { state.theme = el.dataset.theme; save(); sfx("tap"); render(); },
   "enlighten-toggle"() {
-    /* 启蒙模式：2 选项，屏蔽词汇拼图与情景对话 */
+    /* 启蒙模式：2 选项，屏蔽情景对话 */
     state.enlighten = !state.enlighten;
     save();
     sfx("tap");
@@ -242,23 +243,6 @@ const ACTIONS = {
     sfx("win");
     LuckyWheel.open({ fromChest: true });
     render(); /* 更新地图上的宝箱计数 */
-  },
-  /* 🧩 词汇拼图 Word Puzzle：点字母 → 依次填入槽位 */
-  "pz-letter"(el) { puzzlePlace(Number(el.dataset.letter)); },
-  "pz-check"() {
-    if (!quiz || quiz.revealed) return;
-    const q = quiz.order[quiz.index];
-    const slotsById = new Map(q.puzzleSlots.map((x) => [x.id, x]));
-    const lettersById = new Map(q.puzzleLetters.map((x) => [x.id, x]));
-    const got = q.puzzleCells.map((c) => {
-      if (c.hint) return c.hint;
-      const s = slotsById.get(c.slot);
-      const l = s && s.filled !== null ? lettersById.get(s.filled) : null;
-      return l ? l.ch : "_";
-    }).join("").toLowerCase();
-    const ok = got === q.word.toLowerCase();
-    quiz.selected = ok ? q.word : got;
-    finalizeTask(q, ok);
   },
   /* 🍎 动物喂食 Feed Animal */
   "fd-pick"(el) { feedPick(el.dataset.food); },

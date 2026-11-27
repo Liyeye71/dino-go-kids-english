@@ -189,13 +189,20 @@
 .animal-route-map.has-map.zoo .zoo-step::after{inset:-0.35cqw}
 .animal-route-map.has-map.zoo .zoo-step.done{background:#fff;border-color:#E6DCC6;color:#7C6B4E}
 .animal-route-map.has-map.zoo .zoo-step.stars-3{background:#fff;cursor:default}
-.animal-route-map.has-map.zoo .zoo-step.stars-3::before{
+/* 满三星 / BOSS 通关：金色卡通星星印章 */
+.animal-route-map.has-map.zoo .zoo-step.stars-3::before,
+.animal-route-map.has-map.zoo .zoo-step.boss.done::before{
   content:"★";position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;
   width:76%;height:76%;display:grid;place-items:center;border:0.28cqw solid #E2A62E;border-radius:50%;
   color:#F3C643;font-size:3.2cqw;line-height:1;font-weight:var(--w-black);
   text-shadow:0 0.14cqw 0 #B97812;
   box-shadow:inset 0 0 0 0.18cqw #fff,inset 0 0 0 0.38cqw #E2A62E;
   opacity:.95;transform:translate(-50%,-50%) rotate(-12deg)}
+/* 每 5 关最后一关（BOSS 关）：未通关时圆内显示 Boss 小恐龙 */
+.animal-route-map.has-map.zoo .zoo-step.boss:not(.done)::before{
+  content:"🦖";position:absolute;left:50%;top:50%;z-index:1;pointer-events:none;
+  font-size:3.1cqw;line-height:1;transform:translate(-50%,-50%);
+  filter:drop-shadow(0 0.08cqw 0 rgba(255,255,255,.85))}
 .animal-route-map.has-map.zoo .zoo-step.current{background:linear-gradient(180deg,#FFE082,#FFC24D);
   border-color:#E2A83C;color:#6B4A12;
   box-shadow:0 0.16cqw 0.4cqw rgba(120,80,20,.2),0 0 0 0.55cqw rgba(255,201,77,.3);

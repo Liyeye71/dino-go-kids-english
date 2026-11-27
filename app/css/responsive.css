@@ -78,7 +78,6 @@
 .quiz-ref-page .ref-pic-wrap,
 .quiz-ref-page .ref-listen-wrap,
 .quiz-ref-page .ref-action-wrap,
-.quiz-ref-page .ref-puzzle-wrap,
 .quiz-ref-page .ref-feed-wrap {
   flex: 1 1 0 !important;
   min-height: 0 !important;
@@ -149,15 +148,6 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-
-/* 词汇拼图居中 */
-.quiz-ref-page .ref-puzzle-wrap { justify-content: center !important; gap: 0.875rem !important; }
-.quiz-ref-page .ref-puzzle-wrap .ref-puzzle-hint { flex: 0 0 auto; justify-content: center; margin-bottom: 0 !important; }
-.quiz-ref-page .ref-puzzle-wrap .pz-art { overflow: hidden; }
-.quiz-ref-page .ref-puzzle-wrap .pz-slots,
-.quiz-ref-page .ref-puzzle-wrap .pz-letters,
-.quiz-ref-page .ref-puzzle-wrap .pz-check,
-.quiz-ref-page .ref-puzzle-wrap .pz-check-spacer { margin-top: 0 !important; margin-bottom: 0 !important; }
 
 /* 启蒙模式（3 岁）：2 选项布局 */
 .quiz-page[data-enlighten="1"] .ref-pic-options,
@@ -687,7 +677,6 @@
 
 .quiz-ref-page.dino-stage-v2 .ref-picture-frame,
 .quiz-ref-page.dino-stage-v2 .ref-listen-speaker,
-.quiz-ref-page.dino-stage-v2 .ref-puzzle-hint .pz-art,
 .quiz-ref-page.dino-stage-v2 .ref-feed-animal,
 .quiz-ref-page.dino-stage-v2 .ref-action-stage {
   flex: 0 1 auto !important;
@@ -739,7 +728,6 @@
 .quiz-ref-page.dino-stage-v2 .ref-listen-grid { height: auto !important; min-height: 0 !important; }
 .quiz-ref-page.dino-stage-v2 .ref-listen-card { height: var(--q-opt-h, clamp(4.25rem, 11cqh, 5.75rem)) !important; min-height: 0 !important; }
 .quiz-ref-page.dino-stage-v2 .ref-dialog-card { width: min(92%, 38rem) !important; margin: auto auto 0.5rem !important; }
-.quiz-ref-page.dino-stage-v2 .ref-puzzle-wrap { padding: 0 1rem 1rem !important; }
 .quiz-ref-page.dino-stage-v2 .zoo-feedback-card { width: min(92%, 27rem) !important; border-radius: 1.6rem !important; }
 
 @media (min-width:600px) {
@@ -807,6 +795,103 @@
   .listen-bubble-replay { padding: 0.55rem 1rem; font-size: 0.8125rem; }
 }
 
+/* ================= 听音戳泡泡 A+C 融合升级 ================= */
+/* 泡泡彩虹膜（仅未揭晓状态生效，避免覆盖答后 ok/wrong 底色） */
+.listen-bubble-stage:not(.is-revealed) .listen-bubble {
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255,255,255,.88) 0%, rgba(255,255,255,.18) 28%, rgba(160,232,248,.32) 64%, rgba(255,194,224,.42) 86%, rgba(255,236,173,.5) 100%);
+  border-color: rgba(255,255,255,.85);
+  box-shadow:
+    inset -0.25rem -0.3rem 0.6rem rgba(130,200,235,.35),
+    inset 0.2rem 0.25rem 0.5rem rgba(255,255,255,.85),
+    0 0.35rem 0.85rem rgba(92,65,29,.12);
+}
+/* 战场底部草坪 */
+.bubble-grass {
+  position: absolute; left: -6%; right: -6%; bottom: -4%; height: 22%;
+  z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg,#A9DC7E 0%,#7CC058 100%);
+  border-top: 0.14rem solid #5C411D;
+  border-radius: 50% 50% 0 0 / 70% 70% 0 0;
+  box-shadow: inset 0 0.2rem 0 rgba(255,255,255,.38);
+}
+/* 左下角吹泡泡小恐龙 */
+.bubble-dino {
+  position: absolute; left: 2%; bottom: 0.5%;
+  width: clamp(4.2rem, 16cqw, 6rem);
+  z-index: 1; pointer-events: none; transform-origin: bottom center;
+  filter: drop-shadow(0 0.35rem 0.45rem rgba(46,92,56,.2));
+}
+.bubble-dino svg { width: 100%; height: auto; display: block; }
+.bubble-dino .dino-cheek { transform-origin: center; transition: transform .22s ease; }
+.bubble-dino.is-blowing .dino-cheek { transform: scale(1.45); }
+.bubble-dino.is-blowing { animation: dinoBlow .72s cubic-bezier(.34,1.56,.64,1); }
+.bubble-dino.is-cheering { animation: dinoCheer .7s cubic-bezier(.34,1.56,.64,1); }
+@keyframes dinoBlow {
+  0% { transform: scale(1,1) rotate(0deg); }
+  30% { transform: scale(1.08,.92) rotate(-5deg); }
+  65% { transform: scale(.95,1.07) rotate(4deg); }
+  100% { transform: scale(1,1) rotate(0deg); }
+}
+@keyframes dinoCheer {
+  0%,100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-0.9rem) scale(1.06,.96); }
+  65% { transform: translateY(-0.2rem) scale(.98,1.04); }
+}
+/* 爆裂水花微粒 */
+.bubble-spark {
+  position: absolute; width: .72rem; height: .72rem; border-radius: 50%;
+  pointer-events: none; z-index: 9;
+  background: radial-gradient(circle at 35% 35%, #fff 0%, #9CE3F2 70%);
+  border: .08rem solid rgba(255,255,255,.9);
+  transform: translate(-50%,-50%) scale(1);
+  animation: bubbleSparkFly .56s cubic-bezier(.16,.88,.34,1) forwards;
+}
+@keyframes bubbleSparkFly {
+  0% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  100% { transform: translate(-50%,-50%) translate(var(--tx,0),var(--ty,0)) scale(.15); opacity: 0; }
+}
+/* 答对：泡泡壳消隐，内部动物落到底部草坪（重绘后由 .is-rescued 保持该态） */
+.listen-bubble.is-rescued {
+  animation: none !important;
+  top: 78% !important;
+  /* 关掉动画后需手动补回居中位移，否则会偏右下半个身位 */
+  transform: translate(-50%, -50%);
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  z-index: 4;
+  transition: top .5s cubic-bezier(.32,.04,.68,1);
+}
+.listen-bubble.is-rescued::before { display: none; }
+.listen-bubble.is-rescued .ref-listen-mark { display: none; }
+.listen-bubble.is-rescued .listen-bubble-art {
+  animation: rescueBounce .62s cubic-bezier(.34,1.56,.64,1);
+  filter: drop-shadow(0 .3rem .4rem rgba(46,92,56,.25));
+}
+@keyframes rescueBounce {
+  0% { transform: scale(1.2,.78); }
+  32% { transform: translateY(-1.2rem) scale(.92,1.12); }
+  58% { transform: translateY(0) scale(1.1,.9); }
+  80% { transform: translateY(-0.5rem) scale(.97,1.04); }
+  100% { transform: translateY(0) scale(1.06,1.06); }
+}
+/* “点我，再听一遍”按钮：参照 demo 3D 果冻黄色大按钮，随屏幕比例放大 */
+.listen-bubble-replay {
+  min-height: clamp(3.1rem, 8.5cqh, 4rem);
+  padding: 0 clamp(1.4rem, 5cqw, 2.2rem);
+  font-size: clamp(0.95rem, 2.8cqw, 1.18rem);
+  border-radius: 999px;
+  border: 0.15625rem solid #5C411D;
+  border-bottom-width: 0.42rem;
+  background: linear-gradient(180deg,#FFE285 0%,#F5C33B 100%);
+  color: #5C411D;
+  font-weight: 900;
+  box-shadow: 0 0.35rem 0.8rem rgba(160,110,20,.18), inset 0 0.15rem 0 rgba(255,255,255,.65);
+  transition: transform .14s cubic-bezier(.34,1.56,.64,1), border-bottom-width .1s ease;
+}
+.listen-bubble-replay:active { transform: translateY(0.22rem) scale(.97,.94); border-bottom-width: 0.16rem; }
+
 /* ============================================================
    统一题面比例（情景对话除外）
    唯一基准：答题页容器高度 cqh（1cqh = 页面高度 1%）
@@ -852,9 +937,7 @@
 .quiz-ref-page.dino-stage-v2 .ref-picture-art .pic-emoji{font-size: clamp(5rem,30cqh,12rem) !important}
 /* 动作猜猜：图片铺满舞台 */
 .quiz-ref-page.dino-stage-v2 .ref-action-img{padding: 0.5rem !important}
-/* 4. 拼词 / 喂食：槽位与选项同高，插图按同一比例 */
-.quiz-ref-page.dino-stage-v2 .pz-slot,
-.quiz-ref-page.dino-stage-v2 .pz-letter{height: var(--q-opt-h) !important}
+/* 4. 喂食：食物卡片与选项同高，插图按同一比例 */
 .quiz-ref-page.dino-stage-v2 .fd-food{height: var(--q-dock-card-h) !important}
 /* 食物图容器占满卡片内容区（不再用百分比高度，避免图片被裁切） */
 .quiz-ref-page.dino-stage-v2 .ref-food-art{width: 100% !important;height: auto !important;flex: 1 1 auto !important;min-height: 0 !important}
@@ -866,7 +949,7 @@
   width: auto !important; height: auto !important;
 }
 
-/* 6. 图片框统一 4:3（看图 / 动作 / 喂食 / 听音）；拼图与情景对话除外 */
+/* 6. 图片框统一 4:3（看图 / 动作 / 喂食 / 听音）；情景对话除外 */
 .quiz-ref-page .ref-feed-animal,
 .quiz-ref-page .ref-picture-frame,
 .quiz-ref-page .ref-action-stage,
@@ -876,4 +959,35 @@
 .quiz-ref-page.dino-stage-v2 .ref-action-stage,
 .quiz-ref-page.dino-stage-v2 .ref-listen-speaker{
   aspect-ratio: 4/3 !important;
+}
+
+/* ================= 动物喂食（feed_animal）答对咀嚼与甜蜜反馈 ================= */
+.ref-feed-animal { position: relative; }
+.ref-feed-animal.is-chewing .fd-art { animation: feedChewBounce 0.4s ease-in-out 2; }
+.feed-yummy {
+  position: absolute; top: 0.55rem; right: 0.75rem; z-index: 6;
+  padding: 0.16rem 0.62rem; border-radius: 999px;
+  background: #FFE49A; border: 0.125rem solid #5C411D;
+  font-weight: 900; font-size: 0.95rem; color: #5C411D;
+  animation: feedYummyPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.feed-heart {
+  position: absolute; left: 50%; top: 36%; z-index: 6;
+  font-size: 1.3rem; color: #F26B8A; pointer-events: none;
+  animation: feedHeartUp 0.85s ease-out forwards;
+}
+.feed-heart.h1 { --hx: -1.5rem; }
+.feed-heart.h2 { --hx: 1.5rem; color: #FFB703; animation-delay: 0.1s; }
+@keyframes feedChewBounce {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.1, 0.9); }
+}
+@keyframes feedYummyPop {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes feedHeartUp {
+  0% { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--hx, 0px)), -2.6rem) scale(1.1); opacity: 0; }
 }

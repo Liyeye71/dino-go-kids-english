@@ -1,5 +1,5 @@
 /* ============================================================
-   DinoGo · 恐龙英语 — 扩展题型（词汇拼图 / 动物喂食 / 进阶题）与 BOSS 关
+   DinoGo · 恐龙英语 — 扩展题型（动物喂食 / 进阶题）与 BOSS 关
    ============================================================ */
 
 /* ============================================================
@@ -24,7 +24,7 @@
 @keyframes chest-reward-pop{0%{transform:translateY(-0.5rem);opacity:0}100%{transform:translateY(0);opacity:1}}
 
 /* ============================================================
-   DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 对话 / 拼词 / 喂食）
+   DinoGo · 恐龙英语 — 参考题型：动物园贴纸风（看图 / 听音 / 对话 / 喂食）
    ============================================================ */
 
 /* ============================================================
@@ -84,12 +84,10 @@
   border:0.125rem solid var(--sticker-ink);border-radius:1rem;background:#FFF3C9;color:#4B3626;box-shadow:0 0.5rem 1.25rem rgba(75,54,38,.22);
   font-size:1.25rem;font-weight:var(--w-black);transform:translate(-50%,-50%)}
 .ref-drag-ghost svg{width:3.5rem;height:3.5rem;display:block}
-.quiz-ref-page .pz-slot.drop-ready{border-style:solid;border-color:#68A873;background:#EAF7E3}
 
-/* 统一图片框模板：看图 / 听音 / 拼图 / 喂食 / 进阶题共用同一外框 */
+/* 统一图片框模板：看图 / 听音 / 喂食 / 进阶题共用同一外框 */
 .ref-picture-frame,
 .ref-listen-speaker,
-.ref-puzzle-hint .pz-art,
 .ref-feed-animal,
 .ref-action-stage{
   position:relative;width:min(100%,28rem);aspect-ratio:16/10;margin:0 auto;display:grid;place-items:center;
@@ -133,9 +131,6 @@
   border-radius:50%;background:#4FA55E;color:#fff;font-style:normal;font-weight:var(--w-black);font-size:0.8125rem;line-height:1;
   box-shadow:0 0.0625rem 0.25rem rgba(60,40,10,.2);z-index:2}
 .ref-listen-mark.bad{background:#E8604A;color:#fff}
-
-.pz-hint{cursor:pointer;touch-action:manipulation}
-.pz-hint.is-shaking{animation:shake .32s ease}
 
 /* 情景对话：动物园贴纸对话框（角色头像 + 名字牌 + 气泡尾巴 + 场景小装饰） */
 .ref-dialog-card{position:relative;display:flex;flex-direction:column;gap:0.75rem;flex:none}
@@ -198,26 +193,6 @@
 /* 整句答案：英文与中文分列两行展示 */
 .zoo-answer-box.is-sentence .zoo-meaning-text{flex:1 1 100%;padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
 
-/* 词汇拼图 */
-.quiz-ref-page .ref-puzzle-wrap{flex:1;min-height:0;justify-content:center;gap:0.875rem}
-.ref-puzzle-hint{padding:0;border:0;border-radius:0;background:transparent;display:flex;justify-content:center}
-.ref-puzzle-hint .pz-art{cursor:pointer;touch-action:manipulation}
-.ref-puzzle-hint .pic-img{filter:none}
-.ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
-.quiz-ref-page .pz-slots{display:flex;justify-content:center;flex-wrap:nowrap;gap:0.375rem;width:100%;margin:0}
-.quiz-ref-page .pz-slot{width:auto;min-width:clamp(2.5rem,9vw,3.25rem);padding:0 0.375rem;height:clamp(2.75rem,8vw,3.5rem);border:0.125rem dashed #A78C61;border-radius:0.75rem;background:#F2E4C8;
-  color:var(--sticker-ink);font-size:clamp(0.875rem,4vw,1.5rem);box-shadow:inset 0 0.1875rem 0.375rem rgba(92,65,29,.1)}
-.quiz-ref-page .pz-slot.filled{border-style:solid;border-color:var(--sticker-ink);background:#FFE49A;box-shadow:0 0.1875rem 0 #D1AE62}
-.quiz-ref-page .pz-slot.hint{border-style:solid;border-color:#C6AF86;background:#FFF6DE;color:#8A6B3E;box-shadow:none}
-.quiz-ref-page .pz-letters{gap:0.5rem;margin-top:0.25rem}
-.quiz-ref-page .pz-letter{width:auto;min-width:2.75rem;padding:0 0.5rem;height:3rem;border:0.125rem solid var(--sticker-ink);border-radius:0.75rem;background:#68BE83;color:#203B29;
-  box-shadow:0 0.25rem 0 #3F8155;font-size:1.25rem;touch-action:none;user-select:none}
-.quiz-ref-page .pz-letter.used{opacity:.25;pointer-events:none}
-.ref-puzzle-wrap .pz-check{width:min(100%,20rem);border:0.125rem solid var(--sticker-ink);background:#68BE83;color:#243F2B;box-shadow:0 0.25rem 0 #3F8155}
-.ref-puzzle-wrap .pz-check:disabled{border-color:#A49379;background:#E5DCCB;box-shadow:0 0.1875rem 0 #BCAE96}
-/* 答后移除检查按钮时保留同尺寸占位，避免题目区因剩余空间重分配而上下移位 */
-.ref-puzzle-wrap .pz-check-spacer{flex:none;width:min(100%,20rem);min-height:2.75rem;margin-top:0.75rem;visibility:hidden}
-
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
 .ref-feed-animal{flex:none;padding:1rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;
@@ -243,7 +218,42 @@
   .ref-stage-head h2{font-size:1.0625rem}
   .ref-picture-art{padding:0.25rem}
   .ref-listen-speaker .ref-toast-art{width:3rem;height:3rem}
-  .ref-puzzle-hint .pz-art .pic-emoji{font-size:clamp(3.5rem,15vh,6rem)}
   .quiz-ref-page .fd-food{height:6rem}
   .ref-food-art{width:4.5rem;height:4.5rem}
+}
+
+/* ===== 情景对话 A：整句选项外的独立点读喇叭 ===== */
+.quiz-ref-page .ref-dialog-opt-row{display:flex;align-items:stretch;gap:0.5rem}
+.quiz-ref-page .ref-dialog-opt-row .option{flex:1 1 auto;min-width:0}
+.dlg-opt-say{
+  flex:0 0 auto;align-self:center;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:2.6rem;height:2.6rem;border-radius:50%;
+  background:#FFE9A8;border:0.125rem solid #5C411D;
+  box-shadow:0 0.2rem 0 #C9A24A;
+  cursor:pointer;transition:transform .12s ease,box-shadow .12s ease;
+}
+.dlg-opt-say:active{transform:translateY(0.14rem);box-shadow:0 0.06rem 0 #C9A24A}
+.dlg-opt-say.is-shaking{animation:dlgSayShake .5s ease-in-out}
+@keyframes dlgSayShake{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-12deg)}
+  75%{transform:rotate(12deg)}
+}
+/* ===== 情景对话 B：玩家小恐龙（纯展示） ===== */
+.ref-dialog-person.person--player .ref-dialog-dino{
+  width:100%;height:100%;display:block;
+  object-fit:contain;object-position:center bottom;
+}
+/* ===== 情景对话 C：食物飞入提问动物 + 动物开吃 ===== */
+.dialog-food{
+  position:fixed;z-index:70;width:2.2rem;height:2.2rem;object-fit:contain;
+  transform:translate(-50%,-50%);
+  transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .5s ease;
+  pointer-events:none;
+}
+.ref-dialog-ask.is-eating img{animation:dialogEatNod .45s ease-in-out 2}
+@keyframes dialogEatNod{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-.18rem) scale(1.05)}
 }

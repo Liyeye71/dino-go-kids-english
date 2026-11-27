@@ -333,6 +333,28 @@ function emojiArt(ch) {
   </svg>`;
 }
 
+/* 听音戳泡泡专属：左下角内联 SVG 吹泡泡小恐龙（奶油森林暖棕粗描边风） */
+function bubbleDinoSvg() {
+  return `<svg class="bubble-dino-svg" viewBox="0 0 120 116" fill="none" aria-hidden="true">
+    <ellipse cx="48" cy="107" rx="30" ry="6" fill="rgba(92,65,29,0.16)"/>
+    <path d="M22 48 L12 42 L19 56 Z" fill="#FFD166" stroke="#5C411D" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M18 62 L8 59 L16 71 Z" fill="#FFD166" stroke="#5C411D" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M20 77 L11 77 L21 86 Z" fill="#FFD166" stroke="#5C411D" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 84 C10 86 6 95 16 99 C24 102 34 103 52 103 C68 103 74 92 72 78 C70 64 62 56 54 54 C66 50 75 40 73 27 C71 14 57 9 43 12 C28 15 21 28 24 44 C26 53 20 68 22 84 Z" fill="#8FD07A" stroke="#5C411D" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M46 62 C59 64 66 76 64 90 C62 97 54 100 45 99 C42 88 42 74 46 62 Z" fill="#FFF3C4" stroke="#5C411D" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M35 98 L35 106 C35 108 42 108 43 105 L44 99" fill="#7EC05A" stroke="#5C411D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M55 98 L55 106 C55 108 62 108 63 105 L63 98" fill="#7EC05A" stroke="#5C411D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="53" cy="27" r="4.6" fill="#5C411D"/>
+    <circle cx="54.6" cy="25.4" r="1.6" fill="#FFFFFF"/>
+    <ellipse class="dino-cheek" cx="45" cy="36" rx="5.2" ry="3.2" fill="#FFADAD" opacity="0.85"/>
+    <circle cx="69" cy="36" r="3.2" fill="#E88B8B" stroke="#5C411D" stroke-width="2.4"/>
+    <path d="M64 66 C74 64 81 59 84 53" stroke="#5C411D" stroke-width="3.6" stroke-linecap="round"/>
+    <line x1="82" y1="56" x2="88" y2="39" stroke="#F4A261" stroke-width="4" stroke-linecap="round"/>
+    <line x1="82" y1="56" x2="88" y2="39" stroke="#5C411D" stroke-width="1.6" stroke-linecap="round"/>
+    <ellipse cx="91" cy="31" rx="7.5" ry="9.5" transform="rotate(18 91 31)" fill="rgba(156,227,242,0.45)" stroke="#5C411D" stroke-width="2.8"/>
+  </svg>`;
+}
+
 /* 公共彩纸屑片段生成：供答题正确特效与结算页共用 */
 const CONFETTI_PALETTE_QUIZ = ["#FFC94A", "#FF8A4C", "#5BC178", "#5FBCDA", "#FF6F61", "#B8E05A"];
 const CONFETTI_PALETTE_RESULT = ["#FFC94A", "#FF8A4C", "#68BE83", "#9FDCF2", "#F4B4C6"];

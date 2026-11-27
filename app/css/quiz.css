@@ -68,6 +68,9 @@
 .zoo-feedback-card.is-wrong{background:#FFF6EC}
 /* 进阶题型有「纸面安全框」：弹框宽度取纸面宽度的 75%，而不是整屏的 75% */
 .quiz-ref-page .zoo-feedback-card{width:calc((var(--stage-max-w) - 0.75rem) * 0.75)}
+/* 听音戳泡泡：彩带层提到结果卡之上；结果卡下移，露出草坪与获救小动物 */
+.quiz-page[data-type="listen"] .qfx{z-index:45}
+.quiz-page[data-type="listen"] .zoo-feedback-card{top:74%}
 .zoo-feedback-header{position:relative;z-index:2;display:flex;align-items:center;gap:0.6rem}
 .zoo-status-badge{width:2.2rem;height:2.2rem;border-radius:50%;flex:none;display:grid;place-items:center;
   background:#4FAE55;border:0.125rem solid #1E6B3B;box-shadow:0 0.14rem 0 rgba(30,107,59,.32)}

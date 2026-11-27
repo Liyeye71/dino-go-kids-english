@@ -6,6 +6,8 @@
 const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
 let themeSetCache = { len: -1, map: new Map() };
+/* 题型答对延时结算锁：防止特效播放期间重复点击/重复计分 */
+let settleLock = false;
 
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
@@ -40,6 +42,7 @@ function resetQuestionState(qState) {
 
 /* 统一创建一局答题状态 */
 function createQuiz(opts) {
+  settleLock = false;
   return resetQuestionState({
     level: opts.level || 0,
     index: 0,
@@ -140,11 +143,11 @@ function screenQuiz() {
   const isDialog = q.type === "dialog";
   /* 情景对话整句选项展示正确句子，其余对话题展示目标单词 */
   const dialogSentence = isDialog && q.dialog && q.dialog.mode === "sentence";
-  /* 纯单词选项题给出正确单词；词汇拼图也给出正确单词；动物喂食给出正确食物 */
+  /* 纯单词选项题给出正确单词；动物喂食给出正确食物 */
   const answerWord = dialogSentence ? q.answerText
     : (isFeed ? q.correctFood
       : (isDialog && q.dialog ? q.dialog.answerValue
-        : ((q.options || q.type === "word_puzzle") && q.word ? q.word : null)));
+        : (q.options && q.word ? q.word : null)));
   const answerZh = isFeed ? q.correctZh : (dialogSentence ? (q.answerZh || "") : q.zh);
   const answerPhon = isFeed
     ? (q.correctPhon || "")
@@ -241,11 +244,34 @@ function speakTask() {
   if (game && game.autoSpeak && q.word) lines.push(q.word);
   if (lines.length) setTimer(() => speak(lines), 450);
 }
-function selectOption(word) {
-  if (!quiz || quiz.revealed) return;
+/* 通用结算分流：题型声明 settleDelay 时，答对先播特效再延迟进入统一结算 */
+function beginSettlement(q, ok, el, commit) {
+  const run = typeof commit === "function" ? commit : checkAnswer;
+  const game = gameForTask(q);
+  /* settleDelay 支持数字（固定）或函数（按题目动态估算） */
+  const delay = game
+    ? (typeof game.settleDelay === "function" ? game.settleDelay(q) : game.settleDelay) || 0
+    : 0;
+  if (ok && delay > 0) {
+    settleLock = true;
+    if (typeof game.onCorrectFx === "function") game.onCorrectFx({ q, el });
+    setTimer(() => {
+      settleLock = false;
+      /* 延时期间可能已退出答题页，避免在空页面上结算 */
+      if (!document.querySelector(".quiz-page")) return;
+      run();
+    }, delay);
+    return;
+  }
+  run();
+}
+function selectOption(word, el) {
+  if (!quiz || quiz.revealed || settleLock) return;
+  const q = quiz.order[quiz.index];
+  const correctValue = q.answerValue != null ? q.answerValue : q.word;
   quiz.selected = word;
   sfx("tap");
-  checkAnswer();
+  beginSettlement(q, word === correctValue, el);
 }
 /* 听发音按钮：纯喇叭图标 + 圆形底色 */
 function listenPill() {
@@ -260,25 +286,17 @@ function listenSelected() {
   speak(word);
 }
 
-/* 拼图和喂食的共享动作：点击与拖拽走同一条状态、计分路径 */
-function puzzlePlace(letterId, slotId = null) {
-  if (!quiz || quiz.revealed) return;
-  const q = quiz.order[quiz.index];
-  const slot = slotId === null
-    ? q.puzzleSlots.find((s) => s.filled === null)
-    : q.puzzleSlots.find((s) => s.id === Number(slotId));
-  const letter = q.puzzleLetters.find((l) => l.id === letterId);
-  if (!slot || slot.filled !== null || !letter || q.puzzleSlots.some((s) => s.filled === letterId)) return;
-  slot.filled = letterId;
-  sfx("tap");
-  render();
-}
 function feedPick(food) {
-  if (!quiz || quiz.revealed) return;
+  if (!quiz || quiz.revealed || settleLock) return;
   quiz.selected = food;
   sfx("tap");
-  /* 点选食物后立即判题，不再需要底部确认按钮 */
-  feedCheck();
+  const q = quiz.order[quiz.index];
+  /* 点对：先播咀嚼特效，延时后再结算弹卡；点错：保持原逻辑，立即弹框 */
+  if (food === q.correctFood) {
+    beginSettlement(q, true, null, feedCheck);
+  } else {
+    feedCheck();
+  }
 }
 /* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
 function unlockTaskWord(q) {
@@ -351,6 +369,7 @@ function checkAnswer() {
 }
 function nextQuestion() {
   if (!quiz) return;
+  settleLock = false;
   clearTimers();
   if (quiz.index >= quiz.order.length - 1) { finishQuiz(); return; }
   quiz.index++;
