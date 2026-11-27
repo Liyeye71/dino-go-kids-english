@@ -1,9 +1,10 @@
 /* DinoGo · offline cache */
-const VERSION = "1.3";
+const VERSION = "1.4";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
+  "./font/ZCOOLKuaiLe.woff2",
   "./data/icons/icon-192.png",
   "./data/icons/icon-512.png",
   "./data/icons/apple-touch-icon.png",
@@ -29,7 +30,10 @@ const ASSETS = [
   "./images/background/jungle.webp",
   "./images/background/sunset.webp",
   "./images/background/night.webp",
-  "./images/background/animal-zoo-map.webp"
+  "./images/background/animal-zoo-map.webp",
+  "./images/background/theme-animal.webp",
+  "./images/background/theme-school.webp",
+  "./images/background/theme-travel.webp"
 ];
 
 self.addEventListener("install", (event) => {

@@ -991,3 +991,124 @@
   25% { opacity: 1; }
   100% { transform: translate(calc(-50% + var(--hx, 0px)), -2.6rem) scale(1.1); opacity: 0; }
 }
+
+/* ================= 静态素材图呼吸特效（看图 / 喂食 / 动作共用） ================= */
+.ref-picture-art .pic-img,
+.fd-animal-img,
+.ref-action-img {
+  transform-origin: 50% 88%;
+  animation: stickerBreathe 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+.ref-feed-animal.is-chewing .fd-animal-img,
+.ref-feed-animal.is-rejecting .fd-animal-img {
+  animation-play-state: paused;
+}
+@keyframes stickerBreathe {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  50%      { transform: translateY(-0.18rem) scale(0.985, 1.03); }
+}
+
+/* ================= 动物喂食：待机饥饿气泡 / 重听喇叭 / 喂错摇头与食物弹开 ================= */
+.ref-feed-animal .feed-replay-btn {
+  position: absolute; right: 0.75rem; bottom: 0.75rem; z-index: 5;
+  border: 0.09375rem solid var(--sticker-line); color: #72532F;
+  box-shadow: 0 0.1875rem 0 #D5BB8D;
+}
+.feed-hungry-badge {
+  position: absolute; top: 0.55rem; right: 0.75rem; z-index: 4;
+  font-size: 1.55rem; line-height: 1; pointer-events: none;
+  filter: drop-shadow(0 0.15rem 0.25rem rgba(92, 65, 29, .18));
+  animation: hungryFloat 2.4s ease-in-out infinite;
+}
+.ref-feed-animal.is-chewing .feed-hungry-badge,
+.ref-feed-animal.is-rejecting .feed-hungry-badge { display: none; }
+@keyframes hungryFloat {
+  0%, 100% { transform: translateY(0) scale(1); opacity: .92; }
+  50%      { transform: translateY(-0.28rem) scale(1.08); opacity: 1; }
+}
+
+.ref-feed-animal.is-rejecting .fd-art {
+  transform-origin: 50% 88%;
+  animation: feedRejectShake 0.52s ease-in-out both;
+}
+@keyframes feedRejectShake {
+  0%, 100% { transform: translateX(0) rotate(0) scale(1); }
+  20%      { transform: translateX(-0.42rem) rotate(-6deg) scale(0.97, 1.02); }
+  45%      { transform: translateX(0.42rem) rotate(6deg) scale(0.97, 1.02); }
+  70%      { transform: translateX(-0.24rem) rotate(-3.5deg) scale(0.99); }
+  88%      { transform: translateX(0.14rem) rotate(2deg) scale(1); }
+}
+.feed-nope {
+  position: absolute; top: 0.55rem; right: 0.75rem; z-index: 6;
+  padding: 0.16rem 0.62rem; border-radius: 999px;
+  background: #FFE5DD; border: 0.125rem solid #A64332;
+  font-weight: 900; font-size: 0.95rem; color: #A64332;
+  animation: feedYummyPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.feed-sweat {
+  position: absolute; left: 58%; top: 28%; z-index: 6;
+  font-size: 1.25rem; pointer-events: none;
+  animation: feedSweatDrop 0.58s ease-out forwards;
+}
+@keyframes feedSweatDrop {
+  0%   { transform: translate(0, -0.25rem) scale(0.7); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translate(0.75rem, 1.15rem) scale(1.05); opacity: 0; }
+}
+.feed-reject-food {
+  position: absolute; left: 50%; top: 52%; z-index: 7;
+  width: 3.1rem; height: 3.1rem; display: grid; place-items: center;
+  font-size: 2.2rem; pointer-events: none;
+  animation: feedFoodBounceOut 0.56s cubic-bezier(.22, .68, .36, 1) forwards;
+}
+.feed-reject-food img { width: 100%; height: 100%; object-fit: contain; display: block; }
+@keyframes feedFoodBounceOut {
+  0%   { transform: translate(-50%, -50%) scale(0.75) rotate(0); opacity: 0.95; }
+  35%  { transform: translate(0.6rem, -2.1rem) scale(1.02) rotate(18deg); opacity: 1; }
+  100% { transform: translate(3.6rem, 1.2rem) scale(0.55) rotate(48deg); opacity: 0; }
+}
+
+/* ================= 听音戳泡泡（listen）戳错果冻晃动 + 恐龙疑惑 ================= */
+.listen-bubble.is-wrong-wobble {
+  border-color: #E8765A !important;
+  box-shadow: 0 0 0 0.22rem rgba(232, 118, 90, .28), inset 0 0 0.8rem rgba(255, 190, 170, .55) !important;
+  animation: bubbleWrongWobble 0.5s cubic-bezier(.36, .07, .19, .97) both !important;
+}
+@keyframes bubbleWrongWobble {
+  0%, 100% { transform: translate(-50%, -50%) scale(1, 1); }
+  18%      { transform: translate(calc(-50% - 0.55rem), -50%) scale(1.12, 0.88) rotate(-6deg); }
+  38%      { transform: translate(calc(-50% + 0.55rem), -50%) scale(0.92, 1.1) rotate(6deg); }
+  58%      { transform: translate(calc(-50% - 0.35rem), -50%) scale(1.06, 0.94) rotate(-3.5deg); }
+  78%      { transform: translate(calc(-50% + 0.22rem), -50%) scale(0.97, 1.03) rotate(2deg); }
+}
+.bubble-dino.is-oops {
+  animation: dinoOops 0.48s ease-in-out both;
+}
+@keyframes dinoOops {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  30%      { transform: rotate(-9deg) translateY(-0.18rem); }
+  65%      { transform: rotate(7deg) translateY(-0.08rem); }
+}
+.bubble-oops-tag {
+  position: absolute; z-index: 10; pointer-events: none;
+  width: 1.55rem; height: 1.55rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #FFE5DD; border: 0.125rem solid #C94D38;
+  color: #C94D38; font-weight: 900; font-size: 0.95rem;
+  animation: bubbleOopsPop 0.5s ease-out forwards;
+}
+@keyframes bubbleOopsPop {
+  0%   { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+  30%  { transform: translate(-50%, -0.55rem) scale(1.12); opacity: 1; }
+  100% { transform: translate(-50%, -1.45rem) scale(0.9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ref-picture-art .pic-img,
+  .fd-animal-img,
+  .ref-action-img,
+  .feed-hungry-badge {
+    animation: none !important;
+  }
+}

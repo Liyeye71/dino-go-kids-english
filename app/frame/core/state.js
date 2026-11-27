@@ -114,7 +114,6 @@ function setTimer(fn, ms) {
 function clearTimers() {
   timers.forEach((t) => clearTimeout(t));
   timers = [];
-  stopActionSound();
 }
 
 /* 全新存档：零星星、零成长、零记录，所有主题从第 1 关开始 */

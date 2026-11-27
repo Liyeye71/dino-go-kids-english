@@ -5,7 +5,6 @@
 
 const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
-let themeSetCache = { len: -1, map: new Map() };
 /* 题型答对延时结算锁：防止特效播放期间重复点击/重复计分 */
 let settleLock = false;
 
@@ -19,16 +18,30 @@ function artOf(word) {
   return artMap.map.get(word) || (() => UNKNOWN_ART(word));
 }
 
-/* 每日挑战按题目来源取题型实现；按 id 建索引缓存，回退到只读公共实现 */
+/* 每日挑战按题目来源取题型实现；复用 words.js 的 THEME_BY_ID，回退到只读公共实现 */
 function gameForTask(q) {
   if (!q) return null;
-  const sets = window.DINO_WORD_SETS || [];
-  if (themeSetCache.len !== sets.length) {
-    themeSetCache = { len: sets.length, map: new Map(sets.map((t) => [t.id, t])) };
-  }
-  const source = themeSetCache.map.get(q.themeId);
+  const source = THEME_BY_ID.get(q.themeId);
   const currentGames = currentTheme().games || {};
   return (source && source.games && source.games[q.type]) || currentGames[q.type] || DynamicEngine.getDefaultGame(q.type);
+}
+
+/* 统一读取题型的正确答案值与答后展示信息 */
+function correctValueOf(q, game) {
+  const g = game || gameForTask(q);
+  if (g && typeof g.getCorrectValue === "function") return g.getCorrectValue(q);
+  return q && q.answerValue != null ? q.answerValue : (q && q.word) || "";
+}
+function answerMetaOf(q, game) {
+  const g = game || gameForTask(q);
+  if (g && typeof g.getAnswerMeta === "function") return g.getAnswerMeta(q);
+  return {
+    word: q && q.options && q.word ? q.word : null,
+    zh: (q && q.zh) || "",
+    phon: (q && q.phon) || "",
+    speakText: (q && q.word) || "",
+    isSentence: false,
+  };
 }
 
 /* 统一重置单题交互状态 */
@@ -36,7 +49,6 @@ function resetQuestionState(qState) {
   qState.selected = null;
   qState.revealed = false;
   qState.choiceCorrect = null;
-  qState.hatchHits = 0;
   return qState;
 }
 
@@ -70,7 +82,8 @@ function startQuiz(level, opts = {}) {
   lastResult = null;
   levelCue(currentTheme().id);
   go("quiz");
-  speakTask();
+  /* 第 1 题等开场提示音播完再开口，避免人声与旋律重叠 */
+  speakTask(920);
 }
 
 /* 每日随机挑战：全主题混抽 10 题，答对 1 题得 1★，完成结算才消耗次数 */
@@ -139,20 +152,12 @@ function screenQuiz() {
   }).join("");
   const view = game.render({ q, quiz, total, optionClass, choiceButton, options, letters, artOf });
 
-  const isFeed = q.type === "feed_animal";
-  const isDialog = q.type === "dialog";
-  /* 情景对话整句选项展示正确句子，其余对话题展示目标单词 */
-  const dialogSentence = isDialog && q.dialog && q.dialog.mode === "sentence";
-  /* 纯单词选项题给出正确单词；动物喂食给出正确食物 */
-  const answerWord = dialogSentence ? q.answerText
-    : (isFeed ? q.correctFood
-      : (isDialog && q.dialog ? q.dialog.answerValue
-        : (q.options && q.word ? q.word : null)));
-  const answerZh = isFeed ? q.correctZh : (dialogSentence ? (q.answerZh || "") : q.zh);
-  const answerPhon = isFeed
-    ? (q.correctPhon || "")
-    : (answerWord && answerWord === q.word ? (q.phon || "") : "");
-  /* 答后结果卡：参考 temp/correnct.html、woring.html 的森林奶油风结构，从屏幕正中心弹出 */
+  const meta = answerMetaOf(q, game);
+  const answerWord = meta.word;
+  const answerZh = meta.zh;
+  const answerPhon = meta.phon;
+  const dialogSentence = !!meta.isSentence;
+  /* 答后结果卡：森林奶油风结构，从屏幕正中心弹出 */
   const ok = !!quiz.choiceCorrect;
   const statusTitle = ok ? "答对了，你真棒！" : "回答错误，继续努力";
   const nextLabel = quiz.index >= quiz.order.length - 1
@@ -201,8 +206,8 @@ function screenQuiz() {
   const fx = revealed && ok ? correctFx() : "";
   const isDaily = quiz.mode === "daily";
   const refHead = `<div class="ref-stage-head">
-      <span class="ref-stage-badge">${q.type === "listen" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
-      <div><span class="ref-stage-kicker">${isDaily ? "每日随机挑战 · " : isAnimalBossLevel(quiz.level) ? "BOSS · " : ""}${isDaily ? "" : `LEVEL ${String(quiz.level).padStart(2, "0")} · `}${game.label}</span>
+      <span class="ref-stage-badge">${game.badgeIcon === "speaker" ? I.speaker(24, "#5C411D") : I.leaf(24, "#5C411D")}</span>
+      <div><span class="ref-stage-kicker">${isDaily ? "每日随机挑战 · " : isStageBossLevel(quiz.level) ? "BOSS · " : ""}${isDaily ? "" : `LEVEL ${String(quiz.level).padStart(2, "0")} · `}${game.label}</span>
       <h2>${game.title}</h2></div>
     </div>`;
   const frameTop = `<div class="quiz-top">
@@ -223,38 +228,28 @@ function screenQuiz() {
   </section>`;
 }
 
-function speakTask() {
+function speakTask(delay = 450) {
   const q = quiz && quiz.order[quiz.index];
   if (!q) return;
   const game = gameForTask(q);
-  const lines = [];
-  if (q.type === "dialog") {
-    /* 情景对话：直接朗读 A 的提问句 */
-    const d = q.dialog;
-    const ask = d && d.ask ? d.ask : (q.dlgQ || "").replace("{word}", q.word);
-    const text = String(ask || "").replace(/<[^>]*>/g, "").trim();
-    if (text) lines.push(text);
-  } else if (game && game.prompt) {
-    const t = typeof currentTheme === "function" ? currentTheme() : null;
-    /* 每日混抽：看图朗读提示跟随词条来源主题 */
-    const picPrompt = (q.type === "pic" && q.picPrompt) || (q.type === "pic" && t && t.picPrompt) || "";
-    lines.push(picPrompt || game.prompt);
-  }
-  /* 听音戳泡泡：先读题型说明，再读要听的目标单词 */
-  if (game && game.autoSpeak && q.word) lines.push(q.word);
-  if (lines.length) setTimer(() => speak(lines), 450);
+  const lines = game && typeof game.getPromptLines === "function"
+    ? game.getPromptLines(q)
+    : [];
+  if (lines.length) setTimer(() => speak(lines), delay);
 }
-/* 通用结算分流：题型声明 settleDelay 时，答对先播特效再延迟进入统一结算 */
+/* 通用结算分流：支持题型按答对 / 答错分别声明延时特效，再进入统一结算 */
 function beginSettlement(q, ok, el, commit) {
   const run = typeof commit === "function" ? commit : checkAnswer;
   const game = gameForTask(q);
-  /* settleDelay 支持数字（固定）或函数（按题目动态估算） */
-  const delay = game
-    ? (typeof game.settleDelay === "function" ? game.settleDelay(q) : game.settleDelay) || 0
+  /* settleDelay / wrongSettleDelay 支持数字（固定）或函数（按题目动态估算） */
+  const rawDelay = game
+    ? (ok ? game.settleDelay : game.wrongSettleDelay)
     : 0;
-  if (ok && delay > 0) {
+  const delay = (typeof rawDelay === "function" ? rawDelay(q) : rawDelay) || 0;
+  if (delay > 0) {
     settleLock = true;
-    if (typeof game.onCorrectFx === "function") game.onCorrectFx({ q, el });
+    const fxFn = ok ? game.onCorrectFx : game.onWrongFx;
+    if (typeof fxFn === "function") fxFn({ q, el, word: quiz && quiz.selected });
     setTimer(() => {
       settleLock = false;
       /* 延时期间可能已退出答题页，避免在空页面上结算 */
@@ -268,7 +263,7 @@ function beginSettlement(q, ok, el, commit) {
 function selectOption(word, el) {
   if (!quiz || quiz.revealed || settleLock) return;
   const q = quiz.order[quiz.index];
-  const correctValue = q.answerValue != null ? q.answerValue : q.word;
+  const correctValue = correctValueOf(q);
   quiz.selected = word;
   sfx("tap");
   beginSettlement(q, word === correctValue, el);
@@ -277,26 +272,28 @@ function selectOption(word, el) {
 function listenPill() {
   return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(16)}</button>`;
 }
-/* 听发音：需先点击选项，答题后朗读正确答案 */
+/* 听发音：答题前重播当前题干问句，答题后朗读正确答案 */
 function listenSelected() {
   if (!quiz) return;
   const q = quiz.order[quiz.index];
-  const word = quiz.revealed ? q.word : quiz.selected;
-  if (!word) return;
-  speak(word);
+  if (!q) return;
+  if (quiz.revealed) {
+    const meta = answerMetaOf(q);
+    if (meta.speakText) speak(meta.speakText);
+    return;
+  }
+  if (quiz.selected) {
+    speak(quiz.selected);
+    return;
+  }
+  const game = gameForTask(q);
+  const lines = game && typeof game.getPromptLines === "function" ? game.getPromptLines(q) : [];
+  if (lines.length) speak(lines);
 }
 
-function feedPick(food) {
-  if (!quiz || quiz.revealed || settleLock) return;
-  quiz.selected = food;
-  sfx("tap");
-  const q = quiz.order[quiz.index];
-  /* 点对：先播咀嚼特效，延时后再结算弹卡；点错：保持原逻辑，立即弹框 */
-  if (food === q.correctFood) {
-    beginSettlement(q, true, null, feedCheck);
-  } else {
-    feedCheck();
-  }
+/* 动物喂食点选 / 拖拽入口：复用统一选项提交流程，透传触发元素供特效使用 */
+function feedPick(food, el = null) {
+  selectOption(food, el);
 }
 /* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
 function unlockTaskWord(q) {
@@ -315,6 +312,7 @@ function finalizeTask(q, ok, opts = {}) {
     okSfx = "excellent",
     wrongSfx = "wrong",
     speakOnOk = "",
+    speakOnWrong,
     words = null,
     wrongBank = true,
   } = opts;
@@ -334,38 +332,23 @@ function finalizeTask(q, ok, opts = {}) {
     if (!isDaily && wrongBank) WrongBank.applyResult(q, true);
   } else {
     if (wrongSfx) sfx(wrongSfx);
+    /* 答错弹出结果卡后自动朗读正确读音，帮助孩子纠音记忆 */
+    const wrongSpeak = speakOnWrong !== undefined ? speakOnWrong : answerMetaOf(q).speakText;
+    if (wrongSpeak) setTimer(() => speak(wrongSpeak), 520);
     if (!isDaily && wrongBank) WrongBank.applyResult(q, false);
   }
   render();
 }
 
-function feedCheck() {
-  if (!quiz || quiz.revealed || !quiz.selected) return;
-  const q = quiz.order[quiz.index];
-  finalizeTask(q, quiz.selected === q.correctFood, { speakOnOk: q.correctFood });
-}
-
-/* 纯单词选项题型：答对后弹框自动朗读该单词，并播放专属结果音效 */
-const WORD_OPTION_TYPES = ["pic", "action"];
-function isWordOptionTask(q) {
-  if (!q) return false;
-  /* 情景对话只有「单词选项」模式算纯单词题，整句 / 图片选项不算 */
-  if (q.type === "dialog") return !q.dialog || (q.dialog.mode !== "sentence" && q.dialog.mode !== "image");
-  return WORD_OPTION_TYPES.includes(q.type);
-}
 function checkAnswer() {
   if (!quiz || quiz.revealed || !quiz.selected) return;
-  stopActionSound();
   const q = quiz.order[quiz.index];
-  /* 情景对话整句/图片选项使用 answerValue 判题，其余题型仍按单词判定 */
-  const correctValue = q.answerValue != null ? q.answerValue : q.word;
-  const ok = quiz.selected === correctValue;
-  const wordOption = isWordOptionTask(q);
-  finalizeTask(q, ok, {
-    okSfx: wordOption ? "answer-right" : "excellent",
-    wrongSfx: wordOption ? "answer-wrong" : "wrong",
-    speakOnOk: wordOption ? (q.answerValue || q.word) : "",
-  });
+  const game = gameForTask(q);
+  const ok = quiz.selected === correctValueOf(q, game);
+  const fb = game && typeof game.getFeedbackOpts === "function"
+    ? game.getFeedbackOpts(q)
+    : { okSfx: "excellent", wrongSfx: "wrong", speakOnOk: "" };
+  finalizeTask(q, ok, fb);
 }
 function nextQuestion() {
   if (!quiz) return;

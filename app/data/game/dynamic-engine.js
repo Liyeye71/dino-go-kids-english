@@ -183,6 +183,7 @@
       foodId: w.foodId || "",
       eats: w.eats || "",
       diet: w.diet || "",
+      habitat: w.habitat || "",
       dialogueClue: w.dialogueClue || "",
       /* 进阶题型专用数据 */
       actor: w.actor || "",
@@ -258,10 +259,10 @@
     const dlg = theme.dialog || { q: "What's this?", a: "It's a {word}." };
     const size = quizSize(level);
 
-    /* 🦁 动物园场景：按四类题库 + 关卡模板动态组卷 */
-    if (isZooScene() && window.DynamicEngine) {
-      const sceneId = state.scene || "zoo";
-      const scene = zooScene();
+    /* 多场景路线图主题：按四类题库 + 关卡模板动态组卷 */
+    if (hasSceneRoute() && window.DynamicEngine) {
+      const scene = activeScene();
+      const sceneId = (scene && scene.id) || state.scene || theme.id;
       const allSceneWords = scene && scene.words && scene.words.length ? scene.words : pool;
 
       /* 重玩未满星关卡：目标词只从错词库抽，错词不够时再用正常词补足 */
@@ -383,18 +384,18 @@
     buildOptions(task, pool, optionCount());
   }
 
-  /* 单词主图：优先使用数据层的 img，缺图时同目录 .png，再缺则回退 emoji（wordArtFallback 由 shared.js 提供） */
+  /* 单词主图：优先使用数据层的 img，缺图时按主题目录拼路径并回退 emoji */
   function wordImageSrc(w) {
     if (!w) return "";
-    return w.img || `images/words/animal/${w.word}.webp`;
+    return w.img || wordImgPath(w.word, w.themeId);
   }
-  /* 带图片回退的通用插图：图片缺失时显示 emoji/SVG 兜底 */
+  /* 带图片回退的通用插图：复用 shared.js 的 wordArtImg（webp → png → fallback） */
   function artWithImage(src, cls, fallback) {
     if (!src) return fallback;
-    return `<img class="${cls}" src="${src}" alt="" loading="eager" decoding="async"
-      style="width:100%;height:100%;object-fit:contain"
-      onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
-      <span class="art-fallback" style="display:none;width:100%;height:100%;place-items:center">${fallback}</span>`;
+    return wordArtImg(src, cls, fallback, "art-fallback", "eager", {
+      imgStyle: "width:100%;height:100%;object-fit:contain",
+      fallbackStyle: "width:100%;height:100%;place-items:center",
+    });
   }
   function wordHeroArt(w) {
     return wordArtImg(wordImageSrc(w), "pic-img", w.emoji || wordGlyph(w.word), "pic-emoji");
@@ -523,6 +524,31 @@
     }
   }
 
+  /* 听音戳泡泡：戳错即时特效（果冻晃动弹开 + 恐龙疑惑抖动），延时后再进入统一结算 */
+  function playBubbleWrong({ el }) {
+    const stage = el && el.closest ? el.closest(".listen-bubble-stage") : null;
+    if (!stage) return;
+    if (typeof sfx === "function") sfx("boing");
+    el.classList.remove("is-wrong-wobble");
+    void el.offsetWidth;
+    el.classList.add("is-wrong-wobble");
+    const rect = el.getBoundingClientRect();
+    const sRect = stage.getBoundingClientRect();
+    const tag = document.createElement("span");
+    tag.className = "bubble-oops-tag";
+    tag.textContent = "?";
+    tag.style.left = `${rect.left - sRect.left + rect.width / 2}px`;
+    tag.style.top = `${Math.max(18, rect.top - sRect.top)}px`;
+    stage.appendChild(tag);
+    setTimeout(() => tag.remove(), 520);
+    const dino = stage.querySelector(".bubble-dino");
+    if (dino) {
+      dino.classList.remove("is-blowing", "is-oops");
+      void dino.offsetWidth;
+      dino.classList.add("is-oops");
+    }
+  }
+
   /* 听音戳泡泡：在原展示框内浮动，答对后内部动物落到草坪 */
   function renderListen({ q, quiz, artOf }) {
     const revealed = quiz.revealed;
@@ -541,7 +567,7 @@
         .join(" ");
       return `<button type="button" class="${cls}" style="--bubble-x:${p.x};--bubble-y:${p.y};--bubble-dx:${p.dx};--bubble-dy:${p.dy};--bubble-duration:${p.duration}s;--bubble-delay:${p.delay}s;--blow-delay:${(i * 0.11).toFixed(2)}s"
               data-action="select" data-word="${opt}" aria-label="戳破 ${opt} 泡泡"${revealed ? " disabled" : ""}>
-              <span class="listen-bubble-art">${wordArtImg((q.optionImgs && q.optionImgs[opt]) || `images/words/animal/${opt}.webp`, "listen-card-img", (q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)(), "listen-card-emoji")}</span>
+              <span class="listen-bubble-art">${wordArtImg((q.optionImgs && q.optionImgs[opt]) || wordImgPath(opt, q.themeId), "listen-card-img", (q.optionEmojis && q.optionEmojis[opt]) || artOf(opt)(), "listen-card-emoji")}</span>
               ${isCorrect ? `<i class="ref-listen-mark">✓</i>` : ""}
               ${isWrong ? `<i class="ref-listen-mark bad">✕</i>` : ""}
             </button>`;
@@ -592,7 +618,6 @@
     const revealed = quiz.revealed;
     const selected = quiz.selected;
     const d = q.dialog;
-    const escAttr = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
     /* 整句选项的关键词高亮：跳过虚词，突出 Yes/No 与食物、动物等实词 */
     const KEY_STOP = new Set([
       "yes", "no", "it", "is", "a", "an", "the", "does", "doesnt", "isnt", "dont",
@@ -687,8 +712,8 @@
       optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
         const state = optionState(o.value);
         return `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${escAttr(o.label)}" aria-label="朗读这句">${I.speaker(16, "#5C411D")}</button>
-                <button class="option${state ? " " + state : ""}" data-action="select" data-word="${escAttr(o.value)}">
+                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(o.label)}" aria-label="朗读这句">${I.speaker(16, "#5C411D")}</button>
+                <button class="option${state ? " " + state : ""}" data-action="select" data-word="${esc(o.value)}">
                   <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
                 </button>
               </div>`;
@@ -698,7 +723,7 @@
         const state = optionState(o.value);
         const cardState = state === "correct" ? "ok" : (state === "wrong" ? "wrong" : (state === "sel" ? "sel" : ""));
         const art = wordArtImg(o.img, "listen-card-img", artOf(o.value)(), "listen-card-emoji");
-        return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${escAttr(o.value)}" aria-label="选择 ${o.value}">
+        return `<button class="ref-listen-card${cardState ? " " + cardState : ""}" data-action="select" data-word="${esc(o.value)}" aria-label="选择 ${o.value}">
                 <span class="ref-listen-card-art">${art}</span>
                 ${revealed && o.value === d.answerValue ? `<i class="ref-listen-mark">✓</i>` : ""}
                 ${revealed && o.value === selected && o.value !== d.answerValue ? `<i class="ref-listen-mark bad">✕</i>` : ""}
@@ -706,7 +731,7 @@
       }).join("")}</div>`;
     } else {
       optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-opt-rows">${q.options.map((w) => `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${escAttr(w)}" aria-label="朗读">${I.speaker(16, "#5C411D")}</button>
+                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(w)}" aria-label="朗读">${I.speaker(16, "#5C411D")}</button>
                 ${options([w])}
               </div>`).join("")}</div>`;
     }
@@ -714,7 +739,7 @@
       body: `<div class="ref-dialog-card">
                 ${zooDeco}
                 <div class="ref-dialog-row">${person(cast && cast.ask, "boy")}
-                  <div class="ref-dialog-bubble ref-dialog-ask" data-action="speak-text" data-text="${escAttr(askSoundText)}" aria-label="点击朗读 A 的句子">${nameTag(cast && cast.ask, "A")}<p>${askText}</p>${askPic}</div></div>
+                  <div class="ref-dialog-bubble ref-dialog-ask" data-action="speak-text" data-text="${esc(askSoundText)}" aria-label="点击朗读 A 的句子">${nameTag(cast && cast.ask, "A")}<p>${askText}</p>${askPic}<span class="ref-dialog-ask-say" aria-hidden="true">${I.speaker(13, "#8D6835")}</span></div></div>
                 <div class="ref-dialog-row reply"><div class="ref-dialog-bubble">${replyHtml}</div>
                   <div class="ref-dialog-person person--player"><img class="ref-dialog-dino" src="${dinoArtSrc(state.stage, state.ultraSkin)}" alt=""></div></div>
               </div>
@@ -835,10 +860,15 @@
       return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
               data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span></button>`;
     }).join("");
+    const feedPrompt = q && q.word
+      ? `What does the ${q.word} like to eat?`
+      : "What does this animal like to eat?";
     const body = `
             <div class="fd-wrap ref-feed-wrap">
               <div class="fd-animal ref-feed-animal" data-feed-drop>
                 <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
+                ${revealed ? "" : `<span class="feed-hungry-badge" aria-hidden="true">💭</span>`}
+                <button type="button" class="listen feed-replay-btn" data-action="speak-text" data-text="${esc(feedPrompt)}" aria-label="再听一遍问题">${I.speaker(16)}</button>
               </div>
               <p class="ref-hint">${q.zh} 爱吃什么？拖到嘴边或点选食物</p>
               <div class="fd-foods">${foods}</div>
@@ -846,14 +876,13 @@
     return { body, btn: revealed ? quizNextButton() : "" };
   }
 
-  /* 动作猜猜：只展示动作图片 + 提示 + 文字选项 */
+  /* 动作猜猜：动作图片（点击可重播卡通拟声音效）+ 提示 + 文字选项 */
   function renderAction({ q, quiz, options }) {
     const actionSrc = q.img || `images/words/action/${q.assetKey}.webp`;
     return advancedLayout({
       wrap: "ref-action-wrap",
-      stage: `<div class="ref-action-stage">
-                  <img class="ref-action-img" src="${actionSrc}" alt=""
-                    onerror="if(!this.dataset.retry){this.dataset.retry='1';this.src=this.src.replace(/\\.webp$/,'.png')}else{this.style.visibility='hidden'}">
+      stage: `<div class="ref-action-stage" data-action="action-sfx" data-word="${esc(q.word)}">
+                  ${wordArtImg(actionSrc, "ref-action-img", q.emoji || wordGlyph(q.word), "pic-emoji")}
                 </div>`,
       tipClass: "ref-hint",
       tip: "动物在干什么？",
@@ -883,6 +912,35 @@
     h2.className = "feed-heart h2";
     h2.textContent = "💛";
     box.append(yummy, h1, h2);
+  }
+
+  /* 动物喂食答错：软萌摇头 + 食物弹开 + Nope!/汗滴飘出，延时后再进统一结算 */
+  function playFeedWrong({ q, word }) {
+    sfx("nope");
+    const box = document.querySelector(".ref-feed-animal");
+    if (!box) return;
+    box.classList.remove("is-chewing", "is-rejecting");
+    void box.offsetWidth;
+    box.classList.add("is-rejecting");
+    box.querySelectorAll(".feed-nope, .feed-sweat, .feed-reject-food").forEach((n) => n.remove());
+    const nope = document.createElement("span");
+    nope.className = "feed-nope";
+    nope.textContent = "Nope!";
+    const sweat = document.createElement("span");
+    sweat.className = "feed-sweat";
+    sweat.textContent = "💧";
+    box.append(nope, sweat);
+    const picked = q && Array.isArray(q.foods)
+      ? q.foods.find((f) => (f.id || f.word) === word)
+      : null;
+    if (picked) {
+      const reject = document.createElement("span");
+      reject.className = "feed-reject-food";
+      reject.innerHTML = picked.img
+        ? `<img src="${picked.img}" alt="">`
+        : (picked.emoji || "🍽️");
+      box.append(reject);
+    }
   }
 
   /* 情景对话 eat 类答对：食物从选项飞到提问动物身上，并朗读小恐龙的回答（单一音源） */
@@ -920,6 +978,27 @@
     if (d.answerText) speak(d.answerText);
   }
 
+  /* 通用默认答后信息与反馈策略（各题型可按需覆盖，消除 main.js / events.js 中的题型 if/else） */
+  function defaultAnswerMeta(q) {
+    const word = q && q.options && q.word ? q.word : null;
+    return {
+      word,
+      zh: (q && q.zh) || "",
+      phon: (q && q.phon) || "",
+      speakText: (q && q.word) || "",
+      isSentence: false,
+    };
+  }
+  function wordOptionFeedback(q) {
+    return { okSfx: "answer-right", wrongSfx: "answer-wrong", speakOnOk: (q && (q.answerValue || q.word)) || "" };
+  }
+  function defaultPromptLines(q, game) {
+    const lines = [];
+    if (game && game.prompt) lines.push(game.prompt);
+    if (game && game.autoSpeak && q && q.word) lines.push(q.word);
+    return lines;
+  }
+
   function defaultGames() {
     return {
       pic: {
@@ -929,23 +1008,68 @@
         pageClass: "pic-page",
         build: threeChoiceBuild,
         render: renderPic,
+        getAnswerMeta: defaultAnswerMeta,
+        getPromptLines(q) {
+          const t = typeof currentTheme === "function" ? currentTheme() : null;
+          const prompt = (q && q.picPrompt) || (t && t.picPrompt) || this.prompt;
+          return prompt ? [prompt] : [];
+        },
+        getFeedbackOpts: wordOptionFeedback,
       },
       listen: {
         label: "听音戳泡泡",
         title: "听单词，戳破正确的泡泡",
         prompt: "Listen and pop the right bubble!",
+        badgeIcon: "speaker",
         autoSpeak: true,
         build: threeChoiceBuild,
         render: renderListen,
-        /* 答对后先播爆裂救援特效，延迟 650ms 再走统一结算（见 main.js beginSettlement） */
+        getAnswerMeta: defaultAnswerMeta,
+        getPromptLines(q) {
+          /* 同局首次出现播前导句 + 目标词，后续直接播目标词减少等待 */
+          const first = !quiz || !quiz._listenPrompted;
+          if (quiz && first) quiz._listenPrompted = true;
+          if (first) return defaultPromptLines(q, this);
+          return q && q.word ? [q.word] : [];
+        },
+        getFeedbackOpts: () => ({ okSfx: "excellent", wrongSfx: "wrong", speakOnOk: "" }),
+        /* 答对：爆裂救援特效；答错：果冻晃动弹开，延迟后统一结算 */
         settleDelay: 650,
         onCorrectFx: playBubbleRescue,
+        wrongSettleDelay: 540,
+        onWrongFx: playBubbleWrong,
       },
       dialog: {
         label: "情景对话",
         title: "读对话，选出正确的答案",
         build: buildDialog,
         render: renderDialog,
+        getAnswerMeta(q) {
+          const d = q && q.dialog;
+          const isSentence = Boolean(d && d.mode === "sentence");
+          const word = isSentence
+            ? q.answerText
+            : (d ? d.answerValue : (q && q.options && q.word ? q.word : null));
+          const zh = isSentence ? (q.answerZh || "") : ((q && q.zh) || "");
+          const phon = word && q && word === q.word ? (q.phon || "") : "";
+          const speakText = isSentence ? (q.answerText || q.answerValue || q.word || "") : ((q && q.word) || "");
+          return { word, zh, phon, speakText, isSentence };
+        },
+        getPromptLines(q) {
+          const d = q && q.dialog;
+          const ask = d && d.ask ? d.ask : ((q && q.dlgQ) || "").replace("{word}", (q && q.word) || "");
+          const text = String(ask || "").replace(/<[^>]*>/g, "").trim();
+          return text ? [text] : [];
+        },
+        getFeedbackOpts(q) {
+          const d = q && q.dialog;
+          const isWordMode = !d || (d.mode !== "sentence" && d.mode !== "image");
+          if (isWordMode) return wordOptionFeedback(q);
+          /* eat 类整句题已在 playDialogReply 中朗读回复句，其余子模式答对后补读回答句 */
+          const alreadySpoke = Boolean(d && d.mode === "sentence" && d.foodImg);
+          const speakOnOk = alreadySpoke ? "" : ((d && d.answerText) || (q && (q.answerText || q.word)) || "");
+          return { okSfx: "excellent", wrongSfx: "wrong", speakOnOk };
+        },
         /* 仅 eat 类整句题：飞食物 + 读回复，按句长估算弹卡时机 */
         settleDelay: (q) => {
           const d = q && q.dialog;
@@ -962,8 +1086,28 @@
         prompt: "What does this animal like to eat?",
         build: buildFeedAnimal,
         render: renderFeedAnimal,
+        getCorrectValue: (q) => (q && q.correctFood) || "",
+        getAnswerMeta(q) {
+          const food = (q && q.correctFood) || "";
+          return {
+            word: food || null,
+            zh: (q && q.correctZh) || "",
+            phon: (q && q.correctPhon) || "",
+            speakText: food || (q && q.word) || "",
+            isSentence: false,
+          };
+        },
+        getPromptLines(q) {
+          return q && q.word
+            ? [`What does the ${q.word} like to eat?`]
+            : [this.prompt];
+        },
+        getFeedbackOpts: (q) => ({ okSfx: "excellent", wrongSfx: "wrong", speakOnOk: (q && q.correctFood) || "" }),
+        onMount: (root, q, view) => { if (view && view.setupDragging) view.setupDragging(root); },
         settleDelay: 720,
         onCorrectFx: playFeedChew,
+        wrongSettleDelay: 600,
+        onWrongFx: playFeedWrong,
       },
       /* 🏃 动作猜猜 Action（进阶题：中央动态动物 + 纯文字选项） */
       action: {
@@ -972,6 +1116,14 @@
         prompt: "What is the animal doing?",
         build: threeChoiceBuild,
         render: renderAction,
+        getAnswerMeta: defaultAnswerMeta,
+        getPromptLines(q) { return defaultPromptLines(q, this); },
+        getFeedbackOpts: wordOptionFeedback,
+        onMount(root, q) {
+          if (q && q.word && typeof actionSfx === "function") {
+            setTimer(() => actionSfx(q.word), 120);
+          }
+        },
       },
     };
   }

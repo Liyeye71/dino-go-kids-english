@@ -17,9 +17,7 @@
     return list.filter((v, i) => list.indexOf(v) === i);
   }
   function currentStarMax(themeId) {
-    /* 只有考核关（每 STAGE_SIZE 关）产出星星，每关最多 3 星 */
-    const step = window.STAGE_SIZE || 5;
-    return Math.max(1, Math.floor(levelsPerTheme(themeId) / step)) * 3;
+    return themeStarMax(themeId);
   }
 
   /* 安全获取 state（可能从模块内或 window） */
@@ -129,15 +127,9 @@
      ============================================================ */
   const WHEEL_COST = 6;
   const DAILY_LIMIT = 2;
-  /* 今天的日期键，复用全局 dateKey() */
-  function todayKey() {
-    if (typeof dateKey === "function") return dateKey();
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }
   function spinsToday() {
     const s = _state();
-    return s.spinDay === todayKey() ? Math.max(0, Number(s.spinCount) || 0) : 0;
+    return s.spinDay === dateKey() ? Math.max(0, Number(s.spinCount) || 0) : 0;
   }
   /* 统一奖励池：weight 越大越常出现，买玩具仅 5%（低概率大奖）
      配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，贴合全站视觉 */
@@ -355,7 +347,7 @@
     /* 1. 扣费 + 抽取中奖扇区 + 立刻写入存档（防中途刷新丢星星） */
     if (free > 0) state.spins = free - 1;
     else state.stars = balance - WHEEL_COST;
-    if (state.spinDay !== todayKey()) { state.spinDay = todayKey(); state.spinCount = 0; }
+    if (state.spinDay !== dateKey()) { state.spinDay = dateKey(); state.spinCount = 0; }
     state.spinCount = (Number(state.spinCount) || 0) + 1;
 
     const winIdx = pickWeightedIndex(REWARD_POOL);

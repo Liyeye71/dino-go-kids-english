@@ -3,7 +3,7 @@
    26 件文具/教室词表已就绪，仅供每日随机挑战混抽；闯关暂不开放
    ============================================================ */
 /* 文具词表：插画位于 images/words/tool/，文件名由单词生成 */
-const SCHOOL_WORDS = [
+const SCHOOL_WORDS = buildThemeWordList([
   ["pencil", "铅笔", "/ˈpensl/", "I draw with a pencil.", "✏️"],
   ["crayon", "蜡笔", "/ˈkreɪən/", "The crayon is red.", "🖍️"],
   ["pen", "钢笔", "/pen/", "This pen is blue.", "🖊️"],
@@ -30,28 +30,16 @@ const SCHOOL_WORDS = [
   ["lamp", "台灯", "/læmp/", "Turn on the lamp.", "💡"],
   ["glasses", "眼镜", "/ˈɡlɑːsɪz/", "I wear glasses to read.", "👓"],
   ["flask", "烧瓶", "/flɑːsk/", "We use a flask in science class.", "🧪"],
-].map(([word, zh, phon, example, emoji]) => ({
-  word,
-  zh,
-  phon,
-  example,
-  emoji,
-  category: "noun",
-  assetKey: word,
-  img: `images/words/tool/${word.replace(/ /g, "-")}.webp`,
-  /* 情景对话：把例句中的目标词挖空 */
-  dialogueClue: example.replace(
-    new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+")}\\b`, "i"),
-    "___"
-  ),
-}));
+], "tool");
 
 /* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
 definePlaceholderTheme({
   id: "school",
   name: "上学了",
+  islandName: "上学文具岛",
   chip: "文具单词",
   emoji: "🎒",
+  wordImgDir: "tool",
   dialog: { q: "What's this?", a: "It's a {word}." },
   color: "#8C6B3D",
   accent: "#5C411D",

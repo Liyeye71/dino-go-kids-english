@@ -157,8 +157,10 @@
 .ref-dialog-row.reply .ref-dialog-bubble::after{left:auto;right:-0.4rem;border-left:0;border-bottom:0;
   border-right:0.125rem solid var(--sticker-ink);border-bottom:0.125rem solid var(--sticker-ink);border-bottom-left-radius:0;border-bottom-right-radius:0.2rem}
 .ref-dialog-bubble p{flex:1;min-width:0;font-size:0.9375rem;font-weight:var(--w-bold);line-height:1.4;color:#4B3626}
-/* A 的提问气泡：点击即可朗读整句 */
-.ref-dialog-ask{cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* A 的提问气泡：点击即可朗读整句，右下角附迷你喇叭角标提示可点读 */
+.ref-dialog-ask{cursor:pointer;-webkit-tap-highlight-color:transparent;padding-right:2rem}
+.ref-dialog-ask-say{position:absolute;right:0.45rem;bottom:0.35rem;width:1.35rem;height:1.35rem;border-radius:50%;
+  display:grid;place-items:center;background:#FFF3C9;border:0.09375rem solid #D9B773;pointer-events:none;opacity:.9}
 .ref-dialog-bubble .blank{color:#6B8D46;border-bottom:0.125rem dashed #9DB97B;padding:0 0.125rem}
 /* 对话中的动物/食物单词：暖棕色 + 虚线底，帮助小朋友认读 */
 .ref-dialog-word{color:#B5651D;font-weight:var(--w-black);

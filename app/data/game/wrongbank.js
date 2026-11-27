@@ -39,11 +39,11 @@
       return `${sceneId || ""}_${word || ""}`;
     },
 
-    /* 统一入口：按题型 task 记录一次答题结果（仅动物园场景生效）
+    /* 统一入口：按题型 task 记录一次答题结果（由主题能力 usesWrongBank 控制）
        所有题型一视同仁：答错必收录，答对累计连续正确次数 */
     applyResult(task, ok) {
       if (!task || !task.wrongWordId) return false;
-      if (typeof isZooScene === "function" && !isZooScene()) return false;
+      if (typeof usesWrongBank === "function" && !usesWrongBank()) return false;
       if (ok) return this.recordCorrect(task.wrongWordId);
       this.recordWrong(task.wrongWordId);
       return false;

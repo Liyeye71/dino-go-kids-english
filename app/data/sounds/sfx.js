@@ -68,6 +68,26 @@ function sfx(name) {
       tone(233, 0.06, "square", 0.03, 0.07);
       tone(175, 0.07, "triangle", 0.028, 0.14);
     }
+    /* 听音戳泡泡：戳错时的轻柔弹性“啵咚”弹开声 */
+    else if (name === "boing") {
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(210, t + 0.09);
+      osc.frequency.exponentialRampToValueAtTime(260, t + 0.16);
+      g.gain.setValueAtTime(0.08, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.19);
+      osc.connect(g).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.2);
+    }
+    /* 动物喂食：喂错食物时的软萌摇头“唔唔”声 */
+    else if (name === "nope") {
+      tone(310, 0.11, "triangle", 0.05);
+      tone(235, 0.15, "triangle", 0.042, 0.11);
+    }
     /* 纯单词选项题型答后弹框：正确 / 错误各自的专属结果音效 */
     else if (name === "answer-right") {
       [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.18, "triangle", 0.05, i * 0.09));
@@ -159,62 +179,6 @@ function speak(text) {
   } catch (e) { /* ignore */ }
 }
 
-/* 立即停止当前朗读（关闭答题页时调用，避免返回页面后继续读题型提示） */
-function stopSpeak() {
-  speakToken += 1;
-  try {
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-  } catch (e) { /* ignore */ }
-}
-
-/* 动作猜猜：本地短拟声音效；未配置音效或全局静音时点击不处理 */
-let actionAudio = null;
-let actionAudioButton = null;
-
-function stopActionSound() {
-  const audio = actionAudio;
-  const btn = actionAudioButton;
-  actionAudio = null;
-  actionAudioButton = null;
-  if (audio) {
-    audio.pause();
-    try { audio.currentTime = 0; } catch (e) { /* audio not seekable yet */ }
-  }
-  if (btn) {
-    btn.classList.remove("is-playing");
-    btn.setAttribute("aria-pressed", "false");
-  }
-}
-
-function playActionSound(name, btn) {
-  stopActionSound();
-  if (!name || !state.sound || !btn) return false;
-  const audio = new Audio();
-  actionAudio = audio;
-  actionAudioButton = btn;
-  const cleanup = () => {
-    if (actionAudio !== audio) return;
-    actionAudio = null;
-    actionAudioButton = null;
-    btn.classList.remove("is-playing");
-    btn.setAttribute("aria-pressed", "false");
-  };
-  const fail = () => {
-    if (actionAudio !== audio) return;
-    cleanup();
-    if (typeof toast === "function") toast("声音提示加载失败，请再试一次");
-  };
-  audio.preload = "auto";
-  audio.src = `data/sounds/action/${encodeURIComponent(name)}.wav`;
-  audio.addEventListener("ended", cleanup, { once: true });
-  audio.addEventListener("error", fail, { once: true });
-  btn.classList.add("is-playing");
-  btn.setAttribute("aria-pressed", "true");
-  const playing = audio.play();
-  if (playing && typeof playing.catch === "function") playing.catch(fail);
-  return true;
-}
-
 /* 关卡提示音：进入某主题关卡时播放的短旋律 */
 const LEVEL_CUES = {
   animal: [
@@ -232,4 +196,164 @@ function levelCue(id) {
     const pattern = LEVEL_CUES[id] || LEVEL_CUES.animal;
     pattern.forEach(([f, d, type, vol, delay]) => tone(f, d, type, vol, delay));
   } catch (e) { /* no audio */ }
+}
+
+/* ============================================================
+   卡通动作拟声音效（纯 Web Audio 合成，零音频文件、离线秒播）
+   仅覆盖物理/卡通动作类；真实动物叫声（bark/roar 等）不硬合成
+   ============================================================ */
+function noiseBurst(dur = 0.12, freq = 900, q = 1.6, vol = 0.04, delay = 0) {
+  if (!audioCtx) return;
+  const len = Math.max(1, Math.floor(audioCtx.sampleRate * dur));
+  const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = freq;
+  filter.Q.value = q;
+  const gain = audioCtx.createGain();
+  const t = audioCtx.currentTime + delay;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(vol, t + Math.min(0.02, dur * 0.25));
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(filter).connect(gain).connect(audioCtx.destination);
+  src.start(t);
+  src.stop(t + dur + 0.02);
+}
+
+function slideTone(f1, f2, dur = 0.16, type = "sine", vol = 0.055, delay = 0) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime + delay;
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(f1, t);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(40, f2), t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(g).connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+
+const CARTOON_ACTION_SFX = {
+  /* 弹簧跳 */
+  jump() {
+    slideTone(250, 780, 0.18, "sine", 0.065, 0);
+    tone(190, 0.07, "triangle", 0.035, 0.2);
+  },
+  /* 水花四溅 */
+  splash() {
+    noiseBurst(0.24, 1300, 1.1, 0.055, 0);
+    slideTone(320, 880, 0.09, "sine", 0.045, 0.06);
+    slideTone(420, 1020, 0.08, "sine", 0.04, 0.15);
+  },
+  /* 划水游泳 */
+  swim() {
+    noiseBurst(0.16, 850, 1.4, 0.042, 0);
+    slideTone(260, 560, 0.1, "sine", 0.04, 0.08);
+    noiseBurst(0.16, 950, 1.4, 0.038, 0.2);
+    slideTone(300, 640, 0.1, "sine", 0.038, 0.27);
+  },
+  /* 拍翅飞翔 */
+  fly() {
+    noiseBurst(0.11, 680, 1.8, 0.045, 0);
+    slideTone(360, 560, 0.11, "triangle", 0.03, 0.02);
+    noiseBurst(0.11, 780, 1.8, 0.045, 0.16);
+    slideTone(420, 680, 0.12, "triangle", 0.032, 0.18);
+  },
+  /* 轻快跑步 */
+  run() {
+    [0, 0.09, 0.18, 0.27].forEach((d, i) => {
+      tone(i % 2 ? 230 : 185, 0.055, "triangle", 0.045, d);
+    });
+  },
+  chase() { CARTOON_ACTION_SFX.run(); },
+  /* 稳步走路 */
+  walk() {
+    [0, 0.15, 0.3].forEach((d, i) => {
+      tone(i % 2 ? 195 : 165, 0.07, "triangle", 0.042, d);
+    });
+  },
+  /* 吃 / 咬：清脆咔嚓 */
+  eat() {
+    tone(205, 0.055, "square", 0.032, 0);
+    tone(245, 0.055, "square", 0.028, 0.075);
+    tone(185, 0.065, "triangle", 0.03, 0.15);
+  },
+  bite() {
+    noiseBurst(0.06, 1500, 2.0, 0.045, 0);
+    tone(220, 0.06, "square", 0.032, 0.01);
+    tone(160, 0.08, "triangle", 0.035, 0.07);
+  },
+  /* 咕咚喝水 */
+  drink() {
+    slideTone(240, 520, 0.1, "sine", 0.055, 0);
+    slideTone(280, 600, 0.1, "sine", 0.052, 0.13);
+    slideTone(320, 680, 0.11, "sine", 0.048, 0.26);
+  },
+  /* 沙沙挖土 */
+  dig() {
+    noiseBurst(0.11, 1100, 2.2, 0.048, 0);
+    tone(150, 0.06, "triangle", 0.03, 0.02);
+    noiseBurst(0.12, 1250, 2.2, 0.048, 0.17);
+    tone(165, 0.06, "triangle", 0.03, 0.19);
+  },
+  /* 欢快跳舞节拍 */
+  dance() {
+    [NOTE_FREQ.C5, NOTE_FREQ.E5, NOTE_FREQ.G5, NOTE_FREQ.E5, NOTE_FREQ.C6].forEach((f, i) => {
+      tone(f, 0.09, "triangle", 0.042, i * 0.08);
+    });
+  },
+  /* 摇尾巴呼呼声 */
+  wag() {
+    slideTone(300, 440, 0.09, "sine", 0.035, 0);
+    slideTone(440, 300, 0.09, "sine", 0.035, 0.1);
+    slideTone(300, 460, 0.09, "sine", 0.035, 0.2);
+  },
+  /* 逐阶攀爬 */
+  climb() {
+    [NOTE_FREQ.C4, NOTE_FREQ.E4, NOTE_FREQ.G4, NOTE_FREQ.C5].forEach((f, i) => {
+      tone(f, 0.08, "triangle", 0.042, i * 0.09);
+    });
+  },
+  /* 伸懒腰 */
+  stretch() {
+    slideTone(260, 520, 0.22, "sine", 0.045, 0);
+    slideTone(520, 390, 0.16, "sine", 0.035, 0.22);
+  },
+  /* 抓 / 拉 / 推 */
+  catch() {
+    slideTone(620, 280, 0.11, "triangle", 0.05, 0);
+    tone(480, 0.06, "sine", 0.04, 0.11);
+  },
+  pull() { slideTone(240, 420, 0.18, "triangle", 0.045, 0); },
+  push() { slideTone(380, 210, 0.16, "triangle", 0.045, 0); },
+  /* 悄悄躲藏 */
+  hide() {
+    tone(520, 0.07, "sine", 0.035, 0);
+    tone(360, 0.09, "sine", 0.032, 0.09);
+  },
+  /* 轻柔安眠波 */
+  sleep() {
+    slideTone(220, 265, 0.22, "sine", 0.032, 0);
+    slideTone(265, 200, 0.24, "sine", 0.028, 0.22);
+  },
+  nap() { CARTOON_ACTION_SFX.sleep(); },
+};
+
+function actionSfx(word) {
+  if (!state.sound || !word) return false;
+  const fn = CARTOON_ACTION_SFX[String(word).toLowerCase()];
+  if (!fn) return false;
+  try {
+    ensureAudio();
+    if (!audioCtx) return false;
+    fn();
+    return true;
+  } catch (e) { return false; }
 }

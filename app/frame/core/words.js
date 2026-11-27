@@ -159,6 +159,12 @@ function levelsPerTheme(id) {
   const scene = sceneOf(theme, state && state.scene);
   return (scene && scene.levelCount) || (theme && theme.levelCount) || LEVELS_PER_THEME;
 }
+/* 主题星数上限：只有考核关（每 STAGE_SIZE 关）产出星星，每关最多 3 星 */
+function themeStarMax(id, levelCount) {
+  const step = window.STAGE_SIZE || 5;
+  const total = levelCount != null ? levelCount : levelsPerTheme(id);
+  return Math.max(1, Math.floor(total / step)) * 3;
+}
 /* 统一初始化进度对象：{ level, stars, cleared } */
 function ensureProgress(key) {
   if (!state.progress) state.progress = {};

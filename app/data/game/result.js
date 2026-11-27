@@ -107,8 +107,8 @@
     save();
     sfx(stars === 3 ? "win" : "coin");
 
-    /* 🔥 总 BOSS 关（第 50 关 动物欢乐马戏团）通关额外奖励：仅首次全通关发放 */
-    if (isAnimalFinalBoss(completedLevel) && window.ChestManager) {
+    /* 🔥 总 BOSS 关通关额外奖励：仅首次全通关发放 */
+    if (isFinalBossLevel(completedLevel) && window.ChestManager) {
       lastResult.bossClear = true;
       if (!ChestManager.isAllCleared()) lastResult.bossChests = ChestManager.rewardBossClear();
       lastResult.allCleared = ChestManager.isAllCleared();
@@ -252,7 +252,7 @@
     const lib = window.DINO_WORD_LIBRARY || {};
     const wordItemsHtml = uniqueWords.map((w, idx) => {
       const meta = lib[w] || {};
-      const imgSrc = meta.img || `images/words/animal/${w}.webp`;
+      const imgSrc = meta.img || wordImgPath(w);
       const emoji = meta.emoji || "🐾";
       return `<button type="button" class="rs2-word-item" data-action="speak-word" data-word="${esc(w)}" aria-label="朗读 ${w}">
       <span class="rs2-word-pic t${idx % 3}">

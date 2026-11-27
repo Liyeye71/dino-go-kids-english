@@ -6,9 +6,6 @@
    闯关只使用当前场景的 words，与词性词库完全独立
    ============================================================ */
 
-/* 每 5 关为一个阶段（第 5 关为阶段 BOSS） */
-const LEVELS_PER_STAGE = 5;
-
 /* 路线坐标：animal-zoo-map.webp 上 1~50 号白色圆圈中心（百分比，OpenCV 标定） */
 const ANIMAL_ZOO_NODES = [
   { x: 33.49, y: 91.10 }, /* 1 */
@@ -306,140 +303,27 @@ const ANIMAL_SCENES = [
   {
     id: "zoo",
     name: "神奇动物园",
-    /* 点击入口卡进入下方路线抽屉 */
+    emoji: "🦁",
+    /* 点击入口卡进入路线抽屉（由 frame/route-sheet.js 通用渲染） */
     mapImage: "./images/background/animal-zoo-map.webp",
+    mapRatio: "1505/1045",
+    sheetClass: "zoo-route-sheet",
+    mapClass: "zoo",
     levelCount: ANIMAL_ZOO_LEVELS.length,
     levels: ANIMAL_ZOO_LEVELS,
     words: ANIMAL_ZOO_WORDS,
   },
 ];
 
-/* ============================================================
-   🦁 路线弹框（底部抽屉）
-   - 点「开始闯关」后升起，使用原版海报地图（不重绘画面）
-   - 50 个关卡点直接落在图上 1~50 号白色圆圈中心
-   - 未满三星的已通关节点纯白，满星显示居中金色卡通星星印章；当前关金色填充跳动、未解锁灰化
-   - 每 5 关最后一关为 BOSS 关：未通关圆内显示小恐龙，通关后同样盖金色印章
-   - 节点盖住底图原数字，不再显示关号；满星关卡置为只读
-   - 抽屉内支持 100% / 150% / 200% / 250% 缩放，打开时自动定位当前关
-   ============================================================ */
-const ZOO_ZOOM_STEPS = [1, 1.5, 2, 2.5];
-let zooZoom = 1;
-
-function zooBoardEls() {
-  const viewport = document.querySelector(".zoo-board-viewport");
-  const inner = viewport && viewport.querySelector(".zoo-board-inner");
-  const label = document.querySelector(".zoo-zoom-val");
-  return { viewport, inner, label };
-}
-
-/* 以当前关为锚点缩放，放大后始终把当前关留在视口中央 */
-function zooApplyZoom() {
-  const { viewport, inner, label } = zooBoardEls();
-  if (!viewport || !inner) return;
-  inner.style.width = (zooZoom * 100) + "%";
-  if (label) label.textContent = Math.round(zooZoom * 100) + "%";
-  requestAnimationFrame(zooFocusCurrent);
-}
-
-/* 把当前关节点滚到视口中央 */
-function zooFocusCurrent() {
-  const { viewport } = zooBoardEls();
-  const node = viewport && viewport.querySelector(".zoo-step.current");
-  if (!viewport || !node) return;
-  const vr = viewport.getBoundingClientRect();
-  const nr = node.getBoundingClientRect();
-  viewport.scrollLeft += nr.left - vr.left - (vr.width - nr.width) / 2;
-  viewport.scrollTop += nr.top - vr.top - (vr.height - nr.height) / 2;
-}
-
-window.ZooRouteView = {
-  focusCurrent: zooFocusCurrent,
-  zoomIn() {
-    const i = ZOO_ZOOM_STEPS.indexOf(zooZoom);
-    zooZoom = ZOO_ZOOM_STEPS[Math.min(ZOO_ZOOM_STEPS.length - 1, (i < 0 ? 0 : i) + 1)];
-    zooApplyZoom();
-  },
-  zoomOut() {
-    const i = ZOO_ZOOM_STEPS.indexOf(zooZoom);
-    zooZoom = ZOO_ZOOM_STEPS[Math.max(0, (i < 0 ? 0 : i) - 1)];
-    zooApplyZoom();
-  },
-  resetZoom() {
-    zooZoom = 1;
-    zooApplyZoom();
-    zooFocusCurrent();
-  },
-};
-
-function renderZooRouteSheet(scene, prog) {
-  zooZoom = 1;
-  const total = scene.levelCount || scene.levels.length;
-  const level = Math.min(total, Math.max(1, prog.level || 1));
-  const stars = themeStars(prog);
-  const starMax = Math.floor(total / LEVELS_PER_STAGE) * 3;
-
-  const nodes = scene.levels.map((s) => {
-    const locked = s.level > level;
-    const done = s.level < level || Boolean(prog.cleared && prog.cleared[s.level]);
-    const best = (prog.stars && prog.stars[s.level]) || 0;
-    const isCurrent = s.level === level && !done;
-    /* 满星关卡只读：不再允许点击重玩 */
-    const full = done && best >= 3;
-    const cls = [
-      "animal-route-node", "zoo-step",
-      s.level % LEVELS_PER_STAGE === 0 ? "boss" : "",
-      done ? "done" : "",
-      full ? "stars-3" : "",
-      isCurrent ? "current" : "",
-      locked ? "locked" : "",
-    ].filter(Boolean).join(" ");
-    const stateText = done
-      ? (full ? "，已通关，已满星" : `，已通关，${best} 星，可复习`)
-      : (isCurrent ? "，当前关卡" : "，未解锁");
-    return `<button type="button" class="${cls}" style="left:${s.x}%;top:${s.y}%"
-        data-action="zoo-node" data-level="${s.level}"
-        title="第 ${s.level} 关${done ? ` · ★${best}${full ? " · 已满星" : ""}` : ""}"
-        aria-label="第 ${s.level} 关${stateText}"
-        ${(locked || full) ? "disabled" : ""}></button>`;
-  }).join("");
-  /* 完成结算即视为通关，最后一关也不再要求满星 */
-  const allDone = Boolean(prog.cleared && prog.cleared[level]);
-
-  return `<div class="overlay">
-    <section class="sheet animal-route-sheet zoo-route-sheet" role="dialog" aria-modal="true" aria-label="神奇动物园闯关路线">
-      <div class="grab"></div>
-      <div class="zoo-route-head">
-        <div class="zoo-route-title">
-          <strong>🦁 神奇动物园</strong>
-          <small>${allDone ? "全部通关" : `第 ${level} 关`} · ★ ${stars} / ${starMax}</small>
-        </div>
-        <button type="button" class="zoo-route-close" data-action="close-overlay" aria-label="关闭路线图">×</button>
-      </div>
-      <div class="zoo-board-frame">
-        <div class="zoo-board-viewport">
-          <div class="zoo-board-inner">
-            <div class="animal-route-map has-map zoo" style="--arm-ratio:1505/1045">
-              <img class="arm-bg" src="${scene.mapImage}" alt="神奇动物园闯关路线图">
-              ${nodes}
-            </div>
-          </div>
-        </div>
-        <div class="zoo-zoom-bar" role="group" aria-label="路线图缩放">
-          <button type="button" data-action="zoo-zoom-out" aria-label="缩小路线图">−</button>
-          <button type="button" class="zoo-zoom-val" data-action="zoo-zoom-reset" title="恢复 100%">100%</button>
-          <button type="button" data-action="zoo-zoom-in" aria-label="放大路线图">＋</button>
-        </div>
-      </div>
-    </section>
-  </div>`;
-}
-
 defineDinoTheme({
   id: "animal",
   name: "动物乐园",
+  islandName: "神奇动物园",
   chip: "动物单词",
   emoji: "🦁",
+  cover: "./images/background/theme-animal.webp",
+  wordImgDir: "animal",
+  useWrongBank: true,
   dialog: { q: "What animal is this?", a: "It's a {word}." },
   scenes: ANIMAL_SCENES,
 });

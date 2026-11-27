@@ -6,29 +6,28 @@
   "use strict";
 
   /* ---------------- 关卡 / 场景上下文（供出题、结算、错题库共用） ---------------- */
-  /* 判断当前是否为动物园场景（启用动态出题引擎） */
-  function isZooScene() {
-    return state.theme === "animal" && state.scene === "zoo";
+  /* 当前激活的场景对象（多场景主题返回匹配场景，单场景主题返回 null） */
+  function activeScene(themeId, sceneId) {
+    const theme = themeId && typeof THEME_BY_ID !== "undefined"
+      ? THEME_BY_ID.get(themeId)
+      : (typeof currentTheme === "function" ? currentTheme() : null);
+    const scenes = (theme && theme.scenes) || [];
+    if (!scenes.length) return null;
+    const sid = sceneId != null ? sceneId : (state && state.scene);
+    return scenes.find((s) => s.id === sid) || scenes[0];
   }
 
-  /* 当前动物园场景对象 */
-  function zooScene() {
-    return (currentTheme().scenes || []).find((s) => s.id === (state.scene || "zoo")) || null;
+  /* 当前主题/场景是否拥有路线图场景（启用动态场景组卷、阶段 BOSS 与路线抽屉） */
+  function hasSceneRoute(themeId, sceneId) {
+    const scene = activeScene(themeId, sceneId);
+    return Boolean(scene && Array.isArray(scene.levels) && scene.levels.length);
   }
 
-  /* 每 5 关的第 5 关为阶段 BOSS，最后一关为总 BOSS */
-  function isAnimalBossLevel(level) {
-    return isZooScene() && Number(level) % LEVELS_PER_STAGE === 0;
+  /* 当前主题是否启用智能错题库 */
+  function usesWrongBank() {
+    const theme = typeof currentTheme === "function" ? currentTheme() : null;
+    return Boolean(theme && theme.useWrongBank) || hasSceneRoute();
   }
-  function isAnimalFinalBoss(level) {
-    const scene = zooScene();
-    return isZooScene() && !!scene && Number(level) === scene.levelCount;
-  }
-
-  window.isZooScene = isZooScene;
-  window.zooScene = zooScene;
-  window.isAnimalBossLevel = isAnimalBossLevel;
-  window.isAnimalFinalBoss = isAnimalFinalBoss;
 
   /* 阶段划分：每 5 关为一组，第 5/10/15… 关为考核关（5 题，按答对题数发 1~3 星） */
   const STAGE_SIZE = 5;
@@ -36,6 +35,37 @@
     const L = Number(level) || 0;
     return L > 0 && L % STAGE_SIZE === 0;
   }
+
+  /* 每 5 关的第 5 关为阶段 BOSS，最后一关为总 BOSS */
+  function isStageBossLevel(level) {
+    return hasSceneRoute() && isAssessmentLevel(level);
+  }
+  function isFinalBossLevel(level) {
+    const scene = activeScene();
+    return Boolean(scene && scene.levelCount && Number(level) === scene.levelCount);
+  }
+
+  /* 根据主题配置拼接单词图片路径，避免业务代码硬编码 images/words/animal/... */
+  function wordImgPath(word, themeId) {
+    if (!word) return "";
+    const theme = themeId && typeof THEME_BY_ID !== "undefined"
+      ? THEME_BY_ID.get(themeId)
+      : (typeof currentTheme === "function" ? currentTheme() : null);
+    const dir = (theme && theme.wordImgDir) || "animal";
+    return `images/words/${dir}/${String(word).replace(/ /g, "-")}.webp`;
+  }
+
+  /* 通用能力接口 + 兼容旧别名 */
+  window.activeScene = activeScene;
+  window.hasSceneRoute = hasSceneRoute;
+  window.usesWrongBank = usesWrongBank;
+  window.isStageBossLevel = isStageBossLevel;
+  window.isFinalBossLevel = isFinalBossLevel;
+  window.wordImgPath = wordImgPath;
+  window.isZooScene = () => hasSceneRoute();
+  window.zooScene = () => activeScene();
+  window.isAnimalBossLevel = isStageBossLevel;
+  window.isAnimalFinalBoss = isFinalBossLevel;
   window.STAGE_SIZE = STAGE_SIZE;
   window.isAssessmentLevel = isAssessmentLevel;
 
@@ -56,10 +86,30 @@
   };
 
   /* 统一生成带 webp → png → emoji 回退的图片标签 */
-  window.wordArtImg = function wordArtImg(src, imgCls, fallback, fallbackCls, loading = "eager") {
+  window.wordArtImg = function wordArtImg(src, imgCls, fallback, fallbackCls, loading = "eager", opts = null) {
     const fbCls = fallbackCls ? ` class="${fallbackCls}"` : "";
-    if (!src) return `<span${fbCls} style="display:grid">${fallback}</span>`;
-    return `<img class="${imgCls}" src="${src}" alt="" loading="${loading}" decoding="async" onerror="wordArtFallback(this)"><span${fbCls} style="display:none">${fallback}</span>`;
+    const fbExtra = opts && opts.fallbackStyle ? `;${opts.fallbackStyle}` : "";
+    if (!src) return `<span${fbCls} style="display:grid${fbExtra}">${fallback}</span>`;
+    const imgStyle = opts && opts.imgStyle ? ` style="${opts.imgStyle}"` : "";
+    return `<img class="${imgCls}" src="${src}" alt="" loading="${loading}" decoding="async"${imgStyle} onerror="wordArtFallback(this)"><span${fbCls} style="display:none${fbExtra}">${fallback}</span>`;
+  };
+
+  /* 统一构造简单名词主题词表（供 school / travel 等主题复用） */
+  window.buildThemeWordList = function buildThemeWordList(rows, imgDir) {
+    return (rows || []).map(([word, zh, phon, example, emoji]) => ({
+      word,
+      zh,
+      phon,
+      example,
+      emoji,
+      category: "noun",
+      assetKey: word,
+      img: `images/words/${imgDir}/${word.replace(/ /g, "-")}.webp`,
+      dialogueClue: example.replace(
+        new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+")}\\b`, "i"),
+        "___"
+      ),
+    }));
   };
 
   /* 占位主题：统一「敬请期待」页，主题文件只需传差异文案与配色 */
@@ -68,9 +118,12 @@
     return window.defineDinoTheme({
       id: o.id,
       name: o.name,
+      islandName: o.islandName || o.name,
       chip: o.chip,
       unit: o.unit,
       emoji: o.emoji,
+      cover: o.cover || `./images/background/theme-${o.id}.webp`,
+      wordImgDir: o.wordImgDir || o.id,
       dialog: o.dialog || { q: "What's this?", a: "It's a {word}." },
       /* 每日随机挑战混抽到该主题时，看图题的提示文案跟随主题 */
       picHint: o.picHint || "",

@@ -14,7 +14,8 @@ window.QuizView = {
     if (!root || !quiz) return;
     const q = quiz.order[quiz.index];
     this.abort = new AbortController();
-    if (q.type === "feed_animal") this.setupDragging(root);
+    const game = gameForTask(q);
+    if (game && typeof game.onMount === "function") game.onMount(root, q, this);
   },
 
   cleanup() {
@@ -82,7 +83,7 @@ window.QuizView = {
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
       const target = hit && hit.closest("[data-feed-drop]");
-      if (target) feedPick(drag.value);
+      if (target) feedPick(drag.value, source);
     };
     const up = (ev) => finish(ev, false);
     const cancel = (ev) => finish(ev, true);

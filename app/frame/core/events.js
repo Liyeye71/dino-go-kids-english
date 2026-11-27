@@ -123,38 +123,25 @@ const ACTIONS = {
   "listen-selected"(el) { shakeBtn(el); listenSelected(); },
   next() { nextQuestion(); },
   "close-quiz"() {
-    /* 关闭答题页时立即中断题型提示 / 单词朗读与动作拟声音效 */
+    /* 关闭答题页时立即中断题型提示 / 单词朗读 */
     stopSpeak();
-    stopActionSound();
     settleLock = false;
     quiz = null;
     const prevTheme = state.theme;
     const prevScene = state.scene;
     go("map", { replace: true });
-    /* 从场景路线抽屉进入闯关 → 返回时自动重开该场景的路线图 */
-    if (prevTheme === "animal" && prevScene) {
-      const theme = currentTheme();
-      const scene = (theme.scenes || []).find((s) => s.id === prevScene);
-      if (scene) {
-        setTimeout(() => {
-          openOverlay(renderZooRouteSheet(scene, sceneProgress(prevTheme, prevScene)));
-          if (window.ZooRouteView) ZooRouteView.focusCurrent();
-        }, 0);
-      }
+    /* 从带路线图的场景抽屉进入闯关 → 返回时自动重开该场景路线图 */
+    if (hasSceneRoute(prevTheme, prevScene)) {
+      setTimeout(() => openThemeScene(prevTheme, prevScene), 0);
     }
   },
   "speak-answer"(el) {
-    /* 结果条喇叭：朗读正确答案 */
+    /* 结果条喇叭：按题型协议朗读正确答案 */
     shakeBtn(el);
     const q = quiz && quiz.order[quiz.index];
-    /* 动物喂食题读食物；情景对话整句题读正确整句；其余读单词 */
     if (q) {
-      const isDialogSentence = q.type === "dialog" && q.dialog && q.dialog.mode === "sentence";
-      const text = q.type === "feed_animal"
-        ? (q.correctFood || q.word || "")
-        : isDialogSentence ? (q.answerText || q.answerValue || q.word || "")
-          : (q.word || "");
-      speak(text);
+      const meta = answerMetaOf(q);
+      if (meta.speakText) speak(meta.speakText);
     }
   },
   evolve() { beginEvolution(); },
@@ -203,11 +190,14 @@ const ACTIONS = {
     sfx("tap");
     render();
   },
-  "open-animal-scene"(el) { sfx("tap"); openAnimalScene(el.dataset.scene); },
-  "zoo-node"(el) {
-    /* 🦁 路线弹框里的关卡节点 */
+  "open-scene"(el) { sfx("tap"); openThemeScene(el.dataset.theme || state.theme, el.dataset.scene); },
+  "open-animal-scene"(el) { sfx("tap"); openThemeScene("animal", el.dataset.scene); },
+  "route-node"(el) {
+    /* 通用路线图抽屉里的关卡节点 */
     const level = Number(el.dataset.level) || 1;
-    const prog = sceneProgress("animal", "zoo");
+    const themeId = el.dataset.theme || state.theme;
+    const sceneId = el.dataset.scene || state.scene;
+    const prog = sceneProgress(themeId, sceneId);
     const cleared = Boolean(prog.cleared && prog.cleared[level]);
     const best = (prog.stars && prog.stars[level]) || 0;
     if (cleared && best >= 3) {
@@ -222,9 +212,9 @@ const ACTIONS = {
     closeOverlay();
     startQuiz(level, { replay: cleared || level < prog.level });
   },
-  "zoo-zoom-in"() { sfx("tap"); if (window.ZooRouteView) ZooRouteView.zoomIn(); },
-  "zoo-zoom-out"() { sfx("tap"); if (window.ZooRouteView) ZooRouteView.zoomOut(); },
-  "zoo-zoom-reset"() { sfx("tap"); if (window.ZooRouteView) ZooRouteView.resetZoom(); },
+  "route-zoom-in"() { sfx("tap"); if (window.RouteSheetView) RouteSheetView.zoomIn(); },
+  "route-zoom-out"() { sfx("tap"); if (window.RouteSheetView) RouteSheetView.zoomOut(); },
+  "route-zoom-reset"() { sfx("tap"); if (window.RouteSheetView) RouteSheetView.resetZoom(); },
   "chest-claim"(el) {
     /* 🎁 旅程进度条上的里程碑宝箱：开箱即送 1 次免费转盘；按按钮上的主题领取对应进度 */
     const res = ChestManager.claimJourney(Number(el.dataset.threshold) || 0, el.dataset.theme);
@@ -245,7 +235,7 @@ const ACTIONS = {
     render(); /* 更新地图上的宝箱计数 */
   },
   /* 🍎 动物喂食 Feed Animal */
-  "fd-pick"(el) { feedPick(el.dataset.food); },
+  "fd-pick"(el) { feedPick(el.dataset.food, el); },
   settings() { openSettings(); },
   "wheel-open"() { LuckyWheel.open(); },
   "wheel-spin"() { LuckyWheel.spin(); },
@@ -258,7 +248,6 @@ const ACTIONS = {
     state.sound = !state.sound;
     save();
     if (state.sound) { ensureAudio(); sfx("tap"); }
-    else stopActionSound();
     openSettings();
     toast(state.sound ? "音效已开启" : "音效已关闭");
   },
@@ -281,6 +270,8 @@ const ACTIONS = {
   },
   "close-overlay"() { resetVoice(); closeOverlay(); },
   "speak-word"(el) { shakeBtn(el); speak(el.dataset.word); },
+  /* 动作猜猜：点击舞台重播卡通动作拟声 */
+  "action-sfx"(el) { if (typeof actionSfx === "function") actionSfx(el.dataset.word); },
   /* 情景对话：朗读 A 提问框里的完整句子 */
   "speak-text"(el) { shakeBtn(el); speak(el.dataset.text); },
   "open-review"() { openReview(); },

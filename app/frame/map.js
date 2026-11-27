@@ -20,48 +20,37 @@ const MAP_BALLOON_SVG = `<svg viewBox="0 0 84 100" fill="none" aria-hidden="true
 const MAP_LEFT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5 L8 12 L15 19" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const MAP_RIGHT_ARROW_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5 L16 12 L9 19" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-function mapIslandsData() {
-  return [
-    {
-      id: "zoo",
-      themeId: "animal",
-      name: "神奇动物园",
-      sign: "🦁 神奇动物园 · 58 词",
-      emoji: "🦁",
-      mist: "探索中",
-      live: true,
-      playable: true,
-      cover: "./images/background/theme-animal.webp",
-      action: "open-animal-scene",
-      scene: "zoo",
-    },
-    {
-      id: "school",
-      themeId: "school",
-      name: "上学文具岛",
-      sign: "🎒 上学文具岛 · 15 词",
-      emoji: "🎒",
-      mist: "建造中",
-      live: false,
-      playable: false,
-      cover: "./images/background/theme-school.webp",
-      action: "island-soon",
-      scene: "",
-    },
-    {
-      id: "travel",
-      themeId: "travel",
-      name: "去旅行交通岛",
-      sign: "✈️ 去旅行交通岛 · 19 词",
-      emoji: "✈️",
-      mist: "建造中",
-      live: false,
-      playable: false,
-      cover: "./images/background/theme-travel.webp",
-      action: "island-soon",
-      scene: "",
-    },
-  ];
+function islandWordCount(theme, sceneId) {
+  const words = sceneWords(theme, sceneId);
+  const nouns = words.filter((w) => w.category === "noun").length;
+  return nouns || words.length;
+}
+
+/* 由当前单元的主题配置动态生成浮空岛列表，新增/开放主题无需改 map.js */
+function mapIslandsData(unit) {
+  const themes = themesOfUnit(unit || currentUnit());
+  return themes.map((t) => {
+    const firstScene = (t.scenes || [])[0] || null;
+    const playable = themeHasContent(t);
+    const hasRoute = Boolean(firstScene && Array.isArray(firstScene.levels) && firstScene.levels.length);
+    const sceneId = firstScene ? firstScene.id : "";
+    const name = (firstScene && firstScene.name) || t.islandName || t.name;
+    const emoji = (firstScene && firstScene.emoji) || t.emoji || "🏝️";
+    const count = islandWordCount(t, sceneId);
+    return {
+      id: sceneId || t.id,
+      themeId: t.id,
+      name,
+      sign: `${emoji} ${name} · ${count} 词`,
+      emoji,
+      mist: playable ? "探索中" : "建造中",
+      live: playable,
+      playable,
+      cover: t.cover || `./images/background/theme-${t.id}.webp`,
+      action: !playable ? "island-soon" : (hasRoute ? "open-scene" : "start-quiz"),
+      scene: sceneId,
+    };
+  });
 }
 
 function shiftIsland(delta) {
@@ -124,7 +113,7 @@ function screenMap() {
 
   const dailyLeft = dailyChallengeLeft();
 
-  const islands = mapIslandsData();
+  const islands = mapIslandsData(unit);
   const len = islands.length;
   const curIdx = ((islandIdx % len) + len) % len;
   const cur = islands[curIdx];
@@ -133,8 +122,7 @@ function screenMap() {
   const journeyThemeId = cur.themeId || (unitThemes.find(themeHasContent) || currentTheme()).id;
   const jProg = themeProgress(journeyThemeId);
   const starTotal = themeStars(jProg);
-  const stageStep = window.STAGE_SIZE || 5;
-  const starMax = Math.max(1, Math.floor(levelsPerTheme(journeyThemeId) / stageStep)) * 3;
+  const starMax = themeStarMax(journeyThemeId);
   const journeyKey = activeProgressKey(journeyThemeId);
 
   const coverInner = `<img class="im-cover-full" src="${cur.cover}" alt="${cur.name}">${!cur.playable ? `<span class="im-cover-ribbon">${cur.mist}</span>` : ""}`;
@@ -162,7 +150,7 @@ function screenMap() {
       <div class="im-main-island theme-${cur.id}${slideCls}">
         <div class="im-main-sign">${cur.sign}</div>
         <div class="im-main-body">
-          <button type="button" class="im-main-cover" data-action="${cur.action}" data-scene="${cur.scene}" data-name="${cur.name}" aria-label="进入 ${cur.name}">
+          <button type="button" class="im-main-cover" data-action="${cur.action}" data-theme="${cur.themeId}" data-scene="${cur.scene}" data-name="${cur.name}" aria-label="进入 ${cur.name}">
             ${coverInner}
           </button>
         </div>
@@ -190,20 +178,4 @@ function screenMap() {
 
     ${tabbar("map")}
   </section>`;
-}
-
-
-/* 动物乐园：点场景入口 → 锁定 animal 主题并记录场景后弹出路线抽屉 */
-function openAnimalScene(sceneId) {
-  const theme = THEME_BY_ID.get("animal") || currentTheme();
-  const scenes = theme.scenes || [];
-  if (!scenes.length) return;
-  const scene = scenes.find((s) => s.id === sceneId) || scenes[0];
-
-  state.theme = "animal";
-  state.scene = scene.id;
-  save();
-  openOverlay(renderZooRouteSheet(scene, sceneProgress("animal", scene.id)));
-  /* 抽屉插入 DOM 后把当前关滚到视口中央 */
-  if (window.ZooRouteView) setTimeout(() => ZooRouteView.focusCurrent(), 60);
 }
