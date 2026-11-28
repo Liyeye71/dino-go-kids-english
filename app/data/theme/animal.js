@@ -89,7 +89,7 @@ const ANIMAL_ZOO_WORD_REFS = [
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish",
-  "polar bear", "sea lion", "walrus",
+  "polar bear", "sea lion",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -183,7 +183,7 @@ const MARINE_ANIMALS = new Set([
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish", "turtle",
-  "polar bear", "sea lion", "walrus",
+  "polar bear", "sea lion",
 ]);
 
 const ANIMAL_FOODS = {

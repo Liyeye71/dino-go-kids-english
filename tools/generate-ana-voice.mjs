@@ -28,6 +28,9 @@ const EXTRA_PHRASES = [
   "What is this?",
   "What is the animal doing?",
   "What does this animal like to eat?",
+  "Yes, it is.",
+  "Yes, they are.",
+  "Yes, it does.",
 ];
 
 /* 与前端 sfx.js 完全一致的文本规范化函数 */
@@ -57,18 +60,41 @@ function collectItems() {
     if (entry && entry.word) add(entry.word);
   }
 
-  /* 2. animal.js 中的食物词（ANIMAL_FOODS） */
+  /* 2. animal.js 中的食物词、食物问答句、动物喂食问句 */
   const animalSrc = fs.readFileSync(path.join(appDir, "data", "theme", "animal.js"), "utf8");
   for (const m of animalSrc.matchAll(/\ben:\s*"([^"]+)"/g)) {
-    add(m[1]);
+    const food = m[1];
+    add(food);
+    add(`It eats ${food}.`);
+    add(`No, it doesn't. It eats ${food}.`);
+  }
+  const feedMapMatch = animalSrc.match(/const ANIMAL_FEED_MAP = \{([\s\S]*?)\};/);
+  if (feedMapMatch) {
+    for (const m of feedMapMatch[1].matchAll(/(?:"([^"]+)"|\b([a-z]+))\s*:/g)) {
+      const animal = m[1] || m[2];
+      if (animal) add(`What does the ${animal} like to eat?`);
+    }
   }
 
-  /* 3. school.js / travel.js 等独立定义的主题词表 */
+  /* 3. dialog-templates.js 中的固定无变量场景问句（zoo / school / travel / default） */
+  const dlgPath = path.join(appDir, "data", "game", "dialog-templates.js");
+  if (fs.existsSync(dlgPath)) {
+    const dlgSrc = fs.readFileSync(dlgPath, "utf8");
+    for (const m of dlgSrc.matchAll(/"([A-Z][^"{}]*[?!.])"/g)) {
+      const s = m[1].trim();
+      if (s.includes(" ") && !s.includes("{") && !s.includes("___")) add(s);
+    }
+  }
+
+  /* 4. school.js / travel.js 等独立定义的主题词表（名词数组 + 动作动词对象） */
   for (const themeFile of ["school.js", "travel.js"]) {
     const p = path.join(appDir, "data", "theme", themeFile);
     if (!fs.existsSync(p)) continue;
     const src = fs.readFileSync(p, "utf8");
     for (const m of src.matchAll(/\[\s*"([^"]+)"\s*,/g)) {
+      add(m[1]);
+    }
+    for (const m of src.matchAll(/\{\s*word:\s*"([^"]+)"/g)) {
       add(m[1]);
     }
   }

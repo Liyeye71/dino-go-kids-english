@@ -1,5 +1,5 @@
 /* DinoGo · offline cache */
-const VERSION = "1.5";
+const VERSION = "1.6";
 const ASSETS = [
   "./",
   "./index.html",

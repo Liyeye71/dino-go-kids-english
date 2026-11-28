@@ -12,12 +12,7 @@ const TRAVEL_TRANSPORT_WORDS = buildThemeWordList([
   ["ambulance", "救护车", "/ˈæmbjələns/", "The ambulance helps sick people.", "🚑"],
   ["taxi", "出租车", "/ˈtæksi/", "We take a taxi to the station.", "🚕"],
   ["jeep", "吉普车", "/dʒiːp/", "The jeep drives up the hill.", "🚙"],
-  ["dump truck", "自卸卡车", "/dʌmp trʌk/", "The dump truck carries sand.", "🚛"],
   ["van", "面包车", "/væn/", "The van is white.", "🚐"],
-  ["box truck", "厢式货车", "/bɒks trʌk/", "A box truck carries boxes.", "🚚"],
-  ["tanker truck", "油罐车", "/ˈtæŋkə trʌk/", "The tanker truck is very long.", "🚛"],
-  ["tow truck", "拖车", "/təʊ trʌk/", "The tow truck helps broken cars.", "🚚"],
-  ["crane", "起重机", "/kreɪn/", "The crane lifts heavy things.", "🏗️"],
   ["motorcycle", "摩托车", "/ˈməʊtəsaɪkl/", "He rides a motorcycle.", "🏍️"],
   ["scooter", "滑板车", "/ˈskuːtə(r)/", "I ride my scooter in the park.", "🛴"],
   ["bicycle", "自行车", "/ˈbaɪsɪkl/", "I ride my bicycle.", "🚲"],
@@ -27,8 +22,6 @@ const TRAVEL_TRANSPORT_WORDS = buildThemeWordList([
   ["helicopter", "直升机", "/ˈhelɪkɒptə(r)/", "The helicopter flies in the sky.", "🚁"],
   ["rocket", "火箭", "/ˈrɒkɪt/", "The rocket goes to space.", "🚀"],
   ["boat", "小船", "/bəʊt/", "The boat floats on the lake.", "⛵"],
-  ["yacht", "游艇", "/jɒt/", "The yacht sails on the blue sea.", "🛥️"],
-  ["cement mixer", "水泥搅拌车", "/sɪˈment ˈmɪksə(r)/", "The cement mixer is big.", "🏗️"],
   ["tractor", "拖拉机", "/ˈtræktə(r)/", "The tractor works on the farm.", "🚜"],
   ["excavator", "挖掘机", "/ˈekskəveɪtə(r)/", "The excavator digs holes.", "🚧"],
   ["garbage truck", "垃圾车", "/ˈɡɑːbɪdʒ trʌk/", "The garbage truck comes on Monday.", "🚮"],
@@ -43,7 +36,22 @@ const TRAVEL_GEAR_WORDS = buildThemeWordList([
   ["sunglasses", "太阳镜", "/ˈsʌnɡlɑːsɪz/", "I wear sunglasses at the beach.", "🕶️"],
 ], "tool");
 
-const TRAVEL_WORDS = [...TRAVEL_TRANSPORT_WORDS, ...TRAVEL_GEAR_WORDS];
+/* 旅行动作动词 6 个：开启「动作猜猜」题型，插画位于 images/words/action/travel-<word>.webp */
+const TRAVEL_ACTION_WORDS = [
+  { word: "drive", actor: "🦖", motion: "run", zh: "开车", phon: "/draɪv/", example: "I drive a little red car.", emoji: "🚗" },
+  { word: "ride", actor: "🦖", motion: "run", zh: "骑车", phon: "/raɪd/", example: "I ride my blue bicycle.", emoji: "🚲" },
+  { word: "pack", actor: "🦖", motion: "sit", zh: "打包", phon: "/pæk/", example: "I pack my yellow suitcase.", emoji: "🧳" },
+  { word: "sail", actor: "🦖", motion: "swim", zh: "航行", phon: "/seɪl/", example: "We sail a boat on the sea.", emoji: "⛵" },
+  { word: "camp", actor: "🦖", motion: "sit", zh: "露营", phon: "/kæmp/", example: "We camp beside the campfire.", emoji: "⛺" },
+  { word: "hike", actor: "🦖", motion: "walk", zh: "徒步", phon: "/haɪk/", example: "I hike up the green hill.", emoji: "🥾" },
+].map((w) => ({
+  ...w,
+  category: "verb",
+  assetKey: `travel-${w.word}`,
+  img: `images/words/action/travel-${w.word}.webp`,
+}));
+
+const TRAVEL_WORDS = [...TRAVEL_TRANSPORT_WORDS, ...TRAVEL_GEAR_WORDS, ...TRAVEL_ACTION_WORDS];
 
 /* 路线坐标：travel-journey-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-travel-map.mjs 同步） */
 const TRAVEL_JOURNEY_NODES = [

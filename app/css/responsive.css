@@ -103,10 +103,29 @@
   justify-content: center;
 }
 
-/* 情景对话图片选项保持原尺寸 */
-.quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art {
-  width: clamp(3rem, 10cqh, 4.5rem) !important;
-  height: clamp(3rem, 10cqh, 4.5rem) !important;
+/* 情景对话图片选项：铺满选项卡片内容区（与动物喂食同等饱满度，防止被下方 .dino-stage-v2 压小） */
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card {
+  min-height: clamp(6.5rem, 18cqh, 9.5rem) !important;
+  height: clamp(6.5rem, 18cqh, 9.5rem);
+  padding: 0.45rem !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art .listen-card-img,
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art .listen-card-emoji {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
 }
 
 /* 图片选项防裁切 + 食物图铺满 */
@@ -297,10 +316,11 @@
   position: relative; z-index: 12; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
   padding: calc(0.75rem + var(--safe-top)) clamp(0.875rem, 3.2cqw, 1.5rem) 0; flex: none;
 }
-/* 首页 CTA 按钮内的品牌 Logo：白色反色字，随按钮高度等比放大 */
+/* 首页 CTA 按钮内的品牌 Logo：白色反色字，显式高度 + 宽高比避免 iPad Safari flex 塌陷为 0px */
 .bc-play-btn .bc-play-logo {
-  display: block; flex: 0 1 auto; min-width: 0; width: auto; height: auto; max-width: 100%;
-  max-height: clamp(3.1rem, 8cqh, 3.8rem);
+  display: block; flex: 0 1 auto; min-width: 0;
+  height: clamp(3.1rem, 8cqh, 3.8rem); width: auto; aspect-ratio: 720 / 136;
+  max-width: calc(100% - 1.8rem); max-height: clamp(3.1rem, 8cqh, 3.8rem);
   filter: drop-shadow(0 0.15rem 0.2rem rgba(40, 20, 0, 0.22));
 }
 .bc-evo-hud {
@@ -423,20 +443,21 @@
   z-index: 9; display: flex; flex-direction: column; align-items: center;
 }
 .bc-sign-board {
-  position: relative; min-width: clamp(6.4rem, 21cqw, 8.8rem); max-width: clamp(7.8rem, 25cqw, 10.2rem);
-  padding: 0.45rem 0.65rem 0.5rem; border-radius: 1.0625rem;
+  position: relative; min-width: clamp(8.2rem, 26cqw, 11.2rem); max-width: clamp(9.8rem, 31cqw, 13.2rem);
+  padding: 0.5rem 0.75rem 0.55rem; border-radius: 1.0625rem;
   background: linear-gradient(180deg, #FFF7DB 0%, #FFEBBF 100%);
   border: 0.15625rem solid #5C411D;
   box-shadow: 0 0.28rem 0 #C89B63, 0 0.5rem 1rem rgba(92,65,29,.2), inset 0 0.125rem 0 rgba(255,255,255,.78);
   text-align: center; transition: transform .14s ease;
 }
-.bc-sign-board:active { transform: translateY(0.125rem) scale(.97); }
-.bc-sign-top { display: flex; align-items: center; justify-content: space-between; gap: 0.25rem; margin-bottom: 0.125rem; }
-.bc-sign-tag { font-size: 0.5625rem; font-weight: var(--w-black); color: #9C6F3B; letter-spacing: 0.04rem; }
+.bc-sign-board:active:not(:has(.bc-sign-mini-btn:active)) { transform: translateY(0.125rem) scale(.97); }
+.bc-sign-top { display: flex; align-items: center; justify-content: space-between; gap: 0.35rem; margin-bottom: 0.15rem; }
+.bc-sign-tag { font-size: 0.625rem; font-weight: var(--w-black); color: #9C6F3B; letter-spacing: 0.04rem; }
 .bc-sign-mini-btn {
-  width: 1.45rem; height: 1.45rem; border-radius: 50%; background: #fff; border: 0.09375rem solid #E4CFA9;
-  color: #B4811C; display: grid; place-items: center; flex: none; box-shadow: 0 0.125rem 0 #DFC280;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%; background: #fff; border: 0.11rem solid #E4CFA9;
+  color: #B4811C; display: grid; place-items: center; flex: none; box-shadow: 0 0.16rem 0 #DFC280;
 }
+.bc-sign-mini-btn svg { width: 1.2rem; height: 1.2rem; }
 .bc-sign-word { display: block; width: 100%; font-size: clamp(1rem, 3.3cqw, 1.35rem); font-weight: var(--w-black); color: #4A360F; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bc-sign-zh { display: block; font-size: 0.65625rem; font-weight: var(--w-bold); color: #8A6A2E; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bc-sign-post {
@@ -1012,9 +1033,11 @@
 /* ================= 动物喂食：待机饥饿气泡 / 重听喇叭 / 喂错摇头与食物弹开 ================= */
 .ref-feed-animal .feed-replay-btn {
   position: absolute; right: 0.75rem; bottom: 0.75rem; z-index: 5;
-  border: 0.09375rem solid var(--sticker-line); color: #72532F;
-  box-shadow: 0 0.1875rem 0 #D5BB8D;
+  width: 4.25rem; height: 4.25rem;
+  border: 0.125rem solid var(--sticker-line); color: #72532F;
+  box-shadow: 0 0.25rem 0 #D5BB8D;
 }
+.ref-feed-animal .feed-replay-btn svg { width: 2rem; height: 2rem; }
 .feed-hungry-badge {
   position: absolute; top: 0.55rem; right: 0.75rem; z-index: 4;
   font-size: 1.55rem; line-height: 1; pointer-events: none;

@@ -81,13 +81,16 @@
   font-weight:var(--w-black);color:#2E7A4C;overflow-wrap:anywhere}
 .zoo-feedback-card.is-wrong .zoo-feedback-title{color:#B5452F}
 .zoo-feedback-body{position:relative;z-index:2;display:flex;flex-direction:column;gap:0.9rem}
-/* 答案条：英文 + 喇叭 + 音标同排，中文独占下一行 */
-.zoo-answer-box{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;
+/* 答案条：左侧为英文 + 音标 + 中文，右侧独立放大喇叭按钮（框内垂直居中不溢出） */
+.zoo-answer-box{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;
   padding:0.72rem 0.85rem;border-radius:1rem;background:#FFF6DC;border:0.11rem solid #E4CFA9}
+.zoo-answer-info{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:0.28rem}
+.zoo-answer-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:0.2rem 0.5rem}
 .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:1.32rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;overflow-wrap:anywhere;word-break:break-word}
-.zoo-answer-box .zoo-audio-btn{flex:none;width:2.3rem;height:2.3rem;background:#FFFDF7;border:0.125rem solid #C89B63;box-shadow:0 0.15rem 0 #D9C39B;color:#B47024}
+.zoo-answer-box .zoo-audio-btn{flex:none;width:3.35rem;height:3.35rem;background:#FFFDF7;border:0.14rem solid #C89B63;box-shadow:0 0.2rem 0 #D9C39B;color:#B47024}
+.zoo-answer-box .zoo-audio-btn svg{width:66%;height:66%}
 .zoo-answer-phon{flex:none;font-size:0.86rem;font-weight:var(--w-bold);color:#8E724D;white-space:nowrap}
-.zoo-meaning-text{flex:1 1 100%;min-width:0;font-size:0.95rem;font-weight:var(--w-black);color:#8A6431;
+.zoo-meaning-text{min-width:0;font-size:0.95rem;font-weight:var(--w-black);color:#8A6431;
   white-space:normal;overflow-wrap:anywhere}
 .zoo-action-btn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;gap:0.3125rem;
   width:100%;min-height:3.3rem;padding:0 1.5rem;border-radius:1.15rem;border:0.16rem solid #5C411D;border-bottom-width:0.44rem;

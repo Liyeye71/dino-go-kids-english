@@ -183,6 +183,7 @@ function speak(text) {
     if (!lines.length) return;
     const token = ++speakToken;
     const kids = state.voice !== "standard";
+    const slow = typeof enlightenOn === "function" && enlightenOn();
     const hasSynth = "speechSynthesis" in window;
     const synth = hasSynth ? window.speechSynthesis : null;
     const voice = hasSynth ? pickVoice() : null;
@@ -199,7 +200,8 @@ function speak(text) {
       }
       const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
-      u.rate = kids ? 0.82 : 0.86;
+      /* 启蒙模式自动放慢，方便 3~4 岁听清尾音与跟读 */
+      u.rate = slow ? 0.72 : (kids ? 0.80 : 0.84);
       u.pitch = kids ? 1.15 : 1.04;
       if (voice) u.voice = voice;
       u.onend = () => next();
@@ -215,6 +217,10 @@ function speak(text) {
       if (url) {
         const audio = new Audio(url);
         audio.preload = "auto";
+        /* 保持童声原音高：启蒙模式 0.85x，普通模式 0.93x */
+        if ("preservesPitch" in audio) audio.preservesPitch = true;
+        if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
+        audio.playbackRate = slow ? 0.85 : 0.93;
         activeAudio = audio;
         let settled = false;
         const done = () => {

@@ -134,12 +134,31 @@ const DINO_GREETINGS = [
   "点我一起学英语!",
   "Let's explore!",
   "You are awesome!",
+  "哈哈，好痒呀! Hehe!",
+  "High five! 击个掌!",
+  "Good job! 你真棒!",
+  "我最爱吃小星星啦 ★",
+  "去动物园看看狮子吧!",
+  "书包背好，上学去!",
+  "嘀嘀! 坐小火车去旅行!",
+  "Give me a hug! 抱抱!",
+  "Yay! 再戳我一下!",
+  "小恐龙正在长大哦!",
+  "Super star! 超级小天才!",
+  "肚子咕噜噜，快去闯关!",
+  "Let's go! 冒险开始!",
+  "今天也要开心学单词!",
+  "Roar~ 我是最勇敢的小诺!",
 ];
 let dinoGreetIdx = 0;
 
 function pokeDinoInteraction(btn) {
   sfx("star");
-  dinoGreetIdx = (dinoGreetIdx + 1) % DINO_GREETINGS.length;
+  if (DINO_GREETINGS.length > 1) {
+    let next = dinoGreetIdx;
+    while (next === dinoGreetIdx) next = Math.floor(Math.random() * DINO_GREETINGS.length);
+    dinoGreetIdx = next;
+  }
   const bubble = $(".bc-bubble");
   if (bubble) bubble.textContent = DINO_GREETINGS[dinoGreetIdx];
   if (btn) {
@@ -163,7 +182,7 @@ function pokeDinoInteraction(btn) {
 }
 
 /* 首页 CTA 按钮专用品牌 Logo（仅此一处使用，不再抽公共组件） */
-const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
+const HOME_LOGO_SVG = `<svg class="bc-play-logo" width="720" height="136" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
   <defs>
     <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
       <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
@@ -352,10 +371,7 @@ function screenHome() {
         <div class="bc-sign-board">
           <div class="bc-sign-top">
             <span class="bc-sign-tag">每日一词</span>
-            <div style="display:flex;gap:0.2rem">
-              <button class="bc-sign-mini-btn" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(13, "#B4811C")}</button>
-              <button class="bc-sign-mini-btn" data-action="next-home-word" aria-label="换一个单词">${I.refresh(12, "#8C6232")}</button>
-            </div>
+            <button class="bc-sign-mini-btn" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(18, "#B4811C")}</button>
           </div>
           <button type="button" style="width:100%" data-action="open-review" aria-label="打开单词跟读 ${word.word}">
             <span class="bc-sign-word w-word">${word.word}</span>

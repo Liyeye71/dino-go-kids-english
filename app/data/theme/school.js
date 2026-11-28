@@ -12,8 +12,6 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["glue", "胶水", "/ɡluː/", "I use glue to stick the paper.", "🧴"],
   ["notebook", "笔记本", "/ˈnəʊtbʊk/", "Write it in your notebook.", "📓"],
   ["book", "书", "/bʊk/", "This book is fun.", "📘"],
-  ["textbook", "课本", "/ˈtekstbʊk/", "Open your textbook.", "📕"],
-  ["notepad", "便签本", "/ˈnəʊtpæd/", "I draw on the notepad.", "📝"],
   ["eraser", "橡皮", "/ɪˈreɪzə(r)/", "The eraser is small.", "🧽"],
   ["ruler", "尺子", "/ˈruːlə(r)/", "The ruler is long.", "📏"],
   ["backpack", "书包", "/ˈbækpæk/", "My backpack is heavy.", "🎒"],
@@ -21,7 +19,6 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["globe", "地球仪", "/ɡləʊb/", "The globe shows the world.", "🌍"],
   ["pencil case", "铅笔盒", "/ˈpensl keɪs/", "My pencil case is blue.", "✏️"],
   ["water bottle", "水壶", "/ˈwɔːtə ˈbɒtl/", "I drink water from my water bottle.", "🥤"],
-  ["watercolor set", "水彩颜料", "/ˈwɔːtəkʌlə set/", "Paint with the watercolor set.", "🖌️"],
   ["alarm clock", "闹钟", "/əˈlɑːm klɒk/", "The alarm clock rings in the morning.", "⏰"],
   ["bell", "铃铛", "/bel/", "The school bell rings.", "🔔"],
   ["blackboard", "黑板", "/ˈblækbɔːd/", "The teacher writes on the blackboard.", "📋"],
@@ -29,8 +26,24 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["chair", "椅子", "/tʃeə(r)/", "Sit on the chair.", "💺"],
   ["lamp", "台灯", "/læmp/", "Turn on the lamp.", "💡"],
   ["glasses", "眼镜", "/ˈɡlɑːsɪz/", "I wear glasses to read.", "👓"],
-  ["flask", "烧瓶", "/flɑːsk/", "We use a flask in science class.", "🧪"],
 ], "tool");
+
+/* 校园动作动词 6 个：开启「动作猜猜」题型，插画位于 images/words/action/school-<word>.webp */
+const SCHOOL_ACTION_WORDS = [
+  { word: "read", actor: "🦖", motion: "sit", zh: "读", phon: "/riːd/", example: "I read a picture book.", emoji: "📖" },
+  { word: "write", actor: "🦖", motion: "sit", zh: "写", phon: "/raɪt/", example: "I write in my notebook.", emoji: "✍️" },
+  { word: "draw", actor: "🦖", motion: "dance", zh: "画画", phon: "/drɔː/", example: "I draw a rainbow with crayons.", emoji: "🎨" },
+  { word: "cut", actor: "🦖", motion: "sit", zh: "剪", phon: "/kʌt/", example: "I cut the paper with scissors.", emoji: "✂️" },
+  { word: "study", actor: "🦖", motion: "sit", zh: "学习", phon: "/ˈstʌdi/", example: "I study hard at school.", emoji: "💡" },
+  { word: "count", actor: "🦖", motion: "stand", zh: "数数", phon: "/kaʊnt/", example: "Let's count the wooden blocks.", emoji: "🔢" },
+].map((w) => ({
+  ...w,
+  category: "verb",
+  assetKey: `school-${w.word}`,
+  img: `images/words/action/school-${w.word}.webp`,
+}));
+
+const SCHOOL_ALL_WORDS = [...SCHOOL_WORDS, ...SCHOOL_ACTION_WORDS];
 
 /* 路线坐标：school-campus-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-school-map.mjs 同步） */
 const SCHOOL_CAMPUS_NODES = [
@@ -73,7 +86,7 @@ const SCHOOL_SCENES = [
     mapClass: "zoo",
     levelCount: SCHOOL_CAMPUS_LEVELS.length,
     levels: SCHOOL_CAMPUS_LEVELS,
-    words: SCHOOL_WORDS,
+    words: SCHOOL_ALL_WORDS,
   },
 ];
 

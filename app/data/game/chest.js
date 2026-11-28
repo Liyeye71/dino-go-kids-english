@@ -222,6 +222,37 @@
   let lastWon = null;
   let currentDeg = 0;
 
+  function buildRecordsHtml() {
+    const coupons = Array.isArray(state.coupons) ? state.coupons : [];
+    return coupons.length
+      ? coupons.map((c, i) => {
+        const action = c.used
+          ? `<span class="lw-used">已兑换</span>`
+          : confirmAsk === i
+            ? `<span class="lw-confirm">
+                <button class="lw-mini ghost" data-action="coupon-cancel">取消</button>
+                <button class="lw-mini" data-action="coupon-redeem" data-index="${i}">确认</button>
+              </span>`
+            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}">家长核销</button>`;
+        return `<li class="lw-record${c.used ? " used" : ""}">
+          <span class="ico">${PRIZE_ICON[c.id] || "🎁"}</span>
+          <span class="lw-record-main"><b>${c.label}</b><time>${c.date || ""}</time></span>
+          ${action}
+        </li>`;
+      }).join("")
+      : `<li class="lw-history-empty">还没有抽奖记录，转一转试试手气吧</li>`;
+  }
+
+  /* 仅局部刷新抽奖记录列表，避免整页重绘触发抽屉入场动画与滚动条跳动 */
+  function refreshHistoryList() {
+    const listEl = document.querySelector(".lucky-wheel-sheet .lw-history-list");
+    if (!listEl) {
+      openOverlay(buildOverlay(false));
+      return;
+    }
+    listEl.innerHTML = buildRecordsHtml();
+  }
+
   function buildOverlay(fromChest) {
     const free = pendingSpins();
     const balance = starBalance();
@@ -242,23 +273,7 @@
         : `每 ${WHEEL_COST} ★ 转一次，抽中的奖励找爸爸妈妈兑换`;
     const hint = `${baseHint}；今天还剩 ${dailyLeft}/${DAILY_LIMIT} 次`;
 
-    const records = coupons.length
-      ? coupons.map((c, i) => {
-        const action = c.used
-          ? `<span class="lw-used">已兑换</span>`
-          : confirmAsk === i
-            ? `<span class="lw-confirm">
-                <button class="lw-mini ghost" data-action="coupon-cancel">取消</button>
-                <button class="lw-mini" data-action="coupon-redeem" data-index="${i}">确认</button>
-              </span>`
-            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}">家长核销</button>`;
-        return `<li class="lw-record${c.used ? " used" : ""}">
-          <span class="ico">${PRIZE_ICON[c.id] || "🎁"}</span>
-          <span class="lw-record-main"><b>${c.label}</b><time>${c.date || ""}</time></span>
-          ${action}
-        </li>`;
-      }).join("")
-      : `<li class="lw-history-empty">还没有抽奖记录，转一转试试手气吧</li>`;
+    const records = buildRecordsHtml();
 
     const winPop = lastWon ? `<div class="lw-win-mask">
       <div class="lw-win-card">
@@ -442,12 +457,12 @@
   function askRedeem(i) {
     if (!Array.isArray(state.coupons) || !state.coupons[i] || state.coupons[i].used) return;
     confirmAsk = i;
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   function cancelRedeem() {
     confirmAsk = -1;
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   function redeem(i) {
@@ -458,7 +473,7 @@
     save();
     sfx("win");
     toast(`已核销：「${c.label}」，请家长兑现奖励`);
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   window.LuckyWheel = {

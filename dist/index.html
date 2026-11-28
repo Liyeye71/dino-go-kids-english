@@ -738,13 +738,16 @@ h1,h2,h3,h4,p{margin:0}
   font-weight:var(--w-black);color:#2E7A4C;overflow-wrap:anywhere}
 .zoo-feedback-card.is-wrong .zoo-feedback-title{color:#B5452F}
 .zoo-feedback-body{position:relative;z-index:2;display:flex;flex-direction:column;gap:0.9rem}
-/* 答案条：英文 + 喇叭 + 音标同排，中文独占下一行 */
-.zoo-answer-box{display:flex;flex-wrap:wrap;align-items:center;gap:0.45rem;
+/* 答案条：左侧为英文 + 音标 + 中文，右侧独立放大喇叭按钮（框内垂直居中不溢出） */
+.zoo-answer-box{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;
   padding:0.72rem 0.85rem;border-radius:1rem;background:#FFF6DC;border:0.11rem solid #E4CFA9}
+.zoo-answer-info{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:0.28rem}
+.zoo-answer-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:0.2rem 0.5rem}
 .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:1.32rem;line-height:1.3;font-weight:var(--w-black);color:#4B3626;overflow-wrap:anywhere;word-break:break-word}
-.zoo-answer-box .zoo-audio-btn{flex:none;width:2.3rem;height:2.3rem;background:#FFFDF7;border:0.125rem solid #C89B63;box-shadow:0 0.15rem 0 #D9C39B;color:#B47024}
+.zoo-answer-box .zoo-audio-btn{flex:none;width:3.35rem;height:3.35rem;background:#FFFDF7;border:0.14rem solid #C89B63;box-shadow:0 0.2rem 0 #D9C39B;color:#B47024}
+.zoo-answer-box .zoo-audio-btn svg{width:66%;height:66%}
 .zoo-answer-phon{flex:none;font-size:0.86rem;font-weight:var(--w-bold);color:#8E724D;white-space:nowrap}
-.zoo-meaning-text{flex:1 1 100%;min-width:0;font-size:0.95rem;font-weight:var(--w-black);color:#8A6431;
+.zoo-meaning-text{min-width:0;font-size:0.95rem;font-weight:var(--w-black);color:#8A6431;
   white-space:normal;overflow-wrap:anywhere}
 .zoo-action-btn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;gap:0.3125rem;
   width:100%;min-height:3.3rem;padding:0 1.5rem;border-radius:1.15rem;border:0.16rem solid #5C411D;border-bottom-width:0.44rem;
@@ -1609,22 +1612,26 @@ h1,h2,h3,h4,p{margin:0}
 .zoo-audio-btn:active{transform:scale(.9)}
 .zoo-audio-btn svg{width:62%;height:62%;display:block}
 
-/* 抖动特效：播放发音时的按钮反馈 */
+/* 抖动特效：播放发音时的按钮反馈（左右位移 + 旋转 + 弹性缩放 + 暖光波纹，圆形按钮也能一眼看出抖动） */
 @keyframes shakeAudio{
-  0%   {transform:rotate(0deg) scale(1)}
-  15%  {transform:rotate(-12deg) scale(1.08)}
-  30%  {transform:rotate(10deg) scale(1.06)}
-  45%  {transform:rotate(-6deg) scale(1.04)}
-  60%  {transform:rotate(4deg) scale(1.02)}
-  75%  {transform:rotate(-2deg) scale(1)}
-  100% {transform:rotate(0deg) scale(1)}
+  0%   {transform:translateX(0) rotate(0deg) scale(1)}
+  15%  {transform:translateX(-0.22rem) rotate(-14deg) scale(1.14);box-shadow:0 0 0 0.35rem rgba(244,185,66,.35)}
+  30%  {transform:translateX(0.22rem) rotate(14deg) scale(1.12)}
+  45%  {transform:translateX(-0.16rem) rotate(-10deg) scale(1.08);box-shadow:0 0 0 0.5rem rgba(244,185,66,0)}
+  60%  {transform:translateX(0.14rem) rotate(8deg) scale(1.05)}
+  78%  {transform:translateX(-0.06rem) rotate(-4deg) scale(1.02)}
+  100% {transform:translateX(0) rotate(0deg) scale(1)}
 }
 .listen.is-shaking,
 .zoo-audio-btn.is-shaking,
+.listen-bubble-replay.is-shaking,
+.bc-sign-mini-btn.is-shaking,
 .ref-listen-speaker.is-shaking,
-.ref-dialog-ask.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
+.ref-dialog-ask.is-shaking{animation:shakeAudio .58s cubic-bezier(.36,.07,.19,.97) both !important;will-change:transform}
 .listen.is-shaking svg,
 .zoo-audio-btn.is-shaking svg,
+.listen-bubble-replay.is-shaking svg,
+.bc-sign-mini-btn.is-shaking svg,
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
 
 /* ============================================================
@@ -1802,7 +1809,8 @@ h1,h2,h3,h4,p{margin:0}
 .ref-pic-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
 .ref-picture-art{position:absolute;inset:0;display:grid;place-items:center;padding:0.5rem}
 .ref-picture-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
-.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
+.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;width:4.25rem;height:4.25rem;border:0.125rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.25rem 0 #D5BB8D}
+.ref-picture-frame .listen svg{width:2rem;height:2rem}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
 .quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.85rem,2.8cqh,1.05rem);color:#4B3626;font-weight:var(--w-black);line-height:1.25;overflow-wrap:anywhere;word-break:break-word}
@@ -1890,12 +1898,12 @@ h1,h2,h3,h4,p{margin:0}
 .ref-dialog-image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:100%;flex:1;min-height:0;align-content:center}
 .ref-dialog-image-grid .ref-listen-card{min-height:clamp(4.5rem,15cqh,6.5rem);padding:0.5rem}
 .ref-dialog-reply.pending{color:#9C8666;letter-spacing:0.08em}
-/* 结算卡：整句正确答案换行展示 */
-.zoo-answer-box.is-sentence{align-items:flex-start}
+/* 结算卡：整句正确答案换行展示，右侧喇叭保持垂直居中 */
+.zoo-answer-box.is-sentence{align-items:center}
 .zoo-answer-box.is-sentence .zoo-answer-label{padding-top:0.1875rem}
 .zoo-answer-box.is-sentence .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:clamp(1rem,3.6vw,1.25rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
 /* 整句答案：英文与中文分列两行展示 */
-.zoo-answer-box.is-sentence .zoo-meaning-text{flex:1 1 100%;padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
+.zoo-answer-box.is-sentence .zoo-meaning-text{padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
 
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
@@ -2527,10 +2535,29 @@ h1,h2,h3,h4,p{margin:0}
   justify-content: center;
 }
 
-/* 情景对话图片选项保持原尺寸 */
-.quiz-ref-page .ref-dialog-image-grid .ref-listen-card-art {
-  width: clamp(3rem, 10cqh, 4.5rem) !important;
-  height: clamp(3rem, 10cqh, 4.5rem) !important;
+/* 情景对话图片选项：铺满选项卡片内容区（与动物喂食同等饱满度，防止被下方 .dino-stage-v2 压小） */
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card {
+  min-height: clamp(6.5rem, 18cqh, 9.5rem) !important;
+  height: clamp(6.5rem, 18cqh, 9.5rem);
+  padding: 0.45rem !important;
+}
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art .listen-card-img,
+.quiz-ref-page.dino-stage-v2 .ref-dialog-image-grid .ref-listen-card-art .listen-card-emoji {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
 }
 
 /* 图片选项防裁切 + 食物图铺满 */
@@ -2721,10 +2748,11 @@ h1,h2,h3,h4,p{margin:0}
   position: relative; z-index: 12; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
   padding: calc(0.75rem + var(--safe-top)) clamp(0.875rem, 3.2cqw, 1.5rem) 0; flex: none;
 }
-/* 首页 CTA 按钮内的品牌 Logo：白色反色字，随按钮高度等比放大 */
+/* 首页 CTA 按钮内的品牌 Logo：白色反色字，显式高度 + 宽高比避免 iPad Safari flex 塌陷为 0px */
 .bc-play-btn .bc-play-logo {
-  display: block; flex: 0 1 auto; min-width: 0; width: auto; height: auto; max-width: 100%;
-  max-height: clamp(3.1rem, 8cqh, 3.8rem);
+  display: block; flex: 0 1 auto; min-width: 0;
+  height: clamp(3.1rem, 8cqh, 3.8rem); width: auto; aspect-ratio: 720 / 136;
+  max-width: calc(100% - 1.8rem); max-height: clamp(3.1rem, 8cqh, 3.8rem);
   filter: drop-shadow(0 0.15rem 0.2rem rgba(40, 20, 0, 0.22));
 }
 .bc-evo-hud {
@@ -2847,20 +2875,21 @@ h1,h2,h3,h4,p{margin:0}
   z-index: 9; display: flex; flex-direction: column; align-items: center;
 }
 .bc-sign-board {
-  position: relative; min-width: clamp(6.4rem, 21cqw, 8.8rem); max-width: clamp(7.8rem, 25cqw, 10.2rem);
-  padding: 0.45rem 0.65rem 0.5rem; border-radius: 1.0625rem;
+  position: relative; min-width: clamp(8.2rem, 26cqw, 11.2rem); max-width: clamp(9.8rem, 31cqw, 13.2rem);
+  padding: 0.5rem 0.75rem 0.55rem; border-radius: 1.0625rem;
   background: linear-gradient(180deg, #FFF7DB 0%, #FFEBBF 100%);
   border: 0.15625rem solid #5C411D;
   box-shadow: 0 0.28rem 0 #C89B63, 0 0.5rem 1rem rgba(92,65,29,.2), inset 0 0.125rem 0 rgba(255,255,255,.78);
   text-align: center; transition: transform .14s ease;
 }
-.bc-sign-board:active { transform: translateY(0.125rem) scale(.97); }
-.bc-sign-top { display: flex; align-items: center; justify-content: space-between; gap: 0.25rem; margin-bottom: 0.125rem; }
-.bc-sign-tag { font-size: 0.5625rem; font-weight: var(--w-black); color: #9C6F3B; letter-spacing: 0.04rem; }
+.bc-sign-board:active:not(:has(.bc-sign-mini-btn:active)) { transform: translateY(0.125rem) scale(.97); }
+.bc-sign-top { display: flex; align-items: center; justify-content: space-between; gap: 0.35rem; margin-bottom: 0.15rem; }
+.bc-sign-tag { font-size: 0.625rem; font-weight: var(--w-black); color: #9C6F3B; letter-spacing: 0.04rem; }
 .bc-sign-mini-btn {
-  width: 1.45rem; height: 1.45rem; border-radius: 50%; background: #fff; border: 0.09375rem solid #E4CFA9;
-  color: #B4811C; display: grid; place-items: center; flex: none; box-shadow: 0 0.125rem 0 #DFC280;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%; background: #fff; border: 0.11rem solid #E4CFA9;
+  color: #B4811C; display: grid; place-items: center; flex: none; box-shadow: 0 0.16rem 0 #DFC280;
 }
+.bc-sign-mini-btn svg { width: 1.2rem; height: 1.2rem; }
 .bc-sign-word { display: block; width: 100%; font-size: clamp(1rem, 3.3cqw, 1.35rem); font-weight: var(--w-black); color: #4A360F; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bc-sign-zh { display: block; font-size: 0.65625rem; font-weight: var(--w-bold); color: #8A6A2E; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bc-sign-post {
@@ -3436,9 +3465,11 @@ h1,h2,h3,h4,p{margin:0}
 /* ================= 动物喂食：待机饥饿气泡 / 重听喇叭 / 喂错摇头与食物弹开 ================= */
 .ref-feed-animal .feed-replay-btn {
   position: absolute; right: 0.75rem; bottom: 0.75rem; z-index: 5;
-  border: 0.09375rem solid var(--sticker-line); color: #72532F;
-  box-shadow: 0 0.1875rem 0 #D5BB8D;
+  width: 4.25rem; height: 4.25rem;
+  border: 0.125rem solid var(--sticker-line); color: #72532F;
+  box-shadow: 0 0.25rem 0 #D5BB8D;
 }
+.ref-feed-animal .feed-replay-btn svg { width: 2rem; height: 2rem; }
 .feed-hungry-badge {
   position: absolute; top: 0.55rem; right: 0.75rem; z-index: 4;
   font-size: 1.55rem; line-height: 1; pointer-events: none;
@@ -3734,7 +3765,6 @@ window.DINO_WORD_LIBRARY = {
   "otter": { word: "otter", zh: "水獭", phon: "/ˈɒtə(r)/", example: "The otter plays in the water.", emoji: "🦦", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "polar bear": { word: "polar bear", zh: "北极熊", phon: "/ˈpəʊlə beə(r)/", example: "The polar bear lives on the snow.", emoji: "🐻‍❄️", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "sea lion": { word: "sea lion", zh: "海狮", phon: "/siː ˈlaɪən/", example: "The sea lion can balance a ball.", emoji: "🦭", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
-  "walrus": { word: "walrus", zh: "海象", phon: "/ˈwɔːlrəs/", example: "The walrus has two long tusks.", emoji: "🦭", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "bread": { word: "bread", zh: "面包", phon: "/bred/", example: "I eat bread for breakfast.", emoji: "🍞", category: "noun", type: "food", attrs: ["basic"] },
   "pineapple": { word: "pineapple", zh: "菠萝", phon: "/ˈpaɪnæpl/", example: "The pineapple is sweet.", emoji: "🍍", category: "noun", type: "food", attrs: ["advance"] },
   "blueberry": { word: "blueberry", zh: "蓝莓", phon: "/ˈbluːbəri/", example: "I like blueberry muffins.", emoji: "🫐", category: "noun", type: "food", attrs: ["advance"] },
@@ -3756,8 +3786,6 @@ window.DINO_WORD_LIBRARY = {
   "ruler": { word: "ruler", zh: "尺子", phon: "/ˈruːlə(r)/", example: "Use a ruler to draw a line.", emoji: "📏", category: "noun", type: "school", attrs: ["basic"] },
   "book": { word: "book", zh: "书", phon: "/bʊk/", example: "I love reading books.", emoji: "📖", category: "noun", type: "school", attrs: ["basic"] },
   "bag": { word: "bag", zh: "包", phon: "/bæɡ/", example: "Put it in your bag.", emoji: "👜", category: "noun", type: "school", attrs: ["basic"] },
-  "postcard": { word: "postcard", zh: "明信片", phon: "/ˈpəʊstkɑːd/", example: "I send a postcard to Mom.", emoji: "📮", category: "noun", type: "school", attrs: ["advance"] },
-  "newspaper": { word: "newspaper", zh: "报纸", phon: "/ˈnjuːzˌpeɪpə(r)/", example: "Dad reads the newspaper.", emoji: "📰", category: "noun", type: "school", attrs: ["advance"] },
   "schoolbag": { word: "schoolbag", zh: "书包", phon: "/ˈskuːlˌbæɡ/", example: "My schoolbag is heavy.", emoji: "🎒", category: "noun", type: "school", attrs: ["basic"] },
   "eraser": { word: "eraser", zh: "橡皮", phon: "/ɪˈreɪzə(r)/", example: "Use an eraser to fix mistakes.", emoji: "🧽", category: "noun", type: "school", attrs: ["advance"] },
   "crayon": { word: "crayon", zh: "蜡笔", phon: "/ˈkreɪən/", example: "Draw a picture with crayons.", emoji: "🖍️", category: "noun", type: "school", attrs: ["advance"] },
@@ -3793,17 +3821,13 @@ window.DINO_WORD_LIBRARY = {
   "dad": { word: "dad", zh: "爸爸", phon: "/dæd/", example: "Dad drives me to school.", emoji: "👨", category: "noun", type: "people", attrs: ["basic"] },
   "parents": { word: "parents", zh: "父母", phon: "/ˈpeərənts/", example: "My parents love me.", emoji: "👪", category: "noun", type: "people", attrs: ["basic"] },
   "grandma": { word: "grandma", zh: "奶奶", phon: "/ˈɡrænmɑː/", example: "Grandma makes cookies.", emoji: "👵", category: "noun", type: "people", attrs: ["basic"] },
-  "grandmother": { word: "grandmother", zh: "外祖母", phon: "/ˈɡrænmʌðə(r)/", example: "My grandmother is kind.", emoji: "👵", category: "noun", type: "people", attrs: ["advance"] },
   "grandpa": { word: "grandpa", zh: "外公", phon: "/ˈɡrænpɑː/", example: "Grandpa tells stories.", emoji: "👴", category: "noun", type: "people", attrs: ["basic"] },
-  "grandfather": { word: "grandfather", zh: "祖父", phon: "/ˈɡrænfɑːðə(r)/", example: "My grandfather is old.", emoji: "👴", category: "noun", type: "people", attrs: ["advance"] },
   "aunt": { word: "aunt", zh: "阿姨", phon: "/ɑːnt/", example: "My aunt is nice.", emoji: "👩", category: "noun", type: "people", attrs: ["basic"] },
-  "cousin": { word: "cousin", zh: "堂兄妹", phon: "/ˈkʌzn/", example: "My cousin is my age.", emoji: "👦", category: "noun", type: "people", attrs: ["advance"] },
   "son": { word: "son", zh: "儿子", phon: "/sʌn/", example: "Their son is a baby.", emoji: "👶", category: "noun", type: "people", attrs: ["basic"] },
   "baby": { word: "baby", zh: "婴儿", phon: "/ˈbeɪbi/", example: "The baby is sleeping.", emoji: "👶", category: "noun", type: "people", attrs: ["basic"] },
   "kid": { word: "kid", zh: "小孩", phon: "/kɪd/", example: "The kid is playing.", emoji: "🧒", category: "noun", type: "people", attrs: ["basic"] },
   "classmate": { word: "classmate", zh: "同学", phon: "/ˈklɑːsmeɪt/", example: "She is my classmate.", emoji: "🧑‍🎓", category: "noun", type: "people", attrs: ["advance"] },
   "queen": { word: "queen", zh: "女王", phon: "/kwiːn/", example: "The queen is beautiful.", emoji: "👸", category: "noun", type: "people", attrs: ["advance"] },
-  "visitor": { word: "visitor", zh: "参观者", phon: "/ˈvɪzɪtə(r)/", example: "We are visitors here.", emoji: "🧑", category: "noun", type: "people", attrs: ["advance"] },
   "robot": { word: "robot", zh: "机器人", phon: "/ˈrəʊbɒt/", example: "The robot can help us.", emoji: "🤖", category: "noun", type: "people", attrs: ["basic"] },
   "teacher": { word: "teacher", zh: "教师", phon: "/ˈtiːtʃə(r)/", example: "My teacher is kind.", emoji: "👩‍🏫", category: "noun", type: "job", attrs: ["basic"] },
   "student": { word: "student", zh: "学生", phon: "/ˈstjuːdnt/", example: "I am a student.", emoji: "🧑‍🎓", category: "noun", type: "job", attrs: ["basic"] },
@@ -3815,7 +3839,6 @@ window.DINO_WORD_LIBRARY = {
   "writer": { word: "writer", zh: "作家", phon: "/ˈraɪtə(r)/", example: "He writes books.", emoji: "✍️", category: "noun", type: "job", attrs: ["advance"] },
   "artist": { word: "artist", zh: "画家", phon: "/ˈɑːtɪst/", example: "The artist paints pictures.", emoji: "🎨", category: "noun", type: "job", attrs: ["advance"] },
   "actor": { word: "actor", zh: "男演员", phon: "/ˈæktə(r)/", example: "He is an actor.", emoji: "🎭", category: "noun", type: "job", attrs: ["advance"] },
-  "actress": { word: "actress", zh: "女演员", phon: "/ˈæktrəs/", example: "She is an actress.", emoji: "🎭", category: "noun", type: "job", attrs: ["advance"] },
   "policeman": { word: "policeman", zh: "男警察", phon: "/pəˈliːsmən/", example: "The policeman helps people.", emoji: "👮", category: "noun", type: "job", attrs: ["advance"] },
   "cleaner": { word: "cleaner", zh: "清洁工", phon: "/ˈkliːnə(r)/", example: "The cleaner keeps things tidy.", emoji: "🧹", category: "noun", type: "job", attrs: ["advance"] },
   "clown": { word: "clown", zh: "小丑", phon: "/klaʊn/", example: "The clown makes kids laugh.", emoji: "🤡", category: "noun", type: "job", attrs: ["advance"] },
@@ -3865,23 +3888,18 @@ window.DINO_WORD_LIBRARY = {
   "garden": { word: "garden", zh: "花园", phon: "/ˈɡɑːdn/", example: "There are flowers in the garden.", emoji: "🌷", category: "noun", type: "place", attrs: ["basic"] },
   "playground": { word: "playground", zh: "操场", phon: "/ˈpleɪɡraʊnd/", example: "We play on the playground.", emoji: "🏃", category: "noun", type: "place", attrs: ["advance"] },
   "gym": { word: "gym", zh: "体育馆", phon: "/dʒɪm/", example: "We exercise in the gym.", emoji: "🏋️", category: "noun", type: "place", attrs: ["advance"] },
-  "washroom": { word: "washroom", zh: "盥洗室", phon: "/ˈwɒʃruːm/", example: "Wash your face in the washroom.", emoji: "🚻", category: "noun", type: "place", attrs: ["advance"] },
-  "factory": { word: "factory", zh: "工厂", phon: "/ˈfæktri/", example: "Goods are made in a factory.", emoji: "🏭", category: "noun", type: "place", attrs: ["advance"] },
   "supermarket": { word: "supermarket", zh: "超市", phon: "/ˈsuːpəˌmɑːkɪt/", example: "We shop at the supermarket.", emoji: "🛒", category: "noun", type: "place", attrs: ["advance"] },
-  "bank": { word: "bank", zh: "银行", phon: "/bæŋk/", example: "Money is kept in a bank.", emoji: "🏦", category: "noun", type: "place", attrs: ["advance"] },
   "country": { word: "country", zh: "乡村", phon: "/ˈkʌntri/", example: "The country is quiet.", emoji: "🌾", category: "noun", type: "place", attrs: ["advance"] },
   "village": { word: "village", zh: "村庄", phon: "/ˈvɪlɪdʒ/", example: "A small village is peaceful.", emoji: "🏘️", category: "noun", type: "place", attrs: ["advance"] },
   "city": { word: "city", zh: "城市", phon: "/ˈsɪti/", example: "The city is noisy.", emoji: "🏙️", category: "noun", type: "place", attrs: ["basic"] },
   "spring": { word: "spring", zh: "春季", phon: "/sprɪŋ/", example: "Spring is warm.", emoji: "🌸", category: "noun", type: "season", attrs: ["basic"] },
   "summer": { word: "summer", zh: "夏季", phon: "/ˈsʌmə(r)/", example: "Summer is hot.", emoji: "☀️", category: "noun", type: "season", attrs: ["basic"] },
   "fall": { word: "fall", zh: "秋季", phon: "/fɔːl/", example: "Leaves fall in fall.", emoji: "🍁", category: "noun", type: "season", attrs: ["basic"], ambig: true },
-  "autumn": { word: "autumn", zh: "秋季", phon: "/ˈɔːtəm/", example: "Autumn is cool.", emoji: "🍂", category: "noun", type: "season", attrs: ["advance"] },
   "winter": { word: "winter", zh: "冬季", phon: "/ˈwɪntə(r)/", example: "Winter is cold.", emoji: "❄️", category: "noun", type: "season", attrs: ["basic"] },
   "river": { word: "river", zh: "河", phon: "/ˈrɪvə(r)/", example: "A river flows.", emoji: "🏞️", category: "noun", type: "nature", attrs: ["basic"] },
   "stream": { word: "stream", zh: "小溪", phon: "/striːm/", example: "A small stream runs through.", emoji: "💧", category: "noun", type: "nature", attrs: ["advance"] },
   "path": { word: "path", zh: "小路", phon: "/pɑːθ/", example: "Walk along the path.", emoji: "🚶", category: "noun", type: "nature", attrs: ["advance"] },
   "house": { word: "house", zh: "房子", phon: "/haʊs/", example: "We live in a house.", emoji: "🏠", category: "noun", type: "nature", attrs: ["basic"] },
-  "building": { word: "building", zh: "建筑物", phon: "/ˈbɪldɪŋ/", example: "Tall buildings are in the city.", emoji: "🏢", category: "noun", type: "nature", attrs: ["advance"] },
   "cloud": { word: "cloud", zh: "云", phon: "/klaʊd/", example: "There are white clouds.", emoji: "☁️", category: "noun", type: "nature", attrs: ["basic"] },
   "mountain": { word: "mountain", zh: "大山", phon: "/ˈmaʊntɪn/", example: "We climbed the mountain.", emoji: "⛰️", category: "noun", type: "nature", attrs: ["advance"] },
   "rainbow": { word: "rainbow", zh: "彩虹", phon: "/ˈreɪnbəʊ/", example: "Look at the rainbow!", emoji: "🌈", category: "noun", type: "nature", attrs: ["advance"] },
@@ -3927,9 +3945,6 @@ window.DINO_WORD_LIBRARY = {
   "west": { word: "west", zh: "西", phon: "/west/", example: "The sun sets in the west.", emoji: "🧭", category: "noun", type: "direction", attrs: ["advance"] },
   "fever": { word: "fever", zh: "发烧", phon: "/ˈfiːvə(r)/", example: "I have a fever.", emoji: "🤒", category: "noun", type: "illness", attrs: ["advance"] },
   "cold": { word: "cold", zh: "伤风", phon: "/kəʊld/", example: "I have a cold.", emoji: "🤧", category: "noun", type: "illness", attrs: ["basic"], ambig: true },
-  "toothache": { word: "toothache", zh: "牙疼", phon: "/ˈtuːθeɪk/", example: "I have a toothache.", emoji: "🦷", category: "noun", type: "illness", attrs: ["advance"] },
-  "headache": { word: "headache", zh: "头疼", phon: "/ˈhedeɪk/", example: "I have a headache.", emoji: "🤕", category: "noun", type: "illness", attrs: ["advance"] },
-  "sore": { word: "sore", zh: "疼痛的", phon: "/sɔː(r)/", example: "My leg is sore.", emoji: "😣", category: "noun", type: "illness", attrs: ["advance"] },
   "hurt": { word: "hurt", zh: "疼痛", phon: "/hɜːt/", example: "My arm hurts.", emoji: "😖", category: "noun", type: "illness", attrs: ["basic"] },
   "breakfast": { word: "breakfast", zh: "早餐", phon: "/ˈbrekfəst/", example: "I have breakfast at 7.", emoji: "🥞", category: "noun", type: "food", attrs: ["basic"] },
   "lunch": { word: "lunch", zh: "中餐", phon: "/lʌntʃ/", example: "Lunch is at school.", emoji: "🍱", category: "noun", type: "food", attrs: ["basic"] },
@@ -3966,7 +3981,6 @@ window.DINO_WORD_LIBRARY = {
   "floor": { word: "floor", zh: "地板", phon: "/flɔː(r)/", example: "Sweep the floor.", emoji: "🧹", category: "noun", type: "other", attrs: ["basic"] },
   "football": { word: "football", zh: "足球", phon: "/ˈfʊtbɔːl/", example: "Play football.", emoji: "⚽", category: "noun", type: "other", attrs: ["basic"] },
   "gift": { word: "gift", zh: "礼物", phon: "/ɡɪft/", example: "This is my gift.", emoji: "🎁", category: "noun", type: "other", attrs: ["basic"] },
-  "present": { word: "present", zh: "礼物", phon: "/ˈpreznt/", example: "Open your present.", emoji: "🎁", category: "noun", type: "other", attrs: ["basic"] },
   "lamp": { word: "lamp", zh: "台灯", phon: "/læmp/", example: "Turn on the lamp.", emoji: "💡", category: "noun", type: "other", attrs: ["basic"] },
   "phone": { word: "phone", zh: "电话", phon: "/fəʊn/", example: "Answer the phone.", emoji: "📱", category: "noun", type: "other", attrs: ["basic"] },
   "sofa": { word: "sofa", zh: "沙发", phon: "/ˈsəʊfə/", example: "Sit on the sofa.", emoji: "🛋️", category: "noun", type: "other", attrs: ["advance"] },
@@ -3992,10 +4006,7 @@ window.DINO_WORD_LIBRARY = {
   "nest": { word: "nest", zh: "鸟窝", phon: "/nest/", example: "A bird lives in a nest.", emoji: "🪺", category: "noun", type: "other", attrs: ["advance"] },
   "hole": { word: "hole", zh: "洞", phon: "/həʊl/", example: "A rabbit has a hole.", emoji: "🕳️", category: "noun", type: "other", attrs: ["basic"] },
   "toothbrush": { word: "toothbrush", zh: "牙刷", phon: "/ˈtuːθbrʌʃ/", example: "Brush your teeth.", emoji: "🪥", category: "noun", type: "other", attrs: ["advance"] },
-  "menu": { word: "menu", zh: "菜单", phon: "/ˈmenjuː/", example: "Look at the menu.", emoji: "📋", category: "noun", type: "other", attrs: ["advance"] },
-  "e-mail": { word: "e-mail", zh: "电子邮件", phon: "/ˈiː meɪl/", example: "Check your e-mail.", emoji: "📧", category: "noun", type: "other", attrs: ["advance"] },
   "money": { word: "money", zh: "钱", phon: "/ˈmʌni/", example: "Save your money.", emoji: "💰", category: "noun", type: "other", attrs: ["basic"] },
-  "medicine": { word: "medicine", zh: "药", phon: "/ˈmedsn/", example: "Take your medicine.", emoji: "💊", category: "noun", type: "other", attrs: ["advance"] },
   "skate": { word: "skate", zh: "溜冰", phon: "/skeɪt/", example: "She can skate well.", emoji: "⛸️", category: "verb", type: "action", attrs: ["advance"] },
   "like": { word: "like", zh: "喜欢", phon: "/laɪk/", example: "I like apples.", emoji: "❤️", category: "verb", type: "action", attrs: ["basic"] },
   "buy": { word: "buy", zh: "买", phon: "/baɪ/", example: "I buy it for you.", emoji: "🛒", category: "verb", type: "action", attrs: ["basic"] },
@@ -4009,7 +4020,6 @@ window.DINO_WORD_LIBRARY = {
   "sweep": { word: "sweep", zh: "扫地", phon: "/swiːp/", example: "Sweep the floor.", emoji: "🧹", category: "verb", type: "action", attrs: ["advance"] },
   "clean#action": { word: "clean", zh: "打扫", phon: "/kliːn/", example: "Clean the room.", emoji: "🧼", category: "verb", type: "action", attrs: ["basic"], ambig: true },
   "make": { word: "make", zh: "制作", phon: "/meɪk/", example: "Make a cake.", emoji: "🔨", category: "verb", type: "action", attrs: ["basic"] },
-  "set": { word: "set", zh: "摆放", phon: "/set/", example: "Set the table.", emoji: "🍽️", category: "verb", type: "action", attrs: ["advance"] },
   "wash": { word: "wash", zh: "洗", phon: "/wɒʃ/", example: "Wash your hands.", emoji: "🧼", category: "verb", type: "action", attrs: ["basic"] },
   "use": { word: "use", zh: "用", phon: "/juːz/", example: "Use a computer.", emoji: "🛠️", category: "verb", type: "action", attrs: ["basic"] },
   "do": { word: "do", zh: "做", phon: "/duː/", example: "Do your homework.", emoji: "✅", category: "verb", type: "action", attrs: ["basic"] },
@@ -4038,19 +4048,16 @@ window.DINO_WORD_LIBRARY = {
   "fold": { word: "fold", zh: "折叠", phon: "/fəʊld/", example: "Fold the clothes.", emoji: "👕", category: "verb", type: "action", attrs: ["advance"] },
   "send": { word: "send", zh: "送，寄", phon: "/send/", example: "Send a letter.", emoji: "📤", category: "verb", type: "action", attrs: ["advance"] },
   "shine": { word: "shine", zh: "照耀", phon: "/ʃaɪn/", example: "The stars shine at night.", emoji: "✨", category: "verb", type: "action", attrs: ["advance"] },
-  "become": { word: "become", zh: "变成", phon: "/bɪˈkʌm/", example: "Caterpillars become butterflies.", emoji: "🦋", category: "verb", type: "action", attrs: ["advance"] },
   "feel": { word: "feel", zh: "感觉", phon: "/fiːl/", example: "I feel happy.", emoji: "😊", category: "verb", type: "action", attrs: ["basic"] },
   "fall#action": { word: "fall", zh: "掉下", phon: "/fɔːl/", example: "Leaves fall in autumn.", emoji: "🍂", category: "verb", type: "action", attrs: ["basic"], ambig: true },
   "wear": { word: "wear", zh: "穿", phon: "/weə(r)/", example: "Wear a coat.", emoji: "👕", category: "verb", type: "action", attrs: ["basic"] },
   "think": { word: "think", zh: "想", phon: "/θɪŋk/", example: "Think before you speak.", emoji: "🤔", category: "verb", type: "action", attrs: ["basic"] },
-  "leave": { word: "leave", zh: "离开", phon: "/liːv/", example: "Leave the room.", emoji: "🚪", category: "verb", type: "action", attrs: ["basic"] },
   "meet": { word: "meet", zh: "遇见", phon: "/miːt/", example: "Nice to meet you.", emoji: "👋", category: "verb", type: "action", attrs: ["basic"] },
   "young": { word: "young", zh: "年轻的", phon: "/jʌŋ/", example: "She is young.", emoji: "👶", category: "adj", type: "basic", attrs: ["basic"] },
   "old": { word: "old", zh: "年老的", phon: "/əʊld/", example: "My grandma is old.", emoji: "👴", category: "adj", type: "basic", attrs: ["basic"] },
   "active": { word: "active", zh: "活跃的", phon: "/ˈæktɪv/", example: "He is very active.", emoji: "🏃", category: "adj", type: "basic", attrs: ["advance"] },
   "kind": { word: "kind", zh: "善良的", phon: "/kaɪnd/", example: "She is kind.", emoji: "💗", category: "adj", type: "basic", attrs: ["basic"] },
   "nice": { word: "nice", zh: "好的", phon: "/naɪs/", example: "It is a nice day.", emoji: "👍", category: "adj", type: "basic", attrs: ["basic"] },
-  "strict": { word: "strict", zh: "严厉的", phon: "/strɪkt/", example: "My teacher is strict.", category: "adj", type: "basic", attrs: ["advance"] },
   "smart": { word: "smart", zh: "聪明的", phon: "/smɑːt/", example: "He is smart.", emoji: "🧠", category: "adj", type: "basic", attrs: ["basic"] },
   "funny": { word: "funny", zh: "有趣的", phon: "/ˈfʌni/", example: "The clown is funny.", emoji: "😂", category: "adj", type: "basic", attrs: ["basic"] },
   "sweet": { word: "sweet", zh: "甜的", phon: "/swiːt/", example: "Cake is sweet.", emoji: "🍬", category: "adj", type: "basic", attrs: ["basic"] },
@@ -4060,10 +4067,8 @@ window.DINO_WORD_LIBRARY = {
   "favorite": { word: "favorite", zh: "最喜欢的", phon: "/ˈfeɪvərɪt/", example: "This is my favorite.", emoji: "⭐", category: "adj", type: "basic", attrs: ["advance"] },
   "dirty": { word: "dirty", zh: "脏的", phon: "/ˈdɜːti/", example: "Your hands are dirty.", emoji: "🧦", category: "adj", type: "basic", attrs: ["basic"] },
   "tired": { word: "tired", zh: "累的", phon: "/ˈtaɪəd/", example: "I am tired.", emoji: "😴", category: "adj", type: "basic", attrs: ["basic"] },
-  "excited": { word: "excited", zh: "兴奋的", phon: "/ɪkˈsaɪtɪd/", example: "We are excited.", emoji: "🤩", category: "adj", type: "basic", attrs: ["advance"] },
   "happy": { word: "happy", zh: "高兴的", phon: "/ˈhæpi/", example: "I am happy today.", emoji: "😊", category: "adj", type: "basic", attrs: ["basic"] },
   "sad": { word: "sad", zh: "伤心的", phon: "/sæd/", example: "She is sad.", emoji: "😢", category: "adj", type: "basic", attrs: ["basic"] },
-  "bored": { word: "bored", zh: "无聊的", phon: "/bɔːd/", example: "I am bored.", emoji: "😑", category: "adj", type: "basic", attrs: ["advance"] },
   "busy": { word: "busy", zh: "忙的", phon: "/ˈbɪzi/", example: "Mom is busy.", category: "adj", type: "basic", attrs: ["basic"] },
   "hot": { word: "hot", zh: "热的", phon: "/hɒt/", example: "Summer is hot.", emoji: "🔥", category: "adj", type: "basic", attrs: ["basic"] },
   "cold#adj": { word: "cold", zh: "冷的", phon: "/kəʊld/", example: "Winter is cold.", emoji: "🥶", category: "adj", type: "basic", attrs: ["basic"], ambig: true },
@@ -4073,18 +4078,14 @@ window.DINO_WORD_LIBRARY = {
   "beautiful": { word: "beautiful", zh: "美丽的", phon: "/ˈbjuːtɪfl/", example: "The flower is beautiful.", emoji: "🌸", category: "adj", type: "basic", attrs: ["advance"] },
   "colorful": { word: "colorful", zh: "色彩鲜艳的", phon: "/ˈkʌləfl/", example: "The rainbow is colorful.", emoji: "🌈", category: "adj", type: "basic", attrs: ["advance"] },
   "pretty": { word: "pretty", zh: "漂亮的", phon: "/ˈprɪti/", example: "She is pretty.", emoji: "🌷", category: "adj", type: "basic", attrs: ["basic"] },
-  "expensive": { word: "expensive", zh: "贵的", phon: "/ɪkˈspensɪv/", example: "This watch is expensive.", emoji: "💰", category: "adj", type: "basic", attrs: ["advance"] },
   "juicy": { word: "juicy", zh: "多汁的", phon: "/ˈdʒuːsi/", example: "The orange is juicy.", emoji: "🍊", category: "adj", type: "basic", attrs: ["advance"] },
-  "helpful": { word: "helpful", zh: "有用的", phon: "/ˈhelpfl/", example: "He is helpful.", emoji: "🤝", category: "adj", type: "basic", attrs: ["advance"] },
   "easy": { word: "easy", zh: "容易的", phon: "/ˈiːzi/", example: "This question is easy.", emoji: "😌", category: "adj", type: "basic", attrs: ["basic"] },
   "good": { word: "good", zh: "好的", phon: "/ɡʊd/", example: "Good job!", emoji: "👍", category: "adj", type: "basic", attrs: ["basic"] },
   "new": { word: "new", zh: "新的", phon: "/njuː/", example: "This is my new bag.", emoji: "✨", category: "adj", type: "basic", attrs: ["basic"] },
   "right": { word: "right", zh: "对的", phon: "/raɪt/", example: "You are right.", emoji: "✅", category: "adj", type: "basic", attrs: ["basic"] },
   "lovely": { word: "lovely", zh: "可爱的", phon: "/ˈlʌvli/", example: "A lovely cat.", emoji: "💕", category: "adj", type: "basic", attrs: ["advance"] },
-  "cheap": { word: "cheap", zh: "便宜的", phon: "/tʃiːp/", example: "This is cheap.", emoji: "🪙", category: "adj", type: "basic", attrs: ["advance"] },
   "healthy": { word: "healthy", zh: "健康的", phon: "/ˈhelθi/", example: "Vegetables are healthy.", emoji: "💪", category: "adj", type: "basic", attrs: ["advance"] },
   "high": { word: "high", zh: "高的", phon: "/haɪ/", example: "The mountain is high.", emoji: "⛰️", category: "adj", type: "basic", attrs: ["basic"] },
-  "proud": { word: "proud", zh: "自豪的", phon: "/praʊd/", example: "I am proud of you.", emoji: "🏆", category: "adj", type: "basic", attrs: ["advance"] },
   "little": { word: "little", zh: "小的", phon: "/ˈlɪtl/", example: "A little cat.", emoji: "🐤", category: "adj", type: "basic", attrs: ["basic"] },
   "how": { word: "how", zh: "怎样", phon: "/haʊ/", example: "How are you?", category: "adv", type: "interrogative", attrs: ["basic"] },
   "when": { word: "when", zh: "什么时候", phon: "/wen/", example: "When do you get up?", category: "adv", type: "interrogative", attrs: ["basic"], ambig: true },
@@ -4116,13 +4117,6 @@ window.DINO_WORD_LIBRARY = {
   "first": { word: "first", zh: "第一", phon: "/fɜːst/", example: "January is the first month.", category: "num", type: "ordinal", attrs: ["basic"] },
   "second": { word: "second", zh: "第二", phon: "/ˈsekənd/", example: "You are the second.", category: "num", type: "ordinal", attrs: ["basic"] },
   "third": { word: "third", zh: "第三", phon: "/θɜːd/", example: "He is the third.", category: "num", type: "ordinal", attrs: ["basic"] },
-  "fourth": { word: "fourth", zh: "第四", phon: "/fɔːθ/", example: "April is the fourth month.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "fifth": { word: "fifth", zh: "第五", phon: "/fɪfθ/", example: "He is the fifth.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "sixth": { word: "sixth", zh: "第六", phon: "/sɪksθ/", example: "June is the sixth month.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "seventh": { word: "seventh", zh: "第七", phon: "/ˈsevnθ/", example: "Saturday is the seventh day.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "ninth": { word: "ninth", zh: "第九", phon: "/naɪnθ/", example: "September is the ninth month.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "tenth": { word: "tenth", zh: "第十", phon: "/tenθ/", example: "He is the tenth.", category: "num", type: "ordinal", attrs: ["advance"] },
-  "eleventh": { word: "eleventh", zh: "第十一", phon: "/ɪˈlevnθ/", example: "He is the eleventh.", category: "num", type: "ordinal", attrs: ["advance"] },
 };
 /* 水果素材：为水果词条补充插画路径（渲染层缺图时仍回退 emoji） */
 const FRUIT_IMAGES = {
@@ -5985,12 +5979,7 @@ const TRAVEL_TRANSPORT_WORDS = buildThemeWordList([
   ["ambulance", "救护车", "/ˈæmbjələns/", "The ambulance helps sick people.", "🚑"],
   ["taxi", "出租车", "/ˈtæksi/", "We take a taxi to the station.", "🚕"],
   ["jeep", "吉普车", "/dʒiːp/", "The jeep drives up the hill.", "🚙"],
-  ["dump truck", "自卸卡车", "/dʌmp trʌk/", "The dump truck carries sand.", "🚛"],
   ["van", "面包车", "/væn/", "The van is white.", "🚐"],
-  ["box truck", "厢式货车", "/bɒks trʌk/", "A box truck carries boxes.", "🚚"],
-  ["tanker truck", "油罐车", "/ˈtæŋkə trʌk/", "The tanker truck is very long.", "🚛"],
-  ["tow truck", "拖车", "/təʊ trʌk/", "The tow truck helps broken cars.", "🚚"],
-  ["crane", "起重机", "/kreɪn/", "The crane lifts heavy things.", "🏗️"],
   ["motorcycle", "摩托车", "/ˈməʊtəsaɪkl/", "He rides a motorcycle.", "🏍️"],
   ["scooter", "滑板车", "/ˈskuːtə(r)/", "I ride my scooter in the park.", "🛴"],
   ["bicycle", "自行车", "/ˈbaɪsɪkl/", "I ride my bicycle.", "🚲"],
@@ -6000,8 +5989,6 @@ const TRAVEL_TRANSPORT_WORDS = buildThemeWordList([
   ["helicopter", "直升机", "/ˈhelɪkɒptə(r)/", "The helicopter flies in the sky.", "🚁"],
   ["rocket", "火箭", "/ˈrɒkɪt/", "The rocket goes to space.", "🚀"],
   ["boat", "小船", "/bəʊt/", "The boat floats on the lake.", "⛵"],
-  ["yacht", "游艇", "/jɒt/", "The yacht sails on the blue sea.", "🛥️"],
-  ["cement mixer", "水泥搅拌车", "/sɪˈment ˈmɪksə(r)/", "The cement mixer is big.", "🏗️"],
   ["tractor", "拖拉机", "/ˈtræktə(r)/", "The tractor works on the farm.", "🚜"],
   ["excavator", "挖掘机", "/ˈekskəveɪtə(r)/", "The excavator digs holes.", "🚧"],
   ["garbage truck", "垃圾车", "/ˈɡɑːbɪdʒ trʌk/", "The garbage truck comes on Monday.", "🚮"],
@@ -6016,7 +6003,22 @@ const TRAVEL_GEAR_WORDS = buildThemeWordList([
   ["sunglasses", "太阳镜", "/ˈsʌnɡlɑːsɪz/", "I wear sunglasses at the beach.", "🕶️"],
 ], "tool");
 
-const TRAVEL_WORDS = [...TRAVEL_TRANSPORT_WORDS, ...TRAVEL_GEAR_WORDS];
+/* 旅行动作动词 6 个：开启「动作猜猜」题型，插画位于 images/words/action/travel-<word>.webp */
+const TRAVEL_ACTION_WORDS = [
+  { word: "drive", actor: "🦖", motion: "run", zh: "开车", phon: "/draɪv/", example: "I drive a little red car.", emoji: "🚗" },
+  { word: "ride", actor: "🦖", motion: "run", zh: "骑车", phon: "/raɪd/", example: "I ride my blue bicycle.", emoji: "🚲" },
+  { word: "pack", actor: "🦖", motion: "sit", zh: "打包", phon: "/pæk/", example: "I pack my yellow suitcase.", emoji: "🧳" },
+  { word: "sail", actor: "🦖", motion: "swim", zh: "航行", phon: "/seɪl/", example: "We sail a boat on the sea.", emoji: "⛵" },
+  { word: "camp", actor: "🦖", motion: "sit", zh: "露营", phon: "/kæmp/", example: "We camp beside the campfire.", emoji: "⛺" },
+  { word: "hike", actor: "🦖", motion: "walk", zh: "徒步", phon: "/haɪk/", example: "I hike up the green hill.", emoji: "🥾" },
+].map((w) => ({
+  ...w,
+  category: "verb",
+  assetKey: `travel-${w.word}`,
+  img: `images/words/action/travel-${w.word}.webp`,
+}));
+
+const TRAVEL_WORDS = [...TRAVEL_TRANSPORT_WORDS, ...TRAVEL_GEAR_WORDS, ...TRAVEL_ACTION_WORDS];
 
 /* 路线坐标：travel-journey-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-travel-map.mjs 同步） */
 const TRAVEL_JOURNEY_NODES = [
@@ -6172,7 +6174,7 @@ const ANIMAL_ZOO_WORD_REFS = [
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish",
-  "polar bear", "sea lion", "walrus",
+  "polar bear", "sea lion",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -6266,7 +6268,7 @@ const MARINE_ANIMALS = new Set([
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish", "turtle",
-  "polar bear", "sea lion", "walrus",
+  "polar bear", "sea lion",
 ]);
 
 const ANIMAL_FOODS = {
@@ -6454,8 +6456,6 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["glue", "胶水", "/ɡluː/", "I use glue to stick the paper.", "🧴"],
   ["notebook", "笔记本", "/ˈnəʊtbʊk/", "Write it in your notebook.", "📓"],
   ["book", "书", "/bʊk/", "This book is fun.", "📘"],
-  ["textbook", "课本", "/ˈtekstbʊk/", "Open your textbook.", "📕"],
-  ["notepad", "便签本", "/ˈnəʊtpæd/", "I draw on the notepad.", "📝"],
   ["eraser", "橡皮", "/ɪˈreɪzə(r)/", "The eraser is small.", "🧽"],
   ["ruler", "尺子", "/ˈruːlə(r)/", "The ruler is long.", "📏"],
   ["backpack", "书包", "/ˈbækpæk/", "My backpack is heavy.", "🎒"],
@@ -6463,7 +6463,6 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["globe", "地球仪", "/ɡləʊb/", "The globe shows the world.", "🌍"],
   ["pencil case", "铅笔盒", "/ˈpensl keɪs/", "My pencil case is blue.", "✏️"],
   ["water bottle", "水壶", "/ˈwɔːtə ˈbɒtl/", "I drink water from my water bottle.", "🥤"],
-  ["watercolor set", "水彩颜料", "/ˈwɔːtəkʌlə set/", "Paint with the watercolor set.", "🖌️"],
   ["alarm clock", "闹钟", "/əˈlɑːm klɒk/", "The alarm clock rings in the morning.", "⏰"],
   ["bell", "铃铛", "/bel/", "The school bell rings.", "🔔"],
   ["blackboard", "黑板", "/ˈblækbɔːd/", "The teacher writes on the blackboard.", "📋"],
@@ -6471,8 +6470,24 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["chair", "椅子", "/tʃeə(r)/", "Sit on the chair.", "💺"],
   ["lamp", "台灯", "/læmp/", "Turn on the lamp.", "💡"],
   ["glasses", "眼镜", "/ˈɡlɑːsɪz/", "I wear glasses to read.", "👓"],
-  ["flask", "烧瓶", "/flɑːsk/", "We use a flask in science class.", "🧪"],
 ], "tool");
+
+/* 校园动作动词 6 个：开启「动作猜猜」题型，插画位于 images/words/action/school-<word>.webp */
+const SCHOOL_ACTION_WORDS = [
+  { word: "read", actor: "🦖", motion: "sit", zh: "读", phon: "/riːd/", example: "I read a picture book.", emoji: "📖" },
+  { word: "write", actor: "🦖", motion: "sit", zh: "写", phon: "/raɪt/", example: "I write in my notebook.", emoji: "✍️" },
+  { word: "draw", actor: "🦖", motion: "dance", zh: "画画", phon: "/drɔː/", example: "I draw a rainbow with crayons.", emoji: "🎨" },
+  { word: "cut", actor: "🦖", motion: "sit", zh: "剪", phon: "/kʌt/", example: "I cut the paper with scissors.", emoji: "✂️" },
+  { word: "study", actor: "🦖", motion: "sit", zh: "学习", phon: "/ˈstʌdi/", example: "I study hard at school.", emoji: "💡" },
+  { word: "count", actor: "🦖", motion: "stand", zh: "数数", phon: "/kaʊnt/", example: "Let's count the wooden blocks.", emoji: "🔢" },
+].map((w) => ({
+  ...w,
+  category: "verb",
+  assetKey: `school-${w.word}`,
+  img: `images/words/action/school-${w.word}.webp`,
+}));
+
+const SCHOOL_ALL_WORDS = [...SCHOOL_WORDS, ...SCHOOL_ACTION_WORDS];
 
 /* 路线坐标：school-campus-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-school-map.mjs 同步） */
 const SCHOOL_CAMPUS_NODES = [
@@ -6515,7 +6530,7 @@ const SCHOOL_SCENES = [
     mapClass: "zoo",
     levelCount: SCHOOL_CAMPUS_LEVELS.length,
     levels: SCHOOL_CAMPUS_LEVELS,
-    words: SCHOOL_WORDS,
+    words: SCHOOL_ALL_WORDS,
   },
 ];
 
@@ -6539,7 +6554,7 @@ defineDinoTheme({
   <!-- 声音：交互音效 / 单词朗读 / 关卡提示音 -->
   <script>
 /* 自动生成：美音童声 Ana（en-US-AnaNeural）可用本地音频索引，由 tools/generate-ana-voice.mjs 产出 */
-window.ANA_VOICE_FILES = new Set(["active","actor","actress","air","airplane","alarm-clock","ambulance","angry","ant","apple","april","arm","artist","august","aunt","autumn","baboon","baby","backpack","bag","ball","balloon","bamboo","banana","bank","bark","bathroom","beak","bear","beautiful","become","bed","bedroom","beef","bell","belly","bicycle","big","bike","bird","bite","black","blackboard","blue","blueberry","board","boat","bone","book","bookstore","boots","bored","box","box-truck","boy","bread","breakfast","brother","brown","building","bullet-train","bus","busy","buy","cabbage","cake","camel","camera","cap","car","carrot","carry","cat","catch","cement-mixer","chair","chase","cheap","cheetah","cherry","chicken","chopsticks","cinema","city","classmate","classroom","claw","clean","cleaner","climb","close","cloud","clown","clownfish","coat","coconut","coffee","cola","cold","colorful","computer","cook","cool","corn","country","cousin","cow","crab","crane","crayon","crocodile","crow","cry","cupcake","cute","dad","dance","december","deer","desk","dig","dinner","dirty","do","doctor","dog","doll","dolphin","donkey","donut","door","dress","drink","drive","driver","duck","dump-truck","dumpling","e-mail","eagle","ear","east","easy","eat","egg","eggplant","eight","eighty","elephant","eleven","eleventh","eraser","excavator","excited","expensive","eye","face","factory","fall","fan","farm","farmer","fast","fat","father","favorite","feather","february","feed","feel","fever","fifteen","fifth","fifty","fight","find","fine","finger","fire-truck","first","fish","five","flamingo","flask","floor","flower","fly","fold","foot","football","forest","fork","forty","four","fourteen","fourth","fox","fresh","friday","fridge","friend","full","funny","fur","garbage-truck","garden","gift","giraffe","girl","give","glasses","globe","gloves","glue","go","goat","good","goose","gorilla","grandfather","grandma","grandmother","grandpa","grape","grass","green","guess","gym","hair","hamburger","hand","happy","hat","have","head","headache","healthy","heavy","helicopter","hello-let-s-learn-english-together","help","helpful","hen","hide","high","hippo","hold","hole","home","honey","horn","horse","hospital","hot","house","how","hug","hungry","hunt","hurt","ice-cream","jacket","jam","january","jeans","jeep","jellyfish","juice","juicy","july","jump","june","kangaroo","key","kick","kid","kind","kitchen","kite","kiwi","knife","koala","lake","lamb","lamp","laugh","leaf","learn","leave","leaves","leg","lemon","library","lick","light","like","lion","listen","little","live","lizard","lock","long","look","love","lovely","lunch","make","man","mango","map","march","marker","may","meat","medicine","meet","melon","menu","milk","mirror","mom","monday","money","monkey","mother","motorcycle","mountain","mouse","mouth","nap","neck","nest","new","newspaper","nice","nine","ninety","ninth","noisy","noodles","north","nose","notebook","notepad","november","nurse","nut","october","octopus","old","one","onion","open","orange","otter","owl","paint","paint-palette","panda","pants","parents","parrot","pass","path","paw","peach","peacock","pear","pen","pencil","pencil-case","penguin","phone","photo","picture","pig","pineapple","pink","pizza","plane","plant","plate","play","playground","polar-bear","police-car","policeman","pork","postcard","pot","potato","present","pretty","proud","pull","pumpkin","purple","push","put","queen","quiet","rabbit","raccoon","rain","rainbow","raincoat","read","red","rhino","rice","ride","right","river","road","roar","robot","rocket","room","rose","ruler","run","sad","salad","salty","sandals","sandwich","saturday","scared","scarf","school","school-bus","schoolbag","scissors","scooter","sea-lion","seal","second","see","seed","send","september","set","seven","seventh","seventy","share","shark","sheep","shelf","shine","ship","shirt","shoes","short","shorts","show","shrimp","sing","singer","sister","sit","six","sixth","sixty","skate","skirt","sky","sleep","sloth","slow","small","smart","smell","smile","snake","sniff","socks","sofa","son","sore","soup","sour","south","splash","spoon","spring","squid","squirrel","stand","starfish","stop","storybook","strawberry","stream","stretch","strict","strong","student","study","subway","suitcase","summer","sun","sunday","sunglasses","supermarket","sweep","sweet","swim","t-shirt","table","tail","take","tall","tanker-truck","taste","taxi","tea","teacher","tell","ten","tenth","textbook","thank","thin","think","third","thirteen","thirty","three","thursday","tie","tiger","tired","tomato","tongue","tooth","toothache","toothbrush","touch","tow-truck","toy","tractor","train","tree","truck","trunk","tuesday","turkey","turtle","twelve","twenty","two","umbrella","uncle","use","van","vegetable","village","violin","visitor","wag","wait","walk","wall","walrus","warm","wash","washroom","watch","water","water-bottle","watercolor-set","watermelon","wave","wear","weather","wednesday","weekend","welcome","west","whale","what-does-this-animal-like-to-eat","what-is-the-animal-doing","what-is-this","what-is-this-animal","when","where","white","why","wind","window","wing","winter","wolf","woman","work","worm","write","writer","yacht","yellow","young","zebra"]);
+window.ANA_VOICE_FILES = new Set(["active","actor","air","airplane","alarm-clock","ambulance","angry","ant","apple","april","arm","artist","at-the-zoo-we-can-see-many-animals-what-is-this-one","at-the-zoo-what-do-you-see-in-the-picture","august","aunt","baboon","baby","backpack","bag","ball","balloon","bamboo","banana","bark","bathroom","beak","bear","beautiful","bed","bedroom","beef","beep-beep-look-on-the-road-what-is-this","bell","belly","bicycle","big","bike","bird","bite","black","blackboard","blue","blueberry","board","boat","bone","book","bookstore","boots","box","boy","bread","breakfast","brother","brown","bullet-train","bus","busy","buy","cabbage","cake","camel","camera","camp","can-you-tell-me-what-this-is","cap","car","carrot","carry","cat","catch","chair","chase","cheetah","cherry","chicken","chopsticks","cinema","city","classmate","classroom","claw","clean","cleaner","climb","close","cloud","clown","clownfish","coat","coconut","coffee","cola","cold","colorful","computer","cook","cool","corn","count","country","cow","crab","crayon","crocodile","crow","cry","cupcake","cut","cute","dad","dance","december","deer","desk","dig","dinner","dirty","do","do-you-know-this-animal-what-is-it","do-you-know-this-word-what-is-it","do-you-know-this-zoo-word-what-is-it","doctor","dog","doll","dolphin","donkey","donut","door","draw","dress","drink","drive","driver","duck","dumpling","eagle","ear","east","easy","eat","egg","eggplant","eight","eighty","elephant","eleven","eraser","excavator","eye","face","fall","fan","farm","farmer","fast","fat","father","favorite","feather","february","feed","feel","fever","fifteen","fifty","fight","find","fine","finger","fire-truck","first","fish","five","flamingo","floor","flower","fly","fold","foot","football","forest","fork","forty","four","fourteen","fox","fresh","friday","fridge","friend","full","funny","fur","garbage-truck","garden","gift","giraffe","girl","give","glasses","globe","gloves","glue","go","goat","good","goose","gorilla","grandma","grandpa","grape","grass","green","guess","gym","hair","hamburger","hand","happy","hat","have","head","healthy","heavy","helicopter","hello-let-s-learn-english-together","help","hen","hide","high","hike","hippo","hold","hole","home","honey","horn","horse","hospital","hot","house","how","hug","hungry","hunt","hurt","ice-cream","it-eats-apple","it-eats-bamboo","it-eats-banana","it-eats-bone","it-eats-carrot","it-eats-corn","it-eats-fish","it-eats-grass","it-eats-honey","it-eats-leaves","it-eats-meat","it-eats-nut","it-eats-watermelon","it-eats-worm","jacket","jam","january","jeans","jeep","jellyfish","juice","juicy","july","jump","june","kangaroo","key","kick","kid","kind","kitchen","kite","kiwi","knife","koala","lake","lamb","lamp","laugh","leaf","learn","leaves","leg","lemon","let-s-draw-and-learn-what-school-thing-is-this","let-s-go-on-a-trip-look-at-the-picture-what-is-this","library","lick","light","like","lion","listen","little","live","lizard","lock","long","look","look-at-the-classroom-table-do-you-know-what-this-is","look-at-the-picture-what-animal-is-this","look-at-the-picture-what-is-this","look-at-the-zoo-sign-can-you-tell-me-this-animal-s-name","look-carefully-what-is-in-the-picture","look-carefully-what-is-this","look-out-the-window-do-you-know-what-this-is","love","lovely","lunch","make","man","mango","map","march","marker","may","meat","meet","melon","milk","mirror","mom","monday","money","monkey","mother","motorcycle","mountain","mouse","mouth","nap","neck","nest","new","nice","nine","ninety","no-it-doesn-t-it-eats-apple","no-it-doesn-t-it-eats-bamboo","no-it-doesn-t-it-eats-banana","no-it-doesn-t-it-eats-bone","no-it-doesn-t-it-eats-carrot","no-it-doesn-t-it-eats-corn","no-it-doesn-t-it-eats-fish","no-it-doesn-t-it-eats-grass","no-it-doesn-t-it-eats-honey","no-it-doesn-t-it-eats-leaves","no-it-doesn-t-it-eats-meat","no-it-doesn-t-it-eats-nut","no-it-doesn-t-it-eats-watermelon","no-it-doesn-t-it-eats-worm","no-it-isn-t","no-they-aren-t","noisy","noodles","north","nose","notebook","november","nurse","nut","october","octopus","old","one","onion","open","orange","otter","owl","pack","paint","paint-palette","panda","pants","parents","parrot","pass","path","paw","peach","peacock","pear","pen","pencil","pencil-case","penguin","phone","photo","picture","pig","pineapple","pink","pizza","plane","plant","plate","play","playground","polar-bear","police-car","policeman","pork","pot","potato","pretty","pull","pumpkin","purple","push","put","queen","quiet","rabbit","raccoon","rain","rainbow","raincoat","read","ready-to-go-what-is-in-this-travel-picture","red","rhino","rice","ride","right","river","road","roar","robot","rocket","room","rose","ruler","run","sad","sail","salad","salty","sandals","sandwich","saturday","scared","scarf","school","school-bus","schoolbag","scissors","scooter","sea-lion","seal","second","see","seed","send","september","seven","seventy","share","shark","sheep","shelf","shine","ship","shirt","shoes","short","shorts","show","shrimp","sing","singer","sister","sit","six","sixty","skate","skirt","sky","sleep","sloth","slow","small","smart","smell","smile","snake","sniff","socks","sofa","son","soup","sour","south","splash","spoon","spring","squid","squirrel","stand","starfish","stop","storybook","strawberry","stream","stretch","strong","student","study","subway","suitcase","summer","sun","sunday","sunglasses","supermarket","sweep","sweet","swim","t-shirt","table","tail","take","tall","taste","taxi","tea","teacher","tell","ten","thank","the-teacher-holds-up-a-picture-what-is-this","the-zookeeper-points-at-the-picture-what-animal-is-this","the-zookeeper-shows-you-a-picture-what-is-this","thin","think","third","thirteen","thirty","this-animal-lives-in-the-zoo-do-you-know-what-it-is","three","thursday","tie","tiger","time-for-class-what-is-in-your-schoolbag","tired","tomato","tongue","tooth","toothbrush","touch","toy","tractor","train","tree","truck","trunk","tuesday","turkey","turtle","twelve","twenty","two","umbrella","uncle","use","van","vegetable","village","violin","wag","wait","walk","wall","warm","wash","watch","water","water-bottle","watermelon","wave","we-are-going-to-travel-what-vehicle-do-you-see","wear","weather","wednesday","weekend","welcome","welcome-to-the-classroom-look-on-the-desk-what-is-this","welcome-to-the-zoo-look-at-the-picture-what-animal-is-this","welcome-to-the-zoo-look-at-the-picture-what-is-this","west","whale","what-do-you-see-in-the-picture","what-does-the-bear-like-to-eat","what-does-the-bird-like-to-eat","what-does-the-cat-like-to-eat","what-does-the-chicken-like-to-eat","what-does-the-cow-like-to-eat","what-does-the-crocodile-like-to-eat","what-does-the-deer-like-to-eat","what-does-the-dog-like-to-eat","what-does-the-dolphin-like-to-eat","what-does-the-elephant-like-to-eat","what-does-the-giraffe-like-to-eat","what-does-the-goat-like-to-eat","what-does-the-hippo-like-to-eat","what-does-the-horse-like-to-eat","what-does-the-koala-like-to-eat","what-does-the-lion-like-to-eat","what-does-the-monkey-like-to-eat","what-does-the-panda-like-to-eat","what-does-the-penguin-like-to-eat","what-does-the-pig-like-to-eat","what-does-the-polar-bear-like-to-eat","what-does-the-rabbit-like-to-eat","what-does-the-seal-like-to-eat","what-does-the-shark-like-to-eat","what-does-the-sheep-like-to-eat","what-does-the-squirrel-like-to-eat","what-does-the-tiger-like-to-eat","what-does-the-wolf-like-to-eat","what-does-the-zebra-like-to-eat","what-does-this-animal-like-to-eat","what-is-the-animal-doing","what-is-this","what-is-this-animal","when","where","white","why","wind","window","wing","winter","wolf","woman","work","worm","write","writer","yellow","yes-it-does","yes-it-is","yes-they-are","you-are-visiting-the-zoo-what-do-you-see-in-this-picture","young","zebra"]);
 
 </script>
   <script>
@@ -6728,6 +6743,7 @@ function speak(text) {
     if (!lines.length) return;
     const token = ++speakToken;
     const kids = state.voice !== "standard";
+    const slow = typeof enlightenOn === "function" && enlightenOn();
     const hasSynth = "speechSynthesis" in window;
     const synth = hasSynth ? window.speechSynthesis : null;
     const voice = hasSynth ? pickVoice() : null;
@@ -6744,7 +6760,8 @@ function speak(text) {
       }
       const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
-      u.rate = kids ? 0.82 : 0.86;
+      /* 启蒙模式自动放慢，方便 3~4 岁听清尾音与跟读 */
+      u.rate = slow ? 0.72 : (kids ? 0.80 : 0.84);
       u.pitch = kids ? 1.15 : 1.04;
       if (voice) u.voice = voice;
       u.onend = () => next();
@@ -6760,6 +6777,10 @@ function speak(text) {
       if (url) {
         const audio = new Audio(url);
         audio.preload = "auto";
+        /* 保持童声原音高：启蒙模式 0.85x，普通模式 0.93x */
+        if ("preservesPitch" in audio) audio.preservesPitch = true;
+        if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
+        audio.playbackRate = slow ? 0.85 : 0.93;
         activeAudio = audio;
         let settled = false;
         const done = () => {
@@ -8013,14 +8034,18 @@ function renderAndResetScroll() {
   const sc = $(".scroll");
   if (sc) sc.scrollTop = 0;
 }
-/* 喇叭按钮点击抖动反馈 */
+/* 喇叭按钮点击抖动反馈（支持连续点击立即重放） */
 function shakeBtn(el) {
   if (!el) return;
+  if (el._shakeTimer) clearTimeout(el._shakeTimer);
   el.classList.remove("is-shaking");
   /* 强制 reflow 让动画可重放 */
   void el.offsetWidth;
   el.classList.add("is-shaking");
-  setTimeout(() => el.classList.remove("is-shaking"), 560);
+  el._shakeTimer = setTimeout(() => {
+    el.classList.remove("is-shaking");
+    el._shakeTimer = null;
+  }, 600);
 }
 
 /* 家长角长按 + 浮空岛左右滑动 + 营地脚印彩蛋：合并为统一 pointer 监听 */
@@ -8771,6 +8796,37 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   let lastWon = null;
   let currentDeg = 0;
 
+  function buildRecordsHtml() {
+    const coupons = Array.isArray(state.coupons) ? state.coupons : [];
+    return coupons.length
+      ? coupons.map((c, i) => {
+        const action = c.used
+          ? `<span class="lw-used">已兑换</span>`
+          : confirmAsk === i
+            ? `<span class="lw-confirm">
+                <button class="lw-mini ghost" data-action="coupon-cancel">取消</button>
+                <button class="lw-mini" data-action="coupon-redeem" data-index="${i}">确认</button>
+              </span>`
+            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}">家长核销</button>`;
+        return `<li class="lw-record${c.used ? " used" : ""}">
+          <span class="ico">${PRIZE_ICON[c.id] || "🎁"}</span>
+          <span class="lw-record-main"><b>${c.label}</b><time>${c.date || ""}</time></span>
+          ${action}
+        </li>`;
+      }).join("")
+      : `<li class="lw-history-empty">还没有抽奖记录，转一转试试手气吧</li>`;
+  }
+
+  /* 仅局部刷新抽奖记录列表，避免整页重绘触发抽屉入场动画与滚动条跳动 */
+  function refreshHistoryList() {
+    const listEl = document.querySelector(".lucky-wheel-sheet .lw-history-list");
+    if (!listEl) {
+      openOverlay(buildOverlay(false));
+      return;
+    }
+    listEl.innerHTML = buildRecordsHtml();
+  }
+
   function buildOverlay(fromChest) {
     const free = pendingSpins();
     const balance = starBalance();
@@ -8791,23 +8847,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
         : `每 ${WHEEL_COST} ★ 转一次，抽中的奖励找爸爸妈妈兑换`;
     const hint = `${baseHint}；今天还剩 ${dailyLeft}/${DAILY_LIMIT} 次`;
 
-    const records = coupons.length
-      ? coupons.map((c, i) => {
-        const action = c.used
-          ? `<span class="lw-used">已兑换</span>`
-          : confirmAsk === i
-            ? `<span class="lw-confirm">
-                <button class="lw-mini ghost" data-action="coupon-cancel">取消</button>
-                <button class="lw-mini" data-action="coupon-redeem" data-index="${i}">确认</button>
-              </span>`
-            : `<button class="lw-redeem" data-action="coupon-ask" data-index="${i}">家长核销</button>`;
-        return `<li class="lw-record${c.used ? " used" : ""}">
-          <span class="ico">${PRIZE_ICON[c.id] || "🎁"}</span>
-          <span class="lw-record-main"><b>${c.label}</b><time>${c.date || ""}</time></span>
-          ${action}
-        </li>`;
-      }).join("")
-      : `<li class="lw-history-empty">还没有抽奖记录，转一转试试手气吧</li>`;
+    const records = buildRecordsHtml();
 
     const winPop = lastWon ? `<div class="lw-win-mask">
       <div class="lw-win-card">
@@ -8991,12 +9031,12 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
   function askRedeem(i) {
     if (!Array.isArray(state.coupons) || !state.coupons[i] || state.coupons[i].used) return;
     confirmAsk = i;
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   function cancelRedeem() {
     confirmAsk = -1;
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   function redeem(i) {
@@ -9007,7 +9047,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     save();
     sfx("win");
     toast(`已核销：「${c.label}」，请家长兑现奖励`);
-    openOverlay(buildOverlay(false));
+    refreshHistoryList();
   }
 
   window.LuckyWheel = {
@@ -9647,12 +9687,16 @@ function screenQuiz() {
           </svg>`;
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
-        <span class="zoo-answer-word">${answerWord}</span>
+        <div class="zoo-answer-info">
+          <div class="zoo-answer-top">
+            <span class="zoo-answer-word">${answerWord}</span>
+            ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
+          </div>
+          ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
+        </div>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
           ${audioIcon}
         </button>
-        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
-        ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
       </div>`
     : "";
 
@@ -9824,13 +9868,23 @@ function finalizeTask(q, ok, opts = {}) {
       if (!isDaily) unlockTaskWord({ word: w });
     });
     if (okSfx) sfx(okSfx);
-    if (speakOnOk) setTimer(() => speak(speakOnOk), 600);
+    if (speakOnOk) {
+      setTimer(() => {
+        if (typeof shakeBtn === "function") shakeBtn(document.querySelector(".zoo-audio-btn"));
+        speak(speakOnOk);
+      }, 600);
+    }
     if (!isDaily && wrongBank) WrongBank.applyResult(q, true);
   } else {
     if (wrongSfx) sfx(wrongSfx);
     /* 答错弹出结果卡后自动朗读正确读音，帮助孩子纠音记忆 */
     const wrongSpeak = speakOnWrong !== undefined ? speakOnWrong : answerMetaOf(q).speakText;
-    if (wrongSpeak) setTimer(() => speak(wrongSpeak), 520);
+    if (wrongSpeak) {
+      setTimer(() => {
+        if (typeof shakeBtn === "function") shakeBtn(document.querySelector(".zoo-audio-btn"));
+        speak(wrongSpeak);
+      }, 520);
+    }
     if (!isDaily && wrongBank) WrongBank.applyResult(q, false);
   }
   render();
@@ -10099,12 +10153,31 @@ const DINO_GREETINGS = [
   "点我一起学英语!",
   "Let's explore!",
   "You are awesome!",
+  "哈哈，好痒呀! Hehe!",
+  "High five! 击个掌!",
+  "Good job! 你真棒!",
+  "我最爱吃小星星啦 ★",
+  "去动物园看看狮子吧!",
+  "书包背好，上学去!",
+  "嘀嘀! 坐小火车去旅行!",
+  "Give me a hug! 抱抱!",
+  "Yay! 再戳我一下!",
+  "小恐龙正在长大哦!",
+  "Super star! 超级小天才!",
+  "肚子咕噜噜，快去闯关!",
+  "Let's go! 冒险开始!",
+  "今天也要开心学单词!",
+  "Roar~ 我是最勇敢的小诺!",
 ];
 let dinoGreetIdx = 0;
 
 function pokeDinoInteraction(btn) {
   sfx("star");
-  dinoGreetIdx = (dinoGreetIdx + 1) % DINO_GREETINGS.length;
+  if (DINO_GREETINGS.length > 1) {
+    let next = dinoGreetIdx;
+    while (next === dinoGreetIdx) next = Math.floor(Math.random() * DINO_GREETINGS.length);
+    dinoGreetIdx = next;
+  }
   const bubble = $(".bc-bubble");
   if (bubble) bubble.textContent = DINO_GREETINGS[dinoGreetIdx];
   if (btn) {
@@ -10128,7 +10201,7 @@ function pokeDinoInteraction(btn) {
 }
 
 /* 首页 CTA 按钮专用品牌 Logo（仅此一处使用，不再抽公共组件） */
-const HOME_LOGO_SVG = `<svg class="bc-play-logo" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
+const HOME_LOGO_SVG = `<svg class="bc-play-logo" width="720" height="136" viewBox="0 0 720 136" preserveAspectRatio="xMidYMid meet" role="img" aria-label="DinoGo 恐龙英语">
   <defs>
     <filter id="dinogo-sticker-shadow" x="-10%" y="-15%" width="120%" height="140%">
       <feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#9A7242" flood-opacity="0.22"/>
@@ -10317,10 +10390,7 @@ function screenHome() {
         <div class="bc-sign-board">
           <div class="bc-sign-top">
             <span class="bc-sign-tag">每日一词</span>
-            <div style="display:flex;gap:0.2rem">
-              <button class="bc-sign-mini-btn" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(13, "#B4811C")}</button>
-              <button class="bc-sign-mini-btn" data-action="next-home-word" aria-label="换一个单词">${I.refresh(12, "#8C6232")}</button>
-            </div>
+            <button class="bc-sign-mini-btn" data-action="speak-word" data-word="${word.word}" aria-label="朗读 ${word.word}">${I.speaker(18, "#B4811C")}</button>
           </div>
           <button type="button" style="width:100%" data-action="open-review" aria-label="打开单词跟读 ${word.word}">
             <span class="bc-sign-word w-word">${word.word}</span>

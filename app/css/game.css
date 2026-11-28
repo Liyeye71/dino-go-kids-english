@@ -194,22 +194,26 @@
 .zoo-audio-btn:active{transform:scale(.9)}
 .zoo-audio-btn svg{width:62%;height:62%;display:block}
 
-/* 抖动特效：播放发音时的按钮反馈 */
+/* 抖动特效：播放发音时的按钮反馈（左右位移 + 旋转 + 弹性缩放 + 暖光波纹，圆形按钮也能一眼看出抖动） */
 @keyframes shakeAudio{
-  0%   {transform:rotate(0deg) scale(1)}
-  15%  {transform:rotate(-12deg) scale(1.08)}
-  30%  {transform:rotate(10deg) scale(1.06)}
-  45%  {transform:rotate(-6deg) scale(1.04)}
-  60%  {transform:rotate(4deg) scale(1.02)}
-  75%  {transform:rotate(-2deg) scale(1)}
-  100% {transform:rotate(0deg) scale(1)}
+  0%   {transform:translateX(0) rotate(0deg) scale(1)}
+  15%  {transform:translateX(-0.22rem) rotate(-14deg) scale(1.14);box-shadow:0 0 0 0.35rem rgba(244,185,66,.35)}
+  30%  {transform:translateX(0.22rem) rotate(14deg) scale(1.12)}
+  45%  {transform:translateX(-0.16rem) rotate(-10deg) scale(1.08);box-shadow:0 0 0 0.5rem rgba(244,185,66,0)}
+  60%  {transform:translateX(0.14rem) rotate(8deg) scale(1.05)}
+  78%  {transform:translateX(-0.06rem) rotate(-4deg) scale(1.02)}
+  100% {transform:translateX(0) rotate(0deg) scale(1)}
 }
 .listen.is-shaking,
 .zoo-audio-btn.is-shaking,
+.listen-bubble-replay.is-shaking,
+.bc-sign-mini-btn.is-shaking,
 .ref-listen-speaker.is-shaking,
-.ref-dialog-ask.is-shaking{animation:shakeAudio .55s cubic-bezier(.36,.07,.19,.97) both}
+.ref-dialog-ask.is-shaking{animation:shakeAudio .58s cubic-bezier(.36,.07,.19,.97) both !important;will-change:transform}
 .listen.is-shaking svg,
 .zoo-audio-btn.is-shaking svg,
+.listen-bubble-replay.is-shaking svg,
+.bc-sign-mini-btn.is-shaking svg,
 .ref-listen-speaker.is-shaking svg{filter:drop-shadow(0 0 0 currentColor)}
 
 /* ============================================================

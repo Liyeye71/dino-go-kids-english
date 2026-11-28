@@ -181,12 +181,16 @@ function screenQuiz() {
           </svg>`;
   const answerBox = answerWord
     ? `<div class="zoo-answer-box${dialogSentence ? " is-sentence" : ""}">
-        <span class="zoo-answer-word">${answerWord}</span>
+        <div class="zoo-answer-info">
+          <div class="zoo-answer-top">
+            <span class="zoo-answer-word">${answerWord}</span>
+            ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
+          </div>
+          ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
+        </div>
         <button class="zoo-audio-btn" type="button" data-action="speak-answer" aria-label="播放读音">
           ${audioIcon}
         </button>
-        ${answerPhon ? `<span class="zoo-answer-phon">${answerPhon}</span>` : ""}
-        ${answerZh ? `<span class="zoo-meaning-text">中文：${answerZh}</span>` : ""}
       </div>`
     : "";
 
@@ -358,13 +362,23 @@ function finalizeTask(q, ok, opts = {}) {
       if (!isDaily) unlockTaskWord({ word: w });
     });
     if (okSfx) sfx(okSfx);
-    if (speakOnOk) setTimer(() => speak(speakOnOk), 600);
+    if (speakOnOk) {
+      setTimer(() => {
+        if (typeof shakeBtn === "function") shakeBtn(document.querySelector(".zoo-audio-btn"));
+        speak(speakOnOk);
+      }, 600);
+    }
     if (!isDaily && wrongBank) WrongBank.applyResult(q, true);
   } else {
     if (wrongSfx) sfx(wrongSfx);
     /* 答错弹出结果卡后自动朗读正确读音，帮助孩子纠音记忆 */
     const wrongSpeak = speakOnWrong !== undefined ? speakOnWrong : answerMetaOf(q).speakText;
-    if (wrongSpeak) setTimer(() => speak(wrongSpeak), 520);
+    if (wrongSpeak) {
+      setTimer(() => {
+        if (typeof shakeBtn === "function") shakeBtn(document.querySelector(".zoo-audio-btn"));
+        speak(wrongSpeak);
+      }, 520);
+    }
     if (!isDaily && wrongBank) WrongBank.applyResult(q, false);
   }
   render();

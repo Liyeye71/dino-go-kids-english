@@ -8,14 +8,18 @@ function renderAndResetScroll() {
   const sc = $(".scroll");
   if (sc) sc.scrollTop = 0;
 }
-/* 喇叭按钮点击抖动反馈 */
+/* 喇叭按钮点击抖动反馈（支持连续点击立即重放） */
 function shakeBtn(el) {
   if (!el) return;
+  if (el._shakeTimer) clearTimeout(el._shakeTimer);
   el.classList.remove("is-shaking");
   /* 强制 reflow 让动画可重放 */
   void el.offsetWidth;
   el.classList.add("is-shaking");
-  setTimeout(() => el.classList.remove("is-shaking"), 560);
+  el._shakeTimer = setTimeout(() => {
+    el.classList.remove("is-shaking");
+    el._shakeTimer = null;
+  }, 600);
 }
 
 /* 家长角长按 + 浮空岛左右滑动 + 营地脚印彩蛋：合并为统一 pointer 监听 */

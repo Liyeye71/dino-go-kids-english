@@ -100,7 +100,8 @@
 .ref-pic-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
 .ref-picture-art{position:absolute;inset:0;display:grid;place-items:center;padding:0.5rem}
 .ref-picture-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
-.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;border:0.09375rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.1875rem 0 #D5BB8D}
+.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;width:4.25rem;height:4.25rem;border:0.125rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.25rem 0 #D5BB8D}
+.ref-picture-frame .listen svg{width:2rem;height:2rem}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
 .quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.85rem,2.8cqh,1.05rem);color:#4B3626;font-weight:var(--w-black);line-height:1.25;overflow-wrap:anywhere;word-break:break-word}
@@ -188,12 +189,12 @@
 .ref-dialog-image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem;width:100%;flex:1;min-height:0;align-content:center}
 .ref-dialog-image-grid .ref-listen-card{min-height:clamp(4.5rem,15cqh,6.5rem);padding:0.5rem}
 .ref-dialog-reply.pending{color:#9C8666;letter-spacing:0.08em}
-/* 结算卡：整句正确答案换行展示 */
-.zoo-answer-box.is-sentence{align-items:flex-start}
+/* 结算卡：整句正确答案换行展示，右侧喇叭保持垂直居中 */
+.zoo-answer-box.is-sentence{align-items:center}
 .zoo-answer-box.is-sentence .zoo-answer-label{padding-top:0.1875rem}
 .zoo-answer-box.is-sentence .zoo-answer-word{flex:0 1 auto;min-width:0;font-size:clamp(1rem,3.6vw,1.25rem);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
 /* 整句答案：英文与中文分列两行展示 */
-.zoo-answer-box.is-sentence .zoo-meaning-text{flex:1 1 100%;padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
+.zoo-answer-box.is-sentence .zoo-meaning-text{padding-top:0.125rem;font-size:0.9375rem;line-height:1.35}
 
 /* 动物喂食 */
 .quiz-ref-page .ref-feed-wrap{flex:1;min-height:0;justify-content:center;gap:1rem}
