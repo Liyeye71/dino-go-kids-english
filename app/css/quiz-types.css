@@ -60,7 +60,7 @@
 .quiz-ref-page .qbar{background:rgba(255,255,255,.75);border:0.09375rem solid #E8D5AE}
 .quiz-ref-page .circle-btn{background:#FFFDF6;border-color:#E8D5AE;box-shadow:0 0.1875rem 0 #D9C49C;color:var(--sticker-ink)}
 .quiz-ref-page .qcount{color:#6A4C2D}
-.ref-quiz-body{padding:0.75rem 1.25rem 0.25rem;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
+.ref-quiz-body{padding:0.75rem 1.25rem 0.25rem;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;overscroll-behavior-y:contain;touch-action:pan-y}
 .ref-stage-head{display:flex;align-items:center;justify-content:center;gap:0.75rem;flex:none;margin:0.875rem auto 0.75rem;text-align:left}
 .ref-stage-head h2{font-size:clamp(1.125rem,4vw,1.5rem);font-weight:var(--w-black);line-height:1.2;color:#4B3626}
 .ref-stage-badge{width:3rem;height:3rem;display:grid;place-items:center;flex:none;border:0.1875rem solid var(--sticker-ink);border-radius:1rem;
@@ -246,6 +246,24 @@
 .ref-dialog-person.person--player .ref-dialog-dino{
   width:100%;height:100%;display:block;
   object-fit:contain;object-position:center bottom;
+}
+/* ===== 新题入场视觉提醒（替代非听力题自动读题，仅未揭晓时播放一次） ===== */
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-hint{
+  animation:hintCueIn .38s ease both;
+}
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-picture-frame .listen:not(.is-shaking),
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-feed-animal .feed-replay-btn:not(.is-shaking),
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-dialog-ask-say{
+  animation:speakerCuePulse 1.05s ease-out .16s 1;
+}
+@keyframes hintCueIn{
+  0%{opacity:0;transform:translateY(0.25rem)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes speakerCuePulse{
+  0%{transform:scale(1);box-shadow:0 0 0 0 rgba(244,185,66,.55)}
+  40%{transform:scale(1.1);box-shadow:0 0 0 0.55rem rgba(244,185,66,0)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(244,185,66,0)}
 }
 /* ===== 情景对话 C：食物飞入提问动物 + 动物开吃 ===== */
 .dialog-food{

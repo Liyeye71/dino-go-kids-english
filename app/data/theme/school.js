@@ -32,21 +32,63 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["flask", "烧瓶", "/flɑːsk/", "We use a flask in science class.", "🧪"],
 ], "tool");
 
-/* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
-definePlaceholderTheme({
+/* 路线坐标：school-campus-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-school-map.mjs 同步） */
+const SCHOOL_CAMPUS_NODES = [
+  { x: 14, y: 86 }, /* 1 */
+  { x: 28, y: 84 }, /* 2 */
+  { x: 43, y: 87 }, /* 3 */
+  { x: 59, y: 84 }, /* 4 */
+  { x: 75, y: 81 }, /* 5 BOSS */
+  { x: 84, y: 68 }, /* 6 */
+  { x: 72, y: 59 }, /* 7 */
+  { x: 56, y: 62 }, /* 8 */
+  { x: 40, y: 58 }, /* 9 */
+  { x: 24, y: 60 }, /* 10 BOSS */
+  { x: 15, y: 45 }, /* 11 */
+  { x: 27, y: 36 }, /* 12 */
+  { x: 44, y: 39 }, /* 13 */
+  { x: 61, y: 35 }, /* 14 */
+  { x: 77, y: 38 }, /* 15 BOSS */
+  { x: 86, y: 24 }, /* 16 */
+  { x: 72, y: 17 }, /* 17 */
+  { x: 55, y: 19 }, /* 18 */
+  { x: 38, y: 16 }, /* 19 */
+  { x: 22, y: 18 }, /* 20 总 BOSS */
+];
+
+const SCHOOL_CAMPUS_LEVELS = SCHOOL_CAMPUS_NODES.map((node, i) => ({
+  level: i + 1,
+  x: node.x,
+  y: node.y,
+}));
+
+const SCHOOL_SCENES = [
+  {
+    id: "campus",
+    name: "上学文具岛",
+    emoji: "🎒",
+    mapImage: "./images/background/school-campus-map.webp",
+    mapRatio: "1505/1045",
+    sheetClass: "zoo-route-sheet",
+    mapClass: "zoo",
+    levelCount: SCHOOL_CAMPUS_LEVELS.length,
+    levels: SCHOOL_CAMPUS_LEVELS,
+    words: SCHOOL_WORDS,
+  },
+];
+
+/* 已开放：26 个文具/教室词 + 20 关自定义校园路线图 */
+defineDinoTheme({
   id: "school",
   name: "上学了",
   islandName: "上学文具岛",
   chip: "文具单词",
   emoji: "🎒",
+  cover: "./images/background/theme-school.webp",
   wordImgDir: "tool",
+  useWrongBank: true,
   dialog: { q: "What's this?", a: "It's a {word}." },
-  color: "#8C6B3D",
-  accent: "#5C411D",
-  tip: "#A08560",
-  plan: "铅笔、尺子、书包装进书包，闯关地图正在筹备中",
-  mapIntro: "「上学了」词表已就绪，闯关地图正在筹备中…",
   picHint: "猜猜这是什么文具",
   picPrompt: "What is this?",
-  words: SCHOOL_WORDS,
+  scenes: SCHOOL_SCENES,
 });

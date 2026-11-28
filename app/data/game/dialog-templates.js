@@ -43,10 +43,10 @@
       "A visitor asks: does the {word} like {food}?",
     ],
     yesno: [
-      "A visitor asks: is this a {wrong}?",
-      "Look at the zoo sign. Is this a {wrong}?",
-      "The little boy at the zoo says: is this a {wrong}? What do you think?",
-      "This animal is in the zoo. Is it a {wrong}?",
+      "A visitor asks: is this {aWrong}?",
+      "Look at the zoo sign. Is this {aWrong}?",
+      "The little boy at the zoo says: is this {aWrong}? What do you think?",
+      "This animal is in the zoo. Is it {aWrong}?",
     ],
     image: [
       "The zoo map shows many animals. Which one is the {word}?",
@@ -91,10 +91,10 @@
       "Does the {word} like {food}?",
     ],
     yesno: [
-      "Is this a {wrong}?",
-      "Look carefully. Is this a {wrong}?",
-      "Excuse me, is this a {wrong}?",
-      "Is this animal a {wrong}?",
+      "Is this {aWrong}?",
+      "Look carefully. Is this {aWrong}?",
+      "Excuse me, is this {aWrong}?",
+      "Look at the picture. Is it {aWrong}?",
     ],
     image: [
       "Which one is the {word}?",
@@ -110,11 +110,88 @@
     ],
   };
 
-  const SCOPES = { zoo: ZOO_ASKS, animal: ZOO_ASKS, default: DEFAULT_ASKS };
+  /* 校园/文具专属情景对话句式 */
+  const SCHOOL_ASKS = {
+    wordGeneric: [
+      "Welcome to the classroom! Look on the desk. What is this?",
+      "Time for class! What is in your schoolbag?",
+      "Let's draw and learn! What school thing is this?",
+      "The teacher holds up a picture. What is this?",
+      "Look at the classroom table. Do you know what this is?",
+    ],
+    yesno: [
+      "In the classroom, is this {aWrong}?",
+      "Look in your schoolbag. Is this {aWrong}?",
+      "Your classmate asks: is this {aWrong}?",
+      "Check the desk! Is it {aWrong}?",
+    ],
+    yesnoPlural: [
+      "In the classroom, are these {wrong}?",
+      "Look on the desk. Are these {wrong}?",
+      "Your classmate asks: are these {wrong}?",
+    ],
+    image: [
+      "Time for class! Can you find the {word}?",
+      "Look on the desk. Which one is the {word}?",
+      "Pack your bag! Point to the {word}, please.",
+      "Where is the {word} in the classroom?",
+      "The teacher needs the {word}. Which one is it?",
+    ],
+  };
+
+  /* 旅行/交通专属情景对话句式 */
+  const TRAVEL_ASKS = {
+    wordGeneric: [
+      "Let's go on a trip! Look at the picture. What is this?",
+      "Beep beep! Look on the road. What is this?",
+      "We are going to travel! What vehicle do you see?",
+      "Look out the window! Do you know what this is?",
+      "Ready to go! What is in this travel picture?",
+    ],
+    yesno: [
+      "Look on the road! Is this {aWrong}?",
+      "We are at the station. Is this {aWrong}?",
+      "Look out the window! Is it {aWrong}?",
+      "Your friend asks: is this {aWrong}?",
+    ],
+    image: [
+      "Let's travel! Which one is the {word}?",
+      "Look at the busy street. Can you find the {word}?",
+      "Point to the {word} for our trip, please.",
+      "Where is the {word}?",
+      "Which picture shows the {word}?",
+    ],
+  };
+
+  const SCOPES = {
+    zoo: ZOO_ASKS,
+    animal: ZOO_ASKS,
+    campus: SCHOOL_ASKS,
+    school: SCHOOL_ASKS,
+    journey: TRAVEL_ASKS,
+    travel: TRAVEL_ASKS,
+    default: DEFAULT_ASKS,
+  };
   /* 按「场景 → 主题 → 通用」顺序解析作用域，主题不存在时自动使用通用句式 */
   function asksFor(scope) {
     const s = scope || {};
     return SCOPES[s.sceneId] || SCOPES[s.themeId] || SCOPES.default;
+  }
+
+  /* 英文冠词与复数词适配（如 an eraser / an airplane / scissors 不加 a） */
+  const PLURAL_WORDS = new Set(["scissors", "glasses", "sunglasses", "shoes", "socks", "pants", "shorts", "jeans", "gloves"]);
+  function isPluralWord(word) {
+    return PLURAL_WORDS.has(String(word || "").trim().toLowerCase());
+  }
+  function articleOf(word) {
+    const clean = String(word || "").trim().toLowerCase();
+    if (!clean || isPluralWord(clean)) return "";
+    if (/^(uni|use|eur|one\b)/i.test(clean)) return "a";
+    return /^[aeiou]/i.test(clean) ? "an" : "a";
+  }
+  function withArticle(word) {
+    const art = articleOf(word);
+    return art ? `${art} ${word}` : String(word || "");
   }
 
   function animalOption(w) {
@@ -138,14 +215,13 @@
     const food = foodEn(w.food);
     /* 结果卡展示正确答案时使用的中文翻译素材 */
     const foodZh = (w.food && w.food.zh) || food;
-    const animalZh = w.zh || w.word;
+    const itemZh = w.zh || w.word;
     /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
     const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
-    const modes = ["word"];
+    const modes = ["word", "yesno"];
+    if (others.every((x) => x.img || x.animal)) modes.push("image");
     if (w.animal && food && altFoods.length >= 2) modes.push("eat", "foodImage");
     if (w.animal && food && altFoods.length >= 3) modes.push("eatYesNo");
-    if (w.animal && others.every((x) => x.img || x.animal)) modes.push("image");
-    if (w.animal) modes.push("yesno");
 
     let mode = pick(modes);
 
@@ -196,20 +272,31 @@
     if (mode === "yesno") {
       const wrong = two[0].word;
       const third = two[1].word;
-      const correct = `No, it isn't. It is a ${w.word}.`;
+      const askPlural = isPluralWord(wrong);
+      const ansPlural = isPluralWord(w.word);
+      const askList = askPlural
+        ? (ASKS.yesnoPlural || ["Are these {wrong}?", "Look carefully. Are these {wrong}?"])
+        : (ASKS.yesno || DEFAULT_ASKS.yesno);
+      const ask = pick(askList)
+        .replace("{aWrong}", withArticle(wrong))
+        .replace("{wrong}", wrong);
+      const yesOpt = askPlural ? "Yes, they are." : "Yes, it is.";
+      const noPrefix = askPlural ? "No, they aren't." : "No, it isn't.";
+      const stmt = (word) => (isPluralWord(word) ? `They are ${word}.` : `It is ${withArticle(word)}.`);
+      const correct = `${noPrefix} ${stmt(w.word)}`;
       return {
         mode: "sentence",
         replyMode: "sentence",
         askImg: true,
-        ask: pick(ASKS.yesno).replace("{wrong}", wrong),
+        ask,
         options: shuffle([
           { value: correct, label: correct },
-          { value: "Yes, it is.", label: "Yes, it is." },
-          { value: `No, it isn't. It is a ${third}.`, label: `No, it isn't. It is a ${third}.` },
+          { value: yesOpt, label: yesOpt },
+          { value: `${noPrefix} ${stmt(third)}`, label: `${noPrefix} ${stmt(third)}` },
         ]),
         answerValue: correct,
         answerText: correct,
-        answerZh: `不，它不是。它是${animalZh}。`,
+        answerZh: ansPlural ? `不，它们不是。它们是${itemZh}。` : `不，它不是。它是${itemZh}。`,
       };
     }
 
@@ -218,11 +305,11 @@
         mode: "image",
         replyMode: "blank",
         askImg: false,
-        ask: pick(ASKS.image).replace("{word}", w.word),
-        reply: "It's the ___.",
+        ask: pick(ASKS.image || DEFAULT_ASKS.image).replace("{word}", w.word),
+        reply: isPluralWord(w.word) ? "They are the ___." : "It's the ___.",
         options: shuffle([w, ...two].map(animalOption)),
         answerValue: w.word,
-        answerText: `It is the ${w.word}.`,
+        answerText: isPluralWord(w.word) ? `They are the ${w.word}.` : `It is the ${w.word}.`,
       };
     }
 
@@ -244,26 +331,36 @@
     }
 
     const words = shuffle([w, ...two].map((x) => x.word));
+    const plural = isPluralWord(w.word);
+    const art = articleOf(w.word);
     return {
       mode: "word",
       replyMode: "blank",
       askImg: true,
-      ask: pick(w.animal ? ASKS.word : ASKS.wordGeneric),
-      reply: "It's a ___.",
+      ask: pick(w.animal ? (ASKS.word || DEFAULT_ASKS.word) : (ASKS.wordGeneric || DEFAULT_ASKS.wordGeneric)),
+      reply: plural ? "They are ___." : `It's ${art} ___.`,
       options: words.map((value) => ({ value, label: value })),
       answerValue: w.word,
-      answerText: `It's a ${w.word}.`,
+      answerText: plural ? `They are ${w.word}.` : `It's ${art} ${w.word}.`,
     };
   }
 
-  /* 情景对话出场角色：动物园场景下随机安排
-     动物×动物（两个动物朋友聊画面里的动物）、小朋友×小朋友、饲养员×小朋友。
-     动物头像只用 QuizUiArt 内置的纯 SVG 白名单，避免和题目配图混淆 */
+  /* 情景对话出场角色：
+     - 动物园场景：动物×动物、饲养员×小朋友、小朋友×小朋友
+     - 其他主题场景（school / travel 等）：小朋友（Ben / Mia）对话，避免串出饲养员 */
   const CAST_NAMES = { boy: "Ben", girl: "Mia", keeper: "Zookeeper" };
   const cap = (word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : "");
   function buildCast(task, pool, dlg) {
     if (!task || !dlg) return null;
-    if (typeof window.isZooScene !== "function" || !window.isZooScene()) return null;
+    const isZoo = typeof window.isZooScene === "function" && window.isZooScene();
+    if (!isZoo) {
+      const boyFirst = Math.random() < 0.5;
+      return {
+        kind: "kids",
+        ask: { type: "child", gender: boyFirst ? "boy" : "girl", name: CAST_NAMES[boyFirst ? "boy" : "girl"] },
+        reply: { type: "child", gender: boyFirst ? "girl" : "boy", name: CAST_NAMES[boyFirst ? "girl" : "boy"] },
+      };
+    }
     const avatarSet = typeof QuizUiArt !== "undefined" && Array.isArray(QuizUiArt.zooAnimalWords)
       ? new Set(QuizUiArt.zooAnimalWords) : null;
     const others = avatarSet

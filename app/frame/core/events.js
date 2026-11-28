@@ -124,7 +124,8 @@ const ACTIONS = {
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读 */
-    stopSpeak();
+    if (typeof cancelTaskPrompt === "function") cancelTaskPrompt();
+    else stopSpeak();
     settleLock = false;
     quiz = null;
     const prevTheme = state.theme;
@@ -258,7 +259,7 @@ const ACTIONS = {
     stopSpeak();
     speak("Hello! Let's learn English together!");
     openSettings();
-    toast(state.voice === "kids" ? "已切换童趣朗读" : "已切换标准朗读");
+    toast(state.voice === "kids" ? "已开启美音童声 Ana" : "已切换标准系统朗读");
   },
   "install-guide"() { openInstallGuide(); },
   "reset-confirm"() { openResetConfirm(); },
@@ -311,6 +312,37 @@ window.addEventListener("popstate", (e) => {
 });
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());
+/* iPad / iOS Safari 防边缘上下拉动整页（橡皮筋回弹）：
+   仅放行内部确实可滚动容器在边界内的正常滑动，其余区域一律拦截默认滚动 */
+let _touchStartY = 0;
+let _touchScroller = null;
+function findVerticalScroller(node) {
+  let el = node && node.nodeType === 1 ? node : (node && node.parentElement);
+  while (el && el !== document.body && el !== document.documentElement) {
+    const style = window.getComputedStyle(el);
+    if ((style.overflowY === "auto" || style.overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) {
+      return el;
+    }
+    el = el.parentElement;
+  }
+  return null;
+}
+document.addEventListener("touchstart", (e) => {
+  if (e.touches.length !== 1) { _touchScroller = null; return; }
+  _touchStartY = e.touches[0].clientY;
+  _touchScroller = findVerticalScroller(e.target);
+}, { passive: true });
+document.addEventListener("touchmove", (e) => {
+  if (e.touches.length !== 1) return;
+  if (!_touchScroller) {
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+  const dy = e.touches[0].clientY - _touchStartY;
+  const atTop = _touchScroller.scrollTop <= 0 && dy > 0;
+  const atBottom = _touchScroller.scrollTop + _touchScroller.clientHeight >= _touchScroller.scrollHeight - 1 && dy < 0;
+  if ((atTop || atBottom) && e.cancelable) e.preventDefault();
+}, { passive: false });
 /* 兜底：阻止任何图片被原生拖拽（长按图片拖出框） */
 document.addEventListener("dragstart", (e) => {
   const t = e.target;

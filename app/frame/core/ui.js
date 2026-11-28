@@ -57,8 +57,8 @@ function openSettings() {
         </div>
         <div class="setting-row">
           <div class="s-ic">${I.volume(18)}</div>
-          <div class="s-txt"><b>英文读音</b><span>${state.voice === "standard" ? "标准朗读 · 教材发音" : "童趣朗读 · 更慢更亮，像卡通姐姐"}</span></div>
-          <button class="switch ${state.voice !== "standard" ? "on" : ""}" data-action="toggle-voice" aria-label="读音风格切换"></button>
+          <div class="s-txt"><b>美音童声 Ana</b><span>${state.voice === "standard" ? "已关闭 · 当前为标准系统朗读" : "已开启 · 活泼自然的美音小女孩童声"}</span></div>
+          <button class="switch ${state.voice !== "standard" ? "on" : ""}" data-action="toggle-voice" aria-label="美音童声开关"></button>
         </div>
         <div class="setting-row" data-action="install-guide" role="button">
           <div class="s-ic">${I.share(18)}</div>

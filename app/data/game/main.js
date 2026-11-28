@@ -7,6 +7,16 @@ const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
 /* 题型答对延时结算锁：防止特效播放期间重复点击/重复计分 */
 let settleLock = false;
+/* 新题语音/提示音延时句柄：选答案或切题时可精准取消，避免残留播报 */
+let promptTimer = null;
+
+function cancelTaskPrompt() {
+  if (promptTimer) {
+    clearTimeout(promptTimer);
+    promptTimer = null;
+  }
+  if (typeof stopSpeak === "function") stopSpeak();
+}
 
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
@@ -78,12 +88,13 @@ function startQuiz(level, opts = {}) {
     toast("先完成前面的关卡吧");
     return;
   }
+  cancelTaskPrompt();
   quiz = createQuiz({ level: lvl, order: DynamicEngine.buildTasks(lvl, { replay }) });
   lastResult = null;
   levelCue(currentTheme().id);
   go("quiz");
-  /* 第 1 题等开场提示音播完再开口，避免人声与旋律重叠 */
-  speakTask(920);
+  /* 第 1 题已有开场旋律：听力题等旋律播完再读词，非听力题不叠播入场提示音 */
+  speakTask(780, { playCue: false });
 }
 
 /* 每日随机挑战：全主题混抽 10 题，答对 1 题得 1★，完成结算才消耗次数 */
@@ -97,10 +108,11 @@ function startDailyQuiz() {
     toast("词库还在准备中，稍后再试");
     return;
   }
+  cancelTaskPrompt();
   quiz = createQuiz({ mode: "daily", level: 0, starIndex: [], order });
   lastResult = null;
   go("quiz");
-  speakTask();
+  speakTask(260);
 }
 
 /* 答对：只撒彩纸，鼓励语与答案统一收进居中的结果卡 */
@@ -216,7 +228,7 @@ function screenQuiz() {
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
       ${isDaily ? `<div class="daily-run">🎲</div>` : ""}
     </div>`;
-  return `<section class="screen quiz-page ${game.pageClass || ""} quiz-ref-page dino-stage-v2" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
+  return `<section class="screen quiz-page ${game.pageClass || ""} quiz-ref-page dino-stage-v2" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}" data-revealed="${revealed ? "1" : "0"}">
     ${fx}
     <div class="ref-scene-bg">${QuizUiArt.scene()}</div>
     ${frameTop}
@@ -228,14 +240,31 @@ function screenQuiz() {
   </section>`;
 }
 
-function speakTask(delay = 450) {
+/* 进题提醒：仅听力题（autoSpeak）自动读单词；其余题型改用轻提示音效 + 视觉引导，点喇叭仍可手动听题 */
+function speakTask(delay = 260, opts = {}) {
+  cancelTaskPrompt();
   const q = quiz && quiz.order[quiz.index];
   if (!q) return;
   const game = gameForTask(q);
-  const lines = game && typeof game.getPromptLines === "function"
-    ? game.getPromptLines(q)
-    : [];
-  if (lines.length) setTimer(() => speak(lines), delay);
+  if (game && game.autoSpeak) {
+    const lines = typeof game.getPromptLines === "function" ? game.getPromptLines(q) : [];
+    if (lines.length) {
+      promptTimer = setTimeout(() => {
+        promptTimer = null;
+        if (!quiz || quiz.revealed || quiz.order[quiz.index] !== q) return;
+        speak(lines);
+      }, delay);
+    }
+    return;
+  }
+  const playCue = opts.playCue !== false;
+  if (playCue && !(game && game.hasOwnCue)) {
+    promptTimer = setTimeout(() => {
+      promptTimer = null;
+      if (!quiz || quiz.revealed || quiz.order[quiz.index] !== q) return;
+      sfx("question");
+    }, 80);
+  }
 }
 /* 通用结算分流：支持题型按答对 / 答错分别声明延时特效，再进入统一结算 */
 function beginSettlement(q, ok, el, commit) {
@@ -262,6 +291,7 @@ function beginSettlement(q, ok, el, commit) {
 }
 function selectOption(word, el) {
   if (!quiz || quiz.revealed || settleLock) return;
+  cancelTaskPrompt();
   const q = quiz.order[quiz.index];
   const correctValue = correctValueOf(q);
   quiz.selected = word;
@@ -352,6 +382,7 @@ function checkAnswer() {
 }
 function nextQuestion() {
   if (!quiz) return;
+  cancelTaskPrompt();
   settleLock = false;
   clearTimers();
   if (quiz.index >= quiz.order.length - 1) { finishQuiz(); return; }

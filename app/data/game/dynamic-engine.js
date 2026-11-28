@@ -274,14 +274,23 @@
       }
 
       const wordMap = new Map(allSceneWords.map((w) => [w.word, w]));
-      const questions = buildSession(level, allSceneWords, sceneId, null, targetPool);
+      /* 按关卡进度做词库难度分层：L1~15 只出 Tier 1，L16~35 解锁 Tier 1~2，L36+ 全池综合
+         若重玩且错词库包含更高阶词，保留错词；分层池过小时自动回退全池 */
+      const maxTier = level <= 15 ? 1 : (level <= 35 ? 2 : 3);
+      const hasTiers = allSceneWords.some((w) => w.tier);
+      const tiered = hasTiers
+        ? allSceneWords.filter((w) => (w.tier || 3) <= maxTier || (targetPool && targetPool.has(w.word)))
+        : allSceneWords;
+      const sessionPool = tiered.length >= 12 ? tiered : allSceneWords;
+
+      const questions = buildSession(level, sessionPool, sceneId, null, targetPool);
       const tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
-        .map((q) => toTask(q, allSceneWords, dlg, sceneId, allSceneWords, null, wordMap));
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId, sessionPool, null, wordMap));
 
       /* 补题：全部已实现题型都开放（dialog 不再限制） */
       const allowed = typesForCurrentTheme(IMPLEMENTED_TYPES);
-      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, allSceneWords, targetPool, wordMap).slice(0, size);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, sessionPool, targetPool, wordMap).slice(0, size);
       /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音戳泡泡能显示动词图片 */
       return filled.map((task) => attachOptionArt(task, allSceneWords, wordMap));
     }
@@ -441,9 +450,9 @@
       tryPattern(/\b(eat|eats|eating|ate|like|likes|look|see|know|tell)\b/gi);
       return;
     }
-    /* 2. 无动物图片：提示句中的动物单词（按 pool 缓存正则，避免重复编译） */
+    /* 2. 无动物图片：提示句中的动物单词或目标词（按 pool 缓存正则，避免重复编译） */
     if (tryPattern(_animalReForPool(pool))) return;
-    if (task.word && task.animal && task.word.length >= 2) {
+    if (task.word && task.word.length >= 2) {
       if (tryPattern(new RegExp(`\\b${_escapeRe(task.word)}\\b`, "gi"))) return;
     }
     /* 3. 按食物选动物时，提示句中的食物单词 */
@@ -580,7 +589,7 @@
                   <div class="bubble-grass" aria-hidden="true"></div>
                   <div class="bubble-dino${revealed ? " is-cheering" : " is-blowing"}" aria-hidden="true">${dinoSvg}</div>
                 </div>
-                <p class="ref-hint">小恐龙，快救出小动物！</p>
+                <p class="ref-hint">${q.themeId === "animal" ? "小恐龙，快救出小动物！" : "小恐龙，快戳破正确的泡泡！"}</p>
                 <div class="ref-listen-grid listen-bubble-hint">
                   <button type="button" class="listen-bubble-replay" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">
                     ${I.speaker(18, "#5C411D")}<span>点我，再听一遍</span>
@@ -885,7 +894,7 @@
                   ${wordArtImg(actionSrc, "ref-action-img", q.emoji || wordGlyph(q.word), "pic-emoji")}
                 </div>`,
       tipClass: "ref-hint",
-      tip: "动物在干什么？",
+      tip: q.themeId === "animal" ? "动物在干什么？" : "小恐龙在干什么？",
       optionsClass: "ref-action-options",
       options: options(q.options),
       btn: quiz.revealed ? quizNextButton() : "",
@@ -1026,10 +1035,7 @@
         render: renderListen,
         getAnswerMeta: defaultAnswerMeta,
         getPromptLines(q) {
-          /* 同局首次出现播前导句 + 目标词，后续直接播目标词减少等待 */
-          const first = !quiz || !quiz._listenPrompted;
-          if (quiz && first) quiz._listenPrompted = true;
-          if (first) return defaultPromptLines(q, this);
+          /* 直接播目标词，去掉冗长前导句，避免还没读完就戳泡泡 */
           return q && q.word ? [q.word] : [];
         },
         getFeedbackOpts: () => ({ okSfx: "excellent", wrongSfx: "wrong", speakOnOk: "" }),
@@ -1114,6 +1120,7 @@
         label: "动作猜猜",
         title: "看动作，选出正确的单词",
         prompt: "What is the animal doing?",
+        hasOwnCue: true,
         build: threeChoiceBuild,
         render: renderAction,
         getAnswerMeta: defaultAnswerMeta,

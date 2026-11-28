@@ -41,6 +41,8 @@ function sfx(name) {
   try {
     ensureAudio();
     if (name === "tap") tone(520, 0.05, "sine", 0.025);
+    /* 新题入场轻提示音：替代非听力题的自动长句朗读，柔和短促不打断作答 */
+    else if (name === "question") { tone(587.33, 0.08, "sine", 0.032); tone(783.99, 0.11, "sine", 0.026, 0.06); }
     else if (name === "correct") { tone(660, 0.12, "sine", 0.05); tone(880, 0.16, "sine", 0.05, 0.1); }
     else if (name === "excellent") {
       [659, 784, 988, 1318].forEach((f, i) => tone(f, 0.16, "triangle", 0.05, i * 0.08));
@@ -105,15 +107,33 @@ function sfx(name) {
 }
 
 /* 英文单词 / 句子朗读；传入数组时按顺序连续朗读
-   读音风格由设置切换：kids 童趣（更慢更亮，优先儿童/活泼女声音色）/ standard 标准 */
+   读音风格由设置切换：
+   - kids（默认）：美音童声 Ana（预生成神经网络 MP3，未命中词条自动回退系统朗读）
+   - standard：系统标准朗读（speechSynthesis） */
 let speakToken = 0;
+let activeAudio = null;
+
+function voiceSlug(text) {
+  return String(text || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function anaVoiceUrl(text) {
+  const files = window.ANA_VOICE_FILES;
+  if (!files || typeof files.has !== "function") return "";
+  const slug = voiceSlug(text);
+  return slug && files.has(slug) ? `data/sounds/voice/ana/${slug}.mp3` : "";
+}
 
 /* 触发音色列表异步加载（Chrome 首次 getVoices 为空，voiceschanged 后可用） */
 if ("speechSynthesis" in window) {
   try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => {}; } catch (e) { /* ignore */ }
 }
 
-/* 童趣朗读偏好的音色：Ana（Win11 真儿童音色）→ 活泼/柔和女声 → Google 女声 */
+/* 童趣朗读回退音色：Ana（Win11 真儿童音色）→ 活泼/柔和女声 → Google 女声 */
 const KID_VOICE_HINTS = [
   "ana", "aria", "zira", "michelle", "samantha", "karen", "moira", "tessa",
   "google us english", "google uk english female", "female",
@@ -135,43 +155,91 @@ function pickVoice() {
   } catch (e) { return null; }
 }
 
+function stopActiveAudio() {
+  if (!activeAudio) return;
+  try {
+    activeAudio.onended = null;
+    activeAudio.onerror = null;
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+  } catch (e) { /* ignore */ }
+  activeAudio = null;
+}
+
 /* 立即停止当前朗读（切换读音风格、翻页、弹窗等场景调用） */
 function stopSpeak() {
   try {
     speakToken++;
+    stopActiveAudio();
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   } catch (e) { /* ignore */ }
 }
 
 function speak(text) {
   try {
-    if (!("speechSynthesis" in window)) {
-      if (typeof toast === "function") toast("当前浏览器不支持发音");
-      return;
-    }
-    const synth = window.speechSynthesis;
     const lines = (Array.isArray(text) ? text : [text])
       .map((t) => String(t == null ? "" : t).trim())
       .filter(Boolean);
     if (!lines.length) return;
     const token = ++speakToken;
     const kids = state.voice !== "standard";
-    const voice = pickVoice();
-    const sayFrom = (i) => {
-      if (token !== speakToken || i >= lines.length) return;
-      const u = new SpeechSynthesisUtterance(lines[i]);
+    const hasSynth = "speechSynthesis" in window;
+    const synth = hasSynth ? window.speechSynthesis : null;
+    const voice = hasSynth ? pickVoice() : null;
+
+    stopActiveAudio();
+    const hadSynth = Boolean(synth && (synth.speaking || synth.pending));
+    if (hadSynth) synth.cancel();
+
+    const speakWithSynth = (line, next) => {
+      if (token !== speakToken) return;
+      if (!synth) {
+        if (typeof toast === "function") toast("当前浏览器不支持发音");
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
-      /* 童趣：语速更慢、音调更高，听起来像卡通姐姐；标准：教材朗读节奏 */
-      u.rate = kids ? 0.72 : 0.82;
-      u.pitch = kids ? 1.32 : 1.08;
+      u.rate = kids ? 0.82 : 0.86;
+      u.pitch = kids ? 1.15 : 1.04;
       if (voice) u.voice = voice;
-      /* 一句读完自动接下一句；被新的朗读打断后不再继续 */
-      u.onend = () => sayFrom(i + 1);
+      u.onend = () => next();
+      u.onerror = () => next();
       synth.speak(u);
     };
-    /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
-    if (synth.speaking || synth.pending) {
-      synth.cancel();
+
+    const sayFrom = (i) => {
+      if (token !== speakToken || i >= lines.length) return;
+      const line = lines[i];
+      const next = () => sayFrom(i + 1);
+      const url = kids ? anaVoiceUrl(line) : "";
+      if (url) {
+        const audio = new Audio(url);
+        audio.preload = "auto";
+        activeAudio = audio;
+        let settled = false;
+        const done = () => {
+          if (settled) return;
+          settled = true;
+          if (activeAudio === audio) activeAudio = null;
+          next();
+        };
+        const fallback = () => {
+          if (settled) return;
+          settled = true;
+          if (activeAudio === audio) activeAudio = null;
+          if (token === speakToken) speakWithSynth(line, next);
+        };
+        audio.onended = done;
+        audio.onerror = fallback;
+        const p = audio.play();
+        if (p && typeof p.catch === "function") p.catch(fallback);
+        return;
+      }
+      speakWithSynth(line, next);
+    };
+
+    /* 刚 cancel 完系统朗读时稍作延迟，避免部分浏览器丢弃紧随其后的 speak */
+    if (hadSynth && !kids) {
       setTimeout(() => sayFrom(0), 60);
     } else {
       sayFrom(0);

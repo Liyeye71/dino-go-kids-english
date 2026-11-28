@@ -159,9 +159,9 @@
 }
 
 /* ============================================================
-   动物园答题页主题变量与背景装饰
+   路线图场景答题页主题变量与背景装饰（所有路线图场景共用）
    ============================================================ */
-.quiz-ref-page[data-scene="zoo"] {
+.quiz-ref-page[data-scene]:not([data-scene=""]) {
   --opt-line: #C89B63;
   --opt-line-w: 0.15625rem;
   --opt-rim: rgba(255, 255, 255, 0.9);
@@ -187,32 +187,32 @@
   --opt-bad-fill: linear-gradient(180deg, #FFF4F0 0%, #FFE2D8 100%);
   --opt-bad-base: #E8AEA0;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-stage-head + * { padding-top: 0 !important; }
-.quiz-ref-page[data-scene="zoo"] .ref-scene-svg { display: block !important; }
-.quiz-ref-page[data-scene="zoo"] .quiz-foot {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-head + * { padding-top: 0 !important; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-scene-svg { display: block !important; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .quiz-foot {
   height: auto !important;
   min-height: calc(4.25rem + var(--safe-bottom));
   padding-top: 0.45rem !important;
   padding-bottom: calc(0.5rem + var(--safe-bottom)) !important;
 }
-.quiz-ref-page[data-scene="zoo"] .circle-btn {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .circle-btn {
   background: #FFFDF8;
   border: 0.125rem solid #D9B482;
   box-shadow: 0 0.1875rem 0 #D4AC77;
   color: #7A532A;
 }
-.quiz-ref-page[data-scene="zoo"] .qbar {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qbar {
   background: rgba(255, 253, 248, 0.92);
   border: 0.125rem solid #D9B482;
 }
-.quiz-ref-page[data-scene="zoo"] .qcount {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qcount {
   color: #704B25;
   background: rgba(255, 253, 248, 0.9);
   padding: 0.1875rem 0.625rem;
   border-radius: 6.1875rem;
   border: 0.09375rem solid #E2C59B;
 }
-.quiz-ref-page[data-scene="zoo"] .qcount em { color: #A69175; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qcount em { color: #A69175; }
 
 .zoo-deco-plane,
 .zoo-deco-balloons { position: absolute; pointer-events: none; z-index: 1; }

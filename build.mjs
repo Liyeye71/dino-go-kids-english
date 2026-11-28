@@ -92,6 +92,9 @@ function collectOutputs(inlinedHtml) {
 
   /* 字体资源：app/font/ 下的字体统一复制到 dist/font/ */
   collectFiles(outputs, path.join(appDir, "font"), "font", (f) => /\.(ttf|otf|woff2?|eot)$/i.test(f));
+
+  /* 美音童声 Ana 音频：app/data/sounds/voice/ana/ 下的 mp3 统一复制到 dist/data/sounds/voice/ana/ */
+  collectFiles(outputs, path.join(appDir, "data", "sounds", "voice", "ana"), "data/sounds/voice/ana", (f) => /\.mp3$/i.test(f));
   return outputs;
 }
 

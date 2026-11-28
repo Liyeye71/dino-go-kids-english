@@ -68,7 +68,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 /* 根字号随屏幕宽高微调：手机上略收紧，iPad / PC 上整体放大，所有 rem 尺寸随之等比缩放 */
 html{font-size:clamp(14.75px,min(calc(12px + .9vw),calc(10px + 1.3vh)),18px)}
-html,body{height:100%;margin:0;padding:0;overscroll-behavior:none}
+html,body{position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;overflow:hidden;overscroll-behavior:none;touch-action:none}
 body{
   font-family:var(--font-round);
   font-synthesis:none;letter-spacing:0.00938rem;text-rendering:optimizeLegibility;
@@ -103,6 +103,7 @@ h1,h2,h3,h4,p{margin:0}
 .scroll{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  overscroll-behavior-y:contain;touch-action:pan-y;
   padding:calc(0.875rem + var(--safe-top)) 1.25rem calc(1.875rem + var(--safe-bottom));
 }
 .has-tab .scroll{padding-bottom:calc(6.5rem + var(--safe-bottom))}
@@ -1761,7 +1762,7 @@ h1,h2,h3,h4,p{margin:0}
 .quiz-ref-page .qbar{background:rgba(255,255,255,.75);border:0.09375rem solid #E8D5AE}
 .quiz-ref-page .circle-btn{background:#FFFDF6;border-color:#E8D5AE;box-shadow:0 0.1875rem 0 #D9C49C;color:var(--sticker-ink)}
 .quiz-ref-page .qcount{color:#6A4C2D}
-.ref-quiz-body{padding:0.75rem 1.25rem 0.25rem;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
+.ref-quiz-body{padding:0.75rem 1.25rem 0.25rem;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;overscroll-behavior-y:contain;touch-action:pan-y}
 .ref-stage-head{display:flex;align-items:center;justify-content:center;gap:0.75rem;flex:none;margin:0.875rem auto 0.75rem;text-align:left}
 .ref-stage-head h2{font-size:clamp(1.125rem,4vw,1.5rem);font-weight:var(--w-black);line-height:1.2;color:#4B3626}
 .ref-stage-badge{width:3rem;height:3rem;display:grid;place-items:center;flex:none;border:0.1875rem solid var(--sticker-ink);border-radius:1rem;
@@ -1947,6 +1948,24 @@ h1,h2,h3,h4,p{margin:0}
 .ref-dialog-person.person--player .ref-dialog-dino{
   width:100%;height:100%;display:block;
   object-fit:contain;object-position:center bottom;
+}
+/* ===== 新题入场视觉提醒（替代非听力题自动读题，仅未揭晓时播放一次） ===== */
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-hint{
+  animation:hintCueIn .38s ease both;
+}
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-picture-frame .listen:not(.is-shaking),
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-feed-animal .feed-replay-btn:not(.is-shaking),
+.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-dialog-ask-say{
+  animation:speakerCuePulse 1.05s ease-out .16s 1;
+}
+@keyframes hintCueIn{
+  0%{opacity:0;transform:translateY(0.25rem)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes speakerCuePulse{
+  0%{transform:scale(1);box-shadow:0 0 0 0 rgba(244,185,66,.55)}
+  40%{transform:scale(1.1);box-shadow:0 0 0 0.55rem rgba(244,185,66,0)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(244,185,66,0)}
 }
 /* ===== 情景对话 C：食物飞入提问动物 + 动物开吃 ===== */
 .dialog-food{
@@ -2139,7 +2158,7 @@ h1,h2,h3,h4,p{margin:0}
 .overlay{position:absolute;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;
   background:rgba(19,38,29,.42);backdrop-filter:blur(0.1875rem);-webkit-backdrop-filter:blur(0.1875rem);animation:fadeIn .2s ease}
 .overlay.dialog-wrap{align-items:center}
-.sheet{width:100%;max-width:35rem;max-height:88%;overflow-y:auto;background:#FFFBF3;border-radius:1.75rem 1.75rem 0 0;
+.sheet{width:100%;max-width:35rem;max-height:88%;overflow-y:auto;overscroll-behavior-y:contain;touch-action:pan-y;background:#FFFBF3;border-radius:1.75rem 1.75rem 0 0;
   padding:1.125rem 1.25rem calc(1.25rem + var(--safe-bottom));box-shadow:0 -1.25rem 3.125rem rgba(20,40,30,.2);
   animation:sheetUp .3s cubic-bezier(.22,.9,.3,1) both}
 .sheet .grab{width:2.375rem;height:0.25rem;border-radius:6.1875rem;background:#E0D2B8;margin:0 auto 0.875rem}
@@ -2319,23 +2338,24 @@ h1,h2,h3,h4,p{margin:0}
 .lw-history-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:0.375rem}
 .lw-history-head h3{font-size:0.8125rem;font-weight:var(--w-black);color:var(--ink)}
 .lw-history-head span{font-size:0.625rem;color:var(--muted);font-weight:var(--w-mid)}
-.lw-history-list{list-style:none;margin:0;padding:0;max-height:8.25rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.375rem;
-  -webkit-overflow-scrolling:touch}
-.lw-record{display:flex;align-items:center;gap:0.5rem;padding:0.4375rem 0.5rem;border-radius:0.75rem;background:#FFF;
+.lw-history-list{list-style:none;margin:0;padding:0;max-height:10.5rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.4375rem;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y}
+.lw-record{display:flex;align-items:center;gap:0.55rem;padding:0.5rem 0.625rem;border-radius:0.8125rem;background:#FFF;
   border:0.0625rem solid #F0E4CE}
 .lw-record.used{opacity:.68}
-.lw-record .ico{width:1.75rem;height:1.75rem;border-radius:0.5625rem;background:#FBF3E3;
-  display:grid;place-items:center;font-size:0.9375rem;flex:none}
+.lw-record .ico{width:1.875rem;height:1.875rem;border-radius:0.5625rem;background:#FBF3E3;
+  display:grid;place-items:center;font-size:1rem;flex:none}
 .lw-record-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:0.0625rem}
-.lw-record-main b{font-size:0.75rem;color:#3E5548;font-weight:var(--w-bold)}
-.lw-record-main time{font-size:0.5625rem;color:#91A095;font-weight:var(--w-read);white-space:nowrap}
-.lw-redeem{flex:none;font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#6B4E1E;
-  background:#FBE3B6;border:0.09375rem solid #E8A23C;border-radius:6.1875rem;padding:0.2rem 0.48rem;cursor:pointer}
+.lw-record-main b{font-size:0.8125rem;color:#3E5548;font-weight:var(--w-bold)}
+.lw-record-main time{font-size:0.625rem;color:#91A095;font-weight:var(--w-read);white-space:nowrap}
+.lw-redeem{flex:none;font-family:inherit;font-size:0.75rem;line-height:1.2;font-weight:var(--w-bold);color:#6B4E1E;
+  background:#FBE3B6;border:0.1rem solid #E8A23C;border-radius:6.1875rem;padding:0.42rem 0.85rem;min-height:1.95rem;
+  white-space:nowrap;cursor:pointer}
 .lw-redeem:active{transform:scale(.94)}
-.lw-used{flex:none;font-size:0.5625rem;font-weight:var(--w-mid);color:#97A69B}
-.lw-confirm{display:flex;gap:0.1875rem;flex:none}
-.lw-mini{font-family:inherit;font-size:0.5625rem;font-weight:var(--w-bold);color:#FFF;background:#3FA46A;
-  border:0;border-radius:0.4375rem;padding:0.25rem 0.375rem;cursor:pointer}
+.lw-used{flex:none;font-size:0.71875rem;font-weight:var(--w-mid);color:#97A69B;padding:0 0.25rem;white-space:nowrap}
+.lw-confirm{display:flex;gap:0.375rem;flex:none}
+.lw-mini{font-family:inherit;font-size:0.75rem;line-height:1.2;font-weight:var(--w-bold);color:#FFF;background:#3FA46A;
+  border:0;border-radius:0.5625rem;padding:0.42rem 0.72rem;min-height:1.95rem;white-space:nowrap;cursor:pointer}
 .lw-mini.ghost{background:#F2EBDF;color:#8A7550}
 .lw-history-empty{padding:0.625rem 0;font-size:0.6875rem;color:#91A095;text-align:center;font-weight:var(--w-read)}
 
@@ -2344,9 +2364,9 @@ h1,h2,h3,h4,p{margin:0}
    新增主题时在本目录新建同名 css，并在 index.html 中追加 link 即可
    ============================================================ */
 
-/* zoo 主题：只切换变量（背景素材 + 选项框风格），结构复用通用规则 */
-.quiz-ref-page[data-scene="zoo"]{
-  /* 背景与顶部偏移由 responsive.css 的 zoo 主题块接管 */
+/* 所有带路线图场景的答题页共用变量与安全区布局 */
+.quiz-ref-page[data-scene]:not([data-scene=""]){
+  /* 背景与顶部偏移由 responsive.css 的场景主题块接管 */
 
   --opt-line:#956220;--opt-line-w:0.1875rem;
   --opt-rim:#EAB373;--opt-rim-w:0.125rem;
@@ -2367,39 +2387,39 @@ h1,h2,h3,h4,p{margin:0}
 }
 /* 竖版：背景放大到纸面 90%，左右框裁切，页头压到纸面内 */
 @media (max-aspect-ratio:1/1){
-  .quiz-ref-page[data-scene="zoo"]{
+  .quiz-ref-page[data-scene]:not([data-scene=""]){
     padding-top:max(7.5dvh,calc(0.5rem + var(--safe-top)));
   }
 }
-.quiz-ref-page[data-scene="zoo"] .option:active{
+.quiz-ref-page[data-scene]:not([data-scene=""]) .option:active{
   transform:translateY(0.125rem);
   box-shadow:inset 0 0 0 var(--opt-rim-w) var(--opt-rim),0 0.125rem 0 var(--opt-base);
 }
 /* 标题块略微放大并下移，避开纸面上沿 */
-.quiz-ref-page[data-scene="zoo"] .ref-stage-head{margin-top:1.375rem;margin-bottom:0.625rem}
-.quiz-ref-page[data-scene="zoo"] .ref-stage-head h2{font-size:clamp(1.25rem,4.4vw,1.625rem)}
-.quiz-ref-page[data-scene="zoo"] .ref-stage-badge{width:3.125rem;height:3.125rem}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-head{margin-top:1.375rem;margin-bottom:0.625rem}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-head h2{font-size:clamp(1.25rem,4.4vw,1.625rem)}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-badge{width:3.125rem;height:3.125rem}
 
-/* zoo 纸面安全区：横屏时内容宽度同时受屏宽与屏高约束，保证答题块落在背景纸面以内 */
-.quiz-ref-page[data-scene="zoo"]{container-type:size;--quiz-w:100%;--pic-w:min(100%,28rem,58cqh)}
-.quiz-ref-page[data-scene="zoo"] .ref-quiz-body,
-.quiz-ref-page[data-scene="zoo"] .quiz-foot{width:var(--quiz-w);max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
+/* 纸面安全区：横屏时内容宽度同时受屏宽与屏高约束，保证答题块落在背景纸面以内 */
+.quiz-ref-page[data-scene]:not([data-scene=""]){container-type:size;--quiz-w:100%;--pic-w:min(100%,28rem,58cqh)}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-quiz-body,
+.quiz-ref-page[data-scene]:not([data-scene=""]) .quiz-foot{width:var(--quiz-w);max-width:var(--quiz-w);margin-left:auto;margin-right:auto}
 /* 统一图片框宽度：看图 / 听音 / 喂食 / 进阶题共用 --pic-w */
-.quiz-ref-page[data-scene="zoo"] .ref-picture-frame,
-.quiz-ref-page[data-scene="zoo"] .ref-listen-speaker,
-.quiz-ref-page[data-scene="zoo"] .ref-feed-animal,
-.quiz-ref-page[data-scene="zoo"] .ref-action-stage{width:var(--pic-w)}
-.quiz-ref-page[data-scene="zoo"] .ref-quiz-body{padding-top:1.25rem}
-.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option{padding:0 0.5rem;gap:0.375rem}
-.quiz-ref-page[data-scene="zoo"] .ref-pic-options .option .word{font-size:clamp(0.9375rem,2.6vw,1.125rem)}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-picture-frame,
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-listen-speaker,
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-feed-animal,
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-action-stage{width:var(--pic-w)}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-quiz-body{padding-top:1.25rem}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-pic-options .option{padding:0 0.5rem;gap:0.375rem}
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-pic-options .option .word{font-size:clamp(0.9375rem,2.6vw,1.125rem)}
 /* 横屏：纸面宽度受限，收窄内容 */
 @media (min-aspect-ratio:1/1){
   /* 纸面上边界（背景 cover 缩放后） */
-  .quiz-ref-page[data-scene="zoo"]{--quiz-w:min(calc(100% - 2.5rem),57cqw,74cqh);
+  .quiz-ref-page[data-scene]:not([data-scene=""]){--quiz-w:min(calc(100% - 2.5rem),57cqw,74cqh);
     --paper-top:max(23.4cqh,calc(50cqh - 20.31cqw))}
-  .quiz-ref-page[data-scene="zoo"][data-type="pic"]{--quiz-w:min(calc(100% - 2rem),66cqw,78cqh)}
+  .quiz-ref-page[data-scene]:not([data-scene=""])[data-type="pic"]{--quiz-w:min(calc(100% - 2rem),66cqw,78cqh)}
   /* 标题留在纸面外的天空，题卡整体下移到纸面以内 */
-  .quiz-ref-page[data-scene="zoo"] .ref-stage-head + *{padding-top:max(0px,calc(var(--paper-top) - 4.5rem))}
+  .quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-head + *{padding-top:max(0px,calc(var(--paper-top) - 4.5rem))}
 }
 
 /* ============================================================
@@ -2563,9 +2583,9 @@ h1,h2,h3,h4,p{margin:0}
 }
 
 /* ============================================================
-   动物园答题页主题变量与背景装饰
+   路线图场景答题页主题变量与背景装饰（所有路线图场景共用）
    ============================================================ */
-.quiz-ref-page[data-scene="zoo"] {
+.quiz-ref-page[data-scene]:not([data-scene=""]) {
   --opt-line: #C89B63;
   --opt-line-w: 0.15625rem;
   --opt-rim: rgba(255, 255, 255, 0.9);
@@ -2591,32 +2611,32 @@ h1,h2,h3,h4,p{margin:0}
   --opt-bad-fill: linear-gradient(180deg, #FFF4F0 0%, #FFE2D8 100%);
   --opt-bad-base: #E8AEA0;
 }
-.quiz-ref-page[data-scene="zoo"] .ref-stage-head + * { padding-top: 0 !important; }
-.quiz-ref-page[data-scene="zoo"] .ref-scene-svg { display: block !important; }
-.quiz-ref-page[data-scene="zoo"] .quiz-foot {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-stage-head + * { padding-top: 0 !important; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .ref-scene-svg { display: block !important; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .quiz-foot {
   height: auto !important;
   min-height: calc(4.25rem + var(--safe-bottom));
   padding-top: 0.45rem !important;
   padding-bottom: calc(0.5rem + var(--safe-bottom)) !important;
 }
-.quiz-ref-page[data-scene="zoo"] .circle-btn {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .circle-btn {
   background: #FFFDF8;
   border: 0.125rem solid #D9B482;
   box-shadow: 0 0.1875rem 0 #D4AC77;
   color: #7A532A;
 }
-.quiz-ref-page[data-scene="zoo"] .qbar {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qbar {
   background: rgba(255, 253, 248, 0.92);
   border: 0.125rem solid #D9B482;
 }
-.quiz-ref-page[data-scene="zoo"] .qcount {
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qcount {
   color: #704B25;
   background: rgba(255, 253, 248, 0.9);
   padding: 0.1875rem 0.625rem;
   border-radius: 6.1875rem;
   border: 0.09375rem solid #E2C59B;
 }
-.quiz-ref-page[data-scene="zoo"] .qcount em { color: #A69175; }
+.quiz-ref-page[data-scene]:not([data-scene=""]) .qcount em { color: #A69175; }
 
 .zoo-deco-plane,
 .zoo-deco-balloons { position: absolute; pointer-events: none; z-index: 1; }
@@ -3712,6 +3732,9 @@ window.DINO_WORD_LIBRARY = {
   "squid": { word: "squid", zh: "鱿鱼", phon: "/skwɪd/", example: "The squid has long arms.", emoji: "🦑", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "clownfish": { word: "clownfish", zh: "小丑鱼", phon: "/ˈklaʊnfɪʃ/", example: "The clownfish is orange and white.", emoji: "🐠", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "otter": { word: "otter", zh: "水獭", phon: "/ˈɒtə(r)/", example: "The otter plays in the water.", emoji: "🦦", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
+  "polar bear": { word: "polar bear", zh: "北极熊", phon: "/ˈpəʊlə beə(r)/", example: "The polar bear lives on the snow.", emoji: "🐻‍❄️", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
+  "sea lion": { word: "sea lion", zh: "海狮", phon: "/siː ˈlaɪən/", example: "The sea lion can balance a ball.", emoji: "🦭", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
+  "walrus": { word: "walrus", zh: "海象", phon: "/ˈwɔːlrəs/", example: "The walrus has two long tusks.", emoji: "🦭", category: "noun", type: "animal", animal: true, attrs: ["advance"] },
   "bread": { word: "bread", zh: "面包", phon: "/bred/", example: "I eat bread for breakfast.", emoji: "🍞", category: "noun", type: "food", attrs: ["basic"] },
   "pineapple": { word: "pineapple", zh: "菠萝", phon: "/ˈpaɪnæpl/", example: "The pineapple is sweet.", emoji: "🍍", category: "noun", type: "food", attrs: ["advance"] },
   "blueberry": { word: "blueberry", zh: "蓝莓", phon: "/ˈbluːbəri/", example: "I like blueberry muffins.", emoji: "🫐", category: "noun", type: "food", attrs: ["advance"] },
@@ -4203,7 +4226,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
   window.isStageBossLevel = isStageBossLevel;
   window.isFinalBossLevel = isFinalBossLevel;
   window.wordImgPath = wordImgPath;
-  window.isZooScene = () => hasSceneRoute();
+  window.isZooScene = () => hasSceneRoute() && typeof currentTheme === "function" && currentTheme().id === "animal";
   window.zooScene = () => activeScene();
   window.isAnimalBossLevel = isStageBossLevel;
   window.isAnimalFinalBoss = isFinalBossLevel;
@@ -4362,10 +4385,10 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       "A visitor asks: does the {word} like {food}?",
     ],
     yesno: [
-      "A visitor asks: is this a {wrong}?",
-      "Look at the zoo sign. Is this a {wrong}?",
-      "The little boy at the zoo says: is this a {wrong}? What do you think?",
-      "This animal is in the zoo. Is it a {wrong}?",
+      "A visitor asks: is this {aWrong}?",
+      "Look at the zoo sign. Is this {aWrong}?",
+      "The little boy at the zoo says: is this {aWrong}? What do you think?",
+      "This animal is in the zoo. Is it {aWrong}?",
     ],
     image: [
       "The zoo map shows many animals. Which one is the {word}?",
@@ -4410,10 +4433,10 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       "Does the {word} like {food}?",
     ],
     yesno: [
-      "Is this a {wrong}?",
-      "Look carefully. Is this a {wrong}?",
-      "Excuse me, is this a {wrong}?",
-      "Is this animal a {wrong}?",
+      "Is this {aWrong}?",
+      "Look carefully. Is this {aWrong}?",
+      "Excuse me, is this {aWrong}?",
+      "Look at the picture. Is it {aWrong}?",
     ],
     image: [
       "Which one is the {word}?",
@@ -4429,11 +4452,88 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     ],
   };
 
-  const SCOPES = { zoo: ZOO_ASKS, animal: ZOO_ASKS, default: DEFAULT_ASKS };
+  /* 校园/文具专属情景对话句式 */
+  const SCHOOL_ASKS = {
+    wordGeneric: [
+      "Welcome to the classroom! Look on the desk. What is this?",
+      "Time for class! What is in your schoolbag?",
+      "Let's draw and learn! What school thing is this?",
+      "The teacher holds up a picture. What is this?",
+      "Look at the classroom table. Do you know what this is?",
+    ],
+    yesno: [
+      "In the classroom, is this {aWrong}?",
+      "Look in your schoolbag. Is this {aWrong}?",
+      "Your classmate asks: is this {aWrong}?",
+      "Check the desk! Is it {aWrong}?",
+    ],
+    yesnoPlural: [
+      "In the classroom, are these {wrong}?",
+      "Look on the desk. Are these {wrong}?",
+      "Your classmate asks: are these {wrong}?",
+    ],
+    image: [
+      "Time for class! Can you find the {word}?",
+      "Look on the desk. Which one is the {word}?",
+      "Pack your bag! Point to the {word}, please.",
+      "Where is the {word} in the classroom?",
+      "The teacher needs the {word}. Which one is it?",
+    ],
+  };
+
+  /* 旅行/交通专属情景对话句式 */
+  const TRAVEL_ASKS = {
+    wordGeneric: [
+      "Let's go on a trip! Look at the picture. What is this?",
+      "Beep beep! Look on the road. What is this?",
+      "We are going to travel! What vehicle do you see?",
+      "Look out the window! Do you know what this is?",
+      "Ready to go! What is in this travel picture?",
+    ],
+    yesno: [
+      "Look on the road! Is this {aWrong}?",
+      "We are at the station. Is this {aWrong}?",
+      "Look out the window! Is it {aWrong}?",
+      "Your friend asks: is this {aWrong}?",
+    ],
+    image: [
+      "Let's travel! Which one is the {word}?",
+      "Look at the busy street. Can you find the {word}?",
+      "Point to the {word} for our trip, please.",
+      "Where is the {word}?",
+      "Which picture shows the {word}?",
+    ],
+  };
+
+  const SCOPES = {
+    zoo: ZOO_ASKS,
+    animal: ZOO_ASKS,
+    campus: SCHOOL_ASKS,
+    school: SCHOOL_ASKS,
+    journey: TRAVEL_ASKS,
+    travel: TRAVEL_ASKS,
+    default: DEFAULT_ASKS,
+  };
   /* 按「场景 → 主题 → 通用」顺序解析作用域，主题不存在时自动使用通用句式 */
   function asksFor(scope) {
     const s = scope || {};
     return SCOPES[s.sceneId] || SCOPES[s.themeId] || SCOPES.default;
+  }
+
+  /* 英文冠词与复数词适配（如 an eraser / an airplane / scissors 不加 a） */
+  const PLURAL_WORDS = new Set(["scissors", "glasses", "sunglasses", "shoes", "socks", "pants", "shorts", "jeans", "gloves"]);
+  function isPluralWord(word) {
+    return PLURAL_WORDS.has(String(word || "").trim().toLowerCase());
+  }
+  function articleOf(word) {
+    const clean = String(word || "").trim().toLowerCase();
+    if (!clean || isPluralWord(clean)) return "";
+    if (/^(uni|use|eur|one\b)/i.test(clean)) return "a";
+    return /^[aeiou]/i.test(clean) ? "an" : "a";
+  }
+  function withArticle(word) {
+    const art = articleOf(word);
+    return art ? `${art} ${word}` : String(word || "");
   }
 
   function animalOption(w) {
@@ -4457,14 +4557,13 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     const food = foodEn(w.food);
     /* 结果卡展示正确答案时使用的中文翻译素材 */
     const foodZh = (w.food && w.food.zh) || food;
-    const animalZh = w.zh || w.word;
+    const itemZh = w.zh || w.word;
     /* 备选食物全部来自当前场景的动物数据，保证不超出主题词库 */
     const altFoods = [...new Set(others.map((x) => foodEn(x.food)).filter((f) => f && f !== food))];
-    const modes = ["word"];
+    const modes = ["word", "yesno"];
+    if (others.every((x) => x.img || x.animal)) modes.push("image");
     if (w.animal && food && altFoods.length >= 2) modes.push("eat", "foodImage");
     if (w.animal && food && altFoods.length >= 3) modes.push("eatYesNo");
-    if (w.animal && others.every((x) => x.img || x.animal)) modes.push("image");
-    if (w.animal) modes.push("yesno");
 
     let mode = pick(modes);
 
@@ -4515,20 +4614,31 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     if (mode === "yesno") {
       const wrong = two[0].word;
       const third = two[1].word;
-      const correct = `No, it isn't. It is a ${w.word}.`;
+      const askPlural = isPluralWord(wrong);
+      const ansPlural = isPluralWord(w.word);
+      const askList = askPlural
+        ? (ASKS.yesnoPlural || ["Are these {wrong}?", "Look carefully. Are these {wrong}?"])
+        : (ASKS.yesno || DEFAULT_ASKS.yesno);
+      const ask = pick(askList)
+        .replace("{aWrong}", withArticle(wrong))
+        .replace("{wrong}", wrong);
+      const yesOpt = askPlural ? "Yes, they are." : "Yes, it is.";
+      const noPrefix = askPlural ? "No, they aren't." : "No, it isn't.";
+      const stmt = (word) => (isPluralWord(word) ? `They are ${word}.` : `It is ${withArticle(word)}.`);
+      const correct = `${noPrefix} ${stmt(w.word)}`;
       return {
         mode: "sentence",
         replyMode: "sentence",
         askImg: true,
-        ask: pick(ASKS.yesno).replace("{wrong}", wrong),
+        ask,
         options: shuffle([
           { value: correct, label: correct },
-          { value: "Yes, it is.", label: "Yes, it is." },
-          { value: `No, it isn't. It is a ${third}.`, label: `No, it isn't. It is a ${third}.` },
+          { value: yesOpt, label: yesOpt },
+          { value: `${noPrefix} ${stmt(third)}`, label: `${noPrefix} ${stmt(third)}` },
         ]),
         answerValue: correct,
         answerText: correct,
-        answerZh: `不，它不是。它是${animalZh}。`,
+        answerZh: ansPlural ? `不，它们不是。它们是${itemZh}。` : `不，它不是。它是${itemZh}。`,
       };
     }
 
@@ -4537,11 +4647,11 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         mode: "image",
         replyMode: "blank",
         askImg: false,
-        ask: pick(ASKS.image).replace("{word}", w.word),
-        reply: "It's the ___.",
+        ask: pick(ASKS.image || DEFAULT_ASKS.image).replace("{word}", w.word),
+        reply: isPluralWord(w.word) ? "They are the ___." : "It's the ___.",
         options: shuffle([w, ...two].map(animalOption)),
         answerValue: w.word,
-        answerText: `It is the ${w.word}.`,
+        answerText: isPluralWord(w.word) ? `They are the ${w.word}.` : `It is the ${w.word}.`,
       };
     }
 
@@ -4563,26 +4673,36 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     }
 
     const words = shuffle([w, ...two].map((x) => x.word));
+    const plural = isPluralWord(w.word);
+    const art = articleOf(w.word);
     return {
       mode: "word",
       replyMode: "blank",
       askImg: true,
-      ask: pick(w.animal ? ASKS.word : ASKS.wordGeneric),
-      reply: "It's a ___.",
+      ask: pick(w.animal ? (ASKS.word || DEFAULT_ASKS.word) : (ASKS.wordGeneric || DEFAULT_ASKS.wordGeneric)),
+      reply: plural ? "They are ___." : `It's ${art} ___.`,
       options: words.map((value) => ({ value, label: value })),
       answerValue: w.word,
-      answerText: `It's a ${w.word}.`,
+      answerText: plural ? `They are ${w.word}.` : `It's ${art} ${w.word}.`,
     };
   }
 
-  /* 情景对话出场角色：动物园场景下随机安排
-     动物×动物（两个动物朋友聊画面里的动物）、小朋友×小朋友、饲养员×小朋友。
-     动物头像只用 QuizUiArt 内置的纯 SVG 白名单，避免和题目配图混淆 */
+  /* 情景对话出场角色：
+     - 动物园场景：动物×动物、饲养员×小朋友、小朋友×小朋友
+     - 其他主题场景（school / travel 等）：小朋友（Ben / Mia）对话，避免串出饲养员 */
   const CAST_NAMES = { boy: "Ben", girl: "Mia", keeper: "Zookeeper" };
   const cap = (word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : "");
   function buildCast(task, pool, dlg) {
     if (!task || !dlg) return null;
-    if (typeof window.isZooScene !== "function" || !window.isZooScene()) return null;
+    const isZoo = typeof window.isZooScene === "function" && window.isZooScene();
+    if (!isZoo) {
+      const boyFirst = Math.random() < 0.5;
+      return {
+        kind: "kids",
+        ask: { type: "child", gender: boyFirst ? "boy" : "girl", name: CAST_NAMES[boyFirst ? "boy" : "girl"] },
+        reply: { type: "child", gender: boyFirst ? "girl" : "boy", name: CAST_NAMES[boyFirst ? "girl" : "boy"] },
+      };
+    }
     const avatarSet = typeof QuizUiArt !== "undefined" && Array.isArray(QuizUiArt.zooAnimalWords)
       ? new Set(QuizUiArt.zooAnimalWords) : null;
     const others = avatarSet
@@ -4896,14 +5016,23 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       }
 
       const wordMap = new Map(allSceneWords.map((w) => [w.word, w]));
-      const questions = buildSession(level, allSceneWords, sceneId, null, targetPool);
+      /* 按关卡进度做词库难度分层：L1~15 只出 Tier 1，L16~35 解锁 Tier 1~2，L36+ 全池综合
+         若重玩且错词库包含更高阶词，保留错词；分层池过小时自动回退全池 */
+      const maxTier = level <= 15 ? 1 : (level <= 35 ? 2 : 3);
+      const hasTiers = allSceneWords.some((w) => w.tier);
+      const tiered = hasTiers
+        ? allSceneWords.filter((w) => (w.tier || 3) <= maxTier || (targetPool && targetPool.has(w.word)))
+        : allSceneWords;
+      const sessionPool = tiered.length >= 12 ? tiered : allSceneWords;
+
+      const questions = buildSession(level, sessionPool, sceneId, null, targetPool);
       const tasks = questions
         .filter((q) => theme.games[q.gameType] && theme.games[q.gameType].render)
-        .map((q) => toTask(q, allSceneWords, dlg, sceneId, allSceneWords, null, wordMap));
+        .map((q) => toTask(q, allSceneWords, dlg, sceneId, sessionPool, null, wordMap));
 
       /* 补题：全部已实现题型都开放（dialog 不再限制） */
       const allowed = typesForCurrentTheme(IMPLEMENTED_TYPES);
-      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, allSceneWords, targetPool, wordMap).slice(0, size);
+      const filled = fillTasks(tasks, size, allSceneWords, dlg, sceneId, allowed, sessionPool, targetPool, wordMap).slice(0, size);
       /* 选项图片按本场景词池解析：动作动词取 action 目录，保证听音戳泡泡能显示动词图片 */
       return filled.map((task) => attachOptionArt(task, allSceneWords, wordMap));
     }
@@ -5063,9 +5192,9 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       tryPattern(/\b(eat|eats|eating|ate|like|likes|look|see|know|tell)\b/gi);
       return;
     }
-    /* 2. 无动物图片：提示句中的动物单词（按 pool 缓存正则，避免重复编译） */
+    /* 2. 无动物图片：提示句中的动物单词或目标词（按 pool 缓存正则，避免重复编译） */
     if (tryPattern(_animalReForPool(pool))) return;
-    if (task.word && task.animal && task.word.length >= 2) {
+    if (task.word && task.word.length >= 2) {
       if (tryPattern(new RegExp(`\\b${_escapeRe(task.word)}\\b`, "gi"))) return;
     }
     /* 3. 按食物选动物时，提示句中的食物单词 */
@@ -5202,7 +5331,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
                   <div class="bubble-grass" aria-hidden="true"></div>
                   <div class="bubble-dino${revealed ? " is-cheering" : " is-blowing"}" aria-hidden="true">${dinoSvg}</div>
                 </div>
-                <p class="ref-hint">小恐龙，快救出小动物！</p>
+                <p class="ref-hint">${q.themeId === "animal" ? "小恐龙，快救出小动物！" : "小恐龙，快戳破正确的泡泡！"}</p>
                 <div class="ref-listen-grid listen-bubble-hint">
                   <button type="button" class="listen-bubble-replay" data-action="speak-word" data-word="${q.word}" aria-label="再听一遍">
                     ${I.speaker(18, "#5C411D")}<span>点我，再听一遍</span>
@@ -5507,7 +5636,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
                   ${wordArtImg(actionSrc, "ref-action-img", q.emoji || wordGlyph(q.word), "pic-emoji")}
                 </div>`,
       tipClass: "ref-hint",
-      tip: "动物在干什么？",
+      tip: q.themeId === "animal" ? "动物在干什么？" : "小恐龙在干什么？",
       optionsClass: "ref-action-options",
       options: options(q.options),
       btn: quiz.revealed ? quizNextButton() : "",
@@ -5648,10 +5777,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         render: renderListen,
         getAnswerMeta: defaultAnswerMeta,
         getPromptLines(q) {
-          /* 同局首次出现播前导句 + 目标词，后续直接播目标词减少等待 */
-          const first = !quiz || !quiz._listenPrompted;
-          if (quiz && first) quiz._listenPrompted = true;
-          if (first) return defaultPromptLines(q, this);
+          /* 直接播目标词，去掉冗长前导句，避免还没读完就戳泡泡 */
           return q && q.word ? [q.word] : [];
         },
         getFeedbackOpts: () => ({ okSfx: "excellent", wrongSfx: "wrong", speakOnOk: "" }),
@@ -5736,6 +5862,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
         label: "动作猜猜",
         title: "看动作，选出正确的单词",
         prompt: "What is the animal doing?",
+        hasOwnCue: true,
         build: threeChoiceBuild,
         render: renderAction,
         getAnswerMeta: defaultAnswerMeta,
@@ -5844,50 +5971,112 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
 </script>
   <!-- 主题词库、地图与玩法；新增主题放入 theme 目录后，在此追加一行 script 即可 -->
   <script>
-/* ============================================================
+ /* ============================================================
    DinoGo · 恐龙英语 — 去旅行（未开放主题）
    19 个交通词表已就绪，仅供每日随机挑战混抽；闯关暂不开放
    ============================================================ */
 /* 交通词表：插画位于 images/words/transport/，文件名由单词生成 */
-const TRAVEL_WORDS = buildThemeWordList([
+const TRAVEL_TRANSPORT_WORDS = buildThemeWordList([
   ["car", "小汽车", "/kɑː(r)/", "We go to the park by car.", "🚗"],
+  ["bus", "公交车", "/bʌs/", "I take the bus to town.", "🚌"],
   ["school bus", "校车", "/skuːl bʌs/", "I take the school bus.", "🚌"],
   ["police car", "警车", "/pəˈliːs kɑː(r)/", "The police car is fast.", "🚓"],
   ["fire truck", "消防车", "/ˈfaɪə trʌk/", "The fire truck has a ladder.", "🚒"],
   ["ambulance", "救护车", "/ˈæmbjələns/", "The ambulance helps sick people.", "🚑"],
   ["taxi", "出租车", "/ˈtæksi/", "We take a taxi to the station.", "🚕"],
+  ["jeep", "吉普车", "/dʒiːp/", "The jeep drives up the hill.", "🚙"],
   ["dump truck", "自卸卡车", "/dʌmp trʌk/", "The dump truck carries sand.", "🚛"],
   ["van", "面包车", "/væn/", "The van is white.", "🚐"],
   ["box truck", "厢式货车", "/bɒks trʌk/", "A box truck carries boxes.", "🚚"],
+  ["tanker truck", "油罐车", "/ˈtæŋkə trʌk/", "The tanker truck is very long.", "🚛"],
+  ["tow truck", "拖车", "/təʊ trʌk/", "The tow truck helps broken cars.", "🚚"],
+  ["crane", "起重机", "/kreɪn/", "The crane lifts heavy things.", "🏗️"],
   ["motorcycle", "摩托车", "/ˈməʊtəsaɪkl/", "He rides a motorcycle.", "🏍️"],
+  ["scooter", "滑板车", "/ˈskuːtə(r)/", "I ride my scooter in the park.", "🛴"],
   ["bicycle", "自行车", "/ˈbaɪsɪkl/", "I ride my bicycle.", "🚲"],
   ["train", "火车", "/treɪn/", "The train is long.", "🚂"],
+  ["bullet train", "高铁", "/ˈbʊlɪt treɪn/", "The bullet train is very fast.", "🚄"],
   ["airplane", "飞机", "/ˈeəpleɪn/", "The airplane flies high.", "✈️"],
+  ["helicopter", "直升机", "/ˈhelɪkɒptə(r)/", "The helicopter flies in the sky.", "🚁"],
   ["rocket", "火箭", "/ˈrɒkɪt/", "The rocket goes to space.", "🚀"],
+  ["boat", "小船", "/bəʊt/", "The boat floats on the lake.", "⛵"],
+  ["yacht", "游艇", "/jɒt/", "The yacht sails on the blue sea.", "🛥️"],
   ["cement mixer", "水泥搅拌车", "/sɪˈment ˈmɪksə(r)/", "The cement mixer is big.", "🏗️"],
   ["tractor", "拖拉机", "/ˈtræktə(r)/", "The tractor works on the farm.", "🚜"],
   ["excavator", "挖掘机", "/ˈekskəveɪtə(r)/", "The excavator digs holes.", "🚧"],
-  ["bullet train", "高铁", "/ˈbʊlɪt treɪn/", "The bullet train is very fast.", "🚄"],
   ["garbage truck", "垃圾车", "/ˈɡɑːbɪdʒ trʌk/", "The garbage truck comes on Monday.", "🚮"],
 ], "transport");
 
-/* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
-definePlaceholderTheme({
+/* 旅行装备词表：复用 images/words/tool/ 下的现成插画 */
+const TRAVEL_GEAR_WORDS = buildThemeWordList([
+  ["suitcase", "行李箱", "/ˈsuːtkeɪs/", "Pack your clothes in the suitcase.", "🧳"],
+  ["map", "地图", "/mæp/", "Look at the map to find the way.", "🗺️"],
+  ["camera", "相机", "/ˈkæmrə/", "Take a photo with the camera.", "📷"],
+  ["hat", "帽子", "/hæt/", "Wear a hat in the sun.", "👒"],
+  ["sunglasses", "太阳镜", "/ˈsʌnɡlɑːsɪz/", "I wear sunglasses at the beach.", "🕶️"],
+], "tool");
+
+const TRAVEL_WORDS = [...TRAVEL_TRANSPORT_WORDS, ...TRAVEL_GEAR_WORDS];
+
+/* 路线坐标：travel-journey-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-travel-map.mjs 同步） */
+const TRAVEL_JOURNEY_NODES = [
+  { x: 14, y: 85 }, /* 1 */
+  { x: 29, y: 87 }, /* 2 */
+  { x: 45, y: 83 }, /* 3 */
+  { x: 61, y: 86 }, /* 4 */
+  { x: 77, y: 82 }, /* 5 BOSS */
+  { x: 85, y: 67 }, /* 6 */
+  { x: 71, y: 60 }, /* 7 */
+  { x: 54, y: 63 }, /* 8 */
+  { x: 38, y: 59 }, /* 9 */
+  { x: 22, y: 61 }, /* 10 BOSS */
+  { x: 15, y: 45 }, /* 11 */
+  { x: 28, y: 37 }, /* 12 */
+  { x: 45, y: 40 }, /* 13 */
+  { x: 62, y: 36 }, /* 14 */
+  { x: 78, y: 39 }, /* 15 BOSS */
+  { x: 85, y: 24 }, /* 16 */
+  { x: 70, y: 17 }, /* 17 */
+  { x: 53, y: 19 }, /* 18 */
+  { x: 36, y: 16 }, /* 19 */
+  { x: 20, y: 18 }, /* 20 总 BOSS */
+];
+
+const TRAVEL_JOURNEY_LEVELS = TRAVEL_JOURNEY_NODES.map((node, i) => ({
+  level: i + 1,
+  x: node.x,
+  y: node.y,
+}));
+
+const TRAVEL_SCENES = [
+  {
+    id: "journey",
+    name: "去旅行交通岛",
+    emoji: "✈️",
+    mapImage: "./images/background/travel-journey-map.webp",
+    mapRatio: "1505/1045",
+    sheetClass: "zoo-route-sheet",
+    mapClass: "zoo",
+    levelCount: TRAVEL_JOURNEY_LEVELS.length,
+    levels: TRAVEL_JOURNEY_LEVELS,
+    words: TRAVEL_WORDS,
+  },
+];
+
+/* 已开放：19 个交通工具词 + 20 关自定义旅行路线图 */
+defineDinoTheme({
   id: "travel",
   name: "去旅行",
   islandName: "去旅行交通岛",
   chip: "交通单词",
   emoji: "✈️",
+  cover: "./images/background/theme-travel.webp",
   wordImgDir: "transport",
+  useWrongBank: true,
   dialog: { q: "Where are we going?", a: "We are going by {word}." },
-  color: "#4A6E8A",
-  accent: "#3A6E8A",
-  tip: "#6B8CA6",
-  plan: "汽车、火车、飞机排好队，闯关地图正在筹备中",
-  mapIntro: "「去旅行」词表已就绪，闯关地图正在筹备中…",
   picHint: "猜猜这是什么交通工具",
   picPrompt: "What is this?",
-  words: TRAVEL_WORDS,
+  scenes: TRAVEL_SCENES,
 });
 
 </script>
@@ -5895,9 +6084,9 @@ definePlaceholderTheme({
 /* ============================================================
    DinoGo · 恐龙英语 — 动物乐园：主题词表、地图与玩法配置
    神奇动物园：50 关，共用一张连续路线图
-   题库共 125 词（仅神奇动物园）：核心动物名词 57 + 动作动词 49 + 身体部位 19
-   每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关先占位待迭代
-   闯关只使用当前场景的 words，与词性词库完全独立
+   题库共 127 词（仅神奇动物园）：核心动物名词 59 + 动作动词 49 + 身体部位 19
+   每 5 关为一阶段：第 1~4 关按「保底基础题 + 互动进阶题」组卷，第 5 关为阶段考核关
+   闯关只使用当前场景的 words，并按 Tier 1/2/3 分阶解锁（L1~15 / L16~35 / L36~50）
    ============================================================ */
 
 /* 路线坐标：animal-zoo-map.webp 上 1~50 号白色圆圈中心（百分比，OpenCV 标定） */
@@ -5956,8 +6145,8 @@ const ANIMAL_ZOO_NODES = [
 
 /* 关卡编号 1~50，按固定顺序连续排列 */
 /* ============================================================
-   动物乐园题库（125 词，仅神奇动物园）
-   1. 核心动物名词 57 个（含 14 个海洋动物）：看图选词 / 听音戳泡泡
+   动物乐园题库（127 词，仅神奇动物园）
+   1. 核心动物名词 59 个（含 16 个海洋/极地动物）：看图选词 / 听音戳泡泡 / 动物喂食
    2. 动作动词 49 个：动作猜猜（中央动态动物 + 纯文字选项）
    3. 身体部位 19 个：身体部位词汇与宿主动物插画
    ============================================================ */
@@ -5966,7 +6155,7 @@ const ANIMAL_ZOO_NODES = [
    - 同一个词可被其他主题（school 等）同时引用；下方 normalize 仍按原逻辑
      派生 assetKey/img/food/dialogueClue 等动物园场景字段 */
 const ANIMAL_ZOO_WORD_REFS = [
-  /* ---------------- 1. 核心动物名词 58 个 ---------------- */
+  /* ---------------- 1. 核心动物名词 59 个 ---------------- */
   "lion", "tiger", "monkey", "panda",
   "bear", "zebra", "giraffe", "elephant",
   "hippo", "crocodile", "kangaroo", "rabbit",
@@ -5978,11 +6167,12 @@ const ANIMAL_ZOO_WORD_REFS = [
   "pig", "chicken", "bird", "owl",
   "eagle", "crow", "baboon",
   "flamingo", "koala", "lizard", "raccoon", "sloth",
-  /* 海洋动物 13 个（turtle 已包含在上方陆地名单，合计 14 种）
+  /* 海洋与极地动物 15 个（turtle 已包含在上方名单，合计 16 种）
      fish 只作为食物词（ANIMAL_FOODS），不再作为动物园名词出题 */
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish",
+  "polar bear", "sea lion", "walrus",
   /* ---------------- 2. 动作动词（actor/motion 为动物园地图动画参数） 49 个 ---------------- */
   { word: "eat", actor: "🐼", motion: "eat" },
   { word: "sleep", actor: "🐱", motion: "sleep" },
@@ -6053,103 +6243,119 @@ const ANIMAL_ZOO_WORDS = resolveWordRefs(ANIMAL_ZOO_WORD_REFS);
    diet    → carnivore(肉食) / herbivore(草食) / omnivore(杂食)
    habitat → land(陆地) / sea(海洋)
    FOOD_CLASS 用于 buildFeedAnimal 的干扰项安全过滤（植物 vs 动物类） */
+/* 食物分类：所有参与喂食题的食物均有手绘 .webp 插画，不再混入 emoji 海洋食物 */
 const ANIMAL_FOOD_CLASS = {
-  /* —— 陆地食物 land —— */
   meat:       { cls: "animal", habitat: "land" },
+  bone:       { cls: "animal", habitat: "land" },
+  fish:       { cls: "animal", habitat: "land" },
+  worm:       { cls: "animal", habitat: "land" },
   bamboo:     { cls: "plant",  habitat: "land" },
   banana:     { cls: "plant",  habitat: "land" },
   carrot:     { cls: "plant",  habitat: "land" },
   grass:      { cls: "plant",  habitat: "land" },
-  nut:        { cls: "plant",  habitat: "land" },
-  bone:       { cls: "animal", habitat: "land" },
-  apple:      { cls: "plant",  habitat: "land" },
-  worm:       { cls: "animal", habitat: "land" },
   leaves:     { cls: "plant",  habitat: "land" },
+  nut:        { cls: "plant",  habitat: "land" },
+  apple:      { cls: "plant",  habitat: "land" },
   corn:       { cls: "plant",  habitat: "land" },
-  milk:       { cls: "animal", habitat: "land" },
-  honey:      { cls: "plant",  habitat: "land" }, /* 蜂蜜由花蜜酿成，草食动物也能吃 */
+  honey:      { cls: "plant",  habitat: "land" },
   watermelon: { cls: "plant",  habitat: "land" },
-  /* —— 海洋食物 sea —— fish 同时是海/海鸟食物，归 sea 以减少跨域干扰 */
-  fish:       { cls: "animal", habitat: "sea"  },
-  seaweed:    { cls: "plant",  habitat: "sea"  },
-  kelp:       { cls: "plant",  habitat: "sea"  }, /* 海带：大型海藻，海鸟/海龟/海獭常吃 */
-  shellfish:  { cls: "animal", habitat: "sea"  },
-  plankton:   { cls: "animal", habitat: "sea"  },
 };
 
-/* 海洋动物集合：喂食题干扰项从海洋食物池挑，避免出现 banana/grass 跨域乱配 */
+/* 海洋/极地动物集合（用于词库属性标记） */
 const MARINE_ANIMALS = new Set([
   "penguin", "shark", "seal", "whale",
   "dolphin", "octopus", "crab", "starfish", "jellyfish",
   "shrimp", "squid", "clownfish", "turtle",
+  "polar bear", "sea lion", "walrus",
 ]);
 
 const ANIMAL_FOODS = {
-  meat:   { id: "meat",   en: "meat",   zh: "肉",     phon: "/miːt/",            emoji: "🥩", img: "images/words/food/meat.webp", ...ANIMAL_FOOD_CLASS.meat },
-  bamboo: { id: "bamboo", en: "bamboo", zh: "竹子",   phon: "/bæmˈbuː/",         emoji: "🎋", img: "images/words/food/bamboo.webp", ...ANIMAL_FOOD_CLASS.bamboo },
-  banana: { id: "banana", en: "banana", zh: "香蕉",   phon: "/bəˈnɑːnə/",        emoji: "🍌", img: "images/words/food/banana.webp", ...ANIMAL_FOOD_CLASS.banana },
-  carrot: { id: "carrot", en: "carrot", zh: "胡萝卜", phon: "/ˈkærət/",          emoji: "🥕", img: "images/words/food/carrot.webp", ...ANIMAL_FOOD_CLASS.carrot },
-  grass:  { id: "grass",  en: "grass",  zh: "青草",   phon: "/ɡrɑːs/",           emoji: "🌿", img: "images/words/food/grass.webp", ...ANIMAL_FOOD_CLASS.grass },
-  fish:   { id: "fish",   en: "fish",   zh: "鱼",     phon: "/fɪʃ/",             emoji: "🐟", img: "images/words/food/fish.webp", ...ANIMAL_FOOD_CLASS.fish },
-  nut:    { id: "nut",    en: "nut",    zh: "坚果",   phon: "/nʌt/",             emoji: "🌰", img: "images/words/food/nut.webp", ...ANIMAL_FOOD_CLASS.nut },
-  bone:   { id: "bone",   en: "bone",   zh: "骨头",   phon: "/bəʊn/",            emoji: "🦴", img: "images/words/food/bone.webp", ...ANIMAL_FOOD_CLASS.bone },
-  apple:  { id: "apple",  en: "apple",  zh: "苹果",   phon: "/ˈæpəl/",           emoji: "🍎", img: "images/words/food/apple.webp", ...ANIMAL_FOOD_CLASS.apple },
-  worm:   { id: "worm",   en: "worm",   zh: "虫子",   phon: "/wɜːm/",            emoji: "🪱", img: "images/words/food/worm.webp", ...ANIMAL_FOOD_CLASS.worm },
-  leaves: { id: "leaves", en: "leaves", zh: "树叶",   phon: "/liːvz/",           emoji: "🍃", img: "images/words/food/leaves.webp", ...ANIMAL_FOOD_CLASS.leaves },
-  corn:   { id: "corn",   en: "corn",   zh: "玉米",   phon: "/kɔːn/",            emoji: "🌽", img: "images/words/food/corn.webp", ...ANIMAL_FOOD_CLASS.corn },
-  milk:   { id: "milk",   en: "milk",   zh: "牛奶",   phon: "/mɪlk/",            emoji: "🥛", img: "images/words/food/milk.webp", ...ANIMAL_FOOD_CLASS.milk },
-  honey:  { id: "honey",  en: "honey",  zh: "蜂蜜",   phon: "/ˈhʌni/",           emoji: "🍯", img: "images/words/food/honey.webp", ...ANIMAL_FOOD_CLASS.honey },
-  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜", phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp", ...ANIMAL_FOOD_CLASS.watermelon },
-  /* 海洋食物：暂无插画，直接用 emoji 呈现 */
-  seaweed: { id: "seaweed", en: "seaweed", zh: "海藻", phon: "/ˈsiːwiːd/", emoji: "🌿", img: "", ...ANIMAL_FOOD_CLASS.seaweed },
-  kelp: { id: "kelp", en: "kelp", zh: "海带", phon: "/kelp/", emoji: "🌊", img: "", ...ANIMAL_FOOD_CLASS.kelp },
-  shellfish: { id: "shellfish", en: "shellfish", zh: "贝类", phon: "/ˈʃelfɪʃ/", emoji: "🐚", img: "", ...ANIMAL_FOOD_CLASS.shellfish },
-  plankton: { id: "plankton", en: "plankton", zh: "浮游生物", phon: "/ˈplæŋktən/", emoji: "🫧", img: "", ...ANIMAL_FOOD_CLASS.plankton },
+  meat:       { id: "meat",       en: "meat",       zh: "肉",     phon: "/miːt/",        emoji: "🥩", img: "images/words/food/meat.webp",       ...ANIMAL_FOOD_CLASS.meat },
+  bone:       { id: "bone",       en: "bone",       zh: "骨头",   phon: "/bəʊn/",        emoji: "🦴", img: "images/words/food/bone.webp",       ...ANIMAL_FOOD_CLASS.bone },
+  fish:       { id: "fish",       en: "fish",       zh: "鱼",     phon: "/fɪʃ/",         emoji: "🐟", img: "images/words/food/fish.webp",       ...ANIMAL_FOOD_CLASS.fish },
+  worm:       { id: "worm",       en: "worm",       zh: "虫子",   phon: "/wɜːm/",        emoji: "🪱", img: "images/words/food/worm.webp",       ...ANIMAL_FOOD_CLASS.worm },
+  bamboo:     { id: "bamboo",     en: "bamboo",     zh: "竹子",   phon: "/bæmˈbuː/",     emoji: "🎋", img: "images/words/food/bamboo.webp",     ...ANIMAL_FOOD_CLASS.bamboo },
+  banana:     { id: "banana",     en: "banana",     zh: "香蕉",   phon: "/bəˈnɑːnə/",    emoji: "🍌", img: "images/words/food/banana.webp",     ...ANIMAL_FOOD_CLASS.banana },
+  carrot:     { id: "carrot",     en: "carrot",     zh: "胡萝卜", phon: "/ˈkærət/",      emoji: "🥕", img: "images/words/food/carrot.webp",     ...ANIMAL_FOOD_CLASS.carrot },
+  grass:      { id: "grass",      en: "grass",      zh: "青草",   phon: "/ɡrɑːs/",       emoji: "🌿", img: "images/words/food/grass.webp",      ...ANIMAL_FOOD_CLASS.grass },
+  leaves:     { id: "leaves",     en: "leaves",     zh: "树叶",   phon: "/liːvz/",       emoji: "🍃", img: "images/words/food/leaves.webp",     ...ANIMAL_FOOD_CLASS.leaves },
+  nut:        { id: "nut",        en: "nut",        zh: "坚果",   phon: "/nʌt/",         emoji: "🌰", img: "images/words/food/nut.webp",        ...ANIMAL_FOOD_CLASS.nut },
+  apple:      { id: "apple",      en: "apple",      zh: "苹果",   phon: "/ˈæpəl/",       emoji: "🍎", img: "images/words/food/apple.webp",      ...ANIMAL_FOOD_CLASS.apple },
+  corn:       { id: "corn",       en: "corn",       zh: "玉米",   phon: "/kɔːn/",        emoji: "🌽", img: "images/words/food/corn.webp",       ...ANIMAL_FOOD_CLASS.corn },
+  honey:      { id: "honey",      en: "honey",      zh: "蜂蜜",   phon: "/ˈhʌni/",       emoji: "🍯", img: "images/words/food/honey.webp",      ...ANIMAL_FOOD_CLASS.honey },
+  watermelon: { id: "watermelon", en: "watermelon", zh: "西瓜",   phon: "/ˈwɔːtəmelən/", emoji: "🍉", img: "images/words/food/watermelon.webp", ...ANIMAL_FOOD_CLASS.watermelon },
 };
 
-/* 57 种动物各自爱吃的食物 */
+/* 仅针对 29 种常见、孩子一眼能答出的动物出喂食题；
+   冷门或食性容易引起歧义的动物（如狒狒/树懒/水母/海星等）不配置 food，自动不进喂食题 */
 const ANIMAL_FEED_MAP = {
-  lion: "meat", tiger: "meat", wolf: "meat", fox: "meat", crocodile: "meat",
-  cheetah: "meat", eagle: "meat", owl: "meat", snake: "meat",
-  zebra: "grass", deer: "grass", cow: "grass", sheep: "grass", goat: "grass", kangaroo: "grass", rhino: "grass", camel: "grass",
-  giraffe: "leaves", elephant: "leaves", hippo: "watermelon", koala: "leaves", sloth: "leaves",
-  chicken: "corn", bird: "worm", peacock: "worm", crow: "worm", lizard: "worm",
-  monkey: "banana", gorilla: "banana", baboon: "banana",
-  rabbit: "carrot", horse: "carrot", donkey: "carrot",
-  bear: "honey", cat: "milk", duck: "fish",
-  squirrel: "nut", parrot: "nut",
-  pig: "apple",
+  /* —— 常见草食 / 果蔬类（17 种） —— */
   panda: "bamboo",
+  monkey: "banana",
+  rabbit: "carrot",
+  horse: "carrot",
+  cow: "grass",
+  sheep: "grass",
+  goat: "grass",
+  zebra: "grass",
+  giraffe: "leaves",
+  elephant: "leaves",
+  koala: "leaves",
+  deer: "leaves",
+  hippo: "watermelon",
+  squirrel: "nut",
+  pig: "apple",
+  chicken: "corn",
+  bear: "honey",
+  /* —— 常见肉食 / 鱼虫类（12 种） —— */
+  lion: "meat",
+  tiger: "meat",
+  wolf: "meat",
+  crocodile: "meat",
   dog: "bone",
-  flamingo: "fish", raccoon: "fish",
-  /* 海洋动物：按常识配置 + 栖息地约束——
-     海龟吃草/海藻、水母/小虾滤食浮游生物、鲸滤食浮游生物、
-     鲨鱼/海豹/海豚吃小鱼、章鱼/海星吃贝类、螃蟹吃鱼和藻类 */
-  turtle: "seaweed",
-  penguin: "fish", shark: "fish", seal: "fish",
-  whale: "plankton", dolphin: "fish", octopus: "shellfish", crab: "fish",
-  starfish: "shellfish", jellyfish: "plankton", shrimp: "plankton", squid: "fish",
-  clownfish: "plankton", otter: "fish",
+  cat: "fish",
+  bird: "worm",
+  penguin: "fish",
+  shark: "fish",
+  dolphin: "fish",
+  seal: "fish",
+  "polar bear": "fish",
 };
 
-/* 食性分类：喂食题只从“明显不吃”的食物类别里取干扰项，
-   避免 2 选项时把常识上也能吃的食物判成错误答案 */
+/* 食性分类：喂食题只从“明显不吃”的食物类别里取干扰项
+   - carnivore → 干扰项取 plant 类（竹子/香蕉/胡萝卜/草/树叶等）
+   - herbivore → 干扰项取 animal 类（肉/骨头/鱼，自动排除 worm） */
 const ANIMAL_DIET = {
-  lion: "carnivore", tiger: "carnivore", wolf: "carnivore", fox: "carnivore",
-  cheetah: "carnivore", eagle: "carnivore", owl: "carnivore", snake: "carnivore",
-  crocodile: "carnivore", cat: "carnivore", dog: "carnivore",
-  flamingo: "carnivore", lizard: "carnivore",
-  /* 杂食动物在启蒙模式下不出喂食题，因为可吃食物太杂，容易误判 */
-  bear: "omnivore", pig: "omnivore", chicken: "omnivore", duck: "omnivore", crow: "omnivore",
-  raccoon: "omnivore",
-  /* —— 海洋动物食性 ——
-     滤食型（鲸/水母/小虾/小丑鱼）和海龟归 herbivore → 干扰项从 sea animal 池挑
-     顶级捕食者（鲨/海豹/企鹅/海豚/章鱼/海星/螃蟹/乌贼/海獭）归 carnivore → 干扰项从 sea plant 池挑 */
-  whale: "herbivore", jellyfish: "herbivore", shrimp: "herbivore", clownfish: "herbivore",
-  turtle: "herbivore",
-  shark: "carnivore", seal: "carnivore", penguin: "carnivore", dolphin: "carnivore",
-  octopus: "carnivore", crab: "carnivore", starfish: "carnivore", squid: "carnivore", otter: "carnivore",
+  lion: "carnivore", tiger: "carnivore", wolf: "carnivore", crocodile: "carnivore",
+  dog: "carnivore", cat: "carnivore", bird: "carnivore",
+  penguin: "carnivore", shark: "carnivore", dolphin: "carnivore",
+  seal: "carnivore", "polar bear": "carnivore",
+  /* 熊既爱蜂蜜也吃鱼，归 omnivore：启蒙 2 选项不出喂食题，避免误判 */
+  bear: "omnivore",
 };
+
+/* 难度分层：L1~15 高频启蒙词（Tier 1）→ L16~35 进阶词（Tier 2）→ L36~50 全词池（Tier 3） */
+const ANIMAL_TIER1_WORDS = new Set([
+  /* 常见陆地动物 */
+  "cat", "dog", "panda", "lion", "tiger", "monkey", "rabbit", "bear",
+  "elephant", "giraffe", "zebra", "cow", "pig", "sheep", "duck", "chicken",
+  "bird", "horse", "turtle", "deer", "goat", "fox",
+  /* 高频直观动作 */
+  "eat", "sleep", "jump", "run", "swim", "walk", "drink", "fly",
+  "sing", "dance", "sit", "stand", "climb", "roar", "bark", "cry",
+  "smile", "laugh", "wave", "hug", "play",
+]);
+const ANIMAL_TIER2_WORDS = new Set([
+  /* 进阶陆地与热门海洋动物 */
+  "hippo", "crocodile", "kangaroo", "wolf", "snake", "parrot", "peacock",
+  "donkey", "camel", "squirrel", "gorilla", "rhino", "cheetah", "owl",
+  "eagle", "crow", "koala", "lizard", "raccoon", "sloth", "flamingo",
+  "penguin", "shark", "whale", "dolphin", "octopus", "crab", "starfish",
+  "seal", "polar bear", "sea lion",
+  /* 中阶动作 */
+  "bite", "lick", "dig", "splash", "chase", "catch", "hide", "nap",
+  "sniff", "wag", "pull", "push", "carry", "hold", "touch", "open",
+]);
 
 /* 19 个身体部位 → 宿主动物（用于词条插画与素材映射） */
 const PART_OWNER_WORD_MAP = {
@@ -6160,26 +6366,36 @@ const PART_OWNER_WORD_MAP = {
   neck: "giraffe", tooth: "crocodile", tongue: "snake", leg: "zebra", belly: "cat",
 };
 
+/* 新补全的透明底 PNG 素材集合：直接指向 .png，避免先请求 .webp 404 再回退 */
+const ANIMAL_PNG_WORDS = new Set(["shrimp", "squid"]);
+const ACTION_PNG_WORDS = new Set(["jump", "roar", "splash", "chase", "walk", "stand", "open"]);
+
 ANIMAL_ZOO_WORDS.forEach((w) => {
+  w.tier = ANIMAL_TIER1_WORDS.has(w.word) ? 1 : (ANIMAL_TIER2_WORDS.has(w.word) ? 2 : 3);
   if (w.category === "verb") {
     /* 动作题统一用 animal-{word} 素材键，便于后续主题动作词汇区分 */
     if (!w.assetKey || w.assetKey.indexOf("animal-") !== 0) w.assetKey = `animal-${w.word}`;
-    w.img = w.img || `images/words/action/${w.assetKey}.webp`;
+    const ext = ACTION_PNG_WORDS.has(w.word) ? "png" : "webp";
+    w.img = w.img || `images/words/action/${w.assetKey}.${ext}`;
   } else if (w.category === "part") {
     w.ownerWord = PART_OWNER_WORD_MAP[w.word] || "lion";
     w.assetKey = w.assetKey || w.ownerWord;
     w.img = w.img || `images/words/animal/${w.ownerWord}.webp`;
   } else {
     w.assetKey = w.assetKey || w.word;
-    w.img = w.img || `images/words/animal/${w.word}.webp`;
-    const foodId = ANIMAL_FEED_MAP[w.word] || "apple";
-    w.foodId = foodId;
-    w.food = ANIMAL_FOODS[foodId];
-    w.eats = foodId;
-    w.diet = ANIMAL_DIET[w.word] || "herbivore";
+    const ext = ANIMAL_PNG_WORDS.has(w.word) ? "png" : "webp";
+    w.img = w.img || `images/words/animal/${w.word.replace(/ /g, "-")}.${ext}`;
+    /* 仅常见动物挂载食物，冷门动物不配置 food → 自动不参与喂食题和“爱吃什么”情景对话 */
+    const foodId = ANIMAL_FEED_MAP[w.word] || "";
+    if (foodId && ANIMAL_FOODS[foodId]) {
+      w.foodId = foodId;
+      w.food = ANIMAL_FOODS[foodId];
+      w.eats = foodId;
+      w.diet = ANIMAL_DIET[w.word] || "herbivore";
+    }
     w.habitat = MARINE_ANIMALS.has(w.word) ? "sea" : "land";
     w.dialogueClue = w.example
-      ? w.example.replace(new RegExp(`\\b${w.word}\\b`, "i"), "___")
+      ? w.example.replace(new RegExp(`\\b${w.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"), "___")
       : "";
   }
 });
@@ -6258,27 +6474,74 @@ const SCHOOL_WORDS = buildThemeWordList([
   ["flask", "烧瓶", "/flɑːsk/", "We use a flask in science class.", "🧪"],
 ], "tool");
 
-/* 未开放：词表先接入每日随机挑战，闯关入口保持「敬请期待」 */
-definePlaceholderTheme({
+/* 路线坐标：school-campus-map.webp 上 1~20 号圆形石阶中心（百分比，与 tools/generate-school-map.mjs 同步） */
+const SCHOOL_CAMPUS_NODES = [
+  { x: 14, y: 86 }, /* 1 */
+  { x: 28, y: 84 }, /* 2 */
+  { x: 43, y: 87 }, /* 3 */
+  { x: 59, y: 84 }, /* 4 */
+  { x: 75, y: 81 }, /* 5 BOSS */
+  { x: 84, y: 68 }, /* 6 */
+  { x: 72, y: 59 }, /* 7 */
+  { x: 56, y: 62 }, /* 8 */
+  { x: 40, y: 58 }, /* 9 */
+  { x: 24, y: 60 }, /* 10 BOSS */
+  { x: 15, y: 45 }, /* 11 */
+  { x: 27, y: 36 }, /* 12 */
+  { x: 44, y: 39 }, /* 13 */
+  { x: 61, y: 35 }, /* 14 */
+  { x: 77, y: 38 }, /* 15 BOSS */
+  { x: 86, y: 24 }, /* 16 */
+  { x: 72, y: 17 }, /* 17 */
+  { x: 55, y: 19 }, /* 18 */
+  { x: 38, y: 16 }, /* 19 */
+  { x: 22, y: 18 }, /* 20 总 BOSS */
+];
+
+const SCHOOL_CAMPUS_LEVELS = SCHOOL_CAMPUS_NODES.map((node, i) => ({
+  level: i + 1,
+  x: node.x,
+  y: node.y,
+}));
+
+const SCHOOL_SCENES = [
+  {
+    id: "campus",
+    name: "上学文具岛",
+    emoji: "🎒",
+    mapImage: "./images/background/school-campus-map.webp",
+    mapRatio: "1505/1045",
+    sheetClass: "zoo-route-sheet",
+    mapClass: "zoo",
+    levelCount: SCHOOL_CAMPUS_LEVELS.length,
+    levels: SCHOOL_CAMPUS_LEVELS,
+    words: SCHOOL_WORDS,
+  },
+];
+
+/* 已开放：26 个文具/教室词 + 20 关自定义校园路线图 */
+defineDinoTheme({
   id: "school",
   name: "上学了",
   islandName: "上学文具岛",
   chip: "文具单词",
   emoji: "🎒",
+  cover: "./images/background/theme-school.webp",
   wordImgDir: "tool",
+  useWrongBank: true,
   dialog: { q: "What's this?", a: "It's a {word}." },
-  color: "#8C6B3D",
-  accent: "#5C411D",
-  tip: "#A08560",
-  plan: "铅笔、尺子、书包装进书包，闯关地图正在筹备中",
-  mapIntro: "「上学了」词表已就绪，闯关地图正在筹备中…",
   picHint: "猜猜这是什么文具",
   picPrompt: "What is this?",
-  words: SCHOOL_WORDS,
+  scenes: SCHOOL_SCENES,
 });
 
 </script>
   <!-- 声音：交互音效 / 单词朗读 / 关卡提示音 -->
+  <script>
+/* 自动生成：美音童声 Ana（en-US-AnaNeural）可用本地音频索引，由 tools/generate-ana-voice.mjs 产出 */
+window.ANA_VOICE_FILES = new Set(["active","actor","actress","air","airplane","alarm-clock","ambulance","angry","ant","apple","april","arm","artist","august","aunt","autumn","baboon","baby","backpack","bag","ball","balloon","bamboo","banana","bank","bark","bathroom","beak","bear","beautiful","become","bed","bedroom","beef","bell","belly","bicycle","big","bike","bird","bite","black","blackboard","blue","blueberry","board","boat","bone","book","bookstore","boots","bored","box","box-truck","boy","bread","breakfast","brother","brown","building","bullet-train","bus","busy","buy","cabbage","cake","camel","camera","cap","car","carrot","carry","cat","catch","cement-mixer","chair","chase","cheap","cheetah","cherry","chicken","chopsticks","cinema","city","classmate","classroom","claw","clean","cleaner","climb","close","cloud","clown","clownfish","coat","coconut","coffee","cola","cold","colorful","computer","cook","cool","corn","country","cousin","cow","crab","crane","crayon","crocodile","crow","cry","cupcake","cute","dad","dance","december","deer","desk","dig","dinner","dirty","do","doctor","dog","doll","dolphin","donkey","donut","door","dress","drink","drive","driver","duck","dump-truck","dumpling","e-mail","eagle","ear","east","easy","eat","egg","eggplant","eight","eighty","elephant","eleven","eleventh","eraser","excavator","excited","expensive","eye","face","factory","fall","fan","farm","farmer","fast","fat","father","favorite","feather","february","feed","feel","fever","fifteen","fifth","fifty","fight","find","fine","finger","fire-truck","first","fish","five","flamingo","flask","floor","flower","fly","fold","foot","football","forest","fork","forty","four","fourteen","fourth","fox","fresh","friday","fridge","friend","full","funny","fur","garbage-truck","garden","gift","giraffe","girl","give","glasses","globe","gloves","glue","go","goat","good","goose","gorilla","grandfather","grandma","grandmother","grandpa","grape","grass","green","guess","gym","hair","hamburger","hand","happy","hat","have","head","headache","healthy","heavy","helicopter","hello-let-s-learn-english-together","help","helpful","hen","hide","high","hippo","hold","hole","home","honey","horn","horse","hospital","hot","house","how","hug","hungry","hunt","hurt","ice-cream","jacket","jam","january","jeans","jeep","jellyfish","juice","juicy","july","jump","june","kangaroo","key","kick","kid","kind","kitchen","kite","kiwi","knife","koala","lake","lamb","lamp","laugh","leaf","learn","leave","leaves","leg","lemon","library","lick","light","like","lion","listen","little","live","lizard","lock","long","look","love","lovely","lunch","make","man","mango","map","march","marker","may","meat","medicine","meet","melon","menu","milk","mirror","mom","monday","money","monkey","mother","motorcycle","mountain","mouse","mouth","nap","neck","nest","new","newspaper","nice","nine","ninety","ninth","noisy","noodles","north","nose","notebook","notepad","november","nurse","nut","october","octopus","old","one","onion","open","orange","otter","owl","paint","paint-palette","panda","pants","parents","parrot","pass","path","paw","peach","peacock","pear","pen","pencil","pencil-case","penguin","phone","photo","picture","pig","pineapple","pink","pizza","plane","plant","plate","play","playground","polar-bear","police-car","policeman","pork","postcard","pot","potato","present","pretty","proud","pull","pumpkin","purple","push","put","queen","quiet","rabbit","raccoon","rain","rainbow","raincoat","read","red","rhino","rice","ride","right","river","road","roar","robot","rocket","room","rose","ruler","run","sad","salad","salty","sandals","sandwich","saturday","scared","scarf","school","school-bus","schoolbag","scissors","scooter","sea-lion","seal","second","see","seed","send","september","set","seven","seventh","seventy","share","shark","sheep","shelf","shine","ship","shirt","shoes","short","shorts","show","shrimp","sing","singer","sister","sit","six","sixth","sixty","skate","skirt","sky","sleep","sloth","slow","small","smart","smell","smile","snake","sniff","socks","sofa","son","sore","soup","sour","south","splash","spoon","spring","squid","squirrel","stand","starfish","stop","storybook","strawberry","stream","stretch","strict","strong","student","study","subway","suitcase","summer","sun","sunday","sunglasses","supermarket","sweep","sweet","swim","t-shirt","table","tail","take","tall","tanker-truck","taste","taxi","tea","teacher","tell","ten","tenth","textbook","thank","thin","think","third","thirteen","thirty","three","thursday","tie","tiger","tired","tomato","tongue","tooth","toothache","toothbrush","touch","tow-truck","toy","tractor","train","tree","truck","trunk","tuesday","turkey","turtle","twelve","twenty","two","umbrella","uncle","use","van","vegetable","village","violin","visitor","wag","wait","walk","wall","walrus","warm","wash","washroom","watch","water","water-bottle","watercolor-set","watermelon","wave","wear","weather","wednesday","weekend","welcome","west","whale","what-does-this-animal-like-to-eat","what-is-the-animal-doing","what-is-this","what-is-this-animal","when","where","white","why","wind","window","wing","winter","wolf","woman","work","worm","write","writer","yacht","yellow","young","zebra"]);
+
+</script>
   <script>
 /* DinoGo · 交互音效、单词朗读与关卡提示音（Web Audio 实时合成，无需音频素材） */
 
@@ -6323,6 +6586,8 @@ function sfx(name) {
   try {
     ensureAudio();
     if (name === "tap") tone(520, 0.05, "sine", 0.025);
+    /* 新题入场轻提示音：替代非听力题的自动长句朗读，柔和短促不打断作答 */
+    else if (name === "question") { tone(587.33, 0.08, "sine", 0.032); tone(783.99, 0.11, "sine", 0.026, 0.06); }
     else if (name === "correct") { tone(660, 0.12, "sine", 0.05); tone(880, 0.16, "sine", 0.05, 0.1); }
     else if (name === "excellent") {
       [659, 784, 988, 1318].forEach((f, i) => tone(f, 0.16, "triangle", 0.05, i * 0.08));
@@ -6387,15 +6652,33 @@ function sfx(name) {
 }
 
 /* 英文单词 / 句子朗读；传入数组时按顺序连续朗读
-   读音风格由设置切换：kids 童趣（更慢更亮，优先儿童/活泼女声音色）/ standard 标准 */
+   读音风格由设置切换：
+   - kids（默认）：美音童声 Ana（预生成神经网络 MP3，未命中词条自动回退系统朗读）
+   - standard：系统标准朗读（speechSynthesis） */
 let speakToken = 0;
+let activeAudio = null;
+
+function voiceSlug(text) {
+  return String(text || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function anaVoiceUrl(text) {
+  const files = window.ANA_VOICE_FILES;
+  if (!files || typeof files.has !== "function") return "";
+  const slug = voiceSlug(text);
+  return slug && files.has(slug) ? `data/sounds/voice/ana/${slug}.mp3` : "";
+}
 
 /* 触发音色列表异步加载（Chrome 首次 getVoices 为空，voiceschanged 后可用） */
 if ("speechSynthesis" in window) {
   try { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = () => {}; } catch (e) { /* ignore */ }
 }
 
-/* 童趣朗读偏好的音色：Ana（Win11 真儿童音色）→ 活泼/柔和女声 → Google 女声 */
+/* 童趣朗读回退音色：Ana（Win11 真儿童音色）→ 活泼/柔和女声 → Google 女声 */
 const KID_VOICE_HINTS = [
   "ana", "aria", "zira", "michelle", "samantha", "karen", "moira", "tessa",
   "google us english", "google uk english female", "female",
@@ -6417,43 +6700,91 @@ function pickVoice() {
   } catch (e) { return null; }
 }
 
+function stopActiveAudio() {
+  if (!activeAudio) return;
+  try {
+    activeAudio.onended = null;
+    activeAudio.onerror = null;
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+  } catch (e) { /* ignore */ }
+  activeAudio = null;
+}
+
 /* 立即停止当前朗读（切换读音风格、翻页、弹窗等场景调用） */
 function stopSpeak() {
   try {
     speakToken++;
+    stopActiveAudio();
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   } catch (e) { /* ignore */ }
 }
 
 function speak(text) {
   try {
-    if (!("speechSynthesis" in window)) {
-      if (typeof toast === "function") toast("当前浏览器不支持发音");
-      return;
-    }
-    const synth = window.speechSynthesis;
     const lines = (Array.isArray(text) ? text : [text])
       .map((t) => String(t == null ? "" : t).trim())
       .filter(Boolean);
     if (!lines.length) return;
     const token = ++speakToken;
     const kids = state.voice !== "standard";
-    const voice = pickVoice();
-    const sayFrom = (i) => {
-      if (token !== speakToken || i >= lines.length) return;
-      const u = new SpeechSynthesisUtterance(lines[i]);
+    const hasSynth = "speechSynthesis" in window;
+    const synth = hasSynth ? window.speechSynthesis : null;
+    const voice = hasSynth ? pickVoice() : null;
+
+    stopActiveAudio();
+    const hadSynth = Boolean(synth && (synth.speaking || synth.pending));
+    if (hadSynth) synth.cancel();
+
+    const speakWithSynth = (line, next) => {
+      if (token !== speakToken) return;
+      if (!synth) {
+        if (typeof toast === "function") toast("当前浏览器不支持发音");
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
-      /* 童趣：语速更慢、音调更高，听起来像卡通姐姐；标准：教材朗读节奏 */
-      u.rate = kids ? 0.72 : 0.82;
-      u.pitch = kids ? 1.32 : 1.08;
+      u.rate = kids ? 0.82 : 0.86;
+      u.pitch = kids ? 1.15 : 1.04;
       if (voice) u.voice = voice;
-      /* 一句读完自动接下一句；被新的朗读打断后不再继续 */
-      u.onend = () => sayFrom(i + 1);
+      u.onend = () => next();
+      u.onerror = () => next();
       synth.speak(u);
     };
-    /* 先停掉上一段朗读；连续点击时立即 speak 会被部分浏览器丢弃，稍作延迟 */
-    if (synth.speaking || synth.pending) {
-      synth.cancel();
+
+    const sayFrom = (i) => {
+      if (token !== speakToken || i >= lines.length) return;
+      const line = lines[i];
+      const next = () => sayFrom(i + 1);
+      const url = kids ? anaVoiceUrl(line) : "";
+      if (url) {
+        const audio = new Audio(url);
+        audio.preload = "auto";
+        activeAudio = audio;
+        let settled = false;
+        const done = () => {
+          if (settled) return;
+          settled = true;
+          if (activeAudio === audio) activeAudio = null;
+          next();
+        };
+        const fallback = () => {
+          if (settled) return;
+          settled = true;
+          if (activeAudio === audio) activeAudio = null;
+          if (token === speakToken) speakWithSynth(line, next);
+        };
+        audio.onended = done;
+        audio.onerror = fallback;
+        const p = audio.play();
+        if (p && typeof p.catch === "function") p.catch(fallback);
+        return;
+      }
+      speakWithSynth(line, next);
+    };
+
+    /* 刚 cancel 完系统朗读时稍作延迟，避免部分浏览器丢弃紧随其后的 speak */
+    if (hadSynth && !kids) {
       setTimeout(() => sayFrom(0), 60);
     } else {
       sayFrom(0);
@@ -7601,8 +7932,8 @@ function openSettings() {
         </div>
         <div class="setting-row">
           <div class="s-ic">${I.volume(18)}</div>
-          <div class="s-txt"><b>英文读音</b><span>${state.voice === "standard" ? "标准朗读 · 教材发音" : "童趣朗读 · 更慢更亮，像卡通姐姐"}</span></div>
-          <button class="switch ${state.voice !== "standard" ? "on" : ""}" data-action="toggle-voice" aria-label="读音风格切换"></button>
+          <div class="s-txt"><b>美音童声 Ana</b><span>${state.voice === "standard" ? "已关闭 · 当前为标准系统朗读" : "已开启 · 活泼自然的美音小女孩童声"}</span></div>
+          <button class="switch ${state.voice !== "standard" ? "on" : ""}" data-action="toggle-voice" aria-label="美音童声开关"></button>
         </div>
         <div class="setting-row" data-action="install-guide" role="button">
           <div class="s-ic">${I.share(18)}</div>
@@ -7798,7 +8129,8 @@ const ACTIONS = {
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读 */
-    stopSpeak();
+    if (typeof cancelTaskPrompt === "function") cancelTaskPrompt();
+    else stopSpeak();
     settleLock = false;
     quiz = null;
     const prevTheme = state.theme;
@@ -7932,7 +8264,7 @@ const ACTIONS = {
     stopSpeak();
     speak("Hello! Let's learn English together!");
     openSettings();
-    toast(state.voice === "kids" ? "已切换童趣朗读" : "已切换标准朗读");
+    toast(state.voice === "kids" ? "已开启美音童声 Ana" : "已切换标准系统朗读");
   },
   "install-guide"() { openInstallGuide(); },
   "reset-confirm"() { openResetConfirm(); },
@@ -7985,6 +8317,37 @@ window.addEventListener("popstate", (e) => {
 });
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());
+/* iPad / iOS Safari 防边缘上下拉动整页（橡皮筋回弹）：
+   仅放行内部确实可滚动容器在边界内的正常滑动，其余区域一律拦截默认滚动 */
+let _touchStartY = 0;
+let _touchScroller = null;
+function findVerticalScroller(node) {
+  let el = node && node.nodeType === 1 ? node : (node && node.parentElement);
+  while (el && el !== document.body && el !== document.documentElement) {
+    const style = window.getComputedStyle(el);
+    if ((style.overflowY === "auto" || style.overflowY === "scroll") && el.scrollHeight > el.clientHeight + 1) {
+      return el;
+    }
+    el = el.parentElement;
+  }
+  return null;
+}
+document.addEventListener("touchstart", (e) => {
+  if (e.touches.length !== 1) { _touchScroller = null; return; }
+  _touchStartY = e.touches[0].clientY;
+  _touchScroller = findVerticalScroller(e.target);
+}, { passive: true });
+document.addEventListener("touchmove", (e) => {
+  if (e.touches.length !== 1) return;
+  if (!_touchScroller) {
+    if (e.cancelable) e.preventDefault();
+    return;
+  }
+  const dy = e.touches[0].clientY - _touchStartY;
+  const atTop = _touchScroller.scrollTop <= 0 && dy > 0;
+  const atBottom = _touchScroller.scrollTop + _touchScroller.clientHeight >= _touchScroller.scrollHeight - 1 && dy < 0;
+  if ((atTop || atBottom) && e.cancelable) e.preventDefault();
+}, { passive: false });
 /* 兜底：阻止任何图片被原生拖拽（长按图片拖出框） */
 document.addEventListener("dragstart", (e) => {
   const t = e.target;
@@ -8317,19 +8680,21 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     const s = _state();
     return s.spinDay === dateKey() ? Math.max(0, Number(s.spinCount) || 0) : 0;
   }
-  /* 统一奖励池：weight 越大越常出现，买玩具仅 5%（低概率大奖）
-     配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，贴合全站视觉 */
+  /* 统一奖励池（12 种 · 面向 3-6 岁小朋友）：weight 总和 100，日常亲子陪伴与小奖励为主，小玩具/动物园/冰淇淋为低概率大奖
+     配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，相邻扇区冷暖交替 */
   const REWARD_POOL = [
-    { id: "cartoon",  label: "看动画片15分", short: "动画15分", color: "#FBEBC8", ink: "#6B4E1E", weight: 20, icon: "📺" },
-    { id: "story",    label: "多讲1个故事",  short: "讲故事",   color: "#CFE9C8", ink: "#2F5B3A", weight: 20, icon: "📚" },
-    { id: "sticker",  label: "恐龙贴纸1张",  short: "贴纸1张",  color: "#E7D9F3", ink: "#51406E", weight: 15, icon: "🌈" },
-    { id: "snack",    label: "选1个小零食",  short: "小零食",   color: "#FAD9C2", ink: "#7A4526", weight: 10, icon: "🍪" },
-    { id: "game",     label: "一起玩20分钟", short: "玩游戏",   color: "#D4E4F2", ink: "#31536E", weight: 8,  icon: "🎲" },
-    { id: "park",     label: "去公园玩耍",   short: "去公园",   color: "#CFE9DE", ink: "#2A5747", weight: 8,  icon: "🌳" },
-    { id: "book",     label: "挑一本新绘本", short: "新绘本",   color: "#F7EBC0", ink: "#6C5A20", weight: 5,  icon: "📖" },
-    { id: "zoo",      label: "周末去动物园", short: "动物园",   color: "#DFEAC8", ink: "#46603A", weight: 5,  icon: "🦁" },
-    { id: "toy",      label: "买个小玩具",   short: "小玩具",   color: "#F5CFC7", ink: "#7A3A31", weight: 5,  icon: "🧸" },
-    { id: "icecream", label: "全家吃冰淇淋", short: "冰淇淋",   color: "#F8DDE4", ink: "#7A4052", weight: 4,  icon: "🍦" },
+    { id: "story",    label: "睡前多讲1个故事", short: "讲故事",   color: "#CFE9C8", ink: "#2F5B3A", weight: 14, icon: "📚" },
+    { id: "cartoon",  label: "看动画片10分钟",  short: "动画10分", color: "#FBEBC8", ink: "#6B4E1E", weight: 12, icon: "📺" },
+    { id: "sticker",  label: "恐龙小贴纸1张",   short: "小贴纸",   color: "#E7D9F3", ink: "#51406E", weight: 13, icon: "🌈" },
+    { id: "snack",    label: "挑1个小零食",     short: "小零食",   color: "#FAD9C2", ink: "#7A4526", weight: 8,  icon: "🍪" },
+    { id: "game",     label: "一起玩积木20分",  short: "玩积木",   color: "#D4E4F2", ink: "#31536E", weight: 9,  icon: "🧩" },
+    { id: "hug",      label: "骑大马举高高",    short: "骑大马",   color: "#F8DDE4", ink: "#7A4052", weight: 11, icon: "🐎" },
+    { id: "park",     label: "去公园玩滑滑梯",  short: "去公园",   color: "#CFE9DE", ink: "#2A5747", weight: 7,  icon: "🌳" },
+    { id: "craft",    label: "一起画画做手工",  short: "画画手工", color: "#F7EBC0", ink: "#6C5A20", weight: 10, icon: "🎨" },
+    { id: "toy",      label: "买1个小玩具",     short: "小玩具",   color: "#F5CFC7", ink: "#7A3A31", weight: 3,  icon: "🧸" },
+    { id: "zoo",      label: "周末去动物园",    short: "动物园",   color: "#DFEAC8", ink: "#46603A", weight: 4,  icon: "🦁" },
+    { id: "book",     label: "挑1本新绘本",     short: "新绘本",   color: "#DCE0F5", ink: "#3B4473", weight: 5,  icon: "📖" },
+    { id: "icecream", label: "吃1个小冰淇淋",   short: "冰淇淋",   color: "#FBE2CE", ink: "#7A4B2A", weight: 4,  icon: "🍦" },
   ];
   const PRIZE_ICON = {};
   REWARD_POOL.forEach((p) => { PRIZE_ICON[p.id] = p.icon; });
@@ -8345,7 +8710,7 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
     return 0;
   }
 
-  /* 构建并缓存 10 扇区 SVG 盘面（0 号扇区正对顶部指针） */
+  /* 构建并缓存 12 扇区 SVG 盘面（0 号扇区正对顶部指针） */
   let _wheelSvgCache = "";
   function buildWheelSVG() {
     if (_wheelSvgCache) return _wheelSvgCache;
@@ -8358,10 +8723,10 @@ if ("serviceWorker" in navigator && !window.__DINOGO_SINGLE__ && /^https?:$/.tes
       const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
       return `<g>
         <path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z"
-          fill="${p.color}" stroke="#5C411D" stroke-width="2.6" stroke-linejoin="round" stroke-opacity=".55"/>
+          fill="${p.color}" stroke="#5C411D" stroke-width="2.4" stroke-linejoin="round" stroke-opacity=".55"/>
         <g transform="translate(${cx},${cy}) rotate(${i * sliceDeg})">
-          <text x="0" y="-146" text-anchor="middle" fill="${p.ink}" font-size="14" font-weight="800">${p.short}</text>
-          <text x="0" y="-114" text-anchor="middle" font-size="24">${p.icon}</text>
+          <text x="0" y="-150" text-anchor="middle" fill="${p.ink}" font-size="12.5" font-weight="800">${p.short}</text>
+          <text x="0" y="-116" text-anchor="middle" font-size="22">${p.icon}</text>
         </g>
       </g>`;
     }).join("");
@@ -9108,6 +9473,16 @@ const UNKNOWN_ART = (word) => emojiArt(wordGlyph(word));
 let artMap = null;
 /* 题型答对延时结算锁：防止特效播放期间重复点击/重复计分 */
 let settleLock = false;
+/* 新题语音/提示音延时句柄：选答案或切题时可精准取消，避免残留播报 */
+let promptTimer = null;
+
+function cancelTaskPrompt() {
+  if (promptTimer) {
+    clearTimeout(promptTimer);
+    promptTimer = null;
+  }
+  if (typeof stopSpeak === "function") stopSpeak();
+}
 
 /* 当前主题（或场景）的「单词 → 插图」索引，避免每个选项都线性查找 */
 function artOf(word) {
@@ -9179,12 +9554,13 @@ function startQuiz(level, opts = {}) {
     toast("先完成前面的关卡吧");
     return;
   }
+  cancelTaskPrompt();
   quiz = createQuiz({ level: lvl, order: DynamicEngine.buildTasks(lvl, { replay }) });
   lastResult = null;
   levelCue(currentTheme().id);
   go("quiz");
-  /* 第 1 题等开场提示音播完再开口，避免人声与旋律重叠 */
-  speakTask(920);
+  /* 第 1 题已有开场旋律：听力题等旋律播完再读词，非听力题不叠播入场提示音 */
+  speakTask(780, { playCue: false });
 }
 
 /* 每日随机挑战：全主题混抽 10 题，答对 1 题得 1★，完成结算才消耗次数 */
@@ -9198,10 +9574,11 @@ function startDailyQuiz() {
     toast("词库还在准备中，稍后再试");
     return;
   }
+  cancelTaskPrompt();
   quiz = createQuiz({ mode: "daily", level: 0, starIndex: [], order });
   lastResult = null;
   go("quiz");
-  speakTask();
+  speakTask(260);
 }
 
 /* 答对：只撒彩纸，鼓励语与答案统一收进居中的结果卡 */
@@ -9317,7 +9694,7 @@ function screenQuiz() {
       <div class="qcount num">${quiz.index + 1} <em>/ ${total}</em></div>
       ${isDaily ? `<div class="daily-run">🎲</div>` : ""}
     </div>`;
-  return `<section class="screen quiz-page ${game.pageClass || ""} quiz-ref-page dino-stage-v2" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}">
+  return `<section class="screen quiz-page ${game.pageClass || ""} quiz-ref-page dino-stage-v2" data-screen="quiz" data-enlighten="${enlightenOn() ? "1" : "0"}" data-theme="${state.theme}" data-scene="${state.scene || ""}" data-type="${q.type}" data-revealed="${revealed ? "1" : "0"}">
     ${fx}
     <div class="ref-scene-bg">${QuizUiArt.scene()}</div>
     ${frameTop}
@@ -9329,14 +9706,31 @@ function screenQuiz() {
   </section>`;
 }
 
-function speakTask(delay = 450) {
+/* 进题提醒：仅听力题（autoSpeak）自动读单词；其余题型改用轻提示音效 + 视觉引导，点喇叭仍可手动听题 */
+function speakTask(delay = 260, opts = {}) {
+  cancelTaskPrompt();
   const q = quiz && quiz.order[quiz.index];
   if (!q) return;
   const game = gameForTask(q);
-  const lines = game && typeof game.getPromptLines === "function"
-    ? game.getPromptLines(q)
-    : [];
-  if (lines.length) setTimer(() => speak(lines), delay);
+  if (game && game.autoSpeak) {
+    const lines = typeof game.getPromptLines === "function" ? game.getPromptLines(q) : [];
+    if (lines.length) {
+      promptTimer = setTimeout(() => {
+        promptTimer = null;
+        if (!quiz || quiz.revealed || quiz.order[quiz.index] !== q) return;
+        speak(lines);
+      }, delay);
+    }
+    return;
+  }
+  const playCue = opts.playCue !== false;
+  if (playCue && !(game && game.hasOwnCue)) {
+    promptTimer = setTimeout(() => {
+      promptTimer = null;
+      if (!quiz || quiz.revealed || quiz.order[quiz.index] !== q) return;
+      sfx("question");
+    }, 80);
+  }
 }
 /* 通用结算分流：支持题型按答对 / 答错分别声明延时特效，再进入统一结算 */
 function beginSettlement(q, ok, el, commit) {
@@ -9363,6 +9757,7 @@ function beginSettlement(q, ok, el, commit) {
 }
 function selectOption(word, el) {
   if (!quiz || quiz.revealed || settleLock) return;
+  cancelTaskPrompt();
   const q = quiz.order[quiz.index];
   const correctValue = correctValueOf(q);
   quiz.selected = word;
@@ -9453,6 +9848,7 @@ function checkAnswer() {
 }
 function nextQuestion() {
   if (!quiz) return;
+  cancelTaskPrompt();
   settleLock = false;
   clearTimers();
   if (quiz.index >= quiz.order.length - 1) { finishQuiz(); return; }

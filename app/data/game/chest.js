@@ -131,19 +131,21 @@
     const s = _state();
     return s.spinDay === dateKey() ? Math.max(0, Number(s.spinCount) || 0) : 0;
   }
-  /* 统一奖励池：weight 越大越常出现，买玩具仅 5%（低概率大奖）
-     配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，贴合全站视觉 */
+  /* 统一奖励池（12 种 · 面向 3-6 岁小朋友）：weight 总和 100，日常亲子陪伴与小奖励为主，小玩具/动物园/冰淇淋为低概率大奖
+     配色统一为项目奶油+水彩体系：低饱和底色 + 深色墨水字，相邻扇区冷暖交替 */
   const REWARD_POOL = [
-    { id: "cartoon",  label: "看动画片15分", short: "动画15分", color: "#FBEBC8", ink: "#6B4E1E", weight: 20, icon: "📺" },
-    { id: "story",    label: "多讲1个故事",  short: "讲故事",   color: "#CFE9C8", ink: "#2F5B3A", weight: 20, icon: "📚" },
-    { id: "sticker",  label: "恐龙贴纸1张",  short: "贴纸1张",  color: "#E7D9F3", ink: "#51406E", weight: 15, icon: "🌈" },
-    { id: "snack",    label: "选1个小零食",  short: "小零食",   color: "#FAD9C2", ink: "#7A4526", weight: 10, icon: "🍪" },
-    { id: "game",     label: "一起玩20分钟", short: "玩游戏",   color: "#D4E4F2", ink: "#31536E", weight: 8,  icon: "🎲" },
-    { id: "park",     label: "去公园玩耍",   short: "去公园",   color: "#CFE9DE", ink: "#2A5747", weight: 8,  icon: "🌳" },
-    { id: "book",     label: "挑一本新绘本", short: "新绘本",   color: "#F7EBC0", ink: "#6C5A20", weight: 5,  icon: "📖" },
-    { id: "zoo",      label: "周末去动物园", short: "动物园",   color: "#DFEAC8", ink: "#46603A", weight: 5,  icon: "🦁" },
-    { id: "toy",      label: "买个小玩具",   short: "小玩具",   color: "#F5CFC7", ink: "#7A3A31", weight: 5,  icon: "🧸" },
-    { id: "icecream", label: "全家吃冰淇淋", short: "冰淇淋",   color: "#F8DDE4", ink: "#7A4052", weight: 4,  icon: "🍦" },
+    { id: "story",    label: "睡前多讲1个故事", short: "讲故事",   color: "#CFE9C8", ink: "#2F5B3A", weight: 14, icon: "📚" },
+    { id: "cartoon",  label: "看动画片10分钟",  short: "动画10分", color: "#FBEBC8", ink: "#6B4E1E", weight: 12, icon: "📺" },
+    { id: "sticker",  label: "恐龙小贴纸1张",   short: "小贴纸",   color: "#E7D9F3", ink: "#51406E", weight: 13, icon: "🌈" },
+    { id: "snack",    label: "挑1个小零食",     short: "小零食",   color: "#FAD9C2", ink: "#7A4526", weight: 8,  icon: "🍪" },
+    { id: "game",     label: "一起玩积木20分",  short: "玩积木",   color: "#D4E4F2", ink: "#31536E", weight: 9,  icon: "🧩" },
+    { id: "hug",      label: "骑大马举高高",    short: "骑大马",   color: "#F8DDE4", ink: "#7A4052", weight: 11, icon: "🐎" },
+    { id: "park",     label: "去公园玩滑滑梯",  short: "去公园",   color: "#CFE9DE", ink: "#2A5747", weight: 7,  icon: "🌳" },
+    { id: "craft",    label: "一起画画做手工",  short: "画画手工", color: "#F7EBC0", ink: "#6C5A20", weight: 10, icon: "🎨" },
+    { id: "toy",      label: "买1个小玩具",     short: "小玩具",   color: "#F5CFC7", ink: "#7A3A31", weight: 3,  icon: "🧸" },
+    { id: "zoo",      label: "周末去动物园",    short: "动物园",   color: "#DFEAC8", ink: "#46603A", weight: 4,  icon: "🦁" },
+    { id: "book",     label: "挑1本新绘本",     short: "新绘本",   color: "#DCE0F5", ink: "#3B4473", weight: 5,  icon: "📖" },
+    { id: "icecream", label: "吃1个小冰淇淋",   short: "冰淇淋",   color: "#FBE2CE", ink: "#7A4B2A", weight: 4,  icon: "🍦" },
   ];
   const PRIZE_ICON = {};
   REWARD_POOL.forEach((p) => { PRIZE_ICON[p.id] = p.icon; });
@@ -159,7 +161,7 @@
     return 0;
   }
 
-  /* 构建并缓存 10 扇区 SVG 盘面（0 号扇区正对顶部指针） */
+  /* 构建并缓存 12 扇区 SVG 盘面（0 号扇区正对顶部指针） */
   let _wheelSvgCache = "";
   function buildWheelSVG() {
     if (_wheelSvgCache) return _wheelSvgCache;
@@ -172,10 +174,10 @@
       const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
       return `<g>
         <path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 0 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z"
-          fill="${p.color}" stroke="#5C411D" stroke-width="2.6" stroke-linejoin="round" stroke-opacity=".55"/>
+          fill="${p.color}" stroke="#5C411D" stroke-width="2.4" stroke-linejoin="round" stroke-opacity=".55"/>
         <g transform="translate(${cx},${cy}) rotate(${i * sliceDeg})">
-          <text x="0" y="-146" text-anchor="middle" fill="${p.ink}" font-size="14" font-weight="800">${p.short}</text>
-          <text x="0" y="-114" text-anchor="middle" font-size="24">${p.icon}</text>
+          <text x="0" y="-150" text-anchor="middle" fill="${p.ink}" font-size="12.5" font-weight="800">${p.short}</text>
+          <text x="0" y="-116" text-anchor="middle" font-size="22">${p.icon}</text>
         </g>
       </g>`;
     }).join("");

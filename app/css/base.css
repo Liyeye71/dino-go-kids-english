@@ -50,7 +50,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 /* 根字号随屏幕宽高微调：手机上略收紧，iPad / PC 上整体放大，所有 rem 尺寸随之等比缩放 */
 html{font-size:clamp(14.75px,min(calc(12px + .9vw),calc(10px + 1.3vh)),18px)}
-html,body{height:100%;margin:0;padding:0;overscroll-behavior:none}
+html,body{position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;overflow:hidden;overscroll-behavior:none;touch-action:none}
 body{
   font-family:var(--font-round);
   font-synthesis:none;letter-spacing:0.00938rem;text-rendering:optimizeLegibility;
@@ -85,6 +85,7 @@ h1,h2,h3,h4,p{margin:0}
 .scroll{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  overscroll-behavior-y:contain;touch-action:pan-y;
   padding:calc(0.875rem + var(--safe-top)) 1.25rem calc(1.875rem + var(--safe-bottom));
 }
 .has-tab .scroll{padding-bottom:calc(6.5rem + var(--safe-bottom))}

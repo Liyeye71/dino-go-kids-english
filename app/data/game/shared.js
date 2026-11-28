@@ -62,7 +62,7 @@
   window.isStageBossLevel = isStageBossLevel;
   window.isFinalBossLevel = isFinalBossLevel;
   window.wordImgPath = wordImgPath;
-  window.isZooScene = () => hasSceneRoute();
+  window.isZooScene = () => hasSceneRoute() && typeof currentTheme === "function" && currentTheme().id === "animal";
   window.zooScene = () => activeScene();
   window.isAnimalBossLevel = isStageBossLevel;
   window.isAnimalFinalBoss = isFinalBossLevel;
