@@ -78,7 +78,7 @@ const SCHOOL_CAMPUS_LEVELS = SCHOOL_CAMPUS_NODES.map((node, i) => ({
 const SCHOOL_SCENES = [
   {
     id: "campus",
-    name: "上学文具岛",
+    name: "上学了",
     emoji: "🎒",
     mapImage: "./images/background/school-campus-map.webp",
     mapRatio: "1505/1045",
@@ -94,7 +94,7 @@ const SCHOOL_SCENES = [
 defineDinoTheme({
   id: "school",
   name: "上学了",
-  islandName: "上学文具岛",
+  islandName: "上学了",
   chip: "文具单词",
   emoji: "🎒",
   cover: "./images/background/theme-school.webp",

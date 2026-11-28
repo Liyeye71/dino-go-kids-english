@@ -124,7 +124,7 @@ const ACTIONS = {
   },
   "daily-start"() { closeOverlay(); startDailyQuiz(); },
   select(el) { selectOption(el.dataset.word, el); },
-  "listen-selected"(el) { shakeBtn(el); listenSelected(); },
+  "confirm-answer"() { confirmSelection(); },
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读 */

@@ -86,7 +86,7 @@ const TRAVEL_JOURNEY_LEVELS = TRAVEL_JOURNEY_NODES.map((node, i) => ({
 const TRAVEL_SCENES = [
   {
     id: "journey",
-    name: "去旅行交通岛",
+    name: "去旅行",
     emoji: "✈️",
     mapImage: "./images/background/travel-journey-map.webp",
     mapRatio: "1505/1045",
@@ -102,7 +102,7 @@ const TRAVEL_SCENES = [
 defineDinoTheme({
   id: "travel",
   name: "去旅行",
-  islandName: "去旅行交通岛",
+  islandName: "去旅行",
   chip: "交通单词",
   emoji: "✈️",
   cover: "./images/background/theme-travel.webp",

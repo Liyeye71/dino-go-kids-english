@@ -24,10 +24,6 @@ const MAX_RETRIES = 3;
 
 const EXTRA_PHRASES = [
   "Hello! Let's learn English together!",
-  "What is this animal?",
-  "What is this?",
-  "What is the animal doing?",
-  "What does this animal like to eat?",
   "Yes, it is.",
   "Yes, they are.",
   "Yes, it does.",
@@ -60,20 +56,13 @@ function collectItems() {
     if (entry && entry.word) add(entry.word);
   }
 
-  /* 2. animal.js 中的食物词、食物问答句、动物喂食问句 */
+  /* 2. animal.js 中的食物词与情景对话食物问答句 */
   const animalSrc = fs.readFileSync(path.join(appDir, "data", "theme", "animal.js"), "utf8");
   for (const m of animalSrc.matchAll(/\ben:\s*"([^"]+)"/g)) {
     const food = m[1];
     add(food);
     add(`It eats ${food}.`);
     add(`No, it doesn't. It eats ${food}.`);
-  }
-  const feedMapMatch = animalSrc.match(/const ANIMAL_FEED_MAP = \{([\s\S]*?)\};/);
-  if (feedMapMatch) {
-    for (const m of feedMapMatch[1].matchAll(/(?:"([^"]+)"|\b([a-z]+))\s*:/g)) {
-      const animal = m[1] || m[2];
-      if (animal) add(`What does the ${animal} like to eat?`);
-    }
   }
 
   /* 3. dialog-templates.js 中的固定无变量场景问句（zoo / school / travel / default） */

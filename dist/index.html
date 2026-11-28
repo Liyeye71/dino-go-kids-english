@@ -1809,8 +1809,6 @@ h1,h2,h3,h4,p{margin:0}
 .ref-pic-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
 .ref-picture-art{position:absolute;inset:0;display:grid;place-items:center;padding:0.5rem}
 .ref-picture-art .pic-emoji{font-size:clamp(5rem,20vh,9rem)}
-.ref-picture-frame .listen{position:absolute;right:0.75rem;bottom:0.75rem;z-index:3;width:4.25rem;height:4.25rem;border:0.125rem solid var(--sticker-line);color:#72532F;box-shadow:0 0.25rem 0 #D5BB8D}
-.ref-picture-frame .listen svg{width:2rem;height:2rem}
 .quiz-ref-page .ref-pic-options{grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:0.875rem;flex:none}
 .quiz-ref-page .ref-pic-options .option{min-height:4.5rem}
 .quiz-ref-page .ref-pic-options .option .word{font-size:clamp(0.85rem,2.8cqh,1.05rem);color:#4B3626;font-weight:var(--w-black);line-height:1.25;overflow-wrap:anywhere;word-break:break-word}
@@ -1910,7 +1908,7 @@ h1,h2,h3,h4,p{margin:0}
 .ref-feed-animal{flex:none;padding:1rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;
   cursor:pointer;transition:background .15s ease,transform .15s ease}
 .ref-feed-animal.drop-ready{background:#FFF0C9;transform:scale(1.03)}
-.ref-hint{flex:none;margin:0;min-height:2.75rem;display:flex;align-items:center;justify-content:center;color:#806039;text-align:center;line-height:1.4;font-size:clamp(0.8125rem,2.8vw,0.9375rem)}
+.ref-hint{flex:none;margin:0;min-height:3.4rem;display:flex;align-items:center;justify-content:center;color:#806039;text-align:center;line-height:1.35;font-size:clamp(1.22rem,4.2vw,1.41rem);font-weight:var(--w-bold)}
 .quiz-ref-page .fd-foods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;width:min(100%,24rem);margin-top:0}
 .quiz-ref-page .fd-food{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.125rem;width:auto;height:7.2rem;padding:0.375rem;
   border:0.125rem solid var(--sticker-line);border-radius:1.25rem;background:var(--sticker-paper);box-shadow:0 0.25rem 0 var(--sticker-shade);touch-action:none;user-select:none}
@@ -1957,12 +1955,31 @@ h1,h2,h3,h4,p{margin:0}
   width:100%;height:100%;display:block;
   object-fit:contain;object-position:center bottom;
 }
+/* ===== 提示行原地变身「选好了」确认按钮（零高度变化、不破坏底部托盘） ===== */
+.ref-hint.has-confirm{padding:0}
+.ref-confirm-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.35rem;
+  height:3.15rem;width:min(82%,20rem);min-width:14rem;padding:0 2.5rem;border-radius:999px;
+  border:0.16rem solid #246E43;border-bottom-width:0.38rem;
+  background:linear-gradient(180deg,#52C37B 0%,#339D5B 100%);
+  color:#FFFFFF;font-size:1.15rem;font-weight:var(--w-black);letter-spacing:0.06em;white-space:nowrap;
+  box-shadow:0 0.3rem 0.75rem rgba(36,110,67,.24),inset 0 0.14rem 0 rgba(255,255,255,.45);
+  cursor:pointer;flex:none;
+  transition:transform .12s cubic-bezier(.34,1.56,.64,1),border-bottom-width .08s ease;
+  animation:confirmPopIn .26s cubic-bezier(.22,1.4,.42,1) both;
+}
+.ref-confirm-btn:active{transform:translateY(0.18rem) scale(.96,.94);border-bottom-width:0.16rem}
+.ref-confirm-btn.is-inline{
+  width:auto;height:2.75rem;min-width:6.8rem;padding:0 1.65rem;font-size:0.98rem;margin-left:auto;
+}
+@keyframes confirmPopIn{
+  0%{opacity:0;transform:scale(.78)}
+  100%{opacity:1;transform:scale(1)}
+}
 /* ===== 新题入场视觉提醒（替代非听力题自动读题，仅未揭晓时播放一次） ===== */
 .quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-hint{
   animation:hintCueIn .38s ease both;
 }
-.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-picture-frame .listen:not(.is-shaking),
-.quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-feed-animal .feed-replay-btn:not(.is-shaking),
 .quiz-ref-page[data-revealed="0"]:not([data-type="listen"]) .ref-dialog-ask-say{
   animation:speakerCuePulse 1.05s ease-out .16s 1;
 }
@@ -3209,6 +3226,7 @@ h1,h2,h3,h4,p{margin:0}
 .listen-bubble-replay svg { flex: none; }
 .listen-bubble {
   position: absolute; left: var(--bubble-x); top: var(--bubble-y); z-index: 2;
+  transform: translate(-50%, -50%);
   width: clamp(4.75rem, min(23cqw, 28cqh), 7rem); aspect-ratio: 1;
   border-radius: 50%; padding: 0.65rem; display: grid; place-items: center;
   background: radial-gradient(circle at 30% 24%, rgba(255,255,255,.98) 0%, rgba(255,250,238,.88) 45%, rgba(211,238,244,.82) 100%);
@@ -3230,7 +3248,8 @@ h1,h2,h3,h4,p{margin:0}
 .listen-bubble-art .listen-card-emoji { place-items: center; font-size: clamp(2.25rem, 8cqh, 3.5rem); }
 .listen-bubble.ok { border-color: #4FA55E; background: radial-gradient(circle at 30% 24%, #fff 0%, #F0FAE4 48%, #CDEBC0 100%); }
 .listen-bubble.wrong { border-color: #DC8470; background: radial-gradient(circle at 30% 24%, #fff 0%, #FFF5F2 48%, #FFE4DC 100%); }
-.listen-bubble-stage.is-revealed .listen-bubble { animation-play-state: paused; }
+/* 结算重绘后直接停止浮动动画，保持基准 translate(-50%,-50%)，锁死水平位置绝不偏移 */
+.listen-bubble-stage.is-revealed .listen-bubble { animation: none; transform: translate(-50%, -50%); }
 .quiz-ref-page.dino-stage-v2 .ref-listen-grid.listen-bubble-hint {
   display: flex !important; align-items: center; justify-content: center;
   box-sizing: border-box;
@@ -3462,14 +3481,7 @@ h1,h2,h3,h4,p{margin:0}
   50%      { transform: translateY(-0.18rem) scale(0.985, 1.03); }
 }
 
-/* ================= 动物喂食：待机饥饿气泡 / 重听喇叭 / 喂错摇头与食物弹开 ================= */
-.ref-feed-animal .feed-replay-btn {
-  position: absolute; right: 0.75rem; bottom: 0.75rem; z-index: 5;
-  width: 4.25rem; height: 4.25rem;
-  border: 0.125rem solid var(--sticker-line); color: #72532F;
-  box-shadow: 0 0.25rem 0 #D5BB8D;
-}
-.ref-feed-animal .feed-replay-btn svg { width: 2rem; height: 2rem; }
+/* ================= 动物喂食：待机饥饿气泡 / 喂错摇头与食物弹开 ================= */
 .feed-hungry-badge {
   position: absolute; top: 0.55rem; right: 0.75rem; z-index: 4;
   font-size: 1.55rem; line-height: 1; pointer-events: none;
@@ -5206,9 +5218,8 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       body: `<div class="ref-pic-wrap">
                 <div class="ref-picture-frame">
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
-                  ${listenPill()}
                 </div>
-                <p class="ref-hint">${q.picHint || (currentTheme() && currentTheme().picHint) || "猜猜这是什么动物"}</p>
+                <p class="ref-hint">点单词听一听，${q.picHint || (currentTheme() && currentTheme().picHint) || "猜猜这是什么动物"}</p>
                 <div class="options ref-pic-options">${options(q.options)}</div>
               </div>`,
       btn: choiceButton("选一个答案"),
@@ -5456,12 +5467,9 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
     } else if (d.mode === "sentence") {
       optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
         const state = optionState(o.value);
-        return `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(o.label)}" aria-label="朗读这句">${I.speaker(16, "#5C411D")}</button>
-                <button class="option${state ? " " + state : ""}" data-action="select" data-word="${esc(o.value)}">
+        return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${esc(o.value)}">
                   <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
-                </button>
-              </div>`;
+                </button>`;
       }).join("")}</div>`;
     } else if (d.mode === "image") {
       optionHtml = `<div class="ref-dialog-image-grid">${d.options.map((o) => {
@@ -5475,10 +5483,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
               </button>`;
       }).join("")}</div>`;
     } else {
-      optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-opt-rows">${q.options.map((w) => `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(w)}" aria-label="朗读">${I.speaker(16, "#5C411D")}</button>
-                ${options([w])}
-              </div>`).join("")}</div>`;
+      optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
     }
     return {
       body: `<div class="ref-dialog-card">
@@ -5605,15 +5610,11 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
       return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
               data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span></button>`;
     }).join("");
-    const feedPrompt = q && q.word
-      ? `What does the ${q.word} like to eat?`
-      : "What does this animal like to eat?";
     const body = `
             <div class="fd-wrap ref-feed-wrap">
               <div class="fd-animal ref-feed-animal" data-feed-drop>
                 <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 ${revealed ? "" : `<span class="feed-hungry-badge" aria-hidden="true">💭</span>`}
-                <button type="button" class="listen feed-replay-btn" data-action="speak-text" data-text="${esc(feedPrompt)}" aria-label="再听一遍问题">${I.speaker(16)}</button>
               </div>
               <p class="ref-hint">${q.zh} 爱吃什么？拖到嘴边或点选食物</p>
               <div class="fd-foods">${foods}</div>
@@ -5630,7 +5631,7 @@ window.DINO_WORD_SETS = window.DINO_WORD_SETS || [];
                   ${wordArtImg(actionSrc, "ref-action-img", q.emoji || wordGlyph(q.word), "pic-emoji")}
                 </div>`,
       tipClass: "ref-hint",
-      tip: q.themeId === "animal" ? "动物在干什么？" : "小恐龙在干什么？",
+      tip: q.themeId === "animal" ? "点单词听一听，动物在干什么？" : "点单词听一听，小恐龙在干什么？",
       optionsClass: "ref-action-options",
       options: options(q.options),
       btn: quiz.revealed ? quizNextButton() : "",
@@ -6053,7 +6054,7 @@ const TRAVEL_JOURNEY_LEVELS = TRAVEL_JOURNEY_NODES.map((node, i) => ({
 const TRAVEL_SCENES = [
   {
     id: "journey",
-    name: "去旅行交通岛",
+    name: "去旅行",
     emoji: "✈️",
     mapImage: "./images/background/travel-journey-map.webp",
     mapRatio: "1505/1045",
@@ -6069,7 +6070,7 @@ const TRAVEL_SCENES = [
 defineDinoTheme({
   id: "travel",
   name: "去旅行",
-  islandName: "去旅行交通岛",
+  islandName: "去旅行",
   chip: "交通单词",
   emoji: "✈️",
   cover: "./images/background/theme-travel.webp",
@@ -6522,7 +6523,7 @@ const SCHOOL_CAMPUS_LEVELS = SCHOOL_CAMPUS_NODES.map((node, i) => ({
 const SCHOOL_SCENES = [
   {
     id: "campus",
-    name: "上学文具岛",
+    name: "上学了",
     emoji: "🎒",
     mapImage: "./images/background/school-campus-map.webp",
     mapRatio: "1505/1045",
@@ -6538,7 +6539,7 @@ const SCHOOL_SCENES = [
 defineDinoTheme({
   id: "school",
   name: "上学了",
-  islandName: "上学文具岛",
+  islandName: "上学了",
   chip: "文具单词",
   emoji: "🎒",
   cover: "./images/background/theme-school.webp",
@@ -6554,7 +6555,7 @@ defineDinoTheme({
   <!-- 声音：交互音效 / 单词朗读 / 关卡提示音 -->
   <script>
 /* 自动生成：美音童声 Ana（en-US-AnaNeural）可用本地音频索引，由 tools/generate-ana-voice.mjs 产出 */
-window.ANA_VOICE_FILES = new Set(["active","actor","air","airplane","alarm-clock","ambulance","angry","ant","apple","april","arm","artist","at-the-zoo-we-can-see-many-animals-what-is-this-one","at-the-zoo-what-do-you-see-in-the-picture","august","aunt","baboon","baby","backpack","bag","ball","balloon","bamboo","banana","bark","bathroom","beak","bear","beautiful","bed","bedroom","beef","beep-beep-look-on-the-road-what-is-this","bell","belly","bicycle","big","bike","bird","bite","black","blackboard","blue","blueberry","board","boat","bone","book","bookstore","boots","box","boy","bread","breakfast","brother","brown","bullet-train","bus","busy","buy","cabbage","cake","camel","camera","camp","can-you-tell-me-what-this-is","cap","car","carrot","carry","cat","catch","chair","chase","cheetah","cherry","chicken","chopsticks","cinema","city","classmate","classroom","claw","clean","cleaner","climb","close","cloud","clown","clownfish","coat","coconut","coffee","cola","cold","colorful","computer","cook","cool","corn","count","country","cow","crab","crayon","crocodile","crow","cry","cupcake","cut","cute","dad","dance","december","deer","desk","dig","dinner","dirty","do","do-you-know-this-animal-what-is-it","do-you-know-this-word-what-is-it","do-you-know-this-zoo-word-what-is-it","doctor","dog","doll","dolphin","donkey","donut","door","draw","dress","drink","drive","driver","duck","dumpling","eagle","ear","east","easy","eat","egg","eggplant","eight","eighty","elephant","eleven","eraser","excavator","eye","face","fall","fan","farm","farmer","fast","fat","father","favorite","feather","february","feed","feel","fever","fifteen","fifty","fight","find","fine","finger","fire-truck","first","fish","five","flamingo","floor","flower","fly","fold","foot","football","forest","fork","forty","four","fourteen","fox","fresh","friday","fridge","friend","full","funny","fur","garbage-truck","garden","gift","giraffe","girl","give","glasses","globe","gloves","glue","go","goat","good","goose","gorilla","grandma","grandpa","grape","grass","green","guess","gym","hair","hamburger","hand","happy","hat","have","head","healthy","heavy","helicopter","hello-let-s-learn-english-together","help","hen","hide","high","hike","hippo","hold","hole","home","honey","horn","horse","hospital","hot","house","how","hug","hungry","hunt","hurt","ice-cream","it-eats-apple","it-eats-bamboo","it-eats-banana","it-eats-bone","it-eats-carrot","it-eats-corn","it-eats-fish","it-eats-grass","it-eats-honey","it-eats-leaves","it-eats-meat","it-eats-nut","it-eats-watermelon","it-eats-worm","jacket","jam","january","jeans","jeep","jellyfish","juice","juicy","july","jump","june","kangaroo","key","kick","kid","kind","kitchen","kite","kiwi","knife","koala","lake","lamb","lamp","laugh","leaf","learn","leaves","leg","lemon","let-s-draw-and-learn-what-school-thing-is-this","let-s-go-on-a-trip-look-at-the-picture-what-is-this","library","lick","light","like","lion","listen","little","live","lizard","lock","long","look","look-at-the-classroom-table-do-you-know-what-this-is","look-at-the-picture-what-animal-is-this","look-at-the-picture-what-is-this","look-at-the-zoo-sign-can-you-tell-me-this-animal-s-name","look-carefully-what-is-in-the-picture","look-carefully-what-is-this","look-out-the-window-do-you-know-what-this-is","love","lovely","lunch","make","man","mango","map","march","marker","may","meat","meet","melon","milk","mirror","mom","monday","money","monkey","mother","motorcycle","mountain","mouse","mouth","nap","neck","nest","new","nice","nine","ninety","no-it-doesn-t-it-eats-apple","no-it-doesn-t-it-eats-bamboo","no-it-doesn-t-it-eats-banana","no-it-doesn-t-it-eats-bone","no-it-doesn-t-it-eats-carrot","no-it-doesn-t-it-eats-corn","no-it-doesn-t-it-eats-fish","no-it-doesn-t-it-eats-grass","no-it-doesn-t-it-eats-honey","no-it-doesn-t-it-eats-leaves","no-it-doesn-t-it-eats-meat","no-it-doesn-t-it-eats-nut","no-it-doesn-t-it-eats-watermelon","no-it-doesn-t-it-eats-worm","no-it-isn-t","no-they-aren-t","noisy","noodles","north","nose","notebook","november","nurse","nut","october","octopus","old","one","onion","open","orange","otter","owl","pack","paint","paint-palette","panda","pants","parents","parrot","pass","path","paw","peach","peacock","pear","pen","pencil","pencil-case","penguin","phone","photo","picture","pig","pineapple","pink","pizza","plane","plant","plate","play","playground","polar-bear","police-car","policeman","pork","pot","potato","pretty","pull","pumpkin","purple","push","put","queen","quiet","rabbit","raccoon","rain","rainbow","raincoat","read","ready-to-go-what-is-in-this-travel-picture","red","rhino","rice","ride","right","river","road","roar","robot","rocket","room","rose","ruler","run","sad","sail","salad","salty","sandals","sandwich","saturday","scared","scarf","school","school-bus","schoolbag","scissors","scooter","sea-lion","seal","second","see","seed","send","september","seven","seventy","share","shark","sheep","shelf","shine","ship","shirt","shoes","short","shorts","show","shrimp","sing","singer","sister","sit","six","sixty","skate","skirt","sky","sleep","sloth","slow","small","smart","smell","smile","snake","sniff","socks","sofa","son","soup","sour","south","splash","spoon","spring","squid","squirrel","stand","starfish","stop","storybook","strawberry","stream","stretch","strong","student","study","subway","suitcase","summer","sun","sunday","sunglasses","supermarket","sweep","sweet","swim","t-shirt","table","tail","take","tall","taste","taxi","tea","teacher","tell","ten","thank","the-teacher-holds-up-a-picture-what-is-this","the-zookeeper-points-at-the-picture-what-animal-is-this","the-zookeeper-shows-you-a-picture-what-is-this","thin","think","third","thirteen","thirty","this-animal-lives-in-the-zoo-do-you-know-what-it-is","three","thursday","tie","tiger","time-for-class-what-is-in-your-schoolbag","tired","tomato","tongue","tooth","toothbrush","touch","toy","tractor","train","tree","truck","trunk","tuesday","turkey","turtle","twelve","twenty","two","umbrella","uncle","use","van","vegetable","village","violin","wag","wait","walk","wall","warm","wash","watch","water","water-bottle","watermelon","wave","we-are-going-to-travel-what-vehicle-do-you-see","wear","weather","wednesday","weekend","welcome","welcome-to-the-classroom-look-on-the-desk-what-is-this","welcome-to-the-zoo-look-at-the-picture-what-animal-is-this","welcome-to-the-zoo-look-at-the-picture-what-is-this","west","whale","what-do-you-see-in-the-picture","what-does-the-bear-like-to-eat","what-does-the-bird-like-to-eat","what-does-the-cat-like-to-eat","what-does-the-chicken-like-to-eat","what-does-the-cow-like-to-eat","what-does-the-crocodile-like-to-eat","what-does-the-deer-like-to-eat","what-does-the-dog-like-to-eat","what-does-the-dolphin-like-to-eat","what-does-the-elephant-like-to-eat","what-does-the-giraffe-like-to-eat","what-does-the-goat-like-to-eat","what-does-the-hippo-like-to-eat","what-does-the-horse-like-to-eat","what-does-the-koala-like-to-eat","what-does-the-lion-like-to-eat","what-does-the-monkey-like-to-eat","what-does-the-panda-like-to-eat","what-does-the-penguin-like-to-eat","what-does-the-pig-like-to-eat","what-does-the-polar-bear-like-to-eat","what-does-the-rabbit-like-to-eat","what-does-the-seal-like-to-eat","what-does-the-shark-like-to-eat","what-does-the-sheep-like-to-eat","what-does-the-squirrel-like-to-eat","what-does-the-tiger-like-to-eat","what-does-the-wolf-like-to-eat","what-does-the-zebra-like-to-eat","what-does-this-animal-like-to-eat","what-is-the-animal-doing","what-is-this","what-is-this-animal","when","where","white","why","wind","window","wing","winter","wolf","woman","work","worm","write","writer","yellow","yes-it-does","yes-it-is","yes-they-are","you-are-visiting-the-zoo-what-do-you-see-in-this-picture","young","zebra"]);
+window.ANA_VOICE_FILES = new Set(["active","actor","air","airplane","alarm-clock","ambulance","angry","ant","apple","april","arm","artist","at-the-zoo-we-can-see-many-animals-what-is-this-one","at-the-zoo-what-do-you-see-in-the-picture","august","aunt","baboon","baby","backpack","bag","ball","balloon","bamboo","banana","bark","bathroom","beak","bear","beautiful","bed","bedroom","beef","beep-beep-look-on-the-road-what-is-this","bell","belly","bicycle","big","bike","bird","bite","black","blackboard","blue","blueberry","board","boat","bone","book","bookstore","boots","box","boy","bread","breakfast","brother","brown","bullet-train","bus","busy","buy","cabbage","cake","camel","camera","camp","can-you-tell-me-what-this-is","cap","car","carrot","carry","cat","catch","chair","chase","cheetah","cherry","chicken","chopsticks","cinema","city","classmate","classroom","claw","clean","cleaner","climb","close","cloud","clown","clownfish","coat","coconut","coffee","cola","cold","colorful","computer","cook","cool","corn","count","country","cow","crab","crayon","crocodile","crow","cry","cupcake","cut","cute","dad","dance","december","deer","desk","dig","dinner","dirty","do","do-you-know-this-animal-what-is-it","do-you-know-this-word-what-is-it","do-you-know-this-zoo-word-what-is-it","doctor","dog","doll","dolphin","donkey","donut","door","draw","dress","drink","drive","driver","duck","dumpling","eagle","ear","east","easy","eat","egg","eggplant","eight","eighty","elephant","eleven","eraser","excavator","eye","face","fall","fan","farm","farmer","fast","fat","father","favorite","feather","february","feed","feel","fever","fifteen","fifty","fight","find","fine","finger","fire-truck","first","fish","five","flamingo","floor","flower","fly","fold","foot","football","forest","fork","forty","four","fourteen","fox","fresh","friday","fridge","friend","full","funny","fur","garbage-truck","garden","gift","giraffe","girl","give","glasses","globe","gloves","glue","go","goat","good","goose","gorilla","grandma","grandpa","grape","grass","green","guess","gym","hair","hamburger","hand","happy","hat","have","head","healthy","heavy","helicopter","hello-let-s-learn-english-together","help","hen","hide","high","hike","hippo","hold","hole","home","honey","horn","horse","hospital","hot","house","how","hug","hungry","hunt","hurt","ice-cream","it-eats-apple","it-eats-bamboo","it-eats-banana","it-eats-bone","it-eats-carrot","it-eats-corn","it-eats-fish","it-eats-grass","it-eats-honey","it-eats-leaves","it-eats-meat","it-eats-nut","it-eats-watermelon","it-eats-worm","jacket","jam","january","jeans","jeep","jellyfish","juice","juicy","july","jump","june","kangaroo","key","kick","kid","kind","kitchen","kite","kiwi","knife","koala","lake","lamb","lamp","laugh","leaf","learn","leaves","leg","lemon","let-s-draw-and-learn-what-school-thing-is-this","let-s-go-on-a-trip-look-at-the-picture-what-is-this","library","lick","light","like","lion","listen","little","live","lizard","lock","long","look","look-at-the-classroom-table-do-you-know-what-this-is","look-at-the-picture-what-animal-is-this","look-at-the-picture-what-is-this","look-at-the-zoo-sign-can-you-tell-me-this-animal-s-name","look-carefully-what-is-in-the-picture","look-carefully-what-is-this","look-out-the-window-do-you-know-what-this-is","love","lovely","lunch","make","man","mango","map","march","marker","may","meat","meet","melon","milk","mirror","mom","monday","money","monkey","mother","motorcycle","mountain","mouse","mouth","nap","neck","nest","new","nice","nine","ninety","no-it-doesn-t-it-eats-apple","no-it-doesn-t-it-eats-bamboo","no-it-doesn-t-it-eats-banana","no-it-doesn-t-it-eats-bone","no-it-doesn-t-it-eats-carrot","no-it-doesn-t-it-eats-corn","no-it-doesn-t-it-eats-fish","no-it-doesn-t-it-eats-grass","no-it-doesn-t-it-eats-honey","no-it-doesn-t-it-eats-leaves","no-it-doesn-t-it-eats-meat","no-it-doesn-t-it-eats-nut","no-it-doesn-t-it-eats-watermelon","no-it-doesn-t-it-eats-worm","no-it-isn-t","no-they-aren-t","noisy","noodles","north","nose","notebook","november","nurse","nut","october","octopus","old","one","onion","open","orange","otter","owl","pack","paint","paint-palette","panda","pants","parents","parrot","pass","path","paw","peach","peacock","pear","pen","pencil","pencil-case","penguin","phone","photo","picture","pig","pineapple","pink","pizza","plane","plant","plate","play","playground","polar-bear","police-car","policeman","pork","pot","potato","pretty","pull","pumpkin","purple","push","put","queen","quiet","rabbit","raccoon","rain","rainbow","raincoat","read","ready-to-go-what-is-in-this-travel-picture","red","rhino","rice","ride","right","river","road","roar","robot","rocket","room","rose","ruler","run","sad","sail","salad","salty","sandals","sandwich","saturday","scared","scarf","school","school-bus","schoolbag","scissors","scooter","sea-lion","seal","second","see","seed","send","september","seven","seventy","share","shark","sheep","shelf","shine","ship","shirt","shoes","short","shorts","show","shrimp","sing","singer","sister","sit","six","sixty","skate","skirt","sky","sleep","sloth","slow","small","smart","smell","smile","snake","sniff","socks","sofa","son","soup","sour","south","splash","spoon","spring","squid","squirrel","stand","starfish","stop","storybook","strawberry","stream","stretch","strong","student","study","subway","suitcase","summer","sun","sunday","sunglasses","supermarket","sweep","sweet","swim","t-shirt","table","tail","take","tall","taste","taxi","tea","teacher","tell","ten","thank","the-teacher-holds-up-a-picture-what-is-this","the-zookeeper-points-at-the-picture-what-animal-is-this","the-zookeeper-shows-you-a-picture-what-is-this","thin","think","third","thirteen","thirty","this-animal-lives-in-the-zoo-do-you-know-what-it-is","three","thursday","tie","tiger","time-for-class-what-is-in-your-schoolbag","tired","tomato","tongue","tooth","toothbrush","touch","toy","tractor","train","tree","truck","trunk","tuesday","turkey","turtle","twelve","twenty","two","umbrella","uncle","use","van","vegetable","village","violin","wag","wait","walk","wall","warm","wash","watch","water","water-bottle","watermelon","wave","we-are-going-to-travel-what-vehicle-do-you-see","wear","weather","wednesday","weekend","welcome","welcome-to-the-classroom-look-on-the-desk-what-is-this","welcome-to-the-zoo-look-at-the-picture-what-animal-is-this","welcome-to-the-zoo-look-at-the-picture-what-is-this","west","whale","what-do-you-see-in-the-picture","when","where","white","why","wind","window","wing","winter","wolf","woman","work","worm","write","writer","yellow","yes-it-does","yes-it-is","yes-they-are","you-are-visiting-the-zoo-what-do-you-see-in-this-picture","young","zebra"]);
 
 </script>
   <script>
@@ -6570,13 +6571,64 @@ const NOTE_FREQ = {
   C6: 1046.5, D6: 1174.66, E6: 1318.5,
 };
 
-/* 首次交互时创建 / 唤醒音频上下文（iOS 要求） */
+/* 首次交互 / 从后台恢复时创建并唤醒音频上下文（兼容 iOS suspended 与 interrupted 状态） */
+let voiceAudio = null;
+let voiceUnlocked = false;
+/* 1 帧极短静音 WAV，用于在首次用户触摸时同步解锁 iOS 单例 <audio> */
+const SILENT_WAV = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+
+function getVoiceAudio() {
+  if (!voiceAudio) {
+    voiceAudio = new Audio();
+    voiceAudio.preload = "auto";
+    voiceAudio.playsInline = true;
+    voiceAudio.setAttribute("playsinline", "");
+  }
+  return voiceAudio;
+}
+
+function unlockVoiceAudio() {
+  if (voiceUnlocked) return;
+  try {
+    const a = getVoiceAudio();
+    if (a.src && !a.paused) { voiceUnlocked = true; return; }
+    a.muted = true;
+    a.src = SILENT_WAV;
+    const p = a.play();
+    const finish = () => {
+      try { a.pause(); a.currentTime = 0; a.muted = false; } catch (e) { /* ignore */ }
+      voiceUnlocked = true;
+    };
+    if (p && typeof p.then === "function") p.then(finish).catch(() => { try { a.muted = false; } catch (e) {} });
+    else finish();
+  } catch (e) { /* ignore */ }
+}
+
 function ensureAudio() {
   if (!audioCtx) {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (AC) audioCtx = new AC();
   }
-  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  /* iOS 锁屏/切后台/与 <audio> 并行时 state 会进入 "interrupted"，必须用 !== "running" 统一唤醒 */
+  if (audioCtx && audioCtx.state !== "running") {
+    try {
+      const p = audioCtx.resume();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+}
+
+/* 每次用户交互或页面回到前台时自动保活音频上下文与单例播放器 */
+if (typeof document !== "undefined") {
+  const keepAudioAlive = () => {
+    ensureAudio();
+    unlockVoiceAudio();
+  };
+  document.addEventListener("pointerdown", keepAudioAlive, { passive: true, capture: true });
+  document.addEventListener("touchend", keepAudioAlive, { passive: true, capture: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") ensureAudio();
+  });
 }
 
 /* 播放一个音：类型、音量、延迟与输出目标均可配置 */
@@ -6720,6 +6772,7 @@ function stopActiveAudio() {
   try {
     activeAudio.onended = null;
     activeAudio.onerror = null;
+    activeAudio.onloadedmetadata = null;
     activeAudio.pause();
     activeAudio.currentTime = 0;
   } catch (e) { /* ignore */ }
@@ -6737,6 +6790,7 @@ function stopSpeak() {
 
 function speak(text) {
   try {
+    ensureAudio();
     const lines = (Array.isArray(text) ? text : [text])
       .map((t) => String(t == null ? "" : t).trim())
       .filter(Boolean);
@@ -6758,6 +6812,8 @@ function speak(text) {
         if (typeof toast === "function") toast("当前浏览器不支持发音");
         return;
       }
+      /* 修复 iOS / Chrome 偶发 paused 导致朗读静默卡死 */
+      try { if (synth.paused) synth.resume(); } catch (e) { /* ignore */ }
       const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
       /* 启蒙模式自动放慢，方便 3~4 岁听清尾音与跟读 */
@@ -6775,12 +6831,24 @@ function speak(text) {
       const next = () => sayFrom(i + 1);
       const url = kids ? anaVoiceUrl(line) : "";
       if (url) {
-        const audio = new Audio(url);
-        audio.preload = "auto";
-        /* 保持童声原音高：启蒙模式 0.85x，普通模式 0.93x */
-        if ("preservesPitch" in audio) audio.preservesPitch = true;
-        if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
-        audio.playbackRate = slow ? 0.85 : 0.93;
+        /* 复用已解锁的全局单例 Audio，避免 iOS Safari 在 setTimeout 异步回调中拦截新 Audio */
+        const audio = getVoiceAudio();
+        const targetRate = slow ? 0.85 : 0.93;
+        const applyRate = () => {
+          try {
+            if ("preservesPitch" in audio) audio.preservesPitch = true;
+            if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
+            audio.defaultPlaybackRate = targetRate;
+            audio.playbackRate = targetRate;
+          } catch (e) { /* ignore */ }
+        };
+        audio.muted = false;
+        audio.onended = null;
+        audio.onerror = null;
+        audio.onloadedmetadata = applyRate;
+        audio.pause();
+        audio.src = url;
+        applyRate();
         activeAudio = audio;
         let settled = false;
         const done = () => {
@@ -6798,7 +6866,9 @@ function speak(text) {
         audio.onended = done;
         audio.onerror = fallback;
         const p = audio.play();
-        if (p && typeof p.catch === "function") p.catch(fallback);
+        if (p && typeof p.then === "function") {
+          p.then(() => { voiceUnlocked = true; applyRate(); }).catch(fallback);
+        }
         return;
       }
       speakWithSynth(line, next);
@@ -8150,7 +8220,7 @@ const ACTIONS = {
   },
   "daily-start"() { closeOverlay(); startDailyQuiz(); },
   select(el) { selectOption(el.dataset.word, el); },
-  "listen-selected"(el) { shakeBtn(el); listenSelected(); },
+  "confirm-answer"() { confirmSelection(); },
   next() { nextQuestion(); },
   "close-quiz"() {
     /* 关闭答题页时立即中断题型提示 / 单词朗读 */
@@ -9563,6 +9633,7 @@ function answerMetaOf(q, game) {
 /* 统一重置单题交互状态 */
 function resetQuestionState(qState) {
   qState.selected = null;
+  qState.selectedEl = null;
   qState.revealed = false;
   qState.choiceCorrect = null;
   return qState;
@@ -9799,41 +9870,94 @@ function beginSettlement(q, ok, el, commit) {
   }
   run();
 }
-function selectOption(word, el) {
+/* 看图 / 动作 / 喂食点选 / 情景对话文字与整句模式：先点选朗读，再点「选好了」确认，防幼儿乱点 */
+function needsConfirmSelect(q) {
+  if (!q) return false;
+  if (q.type === "pic" || q.type === "action" || q.type === "feed_animal") return true;
+  if (q.type === "dialog") return !(q.dialog && q.dialog.mode === "image");
+  return false;
+}
+
+/* 局部更新选中态与原地确认按钮（不触发整页重绘，避免主图闪烁与布局跳动） */
+function syncConfirmUI(q, word) {
+  const root = document.querySelector(".quiz-ref-page");
+  if (!root) return;
+  if (q.type === "feed_animal") {
+    root.querySelectorAll(".fd-food[data-food]").forEach((btn) => {
+      btn.classList.toggle("selected", btn.dataset.food === word);
+    });
+  } else {
+    root.querySelectorAll('.option[data-action="select"]').forEach((btn) => {
+      const on = btn.dataset.word === word;
+      btn.classList.toggle("sel", on);
+      let radio = btn.querySelector(".mark.radio");
+      if (on && !radio) {
+        radio = document.createElement("span");
+        radio.className = "mark radio";
+        radio.innerHTML = "<i></i>";
+        btn.appendChild(radio);
+      } else if (!on && radio) {
+        radio.remove();
+      }
+    });
+  }
+  if (q.type === "dialog") {
+    const bubble = root.querySelector(".ref-dialog-row.reply .ref-dialog-bubble");
+    if (bubble) {
+      const blank = bubble.querySelector(".blank");
+      const pending = bubble.querySelector(".ref-dialog-reply");
+      if (blank) blank.textContent = word;
+      else if (pending) {
+        pending.textContent = word;
+        pending.classList.remove("pending");
+      }
+      if (!bubble.querySelector(".ref-confirm-btn")) {
+        const confirmBtn = document.createElement("button");
+        confirmBtn.type = "button";
+        confirmBtn.className = "ref-confirm-btn is-inline";
+        confirmBtn.dataset.action = "confirm-answer";
+        confirmBtn.innerHTML = `<span>选好了 ✓</span>`;
+        bubble.appendChild(confirmBtn);
+      }
+    }
+    return;
+  }
+  const hint = root.querySelector(".ref-hint");
+  if (hint) {
+    hint.classList.add("has-confirm");
+    hint.innerHTML = `<button type="button" class="ref-confirm-btn" data-action="confirm-answer"><span>选好了 ✓</span></button>`;
+  }
+}
+
+function selectOption(word, el, opts = {}) {
   if (!quiz || quiz.revealed || settleLock) return;
   cancelTaskPrompt();
   const q = quiz.order[quiz.index];
-  const correctValue = correctValueOf(q);
   quiz.selected = word;
+  quiz.selectedEl = el || null;
+  if (!opts.direct && needsConfirmSelect(q)) {
+    sfx("tap");
+    syncConfirmUI(q, word);
+    speak(word);
+    return;
+  }
+  const correctValue = correctValueOf(q);
   sfx("tap");
   beginSettlement(q, word === correctValue, el);
 }
-/* 听发音按钮：纯喇叭图标 + 圆形底色 */
-function listenPill() {
-  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(16)}</button>`;
-}
-/* 听发音：答题前重播当前题干问句，答题后朗读正确答案 */
-function listenSelected() {
-  if (!quiz) return;
+
+function confirmSelection() {
+  if (!quiz || quiz.revealed || settleLock || !quiz.selected) return;
+  cancelTaskPrompt();
   const q = quiz.order[quiz.index];
-  if (!q) return;
-  if (quiz.revealed) {
-    const meta = answerMetaOf(q);
-    if (meta.speakText) speak(meta.speakText);
-    return;
-  }
-  if (quiz.selected) {
-    speak(quiz.selected);
-    return;
-  }
-  const game = gameForTask(q);
-  const lines = game && typeof game.getPromptLines === "function" ? game.getPromptLines(q) : [];
-  if (lines.length) speak(lines);
+  const correctValue = correctValueOf(q);
+  sfx("tap");
+  beginSettlement(q, quiz.selected === correctValue, quiz.selectedEl || null);
 }
 
-/* 动物喂食点选 / 拖拽入口：复用统一选项提交流程，透传触发元素供特效使用 */
-function feedPick(food, el = null) {
-  selectOption(food, el);
+/* 动物喂食点选 / 拖拽入口：点选先读音+确认按钮，拖拽进嘴直接喂食 */
+function feedPick(food, el = null, opts = {}) {
+  selectOption(food, el, opts);
 }
 /* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
 function unlockTaskWord(q) {
@@ -9999,7 +10123,7 @@ window.QuizView = {
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
       const target = hit && hit.closest("[data-feed-drop]");
-      if (target) feedPick(drag.value, source);
+      if (target) feedPick(drag.value, source, { direct: true });
     };
     const up = (ev) => finish(ev, false);
     const cancel = (ev) => finish(ev, true);

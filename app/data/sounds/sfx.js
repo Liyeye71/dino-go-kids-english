@@ -10,13 +10,64 @@ const NOTE_FREQ = {
   C6: 1046.5, D6: 1174.66, E6: 1318.5,
 };
 
-/* 首次交互时创建 / 唤醒音频上下文（iOS 要求） */
+/* 首次交互 / 从后台恢复时创建并唤醒音频上下文（兼容 iOS suspended 与 interrupted 状态） */
+let voiceAudio = null;
+let voiceUnlocked = false;
+/* 1 帧极短静音 WAV，用于在首次用户触摸时同步解锁 iOS 单例 <audio> */
+const SILENT_WAV = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+
+function getVoiceAudio() {
+  if (!voiceAudio) {
+    voiceAudio = new Audio();
+    voiceAudio.preload = "auto";
+    voiceAudio.playsInline = true;
+    voiceAudio.setAttribute("playsinline", "");
+  }
+  return voiceAudio;
+}
+
+function unlockVoiceAudio() {
+  if (voiceUnlocked) return;
+  try {
+    const a = getVoiceAudio();
+    if (a.src && !a.paused) { voiceUnlocked = true; return; }
+    a.muted = true;
+    a.src = SILENT_WAV;
+    const p = a.play();
+    const finish = () => {
+      try { a.pause(); a.currentTime = 0; a.muted = false; } catch (e) { /* ignore */ }
+      voiceUnlocked = true;
+    };
+    if (p && typeof p.then === "function") p.then(finish).catch(() => { try { a.muted = false; } catch (e) {} });
+    else finish();
+  } catch (e) { /* ignore */ }
+}
+
 function ensureAudio() {
   if (!audioCtx) {
     const AC = window.AudioContext || window.webkitAudioContext;
     if (AC) audioCtx = new AC();
   }
-  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  /* iOS 锁屏/切后台/与 <audio> 并行时 state 会进入 "interrupted"，必须用 !== "running" 统一唤醒 */
+  if (audioCtx && audioCtx.state !== "running") {
+    try {
+      const p = audioCtx.resume();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+}
+
+/* 每次用户交互或页面回到前台时自动保活音频上下文与单例播放器 */
+if (typeof document !== "undefined") {
+  const keepAudioAlive = () => {
+    ensureAudio();
+    unlockVoiceAudio();
+  };
+  document.addEventListener("pointerdown", keepAudioAlive, { passive: true, capture: true });
+  document.addEventListener("touchend", keepAudioAlive, { passive: true, capture: true });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") ensureAudio();
+  });
 }
 
 /* 播放一个音：类型、音量、延迟与输出目标均可配置 */
@@ -160,6 +211,7 @@ function stopActiveAudio() {
   try {
     activeAudio.onended = null;
     activeAudio.onerror = null;
+    activeAudio.onloadedmetadata = null;
     activeAudio.pause();
     activeAudio.currentTime = 0;
   } catch (e) { /* ignore */ }
@@ -177,6 +229,7 @@ function stopSpeak() {
 
 function speak(text) {
   try {
+    ensureAudio();
     const lines = (Array.isArray(text) ? text : [text])
       .map((t) => String(t == null ? "" : t).trim())
       .filter(Boolean);
@@ -198,6 +251,8 @@ function speak(text) {
         if (typeof toast === "function") toast("当前浏览器不支持发音");
         return;
       }
+      /* 修复 iOS / Chrome 偶发 paused 导致朗读静默卡死 */
+      try { if (synth.paused) synth.resume(); } catch (e) { /* ignore */ }
       const u = new SpeechSynthesisUtterance(line);
       u.lang = "en-US";
       /* 启蒙模式自动放慢，方便 3~4 岁听清尾音与跟读 */
@@ -215,12 +270,24 @@ function speak(text) {
       const next = () => sayFrom(i + 1);
       const url = kids ? anaVoiceUrl(line) : "";
       if (url) {
-        const audio = new Audio(url);
-        audio.preload = "auto";
-        /* 保持童声原音高：启蒙模式 0.85x，普通模式 0.93x */
-        if ("preservesPitch" in audio) audio.preservesPitch = true;
-        if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
-        audio.playbackRate = slow ? 0.85 : 0.93;
+        /* 复用已解锁的全局单例 Audio，避免 iOS Safari 在 setTimeout 异步回调中拦截新 Audio */
+        const audio = getVoiceAudio();
+        const targetRate = slow ? 0.85 : 0.93;
+        const applyRate = () => {
+          try {
+            if ("preservesPitch" in audio) audio.preservesPitch = true;
+            if ("webkitPreservesPitch" in audio) audio.webkitPreservesPitch = true;
+            audio.defaultPlaybackRate = targetRate;
+            audio.playbackRate = targetRate;
+          } catch (e) { /* ignore */ }
+        };
+        audio.muted = false;
+        audio.onended = null;
+        audio.onerror = null;
+        audio.onloadedmetadata = applyRate;
+        audio.pause();
+        audio.src = url;
+        applyRate();
         activeAudio = audio;
         let settled = false;
         const done = () => {
@@ -238,7 +305,9 @@ function speak(text) {
         audio.onended = done;
         audio.onerror = fallback;
         const p = audio.play();
-        if (p && typeof p.catch === "function") p.catch(fallback);
+        if (p && typeof p.then === "function") {
+          p.then(() => { voiceUnlocked = true; applyRate(); }).catch(fallback);
+        }
         return;
       }
       speakWithSynth(line, next);

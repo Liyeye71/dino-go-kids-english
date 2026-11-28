@@ -470,9 +470,8 @@
       body: `<div class="ref-pic-wrap">
                 <div class="ref-picture-frame">
                   <div class="ref-picture-art">${wordHeroArt(q)}</div>
-                  ${listenPill()}
                 </div>
-                <p class="ref-hint">${q.picHint || (currentTheme() && currentTheme().picHint) || "猜猜这是什么动物"}</p>
+                <p class="ref-hint">点单词听一听，${q.picHint || (currentTheme() && currentTheme().picHint) || "猜猜这是什么动物"}</p>
                 <div class="options ref-pic-options">${options(q.options)}</div>
               </div>`,
       btn: choiceButton("选一个答案"),
@@ -720,12 +719,9 @@
     } else if (d.mode === "sentence") {
       optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-sentences">${d.options.map((o) => {
         const state = optionState(o.value);
-        return `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(o.label)}" aria-label="朗读这句">${I.speaker(16, "#5C411D")}</button>
-                <button class="option${state ? " " + state : ""}" data-action="select" data-word="${esc(o.value)}">
+        return `<button class="option${state ? " " + state : ""}" data-action="select" data-word="${esc(o.value)}">
                   <span class="dlg-sentence">${highlightKeys(o.label)}</span>${markOf(o.value)}
-                </button>
-              </div>`;
+                </button>`;
       }).join("")}</div>`;
     } else if (d.mode === "image") {
       optionHtml = `<div class="ref-dialog-image-grid">${d.options.map((o) => {
@@ -739,10 +735,7 @@
               </button>`;
       }).join("")}</div>`;
     } else {
-      optionHtml = `<div class="options one-col ref-dialog-options ref-dialog-opt-rows">${q.options.map((w) => `<div class="ref-dialog-opt-row">
-                <button type="button" class="dlg-opt-say" data-action="speak-text" data-text="${esc(w)}" aria-label="朗读">${I.speaker(16, "#5C411D")}</button>
-                ${options([w])}
-              </div>`).join("")}</div>`;
+      optionHtml = `<div class="options one-col ref-dialog-options">${options(q.options)}</div>`;
     }
     return {
       body: `<div class="ref-dialog-card">
@@ -869,15 +862,11 @@
       return `<button type="button" class="fd-food ${revealed && id === q.correctFood ? "correct" : ""} ${quiz.selected === id ? "selected" : ""}"
               data-action="fd-pick" data-drag="food" data-food="${id}"><span class="ref-food-art">${art}</span></button>`;
     }).join("");
-    const feedPrompt = q && q.word
-      ? `What does the ${q.word} like to eat?`
-      : "What does this animal like to eat?";
     const body = `
             <div class="fd-wrap ref-feed-wrap">
               <div class="fd-animal ref-feed-animal" data-feed-drop>
                 <div class="fd-art">${artWithImage(q.img, "fd-animal-img", artOf(q.word)())}</div>
                 ${revealed ? "" : `<span class="feed-hungry-badge" aria-hidden="true">💭</span>`}
-                <button type="button" class="listen feed-replay-btn" data-action="speak-text" data-text="${esc(feedPrompt)}" aria-label="再听一遍问题">${I.speaker(16)}</button>
               </div>
               <p class="ref-hint">${q.zh} 爱吃什么？拖到嘴边或点选食物</p>
               <div class="fd-foods">${foods}</div>
@@ -894,7 +883,7 @@
                   ${wordArtImg(actionSrc, "ref-action-img", q.emoji || wordGlyph(q.word), "pic-emoji")}
                 </div>`,
       tipClass: "ref-hint",
-      tip: q.themeId === "animal" ? "动物在干什么？" : "小恐龙在干什么？",
+      tip: q.themeId === "animal" ? "点单词听一听，动物在干什么？" : "点单词听一听，小恐龙在干什么？",
       optionsClass: "ref-action-options",
       options: options(q.options),
       btn: quiz.revealed ? quizNextButton() : "",

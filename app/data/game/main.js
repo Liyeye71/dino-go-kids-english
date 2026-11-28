@@ -57,6 +57,7 @@ function answerMetaOf(q, game) {
 /* 统一重置单题交互状态 */
 function resetQuestionState(qState) {
   qState.selected = null;
+  qState.selectedEl = null;
   qState.revealed = false;
   qState.choiceCorrect = null;
   return qState;
@@ -293,41 +294,94 @@ function beginSettlement(q, ok, el, commit) {
   }
   run();
 }
-function selectOption(word, el) {
+/* 看图 / 动作 / 喂食点选 / 情景对话文字与整句模式：先点选朗读，再点「选好了」确认，防幼儿乱点 */
+function needsConfirmSelect(q) {
+  if (!q) return false;
+  if (q.type === "pic" || q.type === "action" || q.type === "feed_animal") return true;
+  if (q.type === "dialog") return !(q.dialog && q.dialog.mode === "image");
+  return false;
+}
+
+/* 局部更新选中态与原地确认按钮（不触发整页重绘，避免主图闪烁与布局跳动） */
+function syncConfirmUI(q, word) {
+  const root = document.querySelector(".quiz-ref-page");
+  if (!root) return;
+  if (q.type === "feed_animal") {
+    root.querySelectorAll(".fd-food[data-food]").forEach((btn) => {
+      btn.classList.toggle("selected", btn.dataset.food === word);
+    });
+  } else {
+    root.querySelectorAll('.option[data-action="select"]').forEach((btn) => {
+      const on = btn.dataset.word === word;
+      btn.classList.toggle("sel", on);
+      let radio = btn.querySelector(".mark.radio");
+      if (on && !radio) {
+        radio = document.createElement("span");
+        radio.className = "mark radio";
+        radio.innerHTML = "<i></i>";
+        btn.appendChild(radio);
+      } else if (!on && radio) {
+        radio.remove();
+      }
+    });
+  }
+  if (q.type === "dialog") {
+    const bubble = root.querySelector(".ref-dialog-row.reply .ref-dialog-bubble");
+    if (bubble) {
+      const blank = bubble.querySelector(".blank");
+      const pending = bubble.querySelector(".ref-dialog-reply");
+      if (blank) blank.textContent = word;
+      else if (pending) {
+        pending.textContent = word;
+        pending.classList.remove("pending");
+      }
+      if (!bubble.querySelector(".ref-confirm-btn")) {
+        const confirmBtn = document.createElement("button");
+        confirmBtn.type = "button";
+        confirmBtn.className = "ref-confirm-btn is-inline";
+        confirmBtn.dataset.action = "confirm-answer";
+        confirmBtn.innerHTML = `<span>选好了 ✓</span>`;
+        bubble.appendChild(confirmBtn);
+      }
+    }
+    return;
+  }
+  const hint = root.querySelector(".ref-hint");
+  if (hint) {
+    hint.classList.add("has-confirm");
+    hint.innerHTML = `<button type="button" class="ref-confirm-btn" data-action="confirm-answer"><span>选好了 ✓</span></button>`;
+  }
+}
+
+function selectOption(word, el, opts = {}) {
   if (!quiz || quiz.revealed || settleLock) return;
   cancelTaskPrompt();
   const q = quiz.order[quiz.index];
-  const correctValue = correctValueOf(q);
   quiz.selected = word;
+  quiz.selectedEl = el || null;
+  if (!opts.direct && needsConfirmSelect(q)) {
+    sfx("tap");
+    syncConfirmUI(q, word);
+    speak(word);
+    return;
+  }
+  const correctValue = correctValueOf(q);
   sfx("tap");
   beginSettlement(q, word === correctValue, el);
 }
-/* 听发音按钮：纯喇叭图标 + 圆形底色 */
-function listenPill() {
-  return `<button class="listen" data-action="listen-selected" aria-label="听发音">${I.speaker(16)}</button>`;
-}
-/* 听发音：答题前重播当前题干问句，答题后朗读正确答案 */
-function listenSelected() {
-  if (!quiz) return;
+
+function confirmSelection() {
+  if (!quiz || quiz.revealed || settleLock || !quiz.selected) return;
+  cancelTaskPrompt();
   const q = quiz.order[quiz.index];
-  if (!q) return;
-  if (quiz.revealed) {
-    const meta = answerMetaOf(q);
-    if (meta.speakText) speak(meta.speakText);
-    return;
-  }
-  if (quiz.selected) {
-    speak(quiz.selected);
-    return;
-  }
-  const game = gameForTask(q);
-  const lines = game && typeof game.getPromptLines === "function" ? game.getPromptLines(q) : [];
-  if (lines.length) speak(lines);
+  const correctValue = correctValueOf(q);
+  sfx("tap");
+  beginSettlement(q, quiz.selected === correctValue, quiz.selectedEl || null);
 }
 
-/* 动物喂食点选 / 拖拽入口：复用统一选项提交流程，透传触发元素供特效使用 */
-function feedPick(food, el = null) {
-  selectOption(food, el);
+/* 动物喂食点选 / 拖拽入口：点选先读音+确认按钮，拖拽进嘴直接喂食 */
+function feedPick(food, el = null, opts = {}) {
+  selectOption(food, el, opts);
 }
 /* 答对后解锁当前单词：写入存档并加入本次新解锁列表，词汇页立即可见 */
 function unlockTaskWord(q) {

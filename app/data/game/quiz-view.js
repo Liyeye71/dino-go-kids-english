@@ -83,7 +83,7 @@ window.QuizView = {
       if (cancelled || !drag.moved) return;
       this.suppressClick(source);
       const target = hit && hit.closest("[data-feed-drop]");
-      if (target) feedPick(drag.value, source);
+      if (target) feedPick(drag.value, source, { direct: true });
     };
     const up = (ev) => finish(ev, false);
     const cancel = (ev) => finish(ev, true);
